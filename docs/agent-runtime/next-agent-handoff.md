@@ -150,7 +150,6 @@ If the user asks "what should we do next?", recommend one of:
 
 - Taste-Skill sandbox dry-run planning, not execution
 - CodeGraph reindex approval package, not direct reindex
--  MCP read-only approval package, not direct bb_* calls
 - Final packaging/index cleanup for reviewer navigation
 
 ## Do Not
