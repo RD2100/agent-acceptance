@@ -1,0 +1,22 @@
+{
+  "source_name": "Taste-Skill",
+  "source_url": "https://github.com/Leonxlnx/taste-skill",
+  "commit_sha": "3c7017d636c3a4aad378433ea6d0cfa6c921da4a",
+  "short_sha": "3c7017d",
+  "quarantine_path": "skills-inbox/quarantine/sources/Taste-Skill__3c7017d/",
+  "clone_time": "2026-05-27",
+  "clone_method": "git clone --depth 1",
+  "install_allowed": false,
+  "execute_allowed": false,
+  "mcp_enable_allowed": false,
+  "hook_registration_allowed": false,
+  "runtime_loadable": false,
+  "static_review_status": "completed_human_required",
+  "manifest_files": ["README.md", "CHANGELOG.md", "LICENSE", "skill.sh"],
+  "top_level_dirs": ["assets", "examples", "research", "skills"],
+  "package_manifests_found": [],
+  "install_scripts_found": ["skill.sh"],
+  "network_access_indicators": [],
+  "mcp_config_indicators": [],
+  "notes": "Phase 6D quarantine clone only. No install, no execute, no MCP. Static review pending."
+}
