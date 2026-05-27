@@ -63,7 +63,6 @@
 |-----------|-------------------------------|---------------------------------------------|
 | Remote | `https://github.com/RD2100/agent-acceptance.git` | `git@github.com:RD2100/agent-acceptance.git` |
 | Worktree | Dirty (13M + 6U) | Clean |
-| `.claude/` | Present (blackboard only) | Absent |
 | `.codegraph/` | Present (139KB, 0 indexed) | Absent |
 | `templates/` | Present | Absent |
 | `runs/` | Present | Absent |

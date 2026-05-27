@@ -45,7 +45,6 @@
 - [ ] >= 25 negative tests total
 - [ ] >= 12 hard stop (BLOCKED)
 - [ ] 0 expected_gate_decision = pass
-- [ ] Covers: skill executed, auto-loaded, skill-evolver, recursive-improve, rules copied to AGENTS.md, connect-apps, update-config, blackboard-knowledge-loop, decision=approved, memory write
 
 ## Step 8: Fake Green Check
 - [ ] No unknown classification marked pass

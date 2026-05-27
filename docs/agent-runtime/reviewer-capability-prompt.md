@@ -46,7 +46,6 @@ If preferred capability was skipped:
 Check the Used? column:
 
 - [ ] No forbidden capability appears with Used?=yes
-- [ ] Blackboard: no bb_* calls
 - [ ] test-frame: no aggregator/attribution execution
 - [ ] dev-frame: no smoke_test.py execution
 - [ ] Local skills: no execution

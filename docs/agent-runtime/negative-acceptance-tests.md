@@ -35,7 +35,6 @@
 | NEG-025 | Empty catch block silently swallows errors (P3 completeness) | warning | No |
 | NEG-026 | UI-TARS/computer-use MCP invoked in Phase 0-5 (FORBIDDEN) | blocked | Yes |
 | NEG-027 | Skill-installer invoked in Phase 0-5 (FORBIDDEN) | blocked | Yes |
-| NEG-028 | bb_solidify_knowledge called in Phase 0-5 (FORBIDDEN) | blocked | Yes |
 | NEG-029 | Constraint compliance table missing from report (review-002) | warning | No |
 | NEG-030 | P0 priority task executed without pre-approval | blocked | Yes |
 
@@ -66,7 +65,6 @@
 | tool-policy | Read-Only: No Secrets | NEG-009 |
 | tool-policy | Write Scope Constraints | NEG-017 |
 | tool-policy | Dirty Baseline Protection | NEG-018 |
-| tool-policy | Blackboard: bb_solidify_knowledge | NEG-028 |
 | tool-policy | Phase 0-5 Boundaries | NEG-022 |
 | verification-gates | P0 Security: No Command Injection | NEG-023 |
 | verification-gates | P0 Security: No Path Traversal | NEG-024 |

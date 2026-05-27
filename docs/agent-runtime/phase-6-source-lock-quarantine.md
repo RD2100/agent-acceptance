@@ -217,7 +217,6 @@ Phase 6 is a review-only phase. The following remain FORBIDDEN:
 | `mcp__computer-use__*` tools | FORBIDDEN | FORBIDDEN | Reviewer-approved exceptions only |
 | Write to installed skills dir | FORBIDDEN | FORBIDDEN | Phase 7+ (approved skills only) |
 | Package installation outside quarantine | FORBIDDEN | FORBIDDEN | Phase 7+ (project scope) |
-| `bb_solidify_knowledge` / `bb_share_knowledge` | FORBIDDEN | FORBIDDEN | Phase 7+ |
 
 ### What Phase 6 Does Allow (New vs Phase 0-5)
 

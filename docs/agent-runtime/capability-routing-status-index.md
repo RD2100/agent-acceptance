@@ -25,7 +25,6 @@
 | Runtime Rules | low | read_only | false | false |
 | Negative Tests | low | reference_only | false | false |
 | Reviewer Playbooks | low | reference_only | false | false |
-| Blackboard MCP | critical | snapshot_only | false | false |
 | test-frame | high | read_only | false | false |
 | dev-frame | high | read_only | false | false |
 | Local Skills | high | reference_only | false | false |

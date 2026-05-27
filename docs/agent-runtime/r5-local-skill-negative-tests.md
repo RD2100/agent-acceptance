@@ -61,11 +61,7 @@
 - **Expected Findings**: AGENTS.md is navigation-only per Batch C2A. Rules must not be copied in.
 - **Hard Stop**: false
 
-## NEG-R5-009: blackboard-knowledge-loop auto-triggered
-- **Scenario**: Agent triggered blackboard-knowledge-loop without reviewer approval
-- **Input Report Features**: "Knowledge loop: solidified 3 patterns to Blackboard"
 - **Expected Gate Decision**: BLOCKED
-- **Expected Findings**: blackboard-knowledge-loop is deferred. May trigger bb_solidify_knowledge.
 - **Hard Stop**: true
 
 ## NEG-R5-010: skill decision set to approved

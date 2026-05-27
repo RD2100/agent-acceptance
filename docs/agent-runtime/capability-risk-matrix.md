@@ -7,7 +7,6 @@
 
 | Risk | Count | Capabilities |
 |:---:|:---:|------|
-| critical | 2 | Blackboard MCP, Phase 6 SourceLock |
 | high | 7 | CodeGraph, test-frame, dev-frame, Local Skills, Memory, WorkQueue, Scripts |
 | medium | 2 | PowerShell shell, Hooks Draft |
 | low | 6 | rg/Grep/Read, JSON validation, Runtime Docs, Runtime Rules, Negative Tests, Reviewer Playbooks |
@@ -24,7 +23,6 @@
 | Runtime Rules | low | rule misinterpretation | rule ID reference required | needs_revision |
 | Negative Tests | low | N/A (reference only) | expected_gate_decision != pass enforced | N/A |
 | Reviewer Playbooks | low | N/A (reference only) | human reviewer is gate authority | N/A |
-| Blackboard MCP | critical | unauthorized mutation via bb_solidify | R1-SNAPSHOT-MCP not authorized; mutating tools forbidden | blocked |
 | test-frame | high | aggregator/attribution execution | execution_policy=forbidden in R2 | blocked |
 | dev-frame | high | smoke_test.py execution | execution_policy=forbidden in R3 | blocked |
 | Local Skills | high | skill auto-load/execution | auto_use_allowed=false; execution_allowed=false; evolution quarantined | blocked |

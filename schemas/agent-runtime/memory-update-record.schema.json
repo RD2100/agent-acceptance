@@ -1,7 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "MemoryUpdateRecord",
-  "description": "Proposed memory update, subject to human approval. Produced by an agent (proposed only -- Phase 0-5 agents must NOT write memory files, agent-state.db, or call bb_solidify_knowledge). Only 'proposed' status is allowed for new records in Phase 0-5.",
   "type": "object",
   "required": [
     "record_id",

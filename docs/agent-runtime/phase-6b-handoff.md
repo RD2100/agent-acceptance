@@ -86,7 +86,6 @@ The Phase 6C executor agent must NOT perform any of the following. These are per
 - NO MCP enable or config modification (no changes to `settings.json`, `mcpServers`, or any MCP configuration file)
 - NO hook registration (no `husky install`, `pre-commit install`, `git config core.hooksPath`, or any hook setup)
 - NO source promotion (quarantine -> installed skills directory; promotion is Phase 7+)
-- NO memory write (no `bb_solidify_knowledge`, `bb_share_knowledge`, `bb_report_bug_pattern`, or any Blackboard write. MemoryUpdateRecord proposals only.)
 - NO skill activation (no `skill-installer install`, no enabling/exposing any quarantined skill to the agent runtime)
 - NO code execution from quarantine (quarantine is read-only; no `node`, `python`, `bash` on quarantined files)
 - NO submodule or LFS clone that bypasses the allowlist (see Phase 6B integrity checks in `phase-6-source-lock-quarantine.md`)

@@ -56,7 +56,6 @@ skills-inbox/
 
 1. **Human reviewer**: Execute the R0-R7 reviewer checklists against the batch outputs.
 2. **R0 gate**: Review the resource registry for completeness. All 8 resources registered, classified, and verified.
-3. **R1 gate**: Review the Blackboard snapshot. Confirm mcp_status=disabled, no mutating bb_* tools called.
 4. **R2 gate**: Confirm evidence providers are registered, not executed. All components forbidden.
 5. **R3 gate**: Confirm dev-frame adapter is design_only. No smoke_test.py executed.
 6. **R4 gate**: Confirm CodeGraph stale-aware policy. No reindex occurred. Empty index flagged.
@@ -89,7 +88,6 @@ skills-inbox/
 |----------|------------------|
 | Script execution | Run-WorkQueue.ps1, Run-Smoke.ps1, Test-WorkQueue.ps1, Run-Batch.ps1, Run-AllQueues.ps1, Run-QueueGroup.ps1, Write-Report.ps1 |
 | MCP | Register MCP server, modify MCP config (`.claude/mcp.json`), call forbidden bb_* tools |
-| Blackboard | bb_solidify_knowledge, bb_share_knowledge, bb_claim_file, bb_release_file, bb_acquire_build_lock, bb_release_build_lock, bb_event |
 | Git | git push, git commit, git reset --hard, git clean -f, git checkout (outside Phase 6C quarantine), git stash |
 | Filesystem | Write to C:\Users\RD, write to memory files, write to agent-state.db, modify dirty baseline, create files outside approved outputs |
 | Packages | npm install, pip install, yarn add, cargo install, go get, gem install |
@@ -109,7 +107,6 @@ skills-inbox/
 
 1. **Dirty baseline preservation**: Verify `git status --short` shows only 5 new audit files. No 13M + 6U modified.
 2. **R0 lifecycle_state**: Confirm all 8 resources have lifecycle_state in {discovered, registered, classified}. No evaluated/capability_approved/active.
-3. **R1 mcp_status**: Confirm "disabled" in Blackboard schema and negative tests.
 4. **R2 execution_policy**: Confirm "forbidden" for all test-frame components. Aggregator/attribution/CLI/orchestrator all forbidden.
 5. **R3 execution_policy**: Confirm dev-frame adapter is design_only. Smoke validation is historical_only.
 6. **R4 trusted_for_current_run**: Verify it is false for the empty agent-acceptance index.
@@ -123,7 +120,6 @@ skills-inbox/
 ## Next Batch Candidates
 
 1. **R0 Gate Review**: Human reviewer evaluates R0 resource registry (Batch R0-C outputs).
-2. **R1 Gate Review**: Human reviewer evaluates Blackboard snapshot (Batch R1-C outputs).
 3. **Phase 6C Kickoff**: After R0-R7 gate approval, initiate Phase 6C only for external sources (Taste-Skill, Understand Anything) with source URL approval and explicit clone-to-quarantine human authorization. R5 deferred skills are local classification only — not clone targets.
 4. **Phase 6A Re-assessment**: Review approval matrix decisions for Taste-Skill, Understand Anything, ECC, AnySearch Skill, addyosmani-agent-skills-zh.
 5. **WorkQueue Dry-Run**: After all gates pass, test Run-WorkQueue.ps1 with -DryRun (requires ScriptSafetyRecord + human gate per batch).

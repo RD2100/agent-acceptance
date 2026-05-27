@@ -5,8 +5,6 @@
 
 ## Pre-Review
 
-- [ ] Memory source identified (RD2100-memory, project-memory, Blackboard)
-- [ ] Memory type classified (active_rules, guide, topic, project_memory, blackboard_memory, archive)
 - [ ] Memory path recorded
 - [ ] access_mode confirmed as read_only
 

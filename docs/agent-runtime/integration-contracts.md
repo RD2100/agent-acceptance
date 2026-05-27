@@ -375,7 +375,6 @@ Each contract defines: purpose, producer, consumer, required/optional fields, st
 - `status` must be one of proposed/approved/rejected/superseded
 - `target_location` must be a valid path
 - Phase 0-5: only `proposed` status allowed for new records
-- Phase 0-5: agent must not write memory files or call `bb_solidify_knowledge`
 
 ---
 
@@ -408,11 +407,8 @@ Core contracts are the 8 defined above.
 - **Interface**: MCP (codegraph_* tools)
 - **Direction**: Agent queries CodeGraph
 
-### A3: Blackboard (Cross-Session Collaboration)
-- **Status**: ACTIVE -- state.json at `.claude/blackboard/`
-- **Interface**: MCP (bb_* tools)
+- **Interface**: MCP (* tools)
 - **Direction**: Bidirectional (read: search/recent knowledge; write: register, share_decision, report_bug_pattern)
-- **Phase 0-5 constraint**: `bb_solidify_knowledge` is FORBIDDEN
 
 ### A4: test-frame (Future Downstream)
 - **Status**: PLANNED

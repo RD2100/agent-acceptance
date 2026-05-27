@@ -127,9 +127,6 @@ Verify compliance with R0 Hard Boundary defined in resource-integration-plan.md.
 | 10 | Package manager used (npm install, pip install, yarn) | [ ] NO / [ ] YES | |
 | 11 | External source cloned | [ ] NO / [ ] YES | |
 | 12 | UI automation used (computer-use tools) | [ ] NO / [ ] YES | |
-| 13 | bb_solidify_knowledge invoked | [ ] NO / [ ] YES | |
-| 14 | bb_share_knowledge invoked | [ ] NO / [ ] YES | |
-| 15 | bb_claim_file / bb_release_file invoked | [ ] NO / [ ] YES | |
 
 ### Check Result
 
@@ -175,7 +172,6 @@ Each resource must have these 19 required fields per the JSON schema:
 
 | # | Resource ID | Name | Type | Risk | All Fields Present? |
 |---|-------------|------|------|------|---------------------|
-| 1 | res-blackboard-mcp-001 | Blackboard MCP | mcp_server | critical | [ ] YES / [ ] NO |
 | 2 | res-devframe-002 | dev-frame | repository | high | [ ] YES / [ ] NO |
 | 3 | res-testframe-003 | test-frame | test_framework | high | [ ] YES / [ ] NO |
 | 4 | res-codegraph-004 | CodeGraph | code_intelligence | high | [ ] YES / [ ] NO |
@@ -214,7 +210,6 @@ Per resource-risk-matrix.md and resource-registry.md:
 
 | Resource ID | Risk | human_gate_required | forbidden_actions non-empty | promotion_status <= candidate |
 |-------------|------|:---:|:---:|:---:|
-| res-blackboard-mcp-001 | critical | [ ] Y / [ ] N | [ ] Y / [ ] N | [ ] Y / [ ] N |
 | res-devframe-002 | high | [ ] Y / [ ] N | [ ] Y / [ ] N | [ ] Y / [ ] N |
 | res-testframe-003 | high | [ ] Y / [ ] N | [ ] Y / [ ] N | [ ] Y / [ ] N |
 | res-codegraph-004 | high | [ ] Y / [ ] N | [ ] Y / [ ] N | [ ] Y / [ ] N |
@@ -228,7 +223,6 @@ Note: res-clauderules-007 is medium risk -- human gate not mandatory (but set to
 
 | Resource ID | lifecycle_state | promotion_status | lifecycle_state valid at R0? | promotion_status valid at R0? |
 |-------------|----------------|-----------------|:---:|:---:|
-| res-blackboard-mcp-001 | registered | registered | [ ] Y | [ ] Y |
 | res-devframe-002 | registered | registered | [ ] Y | [ ] Y |
 | res-testframe-003 | registered | registered | [ ] Y | [ ] Y |
 | res-codegraph-004 | registered | registered | [ ] Y | [ ] Y |
@@ -363,7 +357,6 @@ Each of the 13 risk categories must have these 9 fields:
 
 | # | Risk Category | Affected Resources | Risk Level | Gate Decision Present? | Forbidden Actions? |
 |---|---------------|-------------------|------------|:---:|:---:|
-| 1 | MCP (Blackboard) | res-blackboard-mcp-001 | critical | [ ] Y / [ ] N | [ ] Y / [ ] N |
 | 2 | Scripts (PowerShell) | res-agentacceptance-008 | high | [ ] Y / [ ] N | [ ] Y / [ ] N |
 | 3 | Hooks (audit ps1) | res-agentacceptance-008 | high | [ ] Y / [ ] N | [ ] Y / [ ] N |
 | 4 | Skills (local) | res-localskills-005 | high | [ ] Y / [ ] N | [ ] Y / [ ] N |

@@ -13,7 +13,6 @@
     "record_id": { "type": "string" },
     "phase": { "type": "string", "enum": ["R6"] },
     "memory_source": { "type": "string" },
-    "memory_type": { "type": "string", "enum": ["active_rules", "guide", "topic", "project_memory", "blackboard_memory", "archive"] },
     "memory_path": { "type": "string" },
     "access_mode": { "type": "string", "const": "read_only" },
     "write_allowed": { "type": "boolean", "const": false },

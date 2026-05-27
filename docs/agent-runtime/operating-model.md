@@ -44,7 +44,6 @@ All runners default to dry-run mode. Real operations (file writes, mutations, ex
 
 ```
 Session Start
-  -> Blackboard register
   -> Memory inject (top 3-5 relevant memories)
   -> Smoke (L0) gate
   -> Task dispatch
@@ -53,7 +52,6 @@ Session Start
        -> L3 Parallel (if throughput needed)
   -> Verification gates
   -> Report generation
-  -> Blackboard share (decisions, bug patterns)
   -> MemoryUpdateRecord proposal (no memory write in Phase 0-5)
 Session End
 ```
@@ -64,14 +62,10 @@ Session End
 |-----------|-----------|----------|
 | ai-workflow-hub | Upstream | CLI via `$env:AI_WORKFLOW_HUB` |
 | CodeGraph | Sidecar | MCP (codegraph_* tools) |
-| Blackboard | Sidecar | MCP (bb_* tools) |
 | test-frame | Downstream | Future: CLI trigger from workqueues |
-| Memory (3-layer) | Internal | File + SQLite + Blackboard |
 
 ## Governance
 
-- All agent decisions that change state must be logged via Blackboard (`bb_share_decision`)
-- All bugs found during execution must be reported via Blackboard (`bb_report_bug_pattern`)
 - All task completions may propose self-evolution evidence through MemoryUpdateRecord; memory writes remain forbidden in Phase 0-5
 - No agent may skip verification gates without explicit human approval
 
@@ -87,7 +81,6 @@ D:\agent-acceptance\              <- CANONICAL_ROOT
     external/                     <- External skills awaiting review
   runs/                           <- Historical execution records
   templates/                      <- AGENTS and queue templates
-  .claude/                        <- Agent configuration (blackboard)
   .codegraph/                     <- Code intelligence index
 ```
 
@@ -98,6 +91,3 @@ D:\agent-acceptance\              <- CANONICAL_ROOT
 | No fake green | Exit code contract enforced by runners |
 | Dry-run default | Runners require explicit -Real/-Apply flags |
 | Tier 2 escalation | WorkQueue runner blocks Tier 2 without upgrade |
-| Session registration | Blackboard `bb_register` at session start |
-| Decision audit trail | Blackboard `bb_share_decision` for state changes |
-| Bug pattern sharing | Blackboard `bb_report_bug_pattern` for discovered issues |

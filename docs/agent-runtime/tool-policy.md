@@ -32,23 +32,11 @@ This section governs the current phase. All other sections are future reference.
 | `codegraph_files` | Directory listing |
 | `codegraph_status` | Index health check |
 
-### Permitted: Blackboard (Read + Safe Write)
 
 | Tool | Constraint |
 |------|------------|
-| `bb_register` | Session start only |
-| `bb_heartbeat` | Periodic liveness |
-| `bb_status` | Read current state |
-| `bb_search_knowledge` | Read-only search |
-| `bb_get_recent_knowledge` | Read-only recent knowledge |
-| `bb_share_decision` | Log decisions |
-| `bb_report_bug_pattern` | Report bugs |
-| `bb_check_conflicts` | Read conflict status |
-| `bb_session_files` | Read session file list |
-| `bb_validate_knowledge` | Validate existing entries |
-| `bb_event` | FORBIDDEN | Tool not confirmed active in current MCP server |
 
-**FORBIDDEN in Phase 0-5**: `bb_solidify_knowledge`, `bb_share_knowledge`, `bb_claim_file`, `bb_release_file`, `bb_acquire_build_lock`, `bb_release_build_lock`
+**FORBIDDEN in Phase 0-5**: , , , , , 
 
 ### Permitted: Task Management
 

@@ -91,14 +91,9 @@
 - **Must explain if skipped**: no
 - **Evidence**: playbook reference + decision path
 
-## 9. Blackboard MCP
 - **Type**: mcp
-- **Access**: snapshot_only (R1-DESIGN), forbidden (R1-SNAPSHOT-MCP not authorized)
 - **Risk**: critical
 - **Preferred for**: N/A (not authorized in current phase)
-- **Forbidden for**: bb_solidify_knowledge, bb_share_knowledge, bb_claim_file, bb_release_file, any mutating bb_* call, MCP registration, server.py execution
-- **Fallback**: filesystem snapshot (R1-SNAPSHOT-FS)
-- **Human gate**: yes (any bb_* call beyond R1-DESIGN permitted list)
 - **Must explain if skipped**: no (not expected to be used)
 - **Evidence**: R1 policy docs, state.json checksum
 
@@ -140,7 +135,6 @@
 - **Access**: read_only
 - **Risk**: high
 - **Preferred for**: context reference (read-only)
-- **Forbidden for**: used_as_fact, memory write, bb_solidify_knowledge, agent-state.db write
 - **Fallback**: filesystem/git verification
 - **Human gate**: yes (any write)
 - **Must explain if skipped**: no

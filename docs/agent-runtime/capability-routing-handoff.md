@@ -40,7 +40,6 @@
 4. Is fallback chain valid when used?
 5. Are status checks evidenced?
 6. Is Phase 6C still blocked?
-7. Is R1-SNAPSHOT-MCP still not authorized?
 8. Are scripts still not_run without human gate?
 9. Is memory still read_only?
 10. Are all capabilities still auto_use/execution/mutation=false?

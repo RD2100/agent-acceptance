@@ -483,7 +483,7 @@ Decision: pass_to_review / needs_revision / blocked / human_required
 These items are known low-severity follow-ups from D7-R/D8-R and should not block this playbook:
 
 1. `skills-inbox/external/README.md` may still contain sandbox wording that should be softened in a later doc cleanup.
-2. `bb_event` terminology is not yet normalized in the permitted tool table.
+2.  terminology is not yet normalized in the permitted tool table.
 3. Some documents use "approved scope" wording that should be backed by schema references in a later consistency pass.
 
 Do not promote these notes to blockers unless a new batch changes their context or makes them permissive.

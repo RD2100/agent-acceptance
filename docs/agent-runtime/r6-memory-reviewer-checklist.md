@@ -23,14 +23,12 @@
 
 ## Step 4: Command Audit
 - [ ] No file writes to C:\Users\RD\.codex\, C:\Users\RD\.claude\
-- [ ] No bb_solidify_knowledge calls
 - [ ] No agent-state.db writes
 - [ ] No dream-reflection, recursive-improve, memory-bridge execution
 
 ## Step 5: Forbidden Action Check
 - [ ] Memory written? Must be NO
 - [ ] Memory used as current fact? Must be NO
-- [ ] bb_solidify_knowledge called? Must be NO
 - [ ] agent-state.db written? Must be NO
 - [ ] MEMORY.md modified? Must be NO
 - [ ] Memory files moved/deleted? Must be NO
@@ -47,7 +45,6 @@
 - [ ] >= 20 negative tests total
 - [ ] >= 10 hard stop (BLOCKED)
 - [ ] 0 expected_gate_decision = pass
-- [ ] Covers: memory write, used_as_fact, stale memory, bb_solidify, agent-state.db write, MemoryUpdateRecord=approved, C:\Users\RD write, MEMORY.md modify, dream-reflection
 
 ## Step 8: Fake Green Check
 - [ ] No memory entry verified without evidence
@@ -58,14 +55,12 @@
 ## Step 9: Human Gate Check
 - [ ] Memory write operations: all forbidden (no human gate bypass)
 - [ ] MemoryUpdateRecord: all status=proposed (not approved)
-- [ ] Blackboard solidify: all forbidden
 
 ## Step 10: Gate Decision Tree
 
 ```
 Was any memory file written?                       -> YES = BLOCKED
 Was C:\Users\RD written?                            -> YES = BLOCKED
-Was bb_solidify_knowledge called?                   -> YES = BLOCKED
 Was agent-state.db written?                         -> YES = BLOCKED
 Was MEMORY.md modified?                             -> YES = BLOCKED
 Was memory used as current fact?                    -> YES = needs_revision

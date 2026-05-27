@@ -35,7 +35,6 @@ The Capability Routing Track (CR0-CR4) is **structurally complete**. All 17 capa
 | CR2 prompt enforces CR1 routing rules | PASS |
 | CR3 negative tests cover all CR1 forbidden cases | PASS |
 | CR4 playbook references CR2/CR3 correctly | PASS |
-| R1-SNAPSHOT-MCP still blocked | PASS |
 | Phase 6C still blocked | PASS |
 
 ## Final Gate Matrix

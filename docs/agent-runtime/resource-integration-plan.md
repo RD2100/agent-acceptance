@@ -7,13 +7,12 @@
 
 ```
 R0: ACTIVE  (Registry and Classification)
-R1: FUTURE  (Blackboard Read-only Snapshot)
-R2: FUTURE  (test-frame Evidence Provider)
-R3: FUTURE  (dev-frame Orchestration Adapter)
-R4: FUTURE  (CodeGraph Stale-aware Policy)
-R5: FUTURE  (Local Skills / Claude Rules Intake)
-R6: FUTURE  (RD2100 Memory Context Map)
-R7: FUTURE  (Scripts / WorkQueue Controlled Use)
+R1: FUTURE  (test-frame Evidence Provider)
+R2: FUTURE  (dev-frame Orchestration Adapter)
+R3: FUTURE  (CodeGraph Stale-aware Policy)
+R4: FUTURE  (Local Skills / Claude Rules Intake)
+R5: FUTURE  (RD2100 Memory Context Map)
+R6: FUTURE  (Scripts / WorkQueue Controlled Use)
 ```
 
 ## R0 Definition
@@ -34,13 +33,12 @@ Key constraints:
 | Phase | Name | Status | Description |
 |-------|------|--------|-------------|
 | R0 | Resource Registry & Classification | **ACTIVE** | Discover, register, classify all local resources. Produce resource-registry records. Define promotion gates. No execution. |
-| R1 | Blackboard Read-only Snapshot | FUTURE | Snapshot Blackboard state for evidence. Validate bb_* tool availability. Contract mapping A3 verified. |
-| R2 | test-frame Evidence Provider | FUTURE | Integrate test-frame as evidence source. Run discoverer to identify test suites. Produce evidence index records. No test execution. |
-| R3 | dev-frame Orchestration Adapter | FUTURE | Draft adapter for dev-frame orchestration layer. Dry-run read-only orchestration commands. Validate smoke_test.py interface. |
-| R4 | CodeGraph Stale-aware Policy | FUTURE | Human-gated stale check policy; no automatic reindex. Contract mapping A2 verified with freshness checks. All reindex decisions require explicit human approval. |
-| R5 | Local Skills / Claude Rules Intake | FUTURE | Evaluate skills-inbox/ and rules/ directories. Produce SkillIntakeRecords. No installation -- intake evaluation only. |
-| R6 | RD2100 Memory Context Map | FUTURE | Map memory system layers (file, structured, collaborative). Produce MemoryUpdateRecords (proposed only). Validate memory architecture. |
-| R7 | Scripts / WorkQueue Controlled Use | FUTURE | Controlled execution of approved scripts. Dry-run WorkQueue processing. Human-gated script execution with evidence collection. |
+| R1 | test-frame Evidence Provider | FUTURE | Integrate test-frame as evidence source. Produce evidence index records. No test execution. |
+| R2 | dev-frame Orchestration Adapter | FUTURE | Draft adapter for dev-frame orchestration layer. Dry-run read-only orchestration commands. Validate smoke_test.py interface. |
+| R3 | CodeGraph Stale-aware Policy | FUTURE | Human-gated stale check policy; no automatic reindex. All reindex decisions require explicit human approval. |
+| R4 | Local Skills / Claude Rules Intake | FUTURE | Evaluate skills-inbox/ and rules/ directories. Produce SkillIntakeRecords. No installation -- intake evaluation only. |
+| R5 | RD2100 Memory Context Map | FUTURE | Map memory system layers (file, structured). Produce MemoryUpdateRecords (proposed only). |
+| R6 | Scripts / WorkQueue Controlled Use | FUTURE | Controlled execution of approved scripts. Dry-run WorkQueue processing. Human-gated script execution with evidence collection. |
 
 ## Promotion Gate Definitions
 
@@ -155,8 +153,7 @@ Concrete implications:
 1. No script execution (PowerShell, Python, shell)
 2. No MCP server enablement or configuration changes
 3. No CodeGraph reindex or database modification
-4. No Blackboard write operations beyond registration and decision logging
-5. No skill installation or code execution from skills-inbox/
+4. No skill installation or code execution from skills-inbox/
 6. No memory file writes (MemoryUpdateRecords are proposal-only)
 7. No git operations that modify state (commit, push, reset, clean)
 8. No package manager usage (npm, pip, yarn)

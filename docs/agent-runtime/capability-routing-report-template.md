@@ -57,7 +57,6 @@ FALLBACK: <fallback capability used>
 
 | Capability | Reason Forbidden | Confirmed Not Used? |
 |---|---|---|
-| Blackboard MCP | R1-SNAPSHOT-MCP not authorized | yes |
 | Scripts | R7 scripts not_run | yes |
 | Memory write | R6 write_allowed=false | yes |
 

@@ -10,7 +10,6 @@
 | # | ID | Title | Phase | Severity | Status |
 |---|----|-------|:-----:|:--------:|--------|
 | 1 | OI-001 | Phase 6C Source URL + Clone Approval | 6C | BLOCKER | PENDING |
-| 2 | OI-002 | R1 Blackboard SNAPSHOT-MCP Authorization | R1 | HIGH | PENDING |
 | 3 | OI-003 | R5 Local Skill Evolution Quarantine Enforcement | R5 | MEDIUM | ACTIVE |
 | 4 | OI-004 | R6 Memory Write Path Audit | R6 | MEDIUM | MONITOR |
 | 5 | OI-005 | R7 Script Execution Gate Process Definition | R7 | HIGH | PENDING |
@@ -33,12 +32,9 @@
 
 ---
 
-## OI-002: R1 Blackboard SNAPSHOT-MCP Authorization
 
 **Severity**: HIGH
 **Phase**: R1
-**Description**: The Blackboard MCP resource is pre-registered (outside the R0-R7 lifecycle) but the R1 snapshot must confirm mcp_status="disabled". The schema enforces this, but the runtime state of the MCP server must be independently verified by the R1 reviewer.
-**Dependencies**: Blackboard MCP server pre-registration state. Reviewer must verify actual mcp_status matches the "disabled" requirement.
 **Resolution**: R1 gate review must independently confirm mcp_status. If MCP is pre-registered and active, R1 cannot proceed until the environment is corrected.
 **Impact if Unresolved**: R1 boundary violation. Cannot proceed to R2.
 
@@ -59,7 +55,6 @@
 
 **Severity**: MEDIUM
 **Phase**: R6
-**Description**: MemoryContextRecord enforces write_allowed=false and access_mode=read_only via schema consts. However, the memory system spans multiple layers (files at C:\Users\RD\.claude\, agent-state.db, Blackboard knowledge) and a write to any of these layers would be a violation that must be detected post-hoc.
 **Dependencies**: Actual filesystem state of C:\Users\RD memory paths. Session audit logs.
 **Resolution**: Each batch's post-task `git status` (or equivalent filesystem check) should verify no unexpected files appeared in memory paths. Each reviewer checklist should include this check.
 **Impact if Unresolved**: Undetected memory corruption could poison cross-session context.

@@ -61,7 +61,6 @@ templates/
 | `agent-workqueue/` | 5 Tier-graded queue JSONs + QUEUE_INDEX.md |
 | `docs/` | 15 Markdown docs (RUNBOOK, FLOW_CATALOG, RECOVERY_PIPELINE, etc.) |
 | `templates/` | AGENTS.single-project.md + 2 queue JSON templates |
-| `.claude/` | blackboard/ subdirectory only (state.json + state.json.bak) |
 | `.codegraph/` | codegraph.db (139KB, empty index) + WAL/SHM |
 | `runs/` | powershell-acceptance/ historical run records |
 

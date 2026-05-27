@@ -15,7 +15,6 @@ If you have limited time, follow this accelerated path to verify the most critic
 
 2. **Schema parse check** (3 min): Verify `resource-integration-final-audit.md` reports PARSE_OK for all 18 schemas. Spot-check 2-3 critical schemas:
    - `resource-registry-record.schema.json` -- confirm `lifecycle_state` allOf constraint limits R0
-   - `blackboard-resource-record.schema.json` -- confirm `mcp_status` enum = ["disabled"]
    - `script-safety-record.schema.json` -- confirm `allowed_to_run` const = false
 
 3. **Negative test existence** (2 min): Confirm all 9 negative test files are listed in the audit and have zero tests with expected_gate_decision=pass.
@@ -47,7 +46,6 @@ Go through the 18 schemas in the Schema Audit table. For each critical schema, v
 |--------|-------------|
 | resource-registry-record.schema.json | Read the `allOf` block. Confirm: "R0 records may only use lifecycle_state: discovered, registered, or classified." |
 | capability-promotion-record.schema.json | Read the `allOf` block. Confirm: human_gate_passed must be false when promotion_status is not "approved". |
-| blackboard-resource-record.schema.json | Confirm mcp_status enum=["disabled"], server_execution enum=["forbidden"], knowledge_access enum=["read_only"]. |
 | evidence-provider-record.schema.json | Confirm execution_policy enum=["forbidden"]. Read the 4 allOf blocks that reject "current_after_approved_run", "current_pass", "human_gated", "dry_run_allowed". |
 | dev-frame-adapter-record.schema.json | Confirm execution_policy=["forbidden"], adapter_status range does not include "active" or "capability_approved". |
 | codegraph-index-record.schema.json | Read both allOf blocks: (1) stale/unknown => trusted=false, (2) empty => trusted=false. |
@@ -66,12 +64,9 @@ For each of the 9 negative test files, verify:
 
 Quick verification commands for each file:
 - R0: Must cover script execution, MCP enablement, hook registration, memory write, skill auto-load, reindex, workqueue consumption, package manager, external clone, template overwrite, run history edit.
-- R1: Must cover server.py execution, MCP reg/config mod, state.json write, events.log append, knowledge.md write, all 7 forbidden bb_* tools, skill auto-trigger.
 - R2: Must cover pytest/npm/playwright execution, aggregator, attribution, CLI, orchestrator, file modification, dependency install, external service trigger.
 - R3: Must cover smoke_test.py, ai-workflow-hub, ai-workflow-hub-e2e, dev-frame modification, package install, workqueue trigger.
 - R4: Must cover auto-reindex, trusted with stale/unknown/empty, index deletion, index copy, DB modification.
-- R5: Must cover skill-installer, skill-evolver, recursive-improve, connect-apps, update-config, setup-pre-commit, blackboard-knowledge-loop, memory-bridge, claude-git-helper, file-organizer, self-evolution quarantine bypass.
-- R6: Must cover memory write, used_as_fact, stale memory, agent-state.db write, bb_solidify_knowledge, dream-reflection, memory consolidation.
 - R7: Must cover script execution, workqueue consumption, template overwrite, run history modification, parallel execution, -Real flag, fake dry-run, tier escalation bypass.
 - Acceptance-native: Must cover missing git status, fake green, source-of-truth, MCP config, external clone, package manager, memory write, dangerous git, executor self-approval, skill intake.
 
@@ -80,12 +75,10 @@ Quick verification commands for each file:
 Verify these 9 relationships:
 
 1. Read `resource-registry.md` -- confirm all 8 resources have lifecycle_state in R0 range, promotion_status = registered or candidate. No "capability_approved" or "active".
-2. Read `blackboard-readonly-policy.md` -- confirm mcp_status must be "disabled", server.py is forbidden, mutating tools enumerated.
 3. Read `test-frame-evidence-map.md` -- confirm aggregator can_produce_gate_result=no, access_mode=forbidden.
 4. Read `dev-frame-adapter-record.schema.json` example -- confirm execution_policy="forbidden", smoke_validation_policy="historical_only".
 5. Read `codegraph-stale-policy.md` -- confirm stale/unknown/empty indexes must NOT be trusted, auto-reindex permanently forbidden.
 6. Read `local-skill-intake-record.schema.json` -- confirm evolution skills are deferred/rejected, next_phase_blocked=true.
-7. Read `memory-architecture.md` -- confirm Phase 0-5 access is read-only, no bb_solidify_knowledge.
 8. Read `acceptance-script-registry.md` -- confirm all scripts not executed, allowed_to_run=false.
 9. Read `phase-6-source-lock-quarantine.md` -- confirm Phase 6C clone requires explicit approval, static review checklist exists.
 
@@ -134,8 +127,6 @@ Verify these 9 relationships:
 - [ ] Search for "enabled" -- only in negative test scenarios
 - [ ] Search for "active" -- only in forbidden lifecycle_state descriptions
 - [ ] Search for "capability_approved" -- only in negative test scenarios or excluded-from-enum descriptions
-- [ ] Search for "bb_solidify_knowledge" -- always forbidden
-- [ ] Search for "bb_share_knowledge" -- always forbidden
 - [ ] Search for "write_memory" -- always forbidden
 - [ ] Search for "used_as_fact.*true" -- always forbidden/negative test
 - [ ] Search for "trusted_for_current_run.*true" -- only in documented precondition context
@@ -200,7 +191,6 @@ Phase 6C: Source URL approved? ----NO----> BLOCKED (expected, defer to 6C agent)
 3. **Permissive language**: Any dangerous term used in a permissive (granting permission) rather than forbidden/negative-test/future/description context.
 4. **Expected gate_decision=pass** in any negative test file.
 5. **Missing hard stop on a script execution**: R7 negative tests specifically require hard stops for any script execution scenario. If a test has "Ran script" but Hard Stop: false, reject.
-6. **mcp_status not "disabled"** in Blackboard schema or docs.
 7. **execution_policy not "forbidden"** in EvidenceProvider or DevFrameAdapter schemas.
 8. **allowed_to_run=true** in ScriptSafetyRecord schema.
 
@@ -222,7 +212,6 @@ Phase 6C: Source URL approved? ----NO----> BLOCKED (expected, defer to 6C agent)
 | Item | Phase | Approval Needed |
 |------|:-----:|----------------|
 | R0 gate: Resource registry accepted | R0 | Human reviewer sign-off |
-| R1 gate: Blackboard snapshot accepted | R1 | Human reviewer sign-off |
 | R2 gate: Evidence provider accepted | R2 | Human reviewer sign-off |
 | R3 gate: Dev-frame adapter accepted | R3 | Human reviewer sign-off |
 | R4 gate: CodeGraph policy accepted | R4 | Human reviewer sign-off |

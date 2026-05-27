@@ -16,7 +16,6 @@
 ## Step 3: Access Mode Check
 - [ ] Every capability has default_access_mode
 - [ ] Critical/high capabilities are NOT read_write or enabled
-- [ ] Blackboard MCP is snapshot_only or forbidden
 
 ## Step 4: Risk Level Check
 - [ ] Every capability has default_risk
@@ -55,7 +54,6 @@ Is any capability missing from inventory?         -> YES = needs_revision
 Does schema fail to parse?                          -> YES = needs_revision
 Is auto_use/execution/mutation not false?          -> YES = needs_revision
 Is critical/high capability missing human gate?    -> YES = needs_revision
-Is Blackboard/Phase6 not critical?                 -> YES = needs_revision
 All pass?                                            -> pass_to_review
 ```
 

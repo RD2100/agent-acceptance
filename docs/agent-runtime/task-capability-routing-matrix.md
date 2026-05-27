@@ -61,9 +61,6 @@
 - **Forbidden**: executing negative tests as actual tests
 - **Evidence**: test ID + expected_gate_decision
 
-### 8. Blackboard / Shared State
-- **Task examples**: "check Blackboard state", "verify session registration"
-- **Preferred**: N/A (R1-SNAPSHOT-MCP not authorized)
 - **Pre-check**: R1 policy docs
 - **Fallback**: filesystem snapshot (Test-Path, Get-FileHash on state.json)
 - **Forbidden**: any bb_* call, server.py execution, MCP registration, state mutation
@@ -98,7 +95,6 @@
 - **Preferred**: R6 policy docs (read-only reference)
 - **Pre-check**: memory file exists, stale_risk assessed
 - **Fallback**: filesystem/git verification
-- **Forbidden**: used_as_fact, memory write, bb_solidify_knowledge
 - **Evidence**: R6 doc reference + stale_risk + conflict_check
 
 ### 13. Scripts / WorkQueue
@@ -120,7 +116,6 @@
 | 5 | Doc/policy lookup | Runtime Docs + rg | doc exists | Read + search | memory as fact |
 | 6 | Rule enforcement | Rules + gates | rule exists | doc search | self-approval |
 | 7 | Negative tests | Negative test files | file exists | N/A | execute tests |
-| 8 | Blackboard | N/A (not authorized) | R1 policy | FS snapshot | bb_* calls |
 | 9 | test-frame | R2 policy docs | path exists | dir listing | execute tools |
 | 10 | dev-frame | R3 policy + smoke report | path exists | dir listing | execute smoke_test.py |
 | 11 | Local skill | R5 intake + matrix | skill listed | manifest | execute/load |

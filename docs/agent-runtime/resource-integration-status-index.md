@@ -22,7 +22,6 @@ ALL 18 SCHEMAS PARSE, ALL 226 NEGATIVE TESTS EXIST
 | Phase | Name | Status | Key Files | Blockers |
 |:-----:|------|:------:|-----------|----------|
 | R0 | Registry & Classification | PROCEED | resource-registry-record.schema.json, resource-registry.md, r0-negative-tests.md, r0-reviewer-checklist.md, resource-risk-matrix.md | None |
-| R1 | Blackboard Snapshot & Audit | PROCEED | blackboard-resource-record.schema.json, blackboard-readonly-policy.md, blackboard-snapshot-template.md, blackboard-resource-map.md, r1-blackboard-negative-tests.md, r1-blackboard-reviewer-checklist.md | None |
 | R2 | Evidence Provider Registration | PROCEED | evidence-provider-record.schema.json, test-frame-evidence-provider.md, test-frame-evidence-map.md, test-frame-attribution-alignment.md, historical-evidence-policy.md, r2-test-frame-negative-tests.md, r2-test-frame-reviewer-checklist.md | None |
 | R3 | Dev-Frame Adapter (Design) | PROCEED | dev-frame-adapter-record.schema.json, smoke-validation-policy.md, dev-frame-negative-tests.md | None |
 | R4 | CodeGraph Stale-aware Policy | PROCEED | codegraph-index-record.schema.json, codegraph-stale-policy.md, codegraph-review-checklist.md, codegraph-negative-tests.md | None |
@@ -39,7 +38,6 @@ ALL 18 SCHEMAS PARSE, ALL 226 NEGATIVE TESTS EXIST
 |--------|:-----:|:------:|
 | resource-registry-record.schema.json | R0 | PARSE_OK |
 | capability-promotion-record.schema.json | R0-R7 | PARSE_OK |
-| blackboard-resource-record.schema.json | R1 | PARSE_OK |
 | evidence-provider-record.schema.json | R2 | PARSE_OK |
 | dev-frame-adapter-record.schema.json | R3 | PARSE_OK |
 | codegraph-index-record.schema.json | R4 | PARSE_OK |
@@ -63,7 +61,6 @@ ALL 18 SCHEMAS PARSE, ALL 226 NEGATIVE TESTS EXIST
 | File | Tests | Hard Stops | Gate Passes |
 |------|:-----:|:----------:|:-----------:|
 | r0-negative-tests.md | 25 | 18 | 0 |
-| r1-blackboard-negative-tests.md | 28 | 20 | 0 |
 | r2-test-frame-negative-tests.md | 30 | 13 | 0 |
 | dev-frame-negative-tests.md | 20 | 12 | 0 |
 | codegraph-negative-tests.md | 20 | 10 | 0 |

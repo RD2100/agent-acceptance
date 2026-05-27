@@ -13,7 +13,6 @@ The following skills are quarantined by default in R5:
 | skill-evolver | high | Manages mutation/evaluation/selection lifecycle | Requires agent-state.db write approval |
 | recursive-improve | high | May attempt to write rules or memory files | Requires memory write approval |
 | dream-reflection | high | Cross-session pattern detection; may trigger writes | Requires memory write approval |
-| memory-bridge | high | Unifies memory files + agent-state.db + Blackboard; may write | Requires all three write approvals |
 | skill-usage-tracker | medium | Records skill usage to agent-state.db | Requires agent-state.db write approval |
 
 ## 2. Quarantine Conditions
@@ -32,7 +31,6 @@ The self-evolution loop described in `self-evolution.md` (global Claude rule) is
 - Task summary: permitted (documentation only)
 - Recursive reflection: **deferred** (may trigger rule/memory writes)
 - Memory write: **forbidden** (Phase 0-5 memory freeze)
-- Blackboard solidify: **forbidden** (requires human approval)
 - Skill evolution check: **deferred** (requires agent-state.db)
 - Memory audit row: **deferred** (requires memory write)
 
@@ -48,7 +46,6 @@ The self-evolution loop described in `self-evolution.md` (global Claude rule) is
 - Executing any quarantined skill
 - Auto-evolving any skill definition
 - Auto-writing memory based on task outcomes
-- Auto-solidifying knowledge to Blackboard
 - Recording skill execution results to agent-state.db
 - Triggering recursive-improve or dream-reflection
 
@@ -58,7 +55,6 @@ Self-evolution capabilities may be unlocked in future phases ONLY after:
 
 1. Phase 0-5 memory freeze is lifted (separate reviewer decision)
 2. agent-state.db write policy is defined and approved
-3. Blackboard solidify policy is defined and approved
 4. Each skill passes quarantine review individually
 5. ScriptSafetyRecord exists for each skill
 6. Human gate is established for each execution

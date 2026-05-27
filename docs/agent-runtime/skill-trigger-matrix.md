@@ -126,7 +126,6 @@ Must NOT be invoked under any circumstances.
 | `skill-creator` | Creates new skill definitions. Out of bootstrap scope. |
 | `skill-share` | Shares skills on Slack. Network + external service risk. |
 | `update-config` | Modifies Claude Code harness settings.json. MCP config mutation. |
-| `blackboard-knowledge-loop` | May trigger `bb_solidify_knowledge` or `bb_share_knowledge`. |
 | `docs-manager` | May modify project.md, process.md, CLAUDE.md. Writes outside approved scope. |
 | `claude-task-tracker` | May write task state files outside approved scope. |
 | `file-organizer` | May move/delete files. Destructive operation risk. |

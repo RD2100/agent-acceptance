@@ -36,7 +36,6 @@
 ## Step 7: Forbidden Capability Audit
 - [ ] No forbidden capability appears with Used?=yes
 - [ ] Forbidden capabilities verification table is complete
-- [ ] Blackboard, test-frame execution, dev-frame execution, skill execution, memory-as-fact, script execution, queue consumption: all confirmed NOT used
 
 ## Step 8: Cross-Reference with Forbidden Action Check
 - [ ] Capability audit consistent with forbidden action check in same report

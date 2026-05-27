@@ -9,7 +9,6 @@
   ],
   "properties": {
     "audit_id": { "type": "string" },
-    "task_area": { "type": "string", "enum": ["code_structure", "string_search", "file_read", "schema_validation", "doc_policy", "rule_enforcement", "negative_test", "blackboard", "test_frame", "dev_frame", "local_skill", "memory", "script_queue"] },
     "expected_capability": { "type": "string" },
     "status": { "type": "string", "enum": ["available", "stale", "empty", "forbidden", "unavailable"] },
     "used": { "type": "boolean" },
@@ -49,7 +48,6 @@
     "reason_if_not_used": "agent-acceptance index empty (0 files)",
     "fallback": "rg + Read",
     "evidence": "codegraph_status output",
-    "forbidden_capabilities_verified": ["Blackboard MCP", "Scripts", "Memory write"],
     "reviewer_decision": ""
   }]
 }

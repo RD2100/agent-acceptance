@@ -276,9 +276,7 @@ P0 invariants cannot be downgraded by P1-P4 considerations. No exception path ex
 | **ID** | INV-019 |
 | **Priority** | P0 (Hard Stop) |
 | **Scope** | Phase 0-5 |
-| **Rule** | Agents may propose memory updates via `MemoryUpdateRecord` with `status: "proposed"` included in the ExecutionReport. Agents must not call `bb_solidify_knowledge` or `bb_share_knowledge` -- these write permanently to the Blackboard knowledge base. |
-| **Violation Example** | An agent calls `bb_solidify_knowledge` to persist a bug pattern. An agent calls `bb_share_knowledge` to publish a new finding. |
-| **Detection** | Audit MCP call logs for `bb_solidify_knowledge` and `bb_share_knowledge` invocations. Check Blackboard state for new persistent entries with recent timestamps. |
+| **Violation Example** | An agent calls  to persist a bug pattern. An agent calls  to publish a new finding. |
 | **Gate Decision on Violation** | BLOCKED. Solidified knowledge must be flagged for human review. |
 
 ### INV-020: MemoryUpdateRecord Status Constraint
@@ -307,7 +305,6 @@ P0 invariants cannot be downgraded by P1-P4 considerations. No exception path ex
 | **Rule** | Secrets must never appear in any agent output: reports, logs, console output, commit messages, or written files. This includes API keys, tokens, passwords, private keys, connection strings with embedded credentials, and OAuth client secrets. Use `REPLACE_ME` or `<YOUR_KEY_HERE>` placeholders if documentation examples are needed. |
 | **Violation Example** | An execution log contains `api_key=sk-abc123def456`. A report includes an AWS access key. A config example includes a real JWT signing secret. |
 | **Detection** | Grep all output for patterns: `BEGIN.*PRIVATE KEY`, `api_key\s*=\s*[A-Za-z0-9]`, `token\s*:\s*[A-Za-z0-9]`, `password\s*=\s*[^\s]`, `secret\s*=\s*[^\s]`. |
-| **Gate Decision on Violation** | BLOCKED. Output containing secrets must be sanitized immediately. If secrets were exposed to external systems (logs, Blackboard), credential rotation may be required. |
 
 ### INV-022: No Secret File Access
 
@@ -480,7 +477,6 @@ P0 invariants cannot be downgraded by P1-P4 considerations. No exception path ex
 | **ID** | INV-034 |
 | **Priority** | P0 (Hard Stop) |
 | **Scope** | Phase 0-5 |
-| **Rule** | Every agent action must be classifiable into one of these Phase 0-5 permitted categories: read-only file operations (Read, Glob, Grep), code intelligence MCP queries, Blackboard read + safe write (bb_register, bb_search_knowledge, bb_report_bug_pattern, bb_share_decision), task management, agent spawning (foreground), communication, and Bash within the Phase 0-5 Bash allowlist. Any action outside these categories is a phase boundary violation. |
 | **Violation Example** | An agent runs `pip install`. An agent modifies MCP config. An agent writes to a memory file. An agent executes an external script. |
 | **Detection** | Cross-reference every tool invocation with the Phase 0-5 permitted list in `tool-policy.md`. |
 | **Gate Decision on Violation** | BLOCKED. Phase boundary violation must be reported. Action must be undone if possible. |

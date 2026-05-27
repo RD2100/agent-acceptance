@@ -116,6 +116,5 @@ The agent-acceptance workqueues map to these gates:
 |----------|:---:|-------------|
 | P0 failure | NO | Never bypass security gate |
 | P1 failure with known flaky test | YES | Document the flaky test, link to issue |
-| P2 warning with justified reason | YES | Record justification in Blackboard |
 | P3 info only | N/A | Not a gate, informational only |
 | Emergency hotfix | YES (P1 only) | Human approval + post-fix gate run |

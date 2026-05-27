@@ -12,7 +12,6 @@ Before starting any non-trivial task, the agent MUST:
 Classify the task into one of the 13 types from `task-capability-routing-matrix.md`. If the task spans multiple types, select the PRIMARY type.
 
 ```
-TASK TYPE: <one of: code_structure, string_search, file_read, schema_validation, doc_policy, rule_enforcement, negative_test, blackboard, test_frame, dev_frame, local_skill, memory, script_queue>
 ```
 
 ### 2. Declare Expected Capabilities
@@ -67,11 +66,9 @@ Every ExecutionReport MUST include this section:
 
 | Field | Values | Description |
 |-------|--------|-------------|
-| Task Area | code_structure, string_search, file_read, schema_validation, doc_policy, rule_enforcement, negative_test, blackboard, test_frame, dev_frame, local_skill, memory, script_queue | Primary task type |
 | Expected Capability | capability name from inventory | Preferred capability per routing matrix |
 | Status | available, stale, empty, forbidden, unavailable | Result of pre-check |
 | Used? | yes, no | Was preferred capability actually used? |
-| Reason If Not Used | e.g., "index empty (0 files)", "R1-SNAPSHOT-MCP not authorized" | Required if Used?=no |
 | Fallback | capability name or N/A | Fallback actually used |
 | Evidence | e.g., "codegraph_status output", "R1 policy docs" | Evidence of status check |
 
@@ -85,14 +82,12 @@ Every ExecutionReport MUST include this section:
 | code_structure | CodeGraph | empty | no | agent-acceptance index: 0 files indexed | rg + Read | codegraph_status output |
 ```
 
-### Example: Blackboard Task
 
 ```markdown
 ## Capability Routing Audit
 
 | Task Area | Expected Capability | Status | Used? | Reason If Not Used | Fallback | Evidence |
 |---|---|---|---|---|---|---|
-| blackboard | N/A | forbidden | no | R1-SNAPSHOT-MCP not authorized | FS snapshot | R1 policy docs, state.json checksum |
 ```
 
 ### Example: All Preferred Available

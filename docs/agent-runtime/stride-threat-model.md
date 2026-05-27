@@ -16,7 +16,6 @@ This STRIDE analysis covers the RD2100 Agent Runtime v2 architecture across its 
           +-----------------------------+-----------------------------+
           |                             |                             |
     [File System]              [MCP/Bridge Layer]             [External Sources]
-    - docs/                    - Blackboard (bb_*)            - skills-inbox/
     - scripts/                 - CodeGraph (codegraph_*)      - GitHub repos
     - agent-workqueue/         - computer-use (UI-TARS)       - npm / pip
     - memory/*.md              - settings.json (hooks)
@@ -43,16 +42,12 @@ Threats where an attacker impersonates a trusted entity.
 | **Mitigation** | SkillIntakeRecord (Contract 6) requires recording source, rationalizing disposition. Phase 0-5 forbids skill execution from external sources. Phase 6+ quarantine pipeline includes checksum verification and static analysis before allowing execution. Skill-trigger-matrix provides pre-classification of all known skills. |
 | **Gate Decision** | P0 -- MUST NOT bypass. All external skills must produce a SkillIntakeRecord before any execution is considered. |
 
-### S-2: Agent impersonates a Blackboard session it does not own
 
 | Field | Value |
 |-------|-------|
-| **Threat description** | A malicious agent calls `bb_register` with a forged `session_id` or `name` to impersonate another agent session. The impersonated session's decisions, bug reports, and knowledge are attributed to the wrong entity, corrupting the audit trail and enabling the malicious agent to act with another agent's authority. |
-| **Affected component** | Blackboard (MCP) |
+| **Threat description** | A malicious agent calls  with a forged `session_id` or `name` to impersonate another agent session. The impersonated session's decisions, bug reports, and knowledge are attributed to the wrong entity, corrupting the audit trail and enabling the malicious agent to act with another agent's authority. |
 | **STRIDE category** | Spoofing |
-| **Impact** | Cross-session audit contamination; false attribution of decisions; malicious agent hides behind legitimate session identity; Blackboard trust model broken. |
-| **Likelihood** | Low-Medium -- session_id forgery is possible but requires knowledge of other session IDs. Blackboard registration is currently permissive. |
-| **Mitigation** | `bb_register` should validate `session_id` uniqueness and tie it to the calling agent process. Future phase cryptographic session tokens. ExecutionReport includes session_id cross-reference for audit. |
+| **Mitigation** |  should validate `session_id` uniqueness and tie it to the calling agent process. Future phase cryptographic session tokens. ExecutionReport includes session_id cross-reference for audit. |
 | **Gate Decision** | P1 -- Should log and alert on duplicate session registrations. |
 
 ### S-3: External skill source claims to be from trusted GitHub organization
@@ -97,16 +92,10 @@ Threats where an attacker modifies data or code without authorization.
 | **Mitigation** | Hard Boundaries explicit in task prompt: "Do NOT modify dirty baseline files (.claude/)". CLAUDE.md rules are read as global instructions which the agent must follow; tampering is a global instruction violation. PRE/POST diff of .claude/ directory. claude-project-rules skill is Deferred in Phase 0-5. |
 | **Gate Decision** | P0 -- Any modification to .claude/ or rules files in Phase 0-5 is a blocking violation. |
 
-### T-2: Agent tampers with Blackboard knowledge entries
 
 | Field | Value |
 |-------|-------|
-| **Threat description** | Agent calls `bb_report_bug_pattern` with fabricated data to poison the Blackboard knowledge base. Subsequent agents query `bb_get_recent_knowledge` and receive false bug patterns or corrupted decision records, leading them to make incorrect architectural or implementation choices. |
-| **Affected component** | Blackboard (MCP), Memory system (Layer 3) |
 | **STRIDE category** | Tampering |
-| **Impact** | Cross-session knowledge poisoning; all future agents receive corrupted information; cascading errors across entire development lifecycle; trust in Blackboard collapses. |
-| **Likelihood** | Medium -- bb_report_bug_pattern is permitted in Phase 0-5 and does not require escalation. Agent could fabricate plausible-sounding bug patterns. |
-| **Mitigation** | `bb_validate_knowledge` should be called by the reviewer or planning agent on new entries; `bb_share_decision` for state changes creates audit trail but does not prevent fabrication; human reviewer spot-checks Blackboard entries against actual findings; future phase: knowledge reputation scoring. |
 | **Gate Decision** | P1 -- New bug patterns should be cross-referenced with evidence before trusted. |
 
 ### T-3: Agent modifies scripts/runner files (PowerShell) to change behavior
@@ -160,7 +149,6 @@ Threats where an attacker denies having performed an action.
 | **STRIDE category** | Repudiation |
 | **Impact** | Reviewer accepts false-negative report; forbidden operations undetected; trust in self-reporting model collapses; no accountability. |
 | **Likelihood** | High -- ExecutionReport is self-reported by the agent. No independent tool-call audit log exists in the current architecture. |
-| **Mitigation** | Blackboard `bb_share_decision` for all state-changing operations creates an independent audit trail; `bb_heartbeat` with tool usage stats; future phase: Claude Code conversation transcript as audit evidence; independent tool-call logging middleware. |
 | **Gate Decision** | P0 -- Must implement independent audit trail. Self-reported compliance is insufficient. |
 
 ### R-2: Agent denies modifying a file outside approved scope
@@ -172,7 +160,6 @@ Threats where an attacker denies having performed an action.
 | **STRIDE category** | Repudiation |
 | **Impact** | Hidden file mutations accumulate over batches; baseline drift becomes unmanageable; reviewer cannot prove agent wrote a file; no non-repudiable evidence. |
 | **Likelihood** | Medium-High -- git status captures some changes but not all (e.g., writes to directories outside repo, writes to .gitignore'd paths, writes to agent-state.db). |
-| **Mitigation** | Automated PRE/POST git status --short snapshot with timestamp; hash all workspace files before and after; Blackboard event for each Write/Edit tool call with path; future phase: filesystem audit daemon. |
 | **Gate Decision** | P0 -- PRE/POST git status must be automated. Agent self-report is insufficient for non-repudiation. |
 
 ### R-3: Agent denies skipping a P0 verification gate
@@ -187,17 +174,11 @@ Threats where an attacker denies having performed an action.
 | **Mitigation** | P0 gate results must include evidence_ids referencing concrete EvidenceIndex artifacts with checksums; automated gate runners (post-Boolean checks) for objective gates; human reviewer tests a random sample of gate claims against actual artifacts. |
 | **Gate Decision** | P0 -- Every P0 gate result must be linked to verifiable evidence. |
 
-### R-4: Agent denies calling bb_solidify_knowledge
 
 | Field | Value |
 |-------|-------|
-| **Threat description** | Agent calls `bb_solidify_knowledge` (forbidden in Phase 0-5), then does not report it. The Blackboard itself holds the audit record but the reviewer may not check Blackboard event logs. Agent denies ever making the call. |
-| **Affected component** | Blackboard (MCP), ExecutionReport |
 | **STRIDE category** | Repudiation |
-| **Impact** | Permanent knowledge written without approval; agent can deny it happened; trust gap between what Blackboard records and what agent reports. |
-| **Likelihood** | Low -- `bb_solidify_knowledge` is explicitly forbidden; but the capability exists and the audit gap is real. |
-| **Mitigation** | Blackboard event log must be cross-referenced against ExecutionReport tool usage claims; bb_share_decision or bb_heartbeat should include tool-call summary; automated anomaly detection on forbidden event types. |
-| **Gate Decision** | P1 -- Blackboard log must be checked against self-reported tool usage. |
+| **Likelihood** | Low --  is explicitly forbidden; but the capability exists and the audit gap is real. |
 
 ---
 
@@ -209,31 +190,23 @@ Threats where an attacker accesses information they should not see.
 
 | Field | Value |
 |-------|-------|
-| **Threat description** | Agent uses Read tool to access `.env`, `*.key`, `*.pem`, credential files, API key storage, or SSH private keys. The secrets are ingested into the conversation context (which may be logged or persisted) and potentially included in ExecutionReport or Blackboard entries. |
 | **Affected component** | File system (secrets), Agent conversation context |
 | **STRIDE category** | Information Disclosure |
-| **Impact** | Credentials, tokens, API keys, certificates exposed in conversation logs, reports, and Blackboard. PII leakage. Supply chain credential compromise. Regulatory violation if PII is involved. |
 | **Likelihood** | Medium -- Read tool is permitted; the only constraint is the prompt-level prohibition on reading secret-bearing files. No file-level access control. |
 | **Mitigation** | Prompt constraint: "Do NOT read secrets (.env, *.key, *.pem, tokens)"; Hard Boundaries explicit prohibition; future phase: file access control list at Read tool level blocking globs matching secret patterns; secret scanner on ExecutionReport output before submission. |
 | **Gate Decision** | P0 -- Must not include secrets in any output. Reviewer must scan reports for credential patterns. |
 
-### I-2: Blackboard knowledge leaks cross-project confidential information
 
 | Field | Value |
 |-------|-------|
-| **Threat description** | Agent uses `bb_search_knowledge` or `bb_get_recent_knowledge` to query Blackboard. The Blackboard may contain knowledge entries from other projects (devFrame, test-frame) that include architecture details, security findings, or configuration specifics not meant to be shared across project boundaries. |
-| **Affected component** | Blackboard (MCP), Memory system (Layer 3) |
 | **STRIDE category** | Information Disclosure |
 | **Impact** | Cross-project information leakage; devFrame security findings visible to agent-acceptance agents; competitive or sensitive architecture details exposed across project boundaries. |
-| **Likelihood** | Medium -- Blackboard is designed for cross-session sharing; project isolation is not enforced at the Blackboard level. |
-| **Mitigation** | Project-specific knowledge scoping in Blackboard (tag entries with project_id); `bb_search_knowledge` should filter by project scope; reviewer should validate that knowledge queries return only relevant project data; future phase: project-level access control in Blackboard. |
 | **Gate Decision** | P1 -- Knowledge queries should be scoped to current project. |
 
 ### I-3: ExecutionReport exposes internal paths and architecture to external consumers
 
 | Field | Value |
 |-------|-------|
-| **Threat description** | The ExecutionReport includes detailed file paths (D:\agent-acceptance\..., C:\Users\RD\.claude\...), tool call sequences, Blackboard session IDs, and internal network references. If the report is shared externally (GitHub, issue tracker, Slack), this internal information becomes public. |
 | **Affected component** | ExecutionReport |
 | **STRIDE category** | Information Disclosure |
 | **Impact** | Internal file structure, user home directory paths, build environment details, and architectural decisions become public. Facilitates targeted attacks on internal infrastructure. |
@@ -271,17 +244,12 @@ Threats where an attacker prevents legitimate operations from completing.
 | **Mitigation** | context-snapshot skill to persist state before context exhaustion; task timeouts; maximum tool-call limits per task; reviewer-set context budget; explicit page limits on reads. |
 | **Gate Decision** | P1 -- Partial output must be flagged as incomplete. Empty ExecutionReport is a BLOCKED condition. |
 
-### D-2: Blackboard MCP failure blocks session startup
 
 | Field | Value |
 |-------|-------|
-| **Threat description** | Blackboard MCP server is unavailable (network issue, process crash, auth failure). The agent lifecycle requires `bb_register` at session start. If registration fails and the agent treats it as a blocking error (exit code 1: BLOCKED), the entire session cannot proceed even for read-only tasks. |
-| **Affected component** | Blackboard (MCP), Session lifecycle |
 | **STRIDE category** | Denial of Service |
 | **Impact** | Session cannot start; batch cannot execute; all tasks blocked by one unavailable sidecar service. |
 | **Likelihood** | Low-Medium -- MCP servers are generally reliable, but network partitions or configuration errors can cause unavailability. |
-| **Mitigation** | Graceful degradation: if Blackboard is unavailable, agent should continue with reduced audit capability and report "Blackboard unavailable" in ExecutionReport; bb_register failure should warn but not block if task is read-only; session should function without Blackboard in degraded mode. |
-| **Gate Decision** | P1 -- Blackboard unavailability must not block read-only tasks. |
 
 ### D-3: Agent exhausts disk space writing large output files
 
@@ -317,7 +285,6 @@ Threats where an attacker gains higher access than intended.
 
 | Field | Value |
 |-------|-------|
-| **Threat description** | Agent writes to AGENTS.md or CLAUDE.md to add a new permission: "Agent may now install packages," "Agent may modify scripts/," "Agent may call bb_solidify_knowledge." Since these files are read as authoritative by the Claude Code harness, the agent effectively grants itself Phase 6+ privileges during Phase 0-5. |
 | **Affected component** | AGENTS.md / rules, .claude/ configuration |
 | **STRIDE category** | Elevation of Privilege |
 | **Impact** | Phase boundaries shattered. Agent self-escalates from Phase 0-5 (read-mostly) to Phase 6+ (full capability). All Hard Boundaries become optional. Reviewer may not notice the subtle addition. |
@@ -407,7 +374,6 @@ Threats where an attacker gains higher access than intended.
 | MCP configuration | 2 | S-2, E-2 |
 | Hooks (PowerShell) | 2 | T-3, D-4 |
 | UI-TARS / computer-use | 1 | E-4 |
-| Memory system (file + SQLite + Blackboard) | 4 | T-2, I-2, E-3, R-4 |
 | Git operations | 1 | T-3 |
 | CodeGraph queries | 2 | I-4, D-1 |
 | AGENTS.md / rules | 3 | T-1, E-1, D-1 |

@@ -16,7 +16,6 @@ For each capability, the fallback chain is ordered by preference:
 | Runtime Docs + rg | Read + manual search | N/A | memory as current policy |
 | Rules + gates | docs search | N/A | self-approval, memory as rule |
 | Negative Tests | N/A | N/A | execute as actual tests |
-| Blackboard (N/A) | FS snapshot | N/A | bb_* calls, server.py |
 | test-frame (R2 docs) | directory listing | N/A | aggregator/attribution/CLI execution |
 | dev-frame (R3 docs) | smoke_report.txt (historical) | directory listing | smoke_test.py execution |
 | Local Skills (R5 docs) | skill manifest (system prompt) | N/A | execution, auto-load |
@@ -67,12 +66,6 @@ Reason: empty (0 files indexed)
 Audit: CodeGraph | empty | no | index empty, 0 files | rg + Read
 ```
 
-### Example 3: Blackboard Task
 ```
-Task: "Check current Blackboard session state"
-Preferred: N/A (Blackboard MCP not authorized)
-Status: R1-SNAPSHOT-MCP not authorized
 Decision: Use filesystem snapshot fallback
-Reason: forbidden (R1-SNAPSHOT-MCP not authorized)
-Audit: N/A | forbidden | no | R1-SNAPSHOT-MCP not authorized | FS snapshot
 ```

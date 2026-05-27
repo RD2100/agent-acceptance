@@ -178,7 +178,6 @@ Historical evidence may come from sources other than test-frame. The same policy
 | dev-frame (D:\dev-frame) | smoke_report.txt, architecture docs | stale_or_unknown |
 | agent-acceptance (D:\agent-acceptance) | Historical run logs, workqueue outputs | stale_or_unknown |
 | CodeGraph | Indexed code intelligence data | stale_or_unknown |
-| Blackboard | Prior session knowledge | stale_or_unknown |
 
 All sources default to `stale_or_unknown` unless a verifiable timestamp within 7 days is produced. The same metadata, freshness, and reviewer annotation rules apply uniformly.
 

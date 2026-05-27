@@ -13,7 +13,6 @@ This document records the relationship between global Claude rules (`C:\Users\RD
 
 | File | Domain | R5 Access | Status |
 |------|--------|:---:|--------|
-| `blackboard-protocol.md` | Blackboard pointer | reference_only | Pointer to project-rules |
 | `executor-agent-pattern.md` | Agent role | reference_only | Defines executor workflow |
 | `gsd-tdd.md` | TDD enforcement | reference_only | GSD milestone TDD |
 | `self-evolution.md` | Self-evolution | reference_only | Hermes Agent memory model |
@@ -37,7 +36,6 @@ This document records the relationship between global Claude rules (`C:\Users\RD
 | executor-agent-pattern (3-step flow) | core-003 (Phase boundary), review-001 (No fake green) | Native rules are more specific. Global provides role context. No conflict. |
 | gsd-tdd (red-green-refactor) | coding-001 (No empty error handling) | Complementary. GSD TDD applies to GSD milestones. Native coding rules apply to all code. |
 | self-evolution (3-layer memory) | memory-architecture.md (same model) | Duplicate concept. Native doc is canonical for this runtime. |
-| blackboard-protocol (pointer) | memory-architecture.md (Layer 3) | Consistent. Both point to project-rules/blackboard-protocol.md. |
 
 ## 4. Conflict Map
 

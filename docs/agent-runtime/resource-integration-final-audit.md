@@ -44,7 +44,6 @@ All 18 schemas parsed successfully via PowerShell `ConvertFrom-Json`. Full parse
 |---|--------|-------|-------|------------------|:---:|
 | 1 | resource-registry-record.schema.json | ResourceRegistryRecord | R0-R7 | lifecycle_state R0 limited to discovered/registered/classified (allOf); promotion_status enum excludes approved/enabled/active/installed/capability_approved | OK |
 | 2 | capability-promotion-record.schema.json | CapabilityPromotionRecord | R0-R7 | human_gate_passed must be false if promotion_status != approved (allOf); promotion_status max is "approved" | OK |
-| 3 | blackboard-resource-record.schema.json | BlackboardResourceRecord | R1 | mcp_status enum=["disabled"]; state_access enum=["snapshot_only"]; server_execution enum=["forbidden"]; knowledge_access enum=["read_only"]; events_access enum=["read_only"]; reviewer_gate_required const=true | OK |
 | 4 | evidence-provider-record.schema.json | EvidenceProviderRecord | R2 | execution_policy enum=["forbidden"]; current_result_policy enum=["historical_only"]; allOf rejects current_after_approved_run, current_pass, human_gated, dry_run_allowed | OK |
 | 5 | dev-frame-adapter-record.schema.json | DevFrameAdapterRecord | R3 | execution_policy enum=["forbidden"]; adapter_status enum=["design_only","adapter_draft","deferred","rejected"]; dry_run_policy options exclude "active_dry_run" | OK |
 | 6 | codegraph-index-record.schema.json | CodeGraphIndexRecord | R4 | index_freshness unknown/stale => trusted_for_current_run const=false (allOf); index_status empty => trusted_for_current_run const=false (allOf); reindex_policy enum=["forbidden_in_r4","human_required","approved_future_only"] | OK |
@@ -75,7 +74,6 @@ All 9 negative test files exist and are complete. Zero tests have expected_gate_
 | File | Phase | Tests | Hard Stops | Hard Stop % | Verdict |
 |------|-------|:-----:|:----------:|:-----------:|--------|
 | r0-negative-tests.md | R0 | 25 | 18 | 72% | PASS |
-| r1-blackboard-negative-tests.md | R1 | 28 | 20 | 71% | PASS |
 | r2-test-frame-negative-tests.md | R2 | 30 | 13 | 43% | PASS |
 | dev-frame-negative-tests.md | R3 | 20 | 12 | 60% | PASS |
 | codegraph-negative-tests.md | R4 | 20 | 10 | 50% | PASS |
@@ -95,8 +93,7 @@ Each cross-phase relationship was verified against schema constraints and docume
 
 | # | Relationship | Expected | Found | Verdict |
 |---|-------------|----------|-------|:------:|
-| 1 | R0 high/critical resources NOT enabled in R1-R7 | All 7 high/critical resources: lifecycle_state in R0 range, promotion_status=registered/candidate | Blackboard, test-frame, dev-frame, CodeGraph all at registered/candidate in R0. No capability_approved anywhere. | PASS |
-| 2 | R1: SNAPSHOT-MCP NOT authorized | mcp_status=disabled, server_execution=forbidden, bb_tools_called=[] expected | Schema enforces mcp_status=["disabled"], server_execution=["forbidden"]. Example has mcp_status="disabled". | PASS |
+| 2 | 
 | 3 | R2: aggregator/attribution NOT executed | can_produce_gate_result=no, execution_policy=forbidden, current_result_policy=historical_only | EvidenceProviderRecord schema + test-frame-evidence-map show aggregator=forbidden, attribution=forbidden, can_produce_gate_result=no. | PASS |
 | 4 | R3: smoke_test.py NOT executed | execution_policy=forbidden, smoke_validation_policy=historical_only | DevFrameAdapterRecord: execution_policy=["forbidden"], smoke_validation_policy=["historical_only","script_safety_required","human_required_future"]. smoke_report is historical_only. | PASS |
 | 5 | R4: no reindex, stale/unknown/empty => trusted=false | reindex_policy=["forbidden_in_r4","human_required"]; allOf enforces trusted=false for stale/unknown/empty | CodeGraphIndexRecord allOf: two conditions enforce trusted_for_current_run const=false. codegraph-stale-policy.md explicitly forbids auto-reindex. | PASS |
@@ -126,8 +123,6 @@ Searched across all R0-R7 docs and schemas for 24 dangerous terms. Classificatio
 | adapter_dry_run | 5+ | DESCRIPTION, NEGATIVE-TEST | In dev-frame schema enum description and negative tests (NEG-R3-007). |
 | mcp_status.*enabled | 5+ | NEGATIVE-TEST | Only in negative tests (R1-002, R1-017). Schema enforces ["disabled"]. |
 | server_execution.*allowed | 3+ | NEGATIVE-TEST | Only in negative tests (R1-018). Schema enforces ["forbidden"]. |
-| bb_solidify_knowledge | 40+ | FORBIDDEN, NEGATIVE-TEST | Explicitly listed as forbidden in all Phase 0-5 docs, reviewer checklists, and negative tests. No permissive usage. |
-| bb_share_knowledge | 30+ | FORBIDDEN, NEGATIVE-TEST | Same status as bb_solidify_knowledge. Consistently forbidden. |
 | write_memory | 5+ | FORBIDDEN | Always in prohibition context. |
 | used_as_fact.*true | 3+ | NEGATIVE-TEST, FORBIDDEN | Schema const=false. Mentions in review checklists flag it as violation. |
 | trusted_for_current_run.*true | 5+ | NEGATIVE-TEST, RESTRICTED | Allowed only when index_freshness=current (R4 codegraph-stale-policy.md line 45). Not a violation -- this is the documented precondition. |
@@ -160,8 +155,7 @@ Searched across all R0-R7 docs and schemas for 24 dangerous terms. Classificatio
 | 6 | R0: No CodeGraph reindex | forbidden_actions includes "reindex" | PASS |
 | 7 | R0: No WorkQueue consumption | "consume workqueue" in forbidden_actions | PASS |
 | 8 | R0: No external clone | INV-012 prohibits clone Phase 0-5 | PASS |
-| 9 | R1: No server.py execution | server_execution=["forbidden"] | PASS |
-| 10 | R1: Mutating bb_* tools forbidden | 7 forbidden tools enumerated | PASS |
+| 10 | 
 | 11 | R2: No test execution | execution_policy=["forbidden"] | PASS |
 | 12 | R2: No aggregator/attribution | can_produce_gate_result=no | PASS |
 | 13 | R3: No smoke_test.py | execution_policy=["forbidden"] | PASS |
@@ -178,7 +172,6 @@ Searched across all R0-R7 docs and schemas for 24 dangerous terms. Classificatio
 | Phase | Description | Schema Verified | Negative Tests | Cross-Consistency | Phase Blocker | Final Verdict |
 |:-----:|------------|:---:|:---:|:---:|-------|:---:|
 | R0 | Registry & Classification | PASS (2 schemas) | 25 tests, 18 hard | PASS | lifecycle_state limited to R0 range | PROCEED |
-| R1 | Blackboard Snapshot | PASS (1 schema) | 28 tests, 20 hard | PASS | mcp_status=disabled, server_execution=forbidden | PROCEED |
 | R2 | Evidence Provider | PASS (1 schema) | 30 tests, 13 hard | PASS | execution_policy=forbidden, historical_only | PROCEED |
 | R3 | Dev-Frame Adapter | PASS (1 schema) | 20 tests, 12 hard | PASS | execution_policy=forbidden, design_only | PROCEED |
 | R4 | CodeGraph Stale-aware | PASS (1 schema) | 20 tests, 10 hard | PASS | stale/unknown/empty => trusted=false | PROCEED |

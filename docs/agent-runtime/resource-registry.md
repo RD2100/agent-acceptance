@@ -13,14 +13,10 @@ Register != Enable. Candidate != Adapter. Adapter != Capability. No resource may
 
 ---
 
-### Resource 1: Blackboard MCP
 
 | Field | Value |
 |-------|-------|
-| **resource_id** | `res-blackboard-mcp-001` |
-| **resource_name** | Blackboard MCP |
 | **resource_type** | mcp_server |
-| **path_or_reference** | `.claude/blackboard/` + MCP server (bb_* tools) |
 | **path_status** | exists |
 | **runtime_layer** | collaboration |
 | **access_mode** | snapshot_only, human_gated |
@@ -32,31 +28,13 @@ Register != Enable. Candidate != Adapter. Adapter != Capability. No resource may
 
 #### Allowed Actions
 
-- bb_register
-- bb_heartbeat
-- bb_status
-- bb_search_knowledge
-- bb_get_recent_knowledge
-- bb_share_decision
-- bb_report_bug_pattern
-- bb_check_conflicts
-- bb_session_files
-- bb_validate_knowledge
-- bb_deregister
 
 #### Forbidden Actions
 
-- bb_solidify_knowledge
-- bb_share_knowledge
-- bb_claim_file
-- bb_release_file
-- bb_acquire_build_lock
 - bb_release_build_lock
-- bb_event
 - execute server.py
 - register MCP server
 - modify MCP config
-- write to blackboard state
 
 #### Contract & Evidence
 
@@ -65,7 +43,6 @@ Register != Enable. Candidate != Adapter. Adapter != Capability. No resource may
 | **contract_mapping** | integration-contracts.md Appendix A3 |
 | **evidence_requirements** | state.json existence, session registration log |
 | **local_verification_status** | verified |
-| **verification_gaps** | bb_event tool not confirmed active |
 
 ---
 
@@ -293,7 +270,6 @@ Register != Enable. Candidate != Adapter. Adapter != Capability. No resource may
 - write MEMORY.md
 - write ACTIVE.md
 - write agent-state.db
-- bb_solidify_knowledge
 - execute recursive-improve
 - execute dream-reflection
 - execute memory-bridge write operations
@@ -404,7 +380,6 @@ Register != Enable. Candidate != Adapter. Adapter != Capability. No resource may
 
 | # | Resource ID | Name | Type | Layer | Risk | Access | Human Gate | Next Phase |
 |---|-------------|------|------|-------|------|--------|:----------:|------------|
-| 1 | res-blackboard-mcp-001 | Blackboard MCP | mcp_server | collaboration | critical | snapshot_only | Y | R1 |
 | 2 | res-devframe-002 | dev-frame | repository | orchestration | high | read_only | Y | R3 |
 | 3 | res-testframe-003 | test-frame | test_framework | evidence | high | read_only | Y | R2 |
 | 4 | res-codegraph-004 | CodeGraph | code_intelligence | intelligence | high | read_only | Y | R4 |

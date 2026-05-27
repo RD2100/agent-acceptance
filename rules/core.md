@@ -32,7 +32,6 @@
 - **Priority**: P0 (Hard Stop)
 - **Trigger**: Any action
 - **Scope**: Phase 0-5 bootstrap
-- **Rule**: Do not perform actions forbidden in the current phase. See `docs/agent-runtime/tool-policy.md` for the active Phase 0-5 policy. Key prohibitions: no package install, no MCP config mutation, no hook registration, no external skill execution, no memory writes, no `bb_solidify_knowledge`.
 - **Verification**: Cross-reference action list with Phase 0-5 forbidden list.
 - **Conflict Handling**: If a batch plan requests a forbidden action, flag in ExecutionReport, do not execute.
 

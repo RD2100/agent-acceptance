@@ -133,7 +133,7 @@
     "contract_mapping": {
       "type": "array",
       "items": { "type": "string" },
-      "description": "References to integration contracts (e.g., 'A2: CodeGraph', 'A3: Blackboard') that govern this resource's integration."
+      "description": "References to integration contracts (e.g., 'A2: CodeGraph') that govern this resource's integration."
     },
     "evidence_requirements": {
       "type": "array",

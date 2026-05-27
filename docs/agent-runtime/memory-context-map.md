@@ -28,12 +28,9 @@ R6 maps the RD2100 memory system (3-layer architecture) as a reference-only reso
 |--------|:---:|-------|
 | agent-state.db | **not verified** | Existence not confirmed in this session. Not accessible. |
 
-### Layer 3: Collaborative Memory (Blackboard MCP)
 
 | Source | Status | Notes |
 |--------|:---:|-------|
-| state.json | verified (R1-SNAPSHOT-FS) | 109 B, 6 lines, present |
-| state.json.bak | verified (R1-SNAPSHOT-FS) | 109 B, 6 lines, different checksum |
 | events.log | not_found | Not configured |
 | knowledge.md | not_found | Not populated |
 
@@ -63,7 +60,6 @@ If conflict_check cannot be performed (e.g., path not accessible, tool unavailab
 | guide | 60 days | Re-read; mark stale if not re-verified |
 | topic | 30 days | Mark stale; do not use without re-verification |
 | project_memory | 30 days or after project phase change | Re-verify against current project state |
-| blackboard_memory | Session-based | Re-verify each session via bb_get_recent_knowledge |
 | archive | Indefinite | Reference only; always mark as historical |
 
 ## 6. Memory vs Fact
@@ -81,6 +77,5 @@ Memory that has not been verified against current state must be tagged `stale_ri
 Per `memory-architecture.md`:
 - MemoryUpdateRecord can only be `proposed`
 - Agent must not write memory files
-- Agent must not call `bb_solidify_knowledge`
 - Agent must not write agent-state.db
 - Proposed records included in ExecutionReport for reviewer approval

@@ -36,7 +36,6 @@
 
 ### Safety
 - [ ] No forbidden capability marked Used?=yes
-- [ ] Blackboard: no bb_* calls
 - [ ] test-frame: no execution
 - [ ] dev-frame: no smoke_test.py
 - [ ] Local skills: no execution
@@ -57,7 +56,6 @@
 | Forbidden capability used | blocked |
 | Script executed without gate | blocked |
 | WorkQueue consumed | blocked |
-| Blackboard mutating tool called | blocked |
 | CodeGraph auto-reindexed | blocked |
 | Memory used_as_fact | blocked |
 | Phase 6C clone without approval | blocked |
@@ -77,7 +75,6 @@
 |--------|:---:|
 | Any script execution | Per-script, per-execution |
 | Any WorkQueue consumption | Per-queue |
-| Any Blackboard MCP call beyond R1-DESIGN | Per-call |
 | Any CodeGraph reindex | Per-index |
 | Any local skill execution | Per-skill |
 | Any memory write | Per-write |

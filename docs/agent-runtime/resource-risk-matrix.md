@@ -12,19 +12,11 @@ This matrix classifies risks across all resource categories discovered in R0. It
 
 ---
 
-### Risk Category 1: MCP (Blackboard)
 
 | Field | Value |
 |-------|-------|
-| **risk_category** | MCP (Blackboard) |
-| **affected_resources** | res-blackboard-mcp-001 |
 | **risk_level** | critical |
-| **primary_threat** | Unauthorized knowledge solidification (bb_solidify_knowledge) writes unvalidated knowledge into the shared Blackboard, poisoning cross-session intelligence. bb_event could trigger unexpected workflows. bb_claim_file / bb_release_file could disrupt concurrent sessions. |
-| **current_control** | All mutating tools explicitly forbidden (bb_solidify_knowledge, bb_share_knowledge, bb_claim_file, bb_release_file, bb_acquire_build_lock, bb_release_build_lock, bb_event). Server.py not executed. MCP config not modified. |
-| **control_gap** | bb_event tool existence not confirmed active. No runtime enforcement of forbidden tool list -- relies on agent discipline. |
-| **forbidden_actions** | bb_solidify_knowledge, bb_share_knowledge, bb_claim_file, bb_release_file, bb_acquire_build_lock, bb_release_build_lock, bb_event, execute server.py, register MCP server, modify MCP config, write to blackboard state |
-| **gate_decision** | If any forbidden Blackboard tool is invoked, the session is poisoned and must be audited. Knowledge solidification without validation can corrupt the shared knowledge base. Any detected violation requires human review before proceeding. |
-| **next_phase_policy** | R1 elevates Blackboard to read-only snapshot mode. Snapshot state.json for evidence. Validate bb_* tool availability via contract mapping A3. bb_event tool status must be confirmed. Snapshot is read-only -- no write operations added. |
+| **current_control** | All mutating tools explicitly forbidden . Server.py not executed. MCP config not modified. |
 
 ---
 
@@ -83,10 +75,8 @@ This matrix classifies risks across all resource categories discovered in R0. It
 | **risk_category** | Memory (RD2100 + project-local) |
 | **affected_resources** | res-rd2100memory-006 |
 | **risk_level** | high |
-| **primary_threat** | Write operations to RD2100 memory (MEMORY.md, ACTIVE.md, memory/*.md, agent-state.db) could corrupt the long-term memory store. bb_solidify_knowledge could poison the shared knowledge base. recursive-improve and dream-reflection could auto-mutate agent behavior rules without human review. |
 | **current_control** | All memory write operations forbidden. Only read access permitted: MEMORY.md index, memory/*.md files (no secrets), ACTIVE.md, MEMORY-CALL-GUIDE.md. agent-state.db read-only if accessible. |
 | **control_gap** | agent-state.db not accessible for verification. Project-local memory (D--agent-acceptance) is empty -- no project-specific memory exists. Global memory is read-only but physical write protection is not enforced at filesystem level. |
-| **forbidden_actions** | Write memory/*.md, write MEMORY.md, write ACTIVE.md, write agent-state.db, bb_solidify_knowledge, execute recursive-improve, execute dream-reflection, execute memory-bridge write operations |
 | **gate_decision** | Any memory write at R0 is irreversible corruption of the evidence base. Memory writes require R6 gates (MemoryUpdateRecords proposed only, human-approved). |
 | **next_phase_policy** | R6 maps memory system layers (file, structured, collaborative). Produces MemoryUpdateRecords (proposed only -- no writes). Validates memory architecture. No memory writes until capability_approved lifecycle state. |
 
@@ -224,7 +214,6 @@ This matrix classifies risks across all resource categories discovered in R0. It
 
 | # | Risk Category | Affected Resources | Risk Level | Primary Threat Class | Gate Severity |
 |---|---------------|-------------------|------------|---------------------|---------------|
-| 1 | MCP (Blackboard) | res-blackboard-mcp-001 | critical | Knowledge poisoning, session disruption | Session audit required |
 | 2 | Scripts (PowerShell) | res-agentacceptance-008 | high | Unvalidated code execution, evidence corruption | Phase gate violation |
 | 3 | Hooks (audit ps1) | res-agentacceptance-008 | high | Blind pipeline injection, git interception | Capability bypass |
 | 4 | Skills (local) | res-localskills-005 | high | Arbitrary code execution, mutation | Capability bypass |
@@ -252,7 +241,6 @@ All 2 critical-risk categories and 10 high-risk categories require:
 | Current Phase | Permitted Operations | Gate Type |
 |---------------|---------------------|-----------|
 | R0 (current) | Register, classify, assess risk | No execution, no enablement |
-| R1 | Snapshot Blackboard state | Read-only, human-gated |
 | R2 | Discover test-frame suites | Read-only, no execution |
 | R3 | Draft orchestration adapter | Dry-run candidate, human-gated |
 | R4 | Stale index detection | Read-only check, human-gated reindex |

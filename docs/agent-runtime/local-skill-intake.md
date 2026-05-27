@@ -52,7 +52,6 @@ R5 classifies local skills from the system prompt skill manifest and user-level 
 
 ### External Integration (decision: reject)
 - connect-apps -- Composio CLI; **reject** (external service, P0 risk)
-- blackboard-knowledge-loop -- may trigger bb_solidify; **defer**
 - update-config -- MCP config mutation; **reject**
 
 ### UI / Desktop (decision: reject)
