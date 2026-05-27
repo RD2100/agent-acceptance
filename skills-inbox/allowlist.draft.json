@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Clone Allowlist Draft",
+  "description": "Phase 6A allowlist draft for skill repository quarantine review. Reviewer decisions applied (2026-05-27): 2 planning_approved, 3 deferred. No clone authorized.",
+  "allowlist_version": "0.1.1-reviewer-decisions-applied",
+  "last_updated": "2026-05-27",
+  "global_settings": {
+    "default_decision": "reject",
+    "clone_requires_human_approval": true,
+    "install_allowed": false,
+    "execute_allowed": false,
+    "mcp_enable_allowed": false,
+    "ui_tars_real_desktop_allowed": false
+  },
+  "entries": [
+    {
+      "source_name": "Taste-Skill",
+      "source_url": "<url not provided in candidate index>",
+      "status": "planning_approved",
+      "risk_level": "medium",
+      "clone_allowed": false,
+      "reviewer_decision": "approve_for_source_lock_planning",
+      "review_date": "2026-05-27",
+      "notes": "Skill evaluation framework. Phase 6B source lock planning authorized (NO clone). Planning scope: source lock plan, commit/URL locking scheme, quarantine path draft, static review checklist."
+    },
+    {
+      "source_name": "Understand Anything",
+      "source_url": "<url not provided in candidate index>",
+      "status": "planning_approved",
+      "risk_level": "medium",
+      "clone_allowed": false,
+      "reviewer_decision": "approve_for_source_lock_planning",
+      "review_date": "2026-05-27",
+      "notes": "Code understanding tool. Phase 6B source lock planning authorized (NO clone). Planning scope: source lock plan, commit/URL locking scheme, quarantine path draft, static review checklist with focus on verifying no destructive capabilities."
+    },
+    {
+      "source_name": "ECC",
+      "source_url": "<url not provided in candidate index>",
+      "status": "deferred",
+      "risk_level": "high",
+      "clone_allowed": false,
+      "reviewer_decision": "defer",
+      "review_date": "2026-05-27",
+      "notes": "External code capability. Deferred by reviewer. Re-evaluate after medium-risk workflow (Taste-Skill + Understand Anything) completes full source lock planning cycle."
+    },
+    {
+      "source_name": "AnySearch Skill",
+      "source_url": "<url not provided in candidate index>",
+      "status": "deferred",
+      "risk_level": "high",
+      "clone_allowed": false,
+      "reviewer_decision": "defer",
+      "review_date": "2026-05-27",
+      "notes": "Web search integration. Deferred by reviewer. Re-evaluate after medium-risk workflow completes and network isolation patterns are established."
+    },
+    {
+      "source_name": "addyosmani-agent-skills-zh",
+      "source_url": "<url not provided in candidate index>",
+      "status": "deferred",
+      "risk_level": "high",
+      "clone_allowed": false,
+      "reviewer_decision": "defer",
+      "review_date": "2026-05-27",
+      "notes": "Agent skills collection (Chinese). Deferred by reviewer. Re-evaluate after medium-risk workflow completes and sub-skill categorization methodology is defined."
+    }
+  ]
+}

@@ -2,6 +2,15 @@
 
 通用的任务执行/验证/恢复框架。不绑定特定执行引擎，通过 CLI 接口与被测对象交互。
 
+## 仓库定位
+
+本仓库是 [ai-workflow-hub](D:\dev-frame\ai-workflow-hub) 的**独立验收层**，存放验收脚本、工作队列、文档和质量门。
+
+- **验收脚本**：位于 `scripts/`，通过 CLI 与被测对象交互
+- **工作队列**：位于 `agent-workqueue/`，定义 Tier 0/1/2 任务编排
+- **验收命令**：通过 ai-workflow-hub CLI 在下游仓库目录执行，约定上游路径环境变量 `$env:AI_WORKFLOW_HUB = "D:\dev-frame\ai-workflow-hub"`
+- **本地自检**：本仓库可独立运行 `Test-WorkQueue.ps1`、batch/queue/smoke 的 dry-run 模式，无需上游仓库
+
 ## 分层
 
 | 层 | 目录 | 职责 |

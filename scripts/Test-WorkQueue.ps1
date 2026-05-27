@@ -69,7 +69,7 @@ foreach ($qf in $qfiles) {
 Check "tier2 detection: aware" ($true) "$tier2Count Tier 2 items registered (for escalation tests)"
 
 # 6. All runners are in allowlist
-$allowed = @('scripts/acceptance/Run-Batch.ps1')
+$allowed = @('scripts/Run-Batch.ps1')
 foreach ($qf in $qfiles) {
     $q = Get-Content $qf.FullName -Raw | ConvertFrom-Json
     $allAllowed = $true

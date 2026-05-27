@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Clone Allowlist",
+  "description": "Approved source URL patterns for skill repository cloning during Phase 6 Source Lock & Quarantine. This file is an EXAMPLE template. All entries are commented examples, not real approvals.",
+  "allowlist_version": "0.1.0",
+  "last_updated": "2026-05-27",
+  "entries": [
+    {
+      "_comment": "EXAMPLE: Anthropic's official skill repositories on GitHub. NOT an active approval.",
+      "source_url_pattern": "https://github.com/anthropics/claude-code",
+      "reason": "Official Anthropic Claude Code repository. Trusted upstream source.",
+      "approved_by": "EXAMPLE-reviewer",
+      "approved_date": "EXAMPLE-2026-05-27",
+      "constraints": {
+        "max_depth": 3,
+        "allowed_refs": ["main", "master", "tags/v*"],
+        "require_signed_commits": true,
+        "require_review_before_clone": false
+      }
+    },
+    {
+      "_comment": "EXAMPLE: Anthropic's skill ecosystem on GitHub. Wildcard pattern. NOT an active approval.",
+      "source_url_pattern": "https://github.com/anthropics/*",
+      "reason": "Anthropic-maintained skill repositories under the official organization.",
+      "approved_by": "EXAMPLE-reviewer",
+      "approved_date": "EXAMPLE-2026-05-27",
+      "constraints": {
+        "max_depth": 3,
+        "allowed_refs": ["main", "master", "tags/v*"],
+        "require_signed_commits": false,
+        "require_review_before_clone": true
+      }
+    },
+    {
+      "_comment": "EXAMPLE: A trusted community skill repo. NOT an active approval.",
+      "source_url_pattern": "https://github.com/trusted-org/skills/*",
+      "reason": "Community-vetted skill repository with signed releases.",
+      "approved_by": "EXAMPLE-reviewer",
+      "approved_date": "EXAMPLE-2026-05-27",
+      "constraints": {
+        "max_depth": 2,
+        "allowed_refs": ["tags/v*"],
+        "require_signed_commits": true,
+        "require_review_before_clone": true
+      }
+    },
+    {
+      "_comment": "EXAMPLE: Internal skill registry. NOT an active approval.",
+      "source_url_pattern": "https://skills.internal.example.com/*",
+      "reason": "Internal skill distribution server.",
+      "approved_by": "EXAMPLE-reviewer",
+      "approved_date": "EXAMPLE-2026-05-27",
+      "constraints": {
+        "max_depth": 2,
+        "allowed_refs": ["main"],
+        "require_signed_commits": false,
+        "require_review_before_clone": true
+      }
+    }
+  ]
+}

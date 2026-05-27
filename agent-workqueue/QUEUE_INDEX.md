@@ -12,11 +12,11 @@
 
 ```powershell
 # Serial (default, safe)
-powershell -ExecutionPolicy Bypass -File scripts/acceptance/Run-QueueGroup.ps1 `
+powershell -ExecutionPolicy Bypass -File scripts/Run-QueueGroup.ps1 `
   -QueueFiles agent-workqueue/local-quality.queue.json,agent-workqueue/docs-quality.queue.json,agent-workqueue/recovery-regression.queue.json,agent-workqueue/release-readiness.queue.json,agent-workqueue/cleanup-dryrun.queue.json
 
 # Parallel (3 parallel-safe queues)
-powershell -ExecutionPolicy Bypass -File scripts/acceptance/Run-QueueGroup.ps1 `
+powershell -ExecutionPolicy Bypass -File scripts/Run-QueueGroup.ps1 `
   -Parallel -MaxParallel 2 `
   -QueueFiles agent-workqueue/docs-quality.queue.json,agent-workqueue/release-readiness.queue.json,agent-workqueue/cleanup-dryrun.queue.json
 ```

@@ -1,0 +1,22 @@
+{
+  "queue_id": "myproject-quality",
+  "owner": "code-agent",
+  "mode": "safe-batch",
+  "description": "Project-specific Tier 0 quality checks. Edit items to match your project.",
+  "items": [
+    {
+      "id": "q-project-checks",
+      "title": "Run project quality checks",
+      "tier": 0,
+      "task_file": "scripts/project-batch-quality.json",
+      "runner": "D:\\agent-acceptance\\scripts\\Run-Batch.ps1",
+      "status": "pending",
+      "allowed_files": ["runs/**"],
+      "forbidden_files": ["src/**", "configs/**"],
+      "expected_artifacts": [
+        "runs/powershell-acceptance/batch-project-quality/batch-report.md"
+      ],
+      "escalate_on": ["failed", "missing_artifact", "timeout", "forbidden_command"]
+    }
+  ]
+}

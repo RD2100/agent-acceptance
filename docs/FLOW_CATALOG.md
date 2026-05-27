@@ -5,7 +5,7 @@
 | Field | Value |
 |-------|-------|
 | flow_id | `smoke` |
-| command | `powershell -File scripts/acceptance/Run-Smoke.ps1` |
+| command | `powershell -File scripts/Run-Smoke.ps1` |
 | expected_exit_code | 0 |
 | expected_output | PASS or BLOCKED |
 | artifact_paths | `$env:TEMP/acceptance-smoke-*/acceptance-report.md` |

@@ -1,0 +1,43 @@
+{
+  "batch_id": "batch-project-quality",
+  "mode": "dry-run",
+  "description": "Project-specific Tier 0 quality checks. Replace tasks with your project's verification commands.",
+  "tasks": [
+    {
+      "id": "lint",
+      "title": "Run linter",
+      "tier": 0,
+      "command": "echo 'TODO: replace with your linter command' && exit 0",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "typecheck",
+      "title": "Type-check source",
+      "tier": 0,
+      "command": "echo 'TODO: replace with your type-check command' && exit 0",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "unit-test",
+      "title": "Run unit tests",
+      "tier": 0,
+      "command": "echo 'TODO: replace with your test command' && exit 0",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "check-docs",
+      "title": "Required docs present",
+      "tier": 0,
+      "command": "powershell -Command \"$files=@('README.md','docs/'); $ok=0; foreach($f in $files){if(Test-Path $f){$ok++}}; if($ok -eq $files.Count){exit 0}else{Write-Host missing:$($files.Count-$ok);exit 1}\"",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 10
+    }
+  ]
+}

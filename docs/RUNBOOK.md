@@ -6,10 +6,10 @@
 cd D:\devFrame\ai-workflow-hub
 
 # Smoke test (no real backend)
-powershell -ExecutionPolicy Bypass -File scripts/acceptance/Run-Smoke.ps1
+powershell -ExecutionPolicy Bypass -File scripts/Run-Smoke.ps1
 
 # Custom flow
-powershell -ExecutionPolicy Bypass -File scripts/acceptance/Run-Smoke.ps1 -ProjectPath D:\my-project
+powershell -ExecutionPolicy Bypass -File scripts/Run-Smoke.ps1 -ProjectPath D:\my-project
 ```
 
 ## Exit Codes
@@ -34,7 +34,7 @@ Every report has three sections:
 
 1. Add a flow entry in `FLOW_CATALOG.md`
 2. Define: `flow_id`, `command`, `expected_exit_code`, `expected_output`, `failure_signals`
-3. Run: `powershell -File scripts/acceptance/Run-Flow.ps1 -FlowId <id>`
+3. Run: `powershell -File scripts/Run-Flow.ps1 -FlowId <id>`
 4. Collect artifacts: output paths + screenshot paths (when available)
 
 ## When to Use Browser Automation
@@ -48,8 +48,8 @@ Explorer: not run, browser automation deferred
 
 ```powershell
 # Run all Tier 0 quality checks in one batch
-powershell -ExecutionPolicy Bypass -File scripts/acceptance/Run-Batch.ps1 `
-  -TaskFile scripts/acceptance/examples/batch-local-quality.json
+powershell -ExecutionPolicy Bypass -File scripts/Run-Batch.ps1 `
+  -TaskFile scripts/examples/batch-local-quality.json
 ```
 
 Exit codes: 0=PASS, 1=BLOCKED, 2=FAILED.
@@ -69,6 +69,6 @@ Report: `runs/powershell-acceptance/batch-local-quality/batch-report.md`
 
 ## When to add browser validation
 1. Install Playwright: `npm init playwright`
-2. Write browser flow scripts in `scripts/acceptance/browser/`
+2. Write browser flow scripts in `scripts/browser/`
 3. Change Explorer note to: `Explorer: see browser-report.md`
 4. Run: `npx playwright test` from the acceptance directory

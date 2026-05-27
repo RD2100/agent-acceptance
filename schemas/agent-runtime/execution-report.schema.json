@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExecutionReport",
+  "description": "Final structured report of a batch execution. Produced by a report generator, consumed by a human reviewer and planning agent.",
+  "type": "object",
+  "required": [
+    "report_id",
+    "batch_id",
+    "generated_at",
+    "status",
+    "summary"
+  ],
+  "properties": {
+    "report_id": {
+      "type": "string",
+      "description": "Unique report identifier."
+    },
+    "batch_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Batch identifier, e.g. 'A1', 'B1'. Must not be empty."
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO8601 report generation timestamp."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "submitted", "reviewed", "accepted", "rejected"],
+      "description": "Current status of the report."
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Executive summary. Must not be empty."
+    },
+    "run_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "RunSpec identifiers referenced by this report."
+    },
+    "gate_results": {
+      "type": "array",
+      "items": {
+        "$ref": "./gate-result.schema.json"
+      },
+      "description": "Inline gate results for this report."
+    },
+    "blocking_issues": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Issues blocking progress."
+    },
+    "recommendations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Suggested next actions."
+    },
+    "reviewer_decision": {
+      "type": "string",
+      "description": "Reviewer's gate decision. Should be present when status is 'reviewed'."
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "report_id": "rep-001",
+      "batch_id": "A1",
+      "generated_at": "2026-05-27T10:05:00Z",
+      "status": "submitted",
+      "summary": "Batch A1 read-only inventory complete. 3 paths inventoried."
+    }
+  ]
+}

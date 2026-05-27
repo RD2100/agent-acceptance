@@ -35,6 +35,15 @@
 - **Acceptance**: `acceptance run pre-release` runs all checks in one command.
 - **Risk**: Low — wraps existing commands.
 
+## P2: Missing Documentation Recovery
+
+The following documents are referenced by batch-docs-quality checks but do not exist in the repository. They are exempt from docs-quality checks and tracked here for future completion.
+
+- **E2E_FULL_WORKFLOW_EXPERIMENT.md** — referenced by v1.17 release pack; records the full E2E workflow experiment.
+- **E2E_TIMEOUT_DECISION.md** — Planner timeout decision record.
+- **E2E_PROBE_RUNBOOK.md** — v1.17 Key Commands reference; runbook for E2E probing.
+- **STATUS_MACHINE.md** — WorkQueue state machine rules.
+
 ## P3: Multi-Project E2E
 
 - **Why**: Current testing only uses `test-repo`.

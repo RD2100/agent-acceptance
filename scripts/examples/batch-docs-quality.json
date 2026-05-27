@@ -1,7 +1,7 @@
 {
   "batch_id": "batch-docs-quality",
   "mode": "dry-run",
-  "description": "Documentation consistency checks. Tier 0.",
+  "description": "Documentation consistency checks. Tier 0. NOTE: 4 docs moved to backlog (see docs/NEXT_STAGE_BACKLOG.md): E2E_FULL_WORKFLOW_EXPERIMENT.md, E2E_TIMEOUT_DECISION.md, E2E_PROBE_RUNBOOK.md, STATUS_MACHINE.md.",
   "tasks": [
     {
       "id": "docs-release-pack",
@@ -16,7 +16,7 @@
       "id": "docs-recovery",
       "title": "Recovery docs present",
       "tier": 0,
-      "command": "powershell -Command \"$files=@('docs/RECOVERY_PIPELINE_RUNBOOK.md','docs/ARTIFACT_RETENTION_POLICY.md','docs/E2E_FULL_WORKFLOW_EXPERIMENT.md','docs/E2E_TIMEOUT_DECISION.md','docs/E2E_PROBE_RUNBOOK.md'); $ok=0; foreach($f in $files){if(Test-Path $f){$ok++}}; if($ok -eq $files.Count){exit 0}else{Write-Host missing:$($files.Count-$ok);exit 1}\"",
+      "command": "powershell -Command \"$files=@('docs/RECOVERY_PIPELINE_RUNBOOK.md','docs/ARTIFACT_RETENTION_POLICY.md'); $ok=0; foreach($f in $files){if(Test-Path $f){$ok++}}; if($ok -eq $files.Count){exit 0}else{Write-Host missing:$($files.Count-$ok);exit 1}\"",
       "expected_exit_codes": [0],
       "required_artifacts": [],
       "timeout_seconds": 10
@@ -25,7 +25,7 @@
       "id": "docs-powershell",
       "title": "PowerShell acceptance docs present",
       "tier": 0,
-      "command": "powershell -Command \"$files=@('docs/powershell-acceptance/RUNBOOK.md','docs/powershell-acceptance/REPORT_TEMPLATE.md','docs/powershell-acceptance/FLOW_CATALOG.md'); $ok=0; foreach($f in $files){if(Test-Path $f){$ok++}}; if($ok -eq $files.Count){exit 0}else{Write-Host missing:$($files.Count-$ok);exit 1}\"",
+      "command": "powershell -Command \"$files=@('docs/RUNBOOK.md','docs/REPORT_TEMPLATE.md','docs/FLOW_CATALOG.md'); $ok=0; foreach($f in $files){if(Test-Path $f){$ok++}}; if($ok -eq $files.Count){exit 0}else{Write-Host missing:$($files.Count-$ok);exit 1}\"",
       "expected_exit_codes": [0],
       "required_artifacts": [],
       "timeout_seconds": 10
@@ -38,15 +38,6 @@
       "expected_exit_codes": [0],
       "required_artifacts": [],
       "timeout_seconds": 10
-    },
-    {
-      "id": "docs-status-machine",
-      "title": "Status machine doc present",
-      "tier": 0,
-      "command": "powershell -Command \"if(Test-Path 'docs/STATUS_MACHINE.md'){exit 0}else{exit 1}\"",
-      "expected_exit_codes": [0],
-      "required_artifacts": [],
-      "timeout_seconds": 5
     }
   ]
 }

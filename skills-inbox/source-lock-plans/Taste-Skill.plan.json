@@ -1,0 +1,44 @@
+{
+  "plan_id": "SLP-Taste-Skill-20260527",
+  "source_name": "Taste-Skill",
+  "source_url_from_user_input": "<url not provided in candidate index; must be supplied by human before Phase 6C>",
+  "approval_source": {
+    "matrix": "docs/agent-runtime/phase-6a-approval-matrix.md",
+    "allowlist": "skills-inbox/allowlist.draft.json",
+    "reviewer_decision": "approve_for_source_lock_planning",
+    "review_date": "2026-05-27"
+  },
+  "planned_quarantine_path": "skills-inbox/quarantine/Taste-Skill/repo/",
+  "clone_command_template": "DO NOT RUN - TEMPLATE ONLY: git clone --depth 1 <source_url_from_user_input> skills-inbox/quarantine/Taste-Skill/repo/",
+  "commit_sha_status": "unknown_until_clone",
+  "static_review_checklist": [
+    "Verify directory structure matches expected skill format",
+    "Check for package.json / requirements.txt / pyproject.toml",
+    "Check for install scripts (setup.sh, postinstall.js, etc.)",
+    "Check for network access patterns (fetch, curl, http requests)",
+    "Check for filesystem write operations outside own directory",
+    "Check for MCP configuration modifications",
+    "Check for hook registration code",
+    "Check for credential or secret handling"
+  ],
+  "forbidden_actions": [
+    "clone without Phase 6C approval",
+    "install dependencies (npm/pip/yarn)",
+    "execute any code from quarantine",
+    "enable MCP server registration",
+    "modify system configuration"
+  ],
+  "required_human_gate_before_clone": [
+    "Source URL provided by human reviewer",
+    "allowlist.draft.json entry verified against provided URL",
+    "Phase 6C explicit approval received",
+    "Quarantine directory created and permissions verified (read-only for agent)"
+  ],
+  "rollback_cleanup_policy": "If plan is rejected or deferred: archive plan file to skills-inbox/source-lock-plans/archive/. Quarantine directory (if created in Phase 6C) must be deleted after static review completes or if rejected. No code from quarantine may persist outside quarantine.",
+  "clone_allowed": false,
+  "install_allowed": false,
+  "execute_allowed": false,
+  "mcp_enable_allowed": false,
+  "status": "plan_created_pending_human_review",
+  "created_date": "2026-05-27"
+}

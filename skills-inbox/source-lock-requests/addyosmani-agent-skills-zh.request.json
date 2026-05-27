@@ -1,0 +1,23 @@
+{
+  "request_id": "SLR-addyosmani-agent-skills-zh-20260527",
+  "source_name": "addyosmani-agent-skills-zh",
+  "source_url": "<url not provided in candidate index>",
+  "current_disposition": "defer",
+  "risk_level": "high",
+  "requested_action": "source_lock_review",
+  "approval_status": "pending_human_review",
+  "clone_allowed": false,
+  "install_allowed": false,
+  "execute_allowed": false,
+  "mcp_enable_allowed": false,
+  "forbidden_actions": [
+    "broad scope with unknown tool surface"
+  ],
+  "requested_by": "Phase 6A automated request agent",
+  "request_date": "2026-05-27",
+  "reviewer_decision": "",
+  "approved_by": "",
+  "approved_date": "",
+  "constraints": "Phase 6A: no clone, no install, no execute, no MCP enable. Phase 6B requires separate human approval before any quarantine clone.",
+  "notes": ""
+}

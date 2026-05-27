@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceLockRequest",
+  "description": "TEMPLATE ONLY. Filed when a skill is deferred from Phase 0-5 and requires human reviewer approval before Phase 6B clone into quarantine. This is a blank template -- no real request exists. Phase 6A does NOT authorize any clone.",
+  "request_id": "",
+  "skill_name": "",
+  "source_url": "",
+  "proposed_commit_sha": "",
+  "requested_by": "",
+  "request_date": "",
+  "risk_level": "",
+  "reason": "",
+  "reviewer_decision": "",
+  "approved_by": "",
+  "approved_date": "",
+  "constraints": []
+}

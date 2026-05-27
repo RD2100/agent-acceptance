@@ -1,0 +1,87 @@
+{
+  "approval_id": "PHASE6C-URL-20260527",
+  "phase": "6C",
+  "approval_type": "source_url_recording",
+  "recorded_date": "2026-05-27",
+  "clone_authorized": false,
+  "install_authorized": false,
+  "execute_authorized": false,
+  "mcp_enable_authorized": false,
+  "entries": [
+    {
+      "source_name": "Taste-Skill",
+      "source_url": "https://github.com/Leonxlnx/taste-skill",
+      "allowlist_status": "planning_approved",
+      "phase_6a_decision": "approve_for_source_lock_planning",
+      "phase_6b_plan": "SLP-Taste-Skill-20260527",
+      "risk_level": "medium",
+      "url_verified": true,
+      "clone_ready": false
+    },
+    {
+      "source_name": "Understand Anything",
+      "source_url": "https://github.com/Lum1104/Understand-Anything",
+      "allowlist_status": "planning_approved",
+      "phase_6a_decision": "approve_for_source_lock_planning",
+      "phase_6b_plan": "SLP-Understand-Anything-20260527",
+      "risk_level": "medium",
+      "url_verified": true,
+      "clone_ready": false
+    }
+  ],
+  "deferred_entries": [
+    {
+      "source_name": "ECC",
+      "source_url": "https://github.com/affaan-m/ECC",
+      "status": "deferred",
+      "reason": "Phase 6A reviewer decision: defer"
+    },
+    {
+      "source_name": "AnySearch Skill",
+      "source_url": "https://github.com/anysearch-ai/anysearch-skill",
+      "status": "deferred",
+      "reason": "Phase 6A reviewer decision: defer"
+    },
+    {
+      "source_name": "addyosmani-agent-skills-zh",
+      "source_url": "https://github.com/vinvcn/addyosmani-agent-skills-zh",
+      "status": "deferred",
+      "reason": "Phase 6A reviewer decision: defer"
+    }
+  ],
+  "rejected_entries": [
+    {
+      "source_name": "AnySearch MCP Server",
+      "source_url": "https://github.com/anysearch-ai/anysearch-mcp-server",
+      "status": "rejected",
+      "reason": "MCP config modification; permanently out of scope"
+    },
+    {
+      "source_name": "Anthropic Cybersecurity Skills",
+      "source_url": "https://github.com/mukul975/Anthropic-Cybersecurity-Skills",
+      "status": "rejected",
+      "reason": "Security tool execution; permanently out of scope"
+    },
+    {
+      "source_name": "UI-TARS Desktop",
+      "source_url": "https://github.com/bytedance/UI-TARS-desktop",
+      "status": "rejected",
+      "reason": "Desktop automation; permanently out of scope"
+    }
+  ],
+  "reference_entries": [
+    {
+      "source_name": "Andrej Karpathy Skills",
+      "source_url": "https://github.com/multica-ai/andrej-karpathy-skills",
+      "status": "reference_only",
+      "reason": "Domain-specific; no action planned"
+    }
+  ],
+  "next_phase_6d_preconditions": [
+    "Explicit clone-to-quarantine human approval",
+    "Quarantine path prepared: skills-inbox/quarantine/<project>/repo/",
+    "Pre-clone security review completed",
+    "Static review checklist activated per project"
+  ],
+  "constraints": "Phase 6C records URLs only. No clone, no install, no execute, no MCP enable. Phase 6D requires separate human approval."
+}

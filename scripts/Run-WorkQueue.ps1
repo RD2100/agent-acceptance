@@ -29,7 +29,7 @@ Write-Host ""
 
 # ---- Allowed runners (security) ----
 $allowedRunners = @(
-    'scripts/acceptance/Run-Batch.ps1'
+    'scripts/Run-Batch.ps1'
 )
 
 $script:forbidden = @(

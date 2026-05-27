@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TaskSpec",
+  "description": "Describes a unit of work before execution begins. Produced by a planner agent or human operator, consumed by an executor agent.",
+  "type": "object",
+  "required": [
+    "task_id",
+    "title",
+    "priority",
+    "status",
+    "description"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Unique task identifier within the session."
+    },
+    "title": {
+      "type": "string",
+      "description": "Short human-readable description of the task."
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["P0", "P1", "P2", "P3"],
+      "description": "Task priority level."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "ready", "deferred", "rejected"],
+      "description": "Current status of the task."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "What to do and why -- must be non-empty."
+    },
+    "depends_on": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Task IDs that must complete before this task can start."
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Assumptions made when creating this task."
+    },
+    "risk_notes": {
+      "type": "string",
+      "description": "Known risks or concerns."
+    },
+    "estimated_tools": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Tools likely needed during execution."
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "task_id": "t-001",
+      "title": "Inventory agent-acceptance directory",
+      "priority": "P1",
+      "status": "ready",
+      "description": "Run read-only checks on D:\\agent-acceptance and report findings."
+    }
+  ]
+}
