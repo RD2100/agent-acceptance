@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "command": "powershell -ExecutionPolicy Bypass -File \"D:\\agent-acceptance\\hooks\\pre-edit.audit.draft.ps1\""
+      }
+    ]
+  },
+  "note": "Merge this 'hooks' section into your Claude Code settings.json. Restart Claude Code to activate."
+}

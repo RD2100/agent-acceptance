@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0",
+  "description": "Files in sealed tracks — edits blocked unless explicitly unsealed. Add/remove entries through human-approved change requests only.",
+  "sealed_files": [
+    "resource-integration-handoff.md",
+    "resource-integration-final-audit.md",
+    "resource-integration-plan.md",
+    "resource-integration-status-index.md",
+    "resource-registry.md",
+    "resource-risk-matrix.md",
+    "capability-routing-handoff.md",
+    "capability-routing-final-audit.md",
+    "capability-inventory.md",
+    "task-capability-routing-matrix.md",
+    "operating-model.md",
+    "integration-contracts.md",
+    "tool-policy.md",
+    "memory-architecture.md",
+    "skill-trigger-matrix.md",
+    "verification-gates.md",
+    "runtime-invariants.md",
+    "stride-threat-model.md",
+    "fmea-risk-analysis.md",
+    "phase-6b-handoff.md",
+    "phase-6b-source-lock-plan.md",
+    "resource-integration-handoff.md",
+    "resource-integration-final-audit.md",
+    "capability-routing-handoff.md",
+    "capability-routing-final-audit.md"
+  ],
+  "sealed_dirs": [
+    "schemas/",
+    "rules/",
+    "docs/agent-runtime/negative-test-fixtures/"
+  ],
+  "memory_paths": [
+    "C:\\Users\\RD\\.claude\\projects\\D--agent-acceptance\\memory\\",
+    "C:\\Users\\RD\\.claude\\memory\\"
+  ],
+  "created": "2026-05-28",
+  "note": "To unseal a file, remove it from this manifest. Requires human approval."
+}
