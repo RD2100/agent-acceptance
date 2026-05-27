@@ -15,7 +15,7 @@ param(
 $AUDIT_HEADER = @"
 
 ========================================
- PRE-EDIT AUDIT (Draft - Not Registered)
+ PRE-EDIT AUDIT (Active - Registered)
 ========================================
 "@
 
@@ -50,29 +50,26 @@ foreach ($memPath in $memoryPaths) {
 }
 
 # P0: Block edits to sealed files — HARD STOP
-$sealedFiles = @(
-    "resource-integration-handoff.md",
-    "resource-integration-final-audit.md",
-    "resource-integration-plan.md",
-    "resource-integration-status-index.md",
-    "resource-registry.md",
-    "resource-risk-matrix.md",
-    "capability-routing-handoff.md",
-    "capability-routing-final-audit.md",
-    "capability-inventory.md",
-    "task-capability-routing-matrix.md",
-    "operating-model.md",
-    "integration-contracts.md",
-    "tool-policy.md",
-    "memory-architecture.md",
-    "skill-trigger-matrix.md",
-    "verification-gates.md",
-    "runtime-invariants.md",
-    "stride-threat-model.md",
-    "fmea-risk-analysis.md",
-    "phase-6b-handoff.md",
-    "phase-6b-source-lock-plan.md"
-)
+# Load sealed files from manifest (single source of truth)
+$manifestPath = Join-Path $PSScriptRoot "sealed-files-manifest.json"
+$sealedFiles = @()
+if (Test-Path $manifestPath) {
+    try {
+        $manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
+        $sealedFiles = $manifest.sealed_files
+    } catch {
+        Write-Output "[AUDIT] WARNING: Could not read sealed-files-manifest.json. Using hardcoded fallback."
+        $sealedFiles = @(
+            "operating-model.md",
+            "tool-policy.md",
+            "memory-architecture.md",
+            "verification-gates.md",
+            "integration-contracts.md",
+            "runtime-invariants.md",
+            "skill-trigger-matrix.md"
+        )
+    }
+}
 foreach ($sealed in $sealedFiles) {
     $pattern = [regex]::Escape($sealed)
     if ($filePath -match $pattern) {

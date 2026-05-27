@@ -23,11 +23,7 @@
     "stride-threat-model.md",
     "fmea-risk-analysis.md",
     "phase-6b-handoff.md",
-    "phase-6b-source-lock-plan.md",
-    "resource-integration-handoff.md",
-    "resource-integration-final-audit.md",
-    "capability-routing-handoff.md",
-    "capability-routing-final-audit.md"
+    "phase-6b-source-lock-plan.md"
   ],
   "sealed_dirs": [
     "schemas/",

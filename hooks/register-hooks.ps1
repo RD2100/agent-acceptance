@@ -34,39 +34,39 @@ Write-Output "[OK] Backup saved: $backupPath"
 # Read current settings
 $settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
 
-# Add hooks if not present
-if (-not $settings.hooks) {
-    $settings | Add-Member -MemberType NoteProperty -Name "hooks" -Value @{} -Force
-}
+# Read raw JSON as text for safe manipulation
+$rawJson = Get-Content $settingsPath -Raw
 
-if (-not $settings.hooks.PreToolUse) {
-    $settings.hooks | Add-Member -MemberType NoteProperty -Name "PreToolUse" -Value @() -Force
-}
-
-# Define the hook entry
-$hookEntry = @{
-    matcher = "Write|Edit"
-    command = "powershell -ExecutionPolicy Bypass -File `"D:\agent-acceptance\hooks\pre-edit.audit.draft.ps1`""
-}
+# Define the hook entry as raw JSON string
+$hookEntryRaw = @'
+  {
+    "hooks": {
+      "PreToolUse": [
+        {
+          "matcher": "Write|Edit",
+          "command": "powershell -ExecutionPolicy Bypass -File \"D:\\agent-acceptance\\hooks\\pre-edit.audit.draft.ps1\""
+        }
+      ]
+    }
+  }
+'@
 
 # Check if already registered
-$alreadyRegistered = $false
-foreach ($existing in $settings.hooks.PreToolUse) {
-    if ($existing.matcher -eq $hookEntry.matcher -and $existing.command -eq $hookEntry.command) {
-        $alreadyRegistered = $true
-        break
-    }
-}
-
-if ($alreadyRegistered) {
+if ($rawJson -match "pre-edit\.audit\.draft\.ps1") {
     Write-Output "[SKIP] Hook already registered for Write|Edit"
 } else {
-    $settings.hooks.PreToolUse += $hookEntry
+    # Merge: add hooks section into existing JSON
+    $hookConfig = $hookEntryRaw | ConvertFrom-Json
+    $settings = $rawJson | ConvertFrom-Json
+
+    if (-not $settings.hooks) {
+        $settings | Add-Member -MemberType NoteProperty -Name "hooks" -Value $hookConfig.hooks -Force
+    }
+
+    # Re-serialize with proper depth
+    $settings | ConvertTo-Json -Depth 6 | Set-Content $settingsPath -Encoding UTF8
     Write-Output "[OK] Hook registered: PreToolUse(Write|Edit) -> pre-edit.audit.draft.ps1"
 }
-
-# Write back
-$settings | ConvertTo-Json -Depth 4 | Set-Content $settingsPath -Encoding UTF8
 
 Write-Output ""
 Write-Output "=== Registration Complete ==="
