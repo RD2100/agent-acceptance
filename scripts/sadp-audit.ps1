@@ -1,8 +1,8 @@
-# sadp-audit.ps1 ¡ª External SADP Compliance Auditor
+ï»¿# sadp-audit.ps1 â€” External SADP Compliance Auditor
 # ==================================================
 # Runs INDEPENDENTLY of Plan Agent decision.
 # Triggered by git pre-commit hook.
-# Checks: git diff ¡ú TaskSpec existence ¡ú Audit Record existence.
+# Checks: git diff â†’ TaskSpec existence â†’ Audit Record existence.
 #
 # Usage: .\sadp-audit.ps1 [-ProjectRoot <path>] [-Strict]
 # Exit 0: PASS (compliant or no changes)
@@ -22,7 +22,7 @@ try {
     $changedFiles = @(git -c core.safecrlf=false diff --cached --name-only 2>$null | Where-Object { $_ })
     $changedCount = $changedFiles.Count
 
-    # No changes staged ¡ú pass
+    # No changes staged â†’ pass
     if ($changedCount -eq 0) {
         Write-Host "[SADP-AUDIT] No staged changes. PASS."
         exit 0
@@ -139,35 +139,115 @@ if ($taskSpecs.Count -gt 0) {
 $block = $false
     $warn = $false
 
-    # RULE 1: 3+ files ¡ú SADP required ¡ú TaskSpec must exist
+    # RULE 1: 3+ files â†’ SADP required â†’ TaskSpec must exist
     if ($changedCount -ge 3 -and $taskSpecs.Count -eq 0) {
         Write-Host "[SADP-AUDIT] FAIL: $changedCount files changed but no TaskSpec found."
-        Write-Host "[SADP-AUDIT]   SADP ¡ì0.0: 3+ modified files triggers mandatory SADP workflow."
+        Write-Host "[SADP-AUDIT]   SADP Â§0.0: 3+ modified files triggers mandatory SADP workflow."
         Write-Host "[SADP-AUDIT]   Remediation: Create a TaskSpec in tasks/ with gate_0 evidence."
         Write-Host "[SADP-AUDIT]   Then create an ExecutionReport after task completion."
         $block = $true
     }
 
-    # RULE 2: Governance files ¡ú Audit Record must exist
+    # RULE 2: Governance files â†’ Audit Record must exist
     if ($governanceTouched -and $auditRecords.Count -eq 0) {
         Write-Host "[SADP-AUDIT] FAIL: Governance files changed but no ExecutionReport found."
-        Write-Host "[SADP-AUDIT]   SADP ¡ì3.3a: Plan Auditor requires Audit Record for governance changes."
+        Write-Host "[SADP-AUDIT]   SADP Â§3.3a: Plan Auditor requires Audit Record for governance changes."
         Write-Host "[SADP-AUDIT]   Remediation: Create ExecutionReport with Trust Record."
         $block = $true
     }
 
-    # RULE 3: Strict mode ¡ª any change requires TaskSpec
+    # RULE 3: Strict mode â€” any change requires TaskSpec
     if ($Strict -and $changedCount -gt 0 -and $taskSpecs.Count -eq 0) {
         Write-Host "[SADP-AUDIT] FAIL (strict mode): Files changed but no TaskSpec."
         $block = $true
     }
 
-    # RULE 4: TaskSpec exists but no ExecutionReport ¡ú warn
+    # RULE 4: TaskSpec exists but no ExecutionReport â†’ warn
     if ($taskSpecs.Count -gt 0 -and $auditRecords.Count -eq 0 -and $changedCount -gt 0) {
         Write-Host "[SADP-AUDIT] WARN: TaskSpec exists but no ExecutionReport yet."
         Write-Host "[SADP-AUDIT]   Ensure ExecutionReport is created before finalizing."
         $warn = $true
     }
+
+    # RULE 5: Secret pattern scan on staged diff
+    # Detects API keys, tokens, and credentials before they enter Git history
+    $secretPatterns = @(
+        @{ Name = "OpenAI/DeepSeek API Key"; Pattern = "sk-[a-zA-Z0-9]{20,}"; Severity = "CRITICAL" },
+        @{ Name = "GitHub Personal Access Token (classic)"; Pattern = "ghp_[a-zA-Z0-9]{36}"; Severity = "CRITICAL" },
+        @{ Name = "GitHub Personal Access Token (fine-grained)"; Pattern = "github_pat_[a-zA-Z0-9_]{20,}"; Severity = "CRITICAL" },
+        @{ Name = "GitLab Personal Access Token"; Pattern = "glpat-[a-zA-Z0-9\-]{20,}"; Severity = "CRITICAL" },
+        @{ Name = "AWS Access Key ID"; Pattern = "AKIA[0-9A-Z]{16}"; Severity = "CRITICAL" },
+        @{ Name = "Bearer token (16+ chars) in code"; Pattern = "Bearer\s+[A-Za-z0-9\-\._~\+\/]{16,}=*"; Severity = "HIGH" },
+        @{ Name = "JWT Token"; Pattern = "eyJ[a-zA-Z0-9\-_]+\.eyJ[a-zA-Z0-9\-_]+\.[a-zA-Z0-9\-_]+"; Severity = "MEDIUM" }
+    )
+
+    $secretHits = @()
+    
+    foreach ($f in $changedFiles) {
+        try {
+            $diffContent = git -c core.safecrlf=false diff --cached -- "$f" 2>$null
+            if (-not $diffContent) { continue }
+            
+            # Only scan added lines (lines starting with +). Skip pattern definitions (self-reference).
+            $addedLines = $diffContent | Where-Object { $_ -match '^\+(?!\+\+)' }
+            if (-not $addedLines) { continue }
+            
+$addedContent = ($addedLines | Where-Object { $_ -notmatch '@\{ Name =' }) -join "`n"
+            
+            foreach ($sp in $secretPatterns) {
+                $matches = [regex]::Matches($addedContent, $sp.Pattern)
+                foreach ($m in $matches) {
+                    $matchPreview = $m.Value
+                    if ($matchPreview.Length -gt 30) { $matchPreview = $matchPreview.Substring(0, 30) + "..." }
+                    $secretHits += @{
+                        File = $f
+                        Rule = $sp.Name
+                        Severity = $sp.Severity
+                        Preview = $matchPreview
+                    }
+                }
+            }
+        } catch {
+            Write-Host "[SADP-AUDIT] WARN: Could not scan $f for secrets: $_"
+        }
+    }
+
+    if ($secretHits.Count -gt 0) {
+        Write-Host "[SADP-AUDIT] FAIL: Secret patterns detected in staged diff!"
+        Write-Host "[SADP-AUDIT]   The following potential secrets were found:"
+        foreach ($h in $secretHits) {
+            Write-Host "[SADP-AUDIT]   [$($h.Severity)] $($h.File): $($h.Rule) â€” $($h.Preview)"
+        }
+        Write-Host "[SADP-AUDIT]   Remediation:"
+        Write-Host "[SADP-AUDIT]     1. Remove the real secret from the file"
+        Write-Host "[SADP-AUDIT]     2. Replace with placeholder: __REPLACE_WITH_YOUR_OWN_KEY__"
+        Write-Host "[SADP-AUDIT]     3. If the secret was already pushed, REVOKE/ROTATE it immediately"
+        Write-Host "[SADP-AUDIT]     4. Re-stage and retry commit"
+        $block = $true
+    }
+
+    # RULE 6: .env.example / template file integrity check
+    $envExamplePatterns = @(
+        "\benv.*example\b",
+        "\.example\b",
+        "\.sample\b",
+        "\.template\b",
+        "packaging\\",
+        "docker-compose"
+    )
+
+    foreach ($f in $changedFiles) {
+        $isTemplate = $false
+        foreach ($p in $envExamplePatterns) {
+            if ($f -match $p) { $isTemplate = $true; break }
+        }
+        if ($isTemplate) {
+            Write-Host "[SADP-AUDIT] WARN: Template/sensitive file in diff: $f"
+            Write-Host "[SADP-AUDIT]   Verify this file contains ONLY placeholders, never real keys."
+            Write-Host "[SADP-AUDIT]   Use format: __REPLACE_WITH_YOUR_OWN_KEY__"
+        }
+    }
+
 
     if ($block) {
         Write-Host "[SADP-AUDIT] STATUS: BLOCKED"

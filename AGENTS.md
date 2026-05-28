@@ -39,6 +39,26 @@ These rules block delivery. Do not violate:
 | 5 | No write to dirty baseline files (13M + 6U) | `rules/core.md` core-005 |
 | 6 | No capability without inventory registration | `rules/core.md` core-007 |
 
+
+## Agent Secret Safety Rules (P0 ¡ª Hard Stop)
+
+These rules apply to ALL agent actions, regardless of @go or normal mode:
+
+| # | Rule |
+|---|------|
+| 1 | Never write real API keys into repository files |
+| 2 | Never write real API keys into .env.example, config.example, README, tests, CI files, packaging files, or release artifacts |
+| 3 | Treat every file containing "example", "sample", "template", "packaging", "workflow", "docker", or "README" as secret-sensitive |
+| 4 | Before git add or git commit, secret scanning runs on staged diff (via sadp-audit.ps1) |
+| 5 | If a suspected secret is found, STOP immediately and report it |
+| 6 | If a secret has already been committed, REVOKE/ROTATE the key in the provider console BEFORE cleaning Git history |
+| 7 | Default answer to "should I scan?" is YES. Scanning is mandatory, not optional |
+| 8 | All .env.example files MUST use strongly invalid placeholders: `__REPLACE_WITH_YOUR_OWN_KEY__`, never `sk-your-key-here` |
+| 9 | Agent debug output containing session data (tasks/*result*.txt) MUST NOT be committed |
+
+Full policy: `docs/SECURITY_SECRETS_POLICY.md`
+Enforcement: pre-commit hook (`sadp-audit.ps1`), CI, GitHub push protection
+
 ## Document Map
 
 ```

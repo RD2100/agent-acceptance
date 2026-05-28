@@ -11,3 +11,5 @@ docs/agent-runtime/tasks/
 reports/
 
 agent-workqueue/
+
+.backup/
