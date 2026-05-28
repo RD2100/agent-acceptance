@@ -42,6 +42,9 @@ docs/agent-runtime/
   reviewer-playbook.md        <- Reviewer guide + decision tree
   negative-acceptance-tests.md <- 30 negative test definitions
   negative-test-fixtures/     <- 30 JSON
+  sub-agent-dispatch-protocol.md <- Default dev workflow: SADP TaskSpec + ExecutionReport
+  dispatch-model-profiles.md    <- Per-model capability limits + failure patterns
+  lessons-learned.md             <- Operational knowledge log + Knowledge Metabolism
   sub-agent-dispatch-protocol.md <- Default dev workflow: TaskSpec + ExecutionReport test fixtures
 
 rules/
