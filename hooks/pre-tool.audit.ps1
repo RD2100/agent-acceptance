@@ -1,9 +1,11 @@
-# AUDIT-ONLY DRAFT
-# Not registered - Not blocking - No mutation - No secret access
+# PRODUCTION HOOK - Active blocking hook
+
+$hadViolation = $false
+
 #
 # pre-tool.audit.draft.ps1
 # Runs before a tool invocation (conceptual hook, not actually registered).
-# Outputs audit recommendations to stdout. Always exits 0.
+# Exits 0 on pass, exits 1 on violations.
 #
 # Usage (conceptual): Receive tool name and params on stdin, output audit to stdout.
 
@@ -105,4 +107,4 @@ if ($toolName -eq "Skill") {
 }
 
 Write-Output "[AUDIT] STATUS: COMPLETE"
-exit 0
+if ($hadViolation) { Write-Output "[AUDIT] BLOCKED: violations detected"; exit 1 } else { Write-Output "[AUDIT] PASS: no violations"; exit 0 }

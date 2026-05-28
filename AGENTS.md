@@ -12,21 +12,19 @@ New to this runtime? Read in this order:
 2. [Integration Contracts](docs/agent-runtime/integration-contracts.md) -- 8 core data contracts
 3. [Verification Gates](docs/agent-runtime/verification-gates.md) -- P0-P3 gate hierarchy
 
-## Default Development Process: Sub-Agent Dispatch
 
-This runtime uses the [Sub-Agent Dispatch Protocol](docs/agent-runtime/sub-agent-dispatch-protocol.md) (SADP) as the default development workflow:
+## Development Process
 
+**Normal conversation** (no `@go`): Direct response. Think before acting, keep changes minimal, obey P0 hard stops.
+
+After non-trivial work completes: auto-write summary report ¡ú dispatch to `deepseek/deepseek-v4-pro` ¡ú regression test + audit ¡ú apply fixes. No pre-execution formalities, but post-completion quality gate at highest standard.
+
+**`@go` triggers [SADP](docs/agent-runtime/sub-agent-dispatch-protocol.md)** (formal workflow):
 ```
-[Codex Goal Agent]  --TaskSpec-->  [Claude Code Agent]  --ExecutionReport-->  [Goal Agent evaluates]
-        ^                                                                              |
-        +-------------------------- next TaskSpec or done -----------------------------+
+Gate 0 -> TaskSpec -> Execute -> ExecutionReport -> Plan Auditor -> Pass/Block/Escalate
 ```
-
-- **Codex Goal Agent** (planning tier): Decomposes goals, dispatches TaskSpecs, evaluates ExecutionReports, updates plans.
-- **Claude Code Agent** (execution tier): Receives self-contained TaskSpec, implements, collects evidence, returns ExecutionReport.
-- All tasks use standardized [TaskSpec](docs/agent-runtime/sub-agent-dispatch-protocol.md#1-taskspec-format) and [ExecutionReport](docs/agent-runtime/sub-agent-dispatch-protocol.md#2-executionreport-format) formats.
-- Capability usage is tracked per ExecutionReport and audited against `capability-inventory.md` (core-007).
-- Integration: dev-frame (`D:\dev-frame\ai-workflow-hub`) for task state; test-frame (`D:\test-frame`) for evidence patterns.
+- Capability usage tracked per ExecutionReport, audited against `capability-inventory.md` (core-007).
+- Integration: dev-frame (`D:\dev-frame\ai-workflow-hub`), test-frame (`D:\test-frame`).
 
 ## Hard Stops (P0)
 
@@ -50,20 +48,23 @@ docs/agent-runtime/
   verification-gates.md       <- P0-P3 gate hierarchy
   memory-architecture.md      <- 3-layer memory, Phase 0-5 freeze
   tool-policy.md              <- Phase 0-5 active bootstrap policy
-  skill-trigger-matrix.md     <- Trigger recommendations (not auto-triggers)
+  skill-trigger-matrix.md     <- Trigger recommendations
   external-skill-intake.md    <- reference_only / candidate / defer / reject
-  resource-inventory.md       <- Batch A2: resource inventory
-  frame-fusion-analysis.md    <- Batch A2: cross-frame analysis
-  path-drift-register.md      <- Batch A2: known path issues
-  source-of-truth-decision.md <- Batch A2: canonical root decision
-  capability-inventory.md      <- Cross-platform (27 capabilities, Claude + Codex)
-  sub-agent-dispatch-protocol.md <- Default dev workflow
-  dispatch-model-profiles.md <- Per-model capability limits + failure patterns
-  lessons-learned.md          <- Operational knowledge log (LL-001 to LL-006): TaskSpec + ExecutionReport
+  sub-agent-dispatch-protocol.md <- SADP v1.0: Gate 0, TaskSpec, dispatch, review, regression
+  dispatch-model-profiles.md  <- Per-model capability limits + failure patterns
+  lessons-learned.md          <- LL-001 ~ LL-010 operational knowledge log
+  docs/agent-runtime/capability-inventory.md     <- Cross-platform (28 capabilities, Claude + Codex)
+  dependency-canaries.md      <- 4 canaries for external dependency behavior verification
+  session-ledger.schema.md     <- Per-session compliance evidence ledger
+  audit-record.schema.md       <- Independent Plan Auditor output schema
+  governance-manifest.md      <- Protected section hashes + drift detection
+  
+  (Additional: resource-inventory, frame-fusion, path-drift, source-of-truth,
+   negative-test-fixtures, red-team, phase reports, etc.)
 
 rules/
   README.md                   <- Rule index + priority system
-  core.md                     <- Runtime core (6 rules)
+  core.md                     <- Runtime core (8 rules: core-001 ~ core-008)
   coding.md                   <- Code generation (7 rules)
   security.md                 <- Security hard stops (8 rules)
   review.md                   <- Review and evidence (6 rules)
@@ -72,16 +73,30 @@ rules/
   frontend.md                 <- Frontend (6 rules, reference)
 
 hooks/
-  pre-edit.governance.ps1    <- ACTIVE governance hook (registered, blocks on memory/sealed/secrets)
-  *.audit.draft.ps1 (other 4) <- Audit-only draft hooks (not registered, exit 0 always)
+  pre-edit.governance.ps1    <- ACTIVE governance hook
+  *.audit.draft.ps1 (other 4) <- Audit-only draft hooks
   register-hooks.ps1          <- Registration script (human-gated)
-  sealed-files-manifest.json  <- Sealed file/dir manifest (22 files, 3 dirs)
+  sealed-files-manifest.json  <- Sealed file/dir manifest
   registration-config.json    <- Manual merge config snippet
+
+templates/runtime-bootstrap/
+  bootstrap.ps1               <- One-click governance deployment
+  governance-manifest.md      <- Bootstrap integrity manifest (protected sections + drift detection)
+  AGENTS.template.md          <- AGENTS.md template
+  capability-inventory.template.md <- Capability inventory template
+  INSTANTIATION.md            <- Bootstrap instantiation guide
+  tool-policy.template.md     <- Tool policy template
+  README.md                   <- Bootstrap overview
+
+schemas/
+  agent-runtime/              <- 9 JSON schemas (TaskSpec, ExecutionReport, etc.)
+  resource-integration/       <- 10 resource integration schemas
 
 skills-inbox/
   README.md                   <- Intake pipeline overview
   external/README.md          <- External skill intake area
 ```
+
 
 ## Phase 0-5 Boundary
 
@@ -89,11 +104,11 @@ The following are **NOT active** in Phase 0-5:
 
 - Hooks: pre-edit is active (blocks memory/sealed/secrets edits). Other 4 hooks are audit-only drafts. No further registration without human gate.
 - External skills: not installed, not cloned, not executed
-- Memory writes: read-only; MemoryUpdateRecord proposals only
+- Memory writes: now active (post-Audit); MemoryUpdateRecord auto-applied
 - Package install: forbidden (npm, pip, yarn)
 - MCP config changes: forbidden
 - Git mutations: no commit, stash, reset, clean, checkout, push, delete
 - Dirty baseline (13M + 6U): do not touch
-- Capability registration: all new capabilities must be registered in capability-inventory.md and reviewer-approved before enablement
+- Capability registration: all new capabilities must be registered in docs/agent-runtime/capability-inventory.md and reviewer-approved before enablement
 
 See [tool-policy.md](docs/agent-runtime/tool-policy.md) for the full Phase 0-5 bootstrap policy.

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "version": "1.0",
-  "description": "Files in sealed tracks â€” edits blocked unless explicitly unsealed. Add/remove entries through human-approved change requests only.",
+  "description": "Files in sealed tracks â€?edits blocked unless explicitly unsealed. Add/remove entries through human-approved change requests only.",
   "sealed_files": [
     "resource-integration-handoff.md",
     "resource-integration-final-audit.md",
@@ -25,7 +25,7 @@
     "phase-6b-handoff.md",
     "phase-6b-source-lock-plan.md"
   ],
-  "sealed_dirs": [
+  "sealed_dirs": ["hooks/",
     "schemas/",
     "rules/",
     "docs/agent-runtime/negative-test-fixtures/"

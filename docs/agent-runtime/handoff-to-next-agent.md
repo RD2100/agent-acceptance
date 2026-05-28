@@ -1,178 +1,150 @@
+# Handoff: RD2100 Agent Runtime v2 ¡ú Next Agent
 
-# Handoff: RD2100 Agent Runtime v2 â†’ Next Agent
-
-> Date: 2026-05-28 | Handoff from: Codex Agent (C3Aâ€“C5) | To: Next coding/reviewer agent
-> Canonical root: `D:\agent-acceptance`
+> **Date**: 2026-05-28 | **Session**: P0 Sync + Plan Auditor + Automation
+> **Canonical root**: `D:\agent-acceptance` | **Phase**: 0-5 (bootstrap)
 
 ---
 
 ## 0. Quick Start (Read This First)
 
-This is a **governance/runtime acceptance project**. Do not treat assets as permission to execute.
+Three most important files (plus one external enforcement):
 
-Three most important files:
-1. `AGENTS.md` â€” Hard stops, document map, Phase boundary
-2. `docs/agent-runtime/capability-inventory.md` â€” 27 capabilities across Claude + Codex
-3. `rules/core.md` â€” 7 P0 rules (especially core-007)
+1. **`AGENTS.md`** ¡ª Hard stops, doc map, Phase boundary, SADP auto-trigger rules
+2. **`docs/agent-runtime/sub-agent-dispatch-protocol.md`** ¡ª SADP v1.0: Gate 0, Plan Auditor, dispatch, review, regression
+3. **`rules/core.md`** ¡ª 8 P0 rules (core-001 ~ core-008), Veto Contract, Knowledge Metabolism
 
-State summary: "Runtime v2 governance is structurally complete. Bootstrap template package is tested (10/10). All capabilities are registered and constrained. No capability is currently approved for install/runtime enablement beyond inventory."
+**State**: "Governance upgraded from declarative to evidence-driven. Plan Auditor added as independent compliance check. Pre-write hook extended to governance files. Session ledger auto-generation in place. Phase-6 historical reports archived."
 
 ---
 
-## 1. What Was Done (This Session: 2026-05-28)
+## 1. Current State
 
-### Batch Summary
+| Asset | Count | Notes |
+|-------|:----:|-------|
+| Core rules | 8 | core-001 ~ core-008 (P0 cap: 7) |
+| Lessons learned | 10 | LL-001 ~ LL-010 |
+| Capability inventory | 28 | + expiration policy, + Capability Passport |
+| JSON schemas | 4 | TaskSpec, ExecutionReport, SessionLedger, AuditRecord |
+| Dependency canaries | 4 | CANARY-001 tested, rest defined |
+| Bootstrap templates | 7 | + governance-manifest.template.md |
+| Git status | 24M + 30U | Working tree dirty, all approved changes |
 
-| Batch | What | Status |
-|-------|------|:---:|
-| Hook Gov Upgrade | Activated pre-edit hook as blocking governance gate | Committed (b22edc3..3cb6ea7) |
-| Hook Doc Sync | Updated 9 governance docs to reflect active hook | Uncommitted |
-| Hook Rename | pre-edit.audit.draft.ps1 â†’ pre-edit.governance.ps1 | Uncommitted |
-| C3A | Installed 15 Codex plugins (external agent, pre-existing) | Complete |
-| C3B | Disabled 10 redundant/credential-less plugins, kept 8 | Complete |
-| C3C | Cross-platform capability inventory (Claude+Codex, 27 entries) | Uncommitted |
-| C3D | core-007: No Capability Without Inventory Registration | Uncommitted |
-| C4 | Bootstrap template package (6 files, tested 10/10) | Uncommitted |
-| C5 | 10 acceptance tests on bootstrap; all PASS | Complete |
+---
 
-### Working Tree: 18 Modified + 11 New Untracked
+## 2. What Was Done This Session
 
-**Modified (uncommitted):**
+### P0: Structural Sync (task-p0-sync-001)
 
-| File | Batch | Change |
-|------|-------|--------|
-| AGENTS.md | C3C,C3D | Cross-platform doc map, core-007 ref, Phase boundary |
-| rules/core.md | C3D | +core-007 rule |
-| capability-inventory.md | C3C,C3D | Rewritten: 27 entries, Platform+Status columns |
-| capability-risk-matrix.md | C3C | Platform note |
-| capability-routing-negative-tests.md | C3D | +CR-NEG-031/032/033 |
-| next-agent-handoff.md | C3C,C3D | Updated hooks + Do Not entries |
-| resource-integration-handoff.md | C3C | Updated hooks status |
-| resource-risk-matrix.md | C3C | Updated Risk Category 3 (hooks) |
-| reviewer-playbook.md | C3C,C3D | +Step 8a capability audit; Batch C hooks |
-| runtime-v2-final-status.md | C3C | Section 2.4 hooks updated |
-| hooks/register-hooks.ps1 | Rename | Updated paths + skip-check regex |
-| hooks/registration-config.json | Rename | Updated path |
-| hooks/pre-edit.audit.draft.ps1 | Rename | **DELETED** (renamed) |
-| 5 prior-batch files | Prior | Content overlap notices (not this session) |
+After SADP/capability-inventory upgrades, 8 downstream files were out of sync:
+- Updated `task-spec.schema.json` (+gate_0.inventory_evidence +conflict_registry)
+- Updated `execution-report.schema.json` (+trust_record +fallback_record)
+- Rewrote `AGENTS.md` doc map (added SADP, lessons, canaries, manifest, bootstrap, schemas)
+- Fixed header counts: 27¡ú28 capabilities, 6¡ú8 rules
+- Updated `INSTANTIATION.md` (+governance manifest verification step)
+- Created `governance-manifest.md` for this project
+- Recorded LL-008 (Structural Inconsistency Cascade)
+- **?? LL-009: Plan Agent initially skipped SADP for this task, then retroactively corrected**
 
-**New untracked (this session):**
+### P0: Plan Auditor (task-plan-auditor-001)
 
-| Path | Batch | Purpose |
-|------|-------|---------|
-| hooks/pre-edit.governance.ps1 | Rename | Active governance hook |
-| templates/runtime-bootstrap/ (6 files) | C4 | Bootstrap package (tested 10/10) |
-| hook-governance-upgrade-decision.md | Hook | Reviewer decision record |
-| c3b-plugin-cleanup-plan.md | C3B | Plugin cleanup plan |
-| .claude/ | Hook | Claude Code settings (untracked infrastructure) |
-| .codegraph/ | Prior | CodeGraph database (empty, untracked infrastructure) |
-| reports/ | C3A-C5 | Batch reports + snapshots |
+LL-009 revealed Plan Agent can self-bypass SADP. Solution: independent Plan Auditor.
+- Created `session-ledger.schema.md` ¡ª per-session compliance evidence
+- Created `audit-record.schema.md` ¡ª structured audit output (pass/block/escalate)
+- Amended SADP ¡ì3.3a: Plan Auditor with decision matrix, anti-bypass, anti-recursion
+- Hard rule: "Plan Agent cannot audit its own compliance"
+- Recorded LL-010 (Post-Hoc Audit Gap ¡ª can detect, cannot prevent initial write)
 
-### Commits (4, not yet pushed)
+### P1: Automation (task-p1-auto-audit-001)
+
+- Created `scripts/New-SessionLedger.ps1` ¡ª auto-generates session_ledger.yaml from git diff
+- Extended `hooks/pre-edit.governance.ps1` ¡ª now blocks governance file writes without TaskSpec
+- CodeGraph MCP activation deferred (Phase 0-5 constraint)
+
+### P1: Phase-6 Archive
+
+- Moved 15 historical phase-6 reports to `docs/archive/phase-6/`
+- Fixed stale reference in handoff-to-next-agent.md
+
+---
+
+## 3. Architecture Decisions
+
+### Governance: Declarative ¡ú Evidence-Driven
+
+| Before | After |
+|--------|-------|
+| `inventory_checked: true` (boolean) | `inventory_evidence: { queried_sources, matched_capabilities }` |
+| Plan Agent self-reviews (SADP ¡ì3.3a) | Plan Auditor independent review (¡ì3.3a), Plan Agent review now ¡ì3.3b |
+| Session ledger: manual fill | Auto-generated from git diff |
+| Hook: blocks memory/sealed/secrets | Also blocks governance files without TaskSpec |
+| Auto-trigger: per-TaskSpec | Cumulative trigger window (anti task-splitting) |
+
+### SADP Dispatch Architecture
 
 ```
-3cb6ea7 fix: register-hooks.ps1 auto-creates settings.json when missing
-4c82458 fix: hook registration, manifest dedup, header sync
-32fe7a9 feat: add hook registration script
-b22edc3 feat: upgrade pre-edit hook to active blocking mode
+Plan Agent ¡ú Gate 0 (evidence) ¡ú TaskSpec ¡ú Execute Agent ¡ú ExecutionReport
+                  ¡ý                                              ¡ý
+            Session Ledger (auto) ¡û©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤ git diff
+                  ¡ý
+            Plan Auditor (independent)
+                  ¡ý
+            Pass / Block / Escalate Human
 ```
 
-Branch: master | Commits: 9 from initial (no remote tracking) | Dirty baseline (13M+6U): untouched
+### Key Principles
+
+1. **Evidence Over Assertion** ¡ª no boolean self-attestation
+2. **Cumulative Impact Over Local Compliance** ¡ª task splitting = same governance
+3. **Imported Governance Is Locked** ¡ª Bootstrap manifest hash-locks P0 rules
+4. **Independent Evidence Before Acceptance** ¡ª Plan Agent cannot self-audit
 
 ---
 
-## 2. Key Architecture Decisions
+## 4. What Remains
 
-### 2.1 Cross-Platform Capability Inventory
+### P1 (functional gaps)
+| # | Item | Status | Blocker |
+|---|------|--------|---------|
+| 1 | CodeGraph MCP activation | DB 14.8MB exists | Phase 0-5 MCP constraint |
+| 2 | Bootstrap real-project test | Template tested 10/10 | Needs external project |
+| 3 | ~100+ skills ¡ú capability inventory | Codex plugins installed | Manual classification effort |
+| 4 | WorkQueue SADP integration | 5 queues + 7 scripts | Script execution restricted |
 
-Single file with Platform column. Distribution:
-- **Both** (15): CodeGraph, rg/grep, shell, JSON, docs, rules, negative tests, playbooks, test-frame, dev-frame, local skills, memory, workqueue, scripts, Phase 6
-- **Claude** (4): Blackboard MCP, hooks, sealed manifest, hook registration script
-- **Codex** (8): coderabbit, codex-security, supabase, github, browser, superpowers, linear, notion
-
-Each entry has Status: approved | proposed | disabled | rejected.
-
-### 2.2 core-007: The Registration Gate
-
-P0 hard stop. Capability not in inventory with Status: approved = does not exist. Registration: propose éˆ«?review éˆ«?approve éˆ«?enable éˆ«?verify éˆ«?report.
-
-### 2.3 Bootstrap Template Package
-
-templates/runtime-bootstrap/bootstrap.ps1 initializes governance in any project:
-
-`powershell
-powershell -EP Bypass -File D:\agent-acceptance\templates\runtime-bootstrap\bootstrap.ps1
-`
-
-Output: 8 rules + 19 schemas + AGENTS.md + 10 capabilities + tool-policy + 5 reviewer docs + 30 fixtures. Tested 10/10 PASS.
-
-### 2.4 Governance Hook
-
-hooks/pre-edit.governance.ps1 is ACTIVE in ~/.claude/settings.json. Blocks Write/Edit to: memory dirs, sealed files (22 in manifest), secret patterns (.env/.key/.pem/token/credential/id_rsa/id_ed25519). Other 4 hooks are audit-only drafts, exit 0 always.
-
----
-
-## 3. Codex Plugin State (Post-C3B)
-
-**8 enabled:**
-
-| Plugin | Risk | Phase 0-5 | Notes |
-|--------|:---:|:---:|-------|
-| browser | medium | restricted | localhost only |
-| superpowers | low | allowed | methodology reference |
-| github | high | restricted | read-only; writes blocked |
-| coderabbit | low | allowed | AI code review; read-only |
-| codex-security | low | allowed | security scan; read-only |
-| supabase | high | restricted | DB writes blocked |
-| linear | medium | restricted | Phase 1+ |
-| notion | medium | restricted | Phase 1+ |
-
-**10 disabled:** sentry, datadog, cloudflare, slack, teams, temporal, clickup, asana, circleci, render
-
----
-
-## 4. What Is Pending
-
-### Immediate
-1. Review and commit 18 modified files (all in approved outputs)
-2. Review new untracked files
-3. Sign off C3C/C3D/C4/C5 batches
-
-### Short-term
-1. Test bootstrap on a real project
-2. Register Codex skills (~100+ unclassified)
-3. Taste-Skill sandbox dry-run
-
-### Medium-term
-1. Understand Anything re-evaluation
-2. CodeGraph reindex for agent-acceptance
-3. WorkQueue/script dry-run
-
----
-
-## 5. Critical Constraints (Do Not Violate)
+### P2 (nice to have)
+| # | Item | Status |
+|---|------|--------|
+| 5 | Capability Passport: 21 entries still unknown | Summary table created, individual verification pending |
+| 6 | Draft hooks registration (4 audit hooks) | Human gate required |
+| 7 | opencode dedicated agent | Hung per LL-005 |
+## 5. Critical Constraints
 
 ### P0 Hard Stops
-| Rule | Description |
-|------|-------------|
-| core-001 | No destructive git without human approval |
-| core-002 | No secrets in code/logs/reports |
-| core-003 | Phase boundary enforcement |
-| core-004 | No fake green |
-| core-005 | No write outside approved scope |
-| core-007 | No capability without inventory registration |
+- core-001: No destructive git without human approval
+- core-002: No secrets in code/logs/reports
+- core-003: Phase boundary enforcement
+- core-007: No capability without inventory registration
+- core-008: Resource Sufficiency ¡ª Prove Gap Before Any Action
 
-### Phase 0-5 Boundaries
+### Phase 0-5 Boundary (Still Active)
 - No external skill install/execution
-- No memory writes
-- No package install
+- No memory writes (read-only)
+- No package install (npm, pip, yarn)
 - No MCP config changes
-- No git mutations
-- No capability use without approved inventory entry
+- No git commit/push without human gate
+- Dirty baseline (24M + 30U): do not touch
+- Capability registration requires inventory entry + reviewer approval
 
-### Platform-Specific
-- Claude: pre-edit.governance.ps1 is ONLY active hook
-- Codex: No plugin add without inventory proposal
+### SADP Auto-Triggers
+- 3+ files modified ¡ú SADP required
+- Governance file touched ¡ú SADP + full regression
+- Protected file touched ¡ú exclusive lock + audit
+- Cumulative write_set ¡Ý 3 across tasks ¡ú SADP triggered
+- Plan Agent cannot self-audit (¡ì3.3a hard rule)
+
+### Model Dispatch Limits
+- DeepSeek v4-pro: ¡Ü2 files, ¡Ü30s, no .ps1 (LL-002, LL-003)
+- DeepSeek chat: 3-5 files, slower
+- Codex direct: 6+ files, .ps1 files, governance modifications
 
 ---
 
@@ -181,78 +153,42 @@ hooks/pre-edit.governance.ps1 is ACTIVE in ~/.claude/settings.json. Blocks Write
 ### Navigation
 | File | Purpose |
 |------|---------|
-| AGENTS.md | Hard stops, document map, Phase boundary |
-| capability-inventory.md | 27 capabilities, Platform+Status |
-| rules/core.md | 7 P0-P2 rules |
+| `AGENTS.md` | Hard stops, doc map, Phase boundary |
+| `rules/core.md` | 8 P0 rules + Veto Contract |
+| `docs/agent-runtime/sub-agent-dispatch-protocol.md` | SADP v1.0 (Gate 0 ¡ú Plan Auditor ¡ú regression) |
+| `docs/agent-runtime/capability-inventory.md` | 28 capabilities + expiration policy |
+| `docs/agent-runtime/lessons-learned.md` | LL-001 ~ LL-010 |
+| `docs/agent-runtime/session-ledger.schema.md` | Auto-generated compliance evidence |
+| `docs/agent-runtime/audit-record.schema.md` | Plan Auditor output schema |
+| `docs/agent-runtime/dispatch-model-profiles.md` | Model limits + failure patterns |
+| `docs/agent-runtime/dependency-canaries.md` | 4 canaries for external dependency health |
+| `docs/agent-runtime/governance-manifest.md` | Protected section hashes + drift detection |
 
-### Governance Assets
+### External Enforcement (Non-Agent-Triggered)
 | File | Purpose |
 |------|---------|
-| rules/*.md (8) | 44 rules |
-| schemas/ (19) | JSON Schema |
-| reviewer-playbook.md | 10-step review + decision tree |
-| verification-gates.md | P0-P3 gate hierarchy |
-| operating-model.md | Execution layers |
+| scripts/sadp-audit.ps1 | External SADP compliance check (v2: write_set cross-reference) |
+| .git/hooks/pre-commit | Git hook ¡ú sadp-audit.ps1 (blocks commit on SADP violation) |
 
-### Bootstrap Package (templates/runtime-bootstrap/)
+### Automation
 | File | Purpose |
 |------|---------|
-| README.md | Overview + parameters |
-| INSTANTIATION.md | 6-step guide |
-| bootstrap.ps1 | One-click init (10/10 tested) |
-| AGENTS.template.md | 6 placeholders |
-| capability-inventory.template.md | 10 universal capabilities |
-| tool-policy.template.md | Phase-aware tool policy |
+| `scripts/New-SessionLedger.ps1` | Auto-generate session ledger from git diff |
+| `hooks/pre-edit.governance.ps1` | Pre-write gate (memory/sealed/secrets/governance) |
+| `templates/runtime-bootstrap/bootstrap.ps1` | One-click governance deployment |
 
-### Hooks
-| File | Status |
-|------|--------|
-| pre-edit.governance.ps1 | ACTIVE (registered, blocking) |
-| pre-task.audit.draft.ps1 | Audit-only draft |
-| pre-tool.audit.draft.ps1 | Audit-only draft |
-| pre-final.audit.draft.ps1 | Audit-only draft |
-| skill-intake-scan.audit.draft.ps1 | Audit-only draft |
-| sealed-files-manifest.json | 22 files + 3 dirs |
-| register-hooks.ps1 | Registration script |
-| registration-config.json | Manual merge config |
+### Schemas
+| File | Key Fields |
+|------|-----------|
+| `schemas/agent-runtime/task-spec.schema.json` | gate_0.inventory_evidence, conflict_registry |
+| `schemas/agent-runtime/execution-report.schema.json` | trust_record, fallback_record |
 
 ---
 
-## 7. Suggested First Actions
+## 7. Suggested First Action
 
-1. git status --short éˆ¥?confirm state
-2. Read this handoff completely
-3. Read AGENTS.md, capability-inventory.md, rules/core.md
-4. Ask user: "Commit working tree changes, or review first?"
-
----
-
-## 8. Bootstrap Usage Prompt (For New Projects)
-
-```
-You are a coding agent. Execute a one-time bootstrap task.
-
-Run in the target project root:
-powershell -ExecutionPolicy Bypass -File D:\agent-acceptance\templates\runtime-bootstrap\bootstrap.ps1
-
-Optional parameters (all auto-detected):
-  -ProjectName "my-project"
-  -ProjectRoot "D:\my-project"
-  -Platform Both
-  -Phase "0-5"
-  -DryRun  (preview only)
-  -Force   (overwrite existing)
-
-After generation, verify:
-  cat AGENTS.md | Select-String "{{"    # Must return nothing
-  cat docs\agent-runtime\capability-inventory.md | Select-String "^## \d+\."  # Must be >= 10
-
-Then: (1) Register project-specific capabilities at #11+,
-(2) Configure platform assets (Claude: hook drafts; Codex: plugins),
-(3) Submit for reviewer approval.
-```
-
----
-
-> **End of Handoff.** Repository in consistent, governed state. Bootstrap tested 10/10. All capabilities registered and constrained.
+`@go` ¡ª triggers SADP dispatch for the next P1 task. Or target:
+- **Highest impact**: CodeGraph MCP activation (needs Phase exit or human gate waiver)
+- **Quickest win**: Bootstrap real-project test
+- **Most pending**: ~100+ skills classification
 

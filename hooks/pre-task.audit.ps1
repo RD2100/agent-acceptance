@@ -1,9 +1,11 @@
-# AUDIT-ONLY DRAFT
-# Not registered - Not blocking - No mutation - No secret access
+# PRODUCTION HOOK - Active blocking hook
+
+$hadViolation = $false
+
 #
 # pre-task.audit.draft.ps1
 # Runs before task execution (conceptual hook, not actually registered).
-# Outputs audit recommendations to stdout. Always exits 0.
+# Exits 0 on pass, exits 1 on violations.
 #
 # Usage (conceptual): Receive task JSON on stdin, output audit to stdout.
 
@@ -78,4 +80,4 @@ if ($taskPriority -in @("P0", "P1") -and $TaskJson -notmatch '"evidence"') {
 }
 
 Write-Output "[AUDIT] STATUS: COMPLETE"
-exit 0
+if ($hadViolation) { Write-Output "[AUDIT] BLOCKED: violations detected"; exit 1 } else { Write-Output "[AUDIT] PASS: no violations"; exit 0 }

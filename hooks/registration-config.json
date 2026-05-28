@@ -5,7 +5,19 @@
         "matcher": "Write|Edit",
         "command": "powershell -ExecutionPolicy Bypass -File \"D:\\agent-acceptance\\hooks\\pre-edit.governance.ps1\""
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "command": "powershell -ExecutionPolicy Bypass -File \"D:\\agent-acceptance\\hooks\\pre-final.audit.ps1\""
+      }
+    ],
+    "PreTask": [
+      {
+        "matcher": "",
+        "command": "powershell -ExecutionPolicy Bypass -File \"D:\\agent-acceptance\\hooks\\pre-task.audit.ps1\""
+      }
     ]
   },
-  "note": "Merge this 'hooks' section into your Claude Code settings.json. Restart Claude Code to activate."
+  "note": "Merge this 'hooks' section into your Claude Code settings.json. Restart Claude Code to activate. Hooks: pre-edit (blocks governance violations), pre-final (blocks fake green), pre-task (validates TaskSpec). pre-tool.audit.ps1 and skill-intake-scan.audit.ps1 available for manual invocation."
 }

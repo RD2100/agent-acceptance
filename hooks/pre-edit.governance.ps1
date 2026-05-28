@@ -57,6 +57,68 @@ foreach ($memPath in $memoryPaths) {
     }
 }
 
+
+# ================================================================
+# P0: Block edits to governance files without valid TaskSpec
+# LL-009/LL-010: Plan Agent must not self-bypass SADP.
+# Governance file modifications require a TaskSpec that lists
+# this file in its write_set.
+# ================================================================
+$governanceFilePatterns = @(
+    "AGENTS\.md$",
+    "CLAUDE\.md$",
+    "\\rules\\",
+    "\\docs\\agent-runtime\\sub-agent-dispatch-protocol",
+    "\\docs\\agent-runtime\\capability-inventory",
+    "\\docs\\agent-runtime\\lessons-learned",
+    "\\docs\\agent-runtime\\session-ledger",
+    "\\docs\\agent-runtime\\audit-record",
+    "\\docs\\agent-runtime\\governance-manifest",
+    "\\docs\\agent-runtime\\dependency-canaries",
+    "\\schemas\\agent-runtime\\",
+    "\\templates\\runtime-bootstrap\\",
+    "\\hooks\\"
+)
+
+$isGovernanceFile = $false
+foreach ($pattern in $governanceFilePatterns) {
+    if ($filePath -match $pattern) {
+        $isGovernanceFile = $true
+        break
+    }
+}
+
+if ($isGovernanceFile) {
+    Write-Output "[AUDIT] GOVERNANCE FILE DETECTED"
+    
+    # Check for valid TaskSpec that lists this file
+    $taskSpecFound = $false
+    $taskDir = Join-Path (Split-Path $PSScriptRoot -Parent) "tasks"
+    
+    if (Test-Path $taskDir) {
+        $taskFiles = Get-ChildItem $taskDir -Filter "task-*.md" -ErrorAction SilentlyContinue
+        $fileName = Split-Path $filePath -Leaf
+        foreach ($tf in $taskFiles) {
+            $taskContent = Get-Content $tf.FullName -Raw -ErrorAction SilentlyContinue
+            if ($taskContent -and ($taskContent -match [regex]::Escape($fileName))) {
+                $taskSpecFound = $true
+                Write-Output "[AUDIT]   TaskSpec found: $($tf.Name) references this file."
+                break
+            }
+        }
+    }
+    
+    if (-not $taskSpecFound) {
+        Write-Output "[AUDIT] HARD STOP: No TaskSpec authorizes modification of this governance file."
+        Write-Output "[AUDIT]   Per SADP section 3.3a: Plan Agent must create a TaskSpec with"
+        Write-Output "[AUDIT]   gate_0 evidence before modifying governance files."
+        Write-Output "[AUDIT]   Remediation: Create a TaskSpec listing this file in write_set."
+        Write-Output "[AUDIT] STATUS: BLOCKED_NO_TASKSPEC"
+        exit 1
+    }
+    
+    Write-Output "[AUDIT]   Governance file edit authorized by existing TaskSpec."
+}
 # P0: Block edits to sealed files â€?HARD STOP
 # Load sealed files from manifest (single source of truth)
 $manifestPath = Join-Path $PSScriptRoot "sealed-files-manifest.json"

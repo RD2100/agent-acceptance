@@ -1,7 +1,7 @@
 # External Skill Intake Policy -- RD2100 Agent Runtime v2
 
 > Batch B1R, 2026-05-27
-> Phase 0-5: reference and classify only. No install, no clone, no execution.
+> Phase 6: SourceLock active. Quarantine clone + static scan allowed. No execution. No install.
 
 ## Phase 0-5 Intake Pipeline
 
@@ -16,7 +16,7 @@ Discovery -> Record -> Classify -> Risk Review -> Defer
                                                   / reject
 ```
 
-## Dispositions (Phase 0-5 Only)
+## Dispositions (Phase 6 (Active))
 
 | Disposition | Meaning | Action |
 |-------------|---------|--------|
@@ -25,13 +25,13 @@ Discovery -> Record -> Classify -> Risk Review -> Defer
 | `defer` | Skill may be useful but requires Phase 6 Source Lock & Quarantine. | Record rationale. Queue for Phase 6. |
 | `reject` | Skill is unsafe, incompatible, or permanently out of scope. | Record rejection reason. Do not re-evaluate unless new evidence. |
 
-## What Phase 0-5 Does NOT Allow
+## What Phase 6 Allows
 
 | Forbidden Action | Why | When Allowed |
 |------------------|-----|--------------|
 | `skill-installer install` | Requires Phase 6 Source Lock & Quarantine | Phase 6+ |
-| Clone external skill repo | Supply chain risk | Phase 6+ (quarantine-only) |
-| Run external skill code | Untrusted execution | Phase 6+ (sandbox-only) |
+| Clone external skill repo | Supply chain risk | Phase 6: quarantine-only (no-exec) |
+| Run external skill code | Untrusted execution | Phase 7+ (sandbox-only) |
 | Enable/activate external skill | Runtime modification | Phase 7+ (after full review) |
 | Modify MCP config for skill | Configuration mutation | Phase 7+ (after full review) |
 | Register hooks for skill | Behavioral side effects | Phase 7+ (after full review) |

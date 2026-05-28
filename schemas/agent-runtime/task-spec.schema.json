@@ -1,7 +1,7 @@
-{
+﻿{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "TaskSpec",
-  "description": "Describes a unit of work before execution begins. Produced by a planner agent or human operator, consumed by an executor agent.",
+  "description": "Describes a unit of work before execution begins. Produced by a planner agent or human operator, consumed by an executor agent. Construction tasks MUST include gate_0 and conflict_registry.",
   "type": "object",
   "required": [
     "task_id",
@@ -52,6 +52,80 @@
       "type": "array",
       "items": { "type": "string" },
       "description": "Tools likely needed during execution."
+    },
+    "gate_0": {
+      "type": "object",
+      "description": "Gate 0 Reuse-before-Build evidence contract. REQUIRED for any construction task. Boolean self-attestation alone is INVALID.",
+      "required": ["triggered", "inventory_evidence", "sufficiency_decision"],
+      "properties": {
+        "triggered": { "type": "boolean", "description": "Whether Gate 0 was triggered" },
+        "trigger_reason": { "type": "string", "description": "Why Gate 0 was triggered" },
+        "inventory_evidence": {
+          "type": "object",
+          "description": "Evidence of inventory consultation. Must include queried sources and matched capabilities.",
+          "required": ["queried_sources", "matched_capabilities"],
+          "properties": {
+            "queried_sources": {
+              "type": "array", "items": { "type": "string" }, "minItems": 1,
+              "description": "Files/registries actually consulted"
+            },
+            "matched_capabilities": {
+              "type": "array", "items": { "type": "string" },
+              "description": "Capability IDs found relevant to the request"
+            },
+            "compared_against_request": {
+              "type": "array", "items": { "type": "string" },
+              "description": "What user need was checked against inventory"
+            }
+          }
+        },
+        "rules_checked": {
+          "type": "array", "items": { "type": "string" },
+          "description": "Rule IDs consulted"
+        },
+        "lessons_checked": {
+          "type": "array", "items": { "type": "string" },
+          "description": "Lesson IDs consulted"
+        },
+        "sufficiency_decision": {
+          "type": "string",
+          "enum": ["existing_sufficient", "existing_partial", "new_delta_required", "escalate_uncertain"],
+          "description": "Result of sufficiency check"
+        },
+        "decision": {
+          "type": "string",
+          "enum": ["reuse", "build_delta", "escalate"],
+          "description": "Final decision"
+        },
+        "delta_justification": {
+          "type": "string",
+          "description": "Required if sufficiency_decision is new_delta_required"
+        }
+      }
+    },
+    "conflict_registry": {
+      "type": "object",
+      "description": "File access scope for parallel dispatch safety. Declare read_set and write_set before execution.",
+      "required": ["read_set", "write_set"],
+      "properties": {
+        "read_set": {
+          "type": "array", "items": { "type": "string" },
+          "description": "Files this task will read"
+        },
+        "write_set": {
+          "type": "array", "items": { "type": "string" },
+          "description": "Files this task will modify"
+        },
+        "protected_files_touched": {
+          "type": "boolean",
+          "description": "Whether any protected file is in read_set or write_set"
+        },
+        "conflict_level": {
+          "type": "string",
+          "enum": ["none", "low", "high"],
+          "description": "Conflict risk level"
+        }
+      }
     }
   },
   "additionalProperties": false,
@@ -61,7 +135,7 @@
       "title": "Inventory agent-acceptance directory",
       "priority": "P1",
       "status": "ready",
-      "description": "Run read-only checks on D:\\agent-acceptance and report findings."
+      "description": "Run read-only checks and report findings."
     }
   ]
 }

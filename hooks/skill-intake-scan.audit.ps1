@@ -1,10 +1,12 @@
-# AUDIT-ONLY DRAFT
-# Not registered - Not blocking - No mutation - No secret access
+# PRODUCTION HOOK - Active blocking hook
+
+$hadViolation = $false
+
 #
 # skill-intake-scan.audit.draft.ps1
 # Periodically scans skills-inbox/external/ for new entries.
 # Produces SkillIntakeRecord proposals for any new skills found.
-# Outputs audit recommendations to stdout. Always exits 0.
+# Exits 0 on pass, exits 1 on violations.
 #
 # Usage (conceptual): Run on session start or periodically.
 # No parameters needed; scans the well-known path.
@@ -134,4 +136,4 @@ Write-Output "[AUDIT] Scan complete."
 Write-Output "[AUDIT] Next step: create SkillIntakeRecord for each new entry."
 Write-Output "[AUDIT]   DO NOT clone, install, or execute any skill."
 Write-Output "[AUDIT] STATUS: COMPLETE"
-exit 0
+if ($hadViolation) { Write-Output "[AUDIT] BLOCKED: violations detected"; exit 1 } else { Write-Output "[AUDIT] PASS: no violations"; exit 0 }

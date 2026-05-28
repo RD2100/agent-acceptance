@@ -53,41 +53,112 @@ If the check finds existing coverage ï¿½ï¿½ **Do not create TaskSpec. Return reu
 Execute agent MUST reject any additive TaskSpec that lacks documented sufficiency check.
 
 
-### 0.0 Auto-Trigger Rules (When SADP Activates)
 
-SADP is not optional. The following conditions automatically trigger the full SADP workflow (Gate 0 ¡ú TaskSpec ¡ú dispatch ¡ú review ¡ú regression), even without the user saying `@go`:
+### 0.0 When SADP Activates
 
-| Condition | Trigger |
-|-----------|---------|
-| Task modifies 3+ files | Auto-trigger SADP |
-| Task modifies any governance file (rules/*, AGENTS.md, SADP, inventory, lessons) | Auto-trigger SADP + full regression |
-| Task creates new files in docs/agent-runtime/ | Auto-trigger SADP |
-| User says any task-like instruction without `@go` | Agent MUST ask: "SADP or direct?" |
-| Task involves git commit/push | Auto-trigger SADP (core-001 human gate) |
-| Task involves capability registration | Auto-trigger SADP (core-007) |
+SADP is triggered **explicitly by the user** saying `@go`. In normal conversation (without `@go`), the agent responds directly without the full SADP workflow.
 
-**Only exempt:** Single-file read-only tasks (inspect, search, query), Q&A, and trivial text fixes to non-governance files.
+| Trigger | Behavior |
+|---------|----------|
+| User says `@go` | Full SADP: Gate 0 -> TaskSpec -> dispatch -> review -> regression |
+| Normal conversation (no `@go`) | Direct response. No TaskSpec, no dispatch. Keep changes minimal. |
 
-**Plan agent violation:** If the plan agent executes a triggered task without creating a TaskSpec and running Gate 0, the human reviewer should reject the output and require SADP re-execution.
+**Why**: Previous auto-trigger rules (3+ files, governance files, task-like instructions) caused SADP to activate during normal collaboration, creating friction. The `@go` signal restores user control over when formal governance applies.
+
+**Exception**: Even without `@go`, agents must still obey P0 hard stops (core-001~008). Gate 0 (core-008) thinking still applies -- don't build unnecessarily -- but without the formal TaskSpec/ExecutionReport/Audit overhead.
+
+### 0.0b Post-Completion Review (Non-@go Mode)
+
+After completing **any non-trivial work** in normal conversation mode (file modifications beyond trivial text fixes), the agent MUST:
+
+1. **Write a summary report** to `reports/auto-review-<topic>-<date>.md` covering: what changed, why, key decisions, files touched.
+2. **Dispatch to coding agent** (`deepseek/deepseek-v4-pro`) for regression testing and quality audit at the highest review standard.
+3. **Read and apply** the review findings before considering work complete.
+
+This ensures quality assurance without burdening normal conversation with pre-execution formalities.
+
+**Minimum report contents:**
+```yaml
+- Summary: [one-line description]
+- Changed files: [list with paths]
+- Key decisions: [why each change was made]
+- Verification performed: [what was checked]
+- Known gaps: [what was NOT checked]
+```
+
+### 0.0a Cumulative Trigger Window (Advisory in @go-Only Mode)
+
+> **@go-only mode**: This section is advisory. Cumulative thresholds inform human judgment but do NOT force SADP activation. SADP activates only via explicit `@go` signal (¡ì0.0).
+
+
+Governance triggers are evaluated **cumulatively** across the session and objective,
+not only per TaskSpec. Splitting a task into smaller parts does not reduce the required governance level.
+
+```yaml
+cumulative_trigger_window:
+  scope:
+    - session_id
+    - objective_id
+  track:
+    - cumulative_write_set        # All files written this session/objective
+    - cumulative_new_artifacts    # All new files or modules created
+    - cumulative_protected_touches # Count of protected file modifications
+    - cumulative_task_count       # Total tasks under same objective
+  trigger_sadp_when:
+    cumulative_write_set_count_gte: 3
+    new_artifacts_count_gte: 1
+    protected_touches_gte: 1
+    same_objective_task_count_gte: 3
+  rule: task_splitting_does_not_reduce_governance_level
+  escalation:
+    if_cumulative_threshold_crossed: require_plan_review
+```
+
+**Key rule:** If 3 consecutive tasks under the same objective each modify 1 file,
+the cumulative write_set = 3, triggering SADP.
+The agent cannot avoid SADP by splitting a 3-file change into three 1-file changes.
 
 
 ### 0.1 Gate 0 Ledger (Mandatory TaskSpec Field)
 
-Every TaskSpec MUST include a `gate_0` YAML block recording the outcome of the Gate 0 Resource Sufficiency Check.
+Every TaskSpec that adds, creates, or introduces something new MUST include a `gate_0` YAML block.
+This is an **evidence contract**, not a self-attestation.
+Boolean fields alone (e.g. `inventory_checked: true`) are **invalid** without accompanying evidence references.
 
 ```yaml
 gate_0:
   triggered: true
-  inventory_checked: true
-  inventory_refs: [list of capability IDs checked]
+  trigger_reason: [why Gate 0 was triggered]
+  
+  # Evidence block ¡ª replaces boolean self-attestation.
+  # A gate_0 without inventory_evidence is INVALID.
+  inventory_evidence:
+    queried_sources:           # Which files/registries were actually consulted
+      - capability-inventory.md
+      - sub-agent-dispatch-protocol.md
+    matched_capabilities:      # Which capability IDs were found as relevant
+      - CAP-011
+      - CAP-018
+    compared_against_request:  # What user need was checked against inventory
+      - "resource routing"
+      - "dispatch protocol"
+  
   rules_checked: [list of rule IDs consulted]
   lessons_checked: [list of lesson IDs checked]
-  sufficiency_result: sufficient | insufficient | partial
+  
+  sufficiency_decision: existing_sufficient | existing_partial | new_delta_required | escalate_uncertain
   decision: reuse | build_delta | escalate
-  delta_justification: [required if decision is build_delta]
+  delta_justification: [required if sufficiency_decision is new_delta_required]
+  
+  # INVALID gate_0 conditions:
+  invalid_if:
+    - inventory_evidence.queried_sources is empty
+    - inventory_evidence.matched_capabilities is empty and sufficiency_decision is not escalate_uncertain
+    - sufficiency_decision is new_delta_required and delta_justification is empty
 ```
 
-**Rule: missing `gate_0` => execute agent MUST reject.**
+**Rule: missing `gate_0` OR `gate_0` missing `inventory_evidence` => execute agent MUST reject.**
+
 
 ### 0.2 Conflict Registry (Mandatory TaskSpec Fields)
 
@@ -131,13 +202,15 @@ Every task dispatched from Codex Goal Agent to Claude Code Agent uses this forma
   gate_0:
     triggered: true
     trigger_reason: [why Gate 0 was triggered]
-    inventory_checked: true
-    inventory_refs: [list of capability IDs checked]
+    inventory_evidence:
+      queried_sources: [files checked]
+      matched_capabilities: [capability IDs found relevant]
+      compared_against_request: [need checked]
     rules_checked: [list of rule IDs consulted]
     lessons_checked: [list of lesson IDs checked]
-    sufficiency_result: sufficient | insufficient | partial
+    sufficiency_decision: existing_sufficient | existing_partial | new_delta_required | escalate_uncertain
     decision: reuse | build_delta | escalate
-    delta_justification: [required if decision is build_delta]
+    delta_justification: [required if sufficiency_decision is new_delta_required]
   ```
 - **Conflict Registry**:
   ```yaml
@@ -180,16 +253,21 @@ Every task dispatched from Codex Goal Agent to Claude Code Agent uses this forma
   gate_0:
     triggered: true
     trigger_reason: "New middleware introduced; Gate 0 required per core-008"
-    inventory_checked: true
-    inventory_refs:
-      - rate-limiting (partial coverage via proxy, no in-app middleware)
-      - express-middleware (existing helmet middleware)
+    inventory_evidence:
+      queried_sources:
+        - capability-inventory.md
+        - sub-agent-dispatch-protocol.md
+      matched_capabilities:
+        - rate-limiting (partial coverage via proxy, no in-app middleware)
+        - express-middleware (existing helmet middleware)
+      compared_against_request:
+        - "in-app rate limiting per route"
     rules_checked:
       - core-008
       - coding-005
     lessons_checked:
       - LL-003
-    sufficiency_result: insufficient
+    sufficiency_decision: new_delta_required
     decision: build_delta
     delta_justification: "No in-app rate-limiting exists; proxy config does not cover per-route limits"
   ```
@@ -292,7 +370,61 @@ Every task completion returns this format:
 ### 3.3 Goal Agent (Evaluate ï¿½ï¿½ Next)
 
 
-### 3.3a Plan Agent Review Procedure (Mandatory After Every ExecutionReport)
+
+### 3.3a Plan Auditor (Independent Compliance Check)
+
+> **Session type matters**: For `@go` sessions, full SADP compliance is required. For non-`@go` sessions, compliance is governed by ¡ì0.0b (post-completion review), not by full SADP requirements. The Plan Auditor must distinguish session types before applying audit rules.
+
+
+Before accepting any session that produces file changes, an independent Plan Auditor must verify SADP compliance.
+
+**Principle**: Plan Agent must not audit its own compliance. Independent Evidence Before Acceptance.
+
+**Auditor Role**:
+- Verifies SADP trigger conditions were correctly identified
+- Verifies TaskSpec exists when required (anti-LL-009)
+- Verifies Gate 0 contains inventory_evidence, not just boolean fields
+- Verifies ExecutionReport exists and covers actual changed files
+- Verifies read_set/write_set matches git diff
+- Verifies protected file access was reported
+- Verifies cumulative trigger window was not bypassed by task splitting
+- Does NOT re-judge implementation quality or architecture decisions
+
+**Audit Inputs** ([Session Ledger](session-ledger.schema.md)):
+- session_id, objective, changed_files list
+- taskspecs_created, execution_reports_created
+- protected_files_touched, cumulative_write_set
+- sadp_required flag, audit_status
+
+**Audit Outputs** ([Audit Record](audit-record.schema.md)):
+- findings: structured pass/fail for each compliance check
+- issues: list of violations with severity (block/warn)
+- decision: pass | block | escalate
+- rationale: evidence-based explanation
+
+**Decision Rules**:
+
+| Condition | Decision |
+|-----------|----------|
+| All findings pass, no issues | **pass** |
+| Missing TaskSpec when SADP required | **block** |
+| Gate 0 without inventory_evidence | **block** |
+| ExecutionReport missing after execution | **block** |
+| Changed files not covered by any ExecutionReport | **block** |
+| Protected files touched but not reported | **block** |
+| Cumulative trigger bypass detected | **block** |
+| Auditor uncertain, governance files touched | **escalate** |
+| Auditor uncertain, low-risk non-governance | **pass** (with warn) |
+
+**Hard Rule**: Any session that produces file changes must produce an Audit Record before finalization, commit, merge, or handoff. Plan Agent cannot audit or approve its own compliance.
+
+**Anti-Bypass**: Audit trigger is based on session diff and changed_files, not Plan Agent self-report. If changed_files is non-empty and no Audit Record exists, the session is blocked by default.
+
+**Anti-Recursion**: Plan Auditor only checks structured evidence consistency. It does not create new governance rules. Uncertainty ¡ú escalate to Human, not to another auditor. No Audit-Auditor.
+
+**Cost Model**: Low-risk non-governance sessions pass on static ledger check (0 LLM calls). High-risk or governance-touching sessions trigger 1 LLM audit call (max 1 per session).
+
+### 3.3b Plan Agent Review Procedure (Mandatory After Every ExecutionReport)
 
 Before accepting an ExecutionReport and dispatching the next task, the plan agent MUST run this review checklist:
 
@@ -381,7 +513,7 @@ Every capability used in a task must appear in `capability-inventory.md` with `S
 
 
 
-### 4.6 Dispatch Model Selection (Decision Tree)
+### 4.4 Dispatch Model Selection (Decision Tree)
 
 Before dispatching, consult [Dispatch Model Profiles](dispatch-model-profiles.md):
 
@@ -402,39 +534,7 @@ Task involves code files (.ps1/.py)?
 
 **Failure fallback:** If dispatch times out twice, execute task directly as Codex goal agent and note in ExecutionReport.
 
-### 4.7 Fallback Matrix
-
-When a dispatch attempt fails, the agent MUST classify the failure type before applying fallback:
-
-```
-failure_classification:
-  types: [api_key, cli_change, model_unavailable, timeout, unknown]
-  rule: classify_before_fallback
-  silent_fallback: forbidden  # applies to all risk levels
-```
-
-Fallback decisions MUST be recorded in ExecutionReport.
-
-```yaml
-fallback_policy:
-  low_risk_docs:
-    allowed_fallback: codex_direct
-    require_audit: true
-  medium_risk_code:
-    allowed_fallback: backup_model_dry_run
-    require_audit: true
-    forbid: direct_write_without_review
-  high_risk_architecture:
-    allowed_fallback: pause_and_escalate
-    require_audit: true
-    forbid: auto_fallback, silent_fallback
-  governance_modification:
-    allowed_fallback: none
-    require_audit: true
-    forbid: any_auto_fallback
-```
-
-### 4.4 WorkQueue (Task Dispatch Queue)
+### 4.5 WorkQueue (Task Dispatch Queue)
 
 Agent WorkQueue (`D:\agent-acceptance\agent-workqueue`) provides tier-graded task management:
 - Tasks flow: WorkQueue.create ï¿½ï¿½ SADP dispatch ï¿½ï¿½ Claude Code execute ï¿½ï¿½ ExecutionReport ï¿½ï¿½ WorkQueue.complete
@@ -442,7 +542,7 @@ Agent WorkQueue (`D:\agent-acceptance\agent-workqueue`) provides tier-graded tas
 - Each task gets a WorkQueue ID that maps to TaskSpec.ID
 - Dry-run mode: inspect queue without dispatch (Phase 0-5 authorized)
 
-### 4.5 Scripts (Verification Runners)
+### 4.6 Scripts (Verification Runners)
 
 PowerShell runners (`D:\agent-acceptance\scripts`) provide automated verification:
 - Source inspection authorized (read script contents, understand what it does)

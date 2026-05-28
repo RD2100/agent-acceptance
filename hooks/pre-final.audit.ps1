@@ -1,10 +1,12 @@
-# AUDIT-ONLY DRAFT
-# Not registered - Not blocking - No mutation - No secret access
+# PRODUCTION HOOK - Active blocking hook
+
+$hadViolation = $false
+
 #
 # pre-final.audit.draft.ps1
 # Runs before task finalization (conceptual hook, not actually registered).
 # Checks verification gates are satisfied before reporting completion.
-# Outputs audit recommendations to stdout. Always exits 0.
+# Exits 0 on pass, exits 1 on violations.
 #
 # Usage (conceptual): Receive task result JSON on stdin, output audit to stdout.
 
@@ -56,11 +58,13 @@ if ($missingSections.Count -gt 0) {
 # P1: Check for fake green - FAILED/BLOCKED should not be reported as PASS
 if ($TaskResult -match "FAILED" -and $TaskResult -match '"status"\s*:\s*"PASS"') {
     Write-Output "[AUDIT] HARD STOP: FAILED detected but status is PASS. This is fake green."
+$hadViolation = $true
     Write-Output "[AUDIT]   Rule review-001: Never report FAILED/BLOCKED as PASS."
 }
 
 if ($TaskResult -match "BLOCKED" -and $TaskResult -match '"status"\s*:\s*"PASS"') {
     Write-Output "[AUDIT] HARD STOP: BLOCKED detected but status is PASS. This is fake green."
+$hadViolation = $true
     Write-Output "[AUDIT]   Rule review-001: Never report FAILED/BLOCKED as PASS."
 }
 
@@ -116,4 +120,4 @@ if ($TaskResult -notmatch "Blocking Issue" -and $TaskResult -notmatch "blocking"
 }
 
 Write-Output "[AUDIT] STATUS: COMPLETE"
-exit 0
+if ($hadViolation) { Write-Output "[AUDIT] BLOCKED: violations detected"; exit 1 } else { Write-Output "[AUDIT] PASS: no violations"; exit 0 }

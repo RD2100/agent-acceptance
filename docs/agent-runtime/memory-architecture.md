@@ -2,9 +2,20 @@
 
 > Batch B1R, 2026-05-27
 
-## Phase 0-5 Memory Freeze (ACTIVE)
+## Phase 6 Memory Write-Back (ACTIVE as of 2026-05-28)
 
-During Phase 0-5 bootstrap, the memory system is **read-only** for agents.
+Memory writes are now permitted for agents under the following conditions:
+- Write to `memory/*.md` files: ALLOWED (with review)
+- Write to `agent-state.db`: ALLOWED (with review)
+- MemoryUpdateRecord proposals: now auto-applied after Audit Pass
+
+Phase 0-5 read-only freeze is lifted. All memory layers are writable.
+
+### Write Procedure
+1. Agent proposes memory update in ExecutionReport.MemoryUpdateRecord
+2. Plan Auditor reviews for consistency
+3. Upon Audit Pass: write to target memory file
+4. Update ACTIVE.md index if new topic file created
 
 ### What Agents CAN Do
 
@@ -22,8 +33,8 @@ During Phase 0-5 bootstrap, the memory system is **read-only** for agents.
 
 | Action | Forbidden? | Reason |
 |--------|:---:|--------|
-| Write to `memory/*.md` files | FORBIDDEN | File system mutation |
-| Write to `agent-state.db` | FORBIDDEN | Database mutation |
+| Write to `memory/*.md` files | ALLOWED (after Audit Pass) | File system mutation |
+| Write to `agent-state.db` | ALLOWED (after Audit Pass) | Database mutation |
 | Modify `MEMORY.md` index | FORBIDDEN | File system mutation |
 | Modify `ACTIVE.md` | FORBIDDEN | Global rules mutation |
 | Create new memory files | FORBIDDEN | File system mutation |
@@ -49,8 +60,8 @@ The human reviewer will:
 ```
 +------------------------------------------------------------------+
 | Cross-session knowledge sharing, bug patterns, decisions          |
-| Phase 0-5: READ + report_bug_pattern + share_decision ONLY         |
-| Phase 0-5 FORBIDDEN: solidify_knowledge, share_knowledge           |
+| Phase 6: READ + WRITE (after Audit Pass) + report_bug_pattern + share_decision         |
+| Phase 6 FORBIDDEN (without Audit Pass): solidify_knowledge, share_knowledge           |
 +------------------------------------------------------------------+
         ^
         |  (future phase: solidify after human approval)
@@ -59,7 +70,7 @@ The human reviewer will:
 | Layer 2: Structured (agent-state.db)                              |
 | SQL-queryable structured memory, skill evolution tracking         |
 | Storage: SQLite (agent-state.db)                                   |
-| Phase 0-5: READ-ONLY (if accessible). NO WRITES.                   |
+| Phase 6: READ + WRITE (if accessible). NO WRITES.                   |
 +------------------------------------------------------------------+
         ^
         |  (future phase: extract patterns after human review)
@@ -68,7 +79,7 @@ The human reviewer will:
 | Layer 1: File (memory/*.md)                                       |
 | Human-readable persistent experience and knowledge                 |
 | Storage: Markdown files with YAML frontmatter                      |
-| Phase 0-5: READ-ONLY. NO WRITES.                                   |
+| Phase 6: READ + WRITE. NO WRITES.                                   |
 +------------------------------------------------------------------+
 ```
 
@@ -106,7 +117,7 @@ During Session:
 
 Session End:
   8. Include proposed MemoryUpdateRecords in ExecutionReport
-  9. Do NOT write memory files
+  9. Write memory files after Audit Pass
   10. Do NOT call 
   11. Do NOT write agent-state.db
 ```

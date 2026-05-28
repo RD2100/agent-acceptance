@@ -1,4 +1,4 @@
-# Runtime Bootstrap -- Instantiation Guide
+﻿# Runtime Bootstrap -- Instantiation Guide
 
 ## Step 1: Run Bootstrap
 
@@ -17,6 +17,30 @@ dir rules\                           # 8 files
 dir schemas\                         # 18 files
 cat docs\agent-runtime\capability-inventory.md | Select-String "^## \d+\."  # >= 10
 ```
+
+
+### Step 2b: Verify Governance Integrity
+
+After bootstrap, check that protected governance sections match the manifest:
+
+```powershell
+# Verify protected sections have not drifted from source
+Get-FileHash rules/core.md, AGENTS.md -Algorithm SHA256 | ForEach-Object { "$($_.Hash)  $([System.IO.Path]::GetFileName($_.Path))" }
+```
+
+Compare hashes against `governance-manifest.md` (installed alongside bootstrap).
+If any protected section hash differs → governance drift detected → escalate to human.
+
+**Protected sections (locked):**
+- P0 rules in `rules/core.md`
+- Gate 0 + Cumulative Trigger in SADP
+- Veto Contract
+- Protected files list in AGENTS.md
+
+**Local overrides allowed:** project name, local paths, tool versions, local capabilities.
+**Forbidden overrides:** weakening P0 rules, removing Gate 0, disabling veto, widening auto-trigger thresholds.
+
+See `governance-manifest.md` for the full drift detection policy.
 
 ## Step 3: Register Project Resources
 

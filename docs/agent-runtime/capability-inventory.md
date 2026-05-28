@@ -1,7 +1,7 @@
 # Capability Inventory -- Cross-Platform
 
 > Batch C3C, 2026-05-28
-> 27 capabilities across Claude Code + Codex.
+> 28 capabilities across Claude Code + Codex.
 > All: auto_use_allowed=false, execution_allowed=false, mutation_allowed=false.
 
 ## Registration Procedure
@@ -12,7 +12,7 @@ This inventory is the single source of truth for all capabilities. No capability
 
 1. **Propose**: Add an entry to this file with `Status: proposed`. Include all required fields: Platform, Type, Access, Risk, Preferred for, Forbidden for, Fallback, Human gate, Must explain if skipped, Evidence, and Capability Passport fields (verified_status, last_verified_at, confidence, usable_for_gate0, usable_for_execution).
 2. **Review**: Submit the proposal to the human reviewer. The reviewer checks: (a) Platform field is correct, (b) Risk level matches existing classifications, (c) Phase 0-5 constraints are appropriate, (d) Forbidden actions are explicitly listed.
-3. **Approve**: Reviewer changes `Status: proposed` â†’ `Status: approved` and signs off.
+3. **Approve**: Reviewer changes `Status: proposed` â†?`Status: approved` and signs off.
 4. **Enable**: Enable the capability on the target platform (e.g., `codex plugin add` for Codex, `register-hooks.ps1` for Claude hooks).
 5. **Verify**: Confirm the capability appears in `codex plugin list` (Codex) or relevant config (Claude). Update the Evidence field with the verification output.
 6. **Report**: Include the new registration in the batch ExecutionReport.
@@ -25,15 +25,46 @@ Each capability entry must include verification fields in addition to the base f
 |-------|--------|---------|
 | verified_status | unknown / verified / degraded / stale / broken | Whether capability has been proven available |
 | last_verified_at | ISO-8601 date | When last verified |
-| confidence | 0.0 â€“ 1.0 | Evidence strength for current status |
+| confidence | 0.0 â€?1.0 | Evidence strength for current status |
 | usable_for_gate0 | true / false | Can this capability be cited in Gate 0 sufficiency checks? |
 | usable_for_execution | true / false | Can this capability be dispatched to in SADP? |
 
 Rule: A capability with verified_status = unknown, stale, or broken must NOT be used as the sole basis to reject new construction in Gate 0 sufficiency checks.
 
+### Capability Expiration Policy
+
+Capabilities decay over time. A verified capability can become stale, and a stale capability can become broken.
+The inventory must reflect reality, not declaration.
+
+| Status | Meaning | Gate 0 Usage | Execution Usage |
+|--------|---------|-------------|-----------------|
+| verified | Proven available within expiry window | allowed | allowed |
+| degraded | Partially available (some features broken) | partial_only | allowed_with_warning |
+| stale | Not verified within expiry window | candidate_only (cannot be sole basis) | allowed_with_warning |
+| broken | Known unavailable | forbidden | forbidden |
+| unknown | Never verified, declaration only | candidate_only | forbidden |
+
+**Expiry rules:**
+- External dependency capabilities (API, MCP, CLI): expire after **30 days** without re-verification
+- Local static capabilities (scripts, files, templates): expire after **90 days** without re-verification
+- Any capability that fails 2 consecutive verification attempts ¡ú auto-degrade to broken
+- `last_verified_at` must be updated on every successful verification
+
+**Gate 0 constraint:**
+- `verified` ¡ú may be cited as sufficient coverage evidence
+- `degraded` ¡ú may be cited for partial coverage only; must note which parts are unavailable
+- `stale` or `unknown` ¡ú may be cited only as candidates; must NOT be sole basis for rejecting new construction
+- `broken` ¡ú must not be cited at all
+
+**Re-verification triggers:**
+- Expiry window exceeded ¡ú auto-mark stale
+- Dependency change (MCP server update, CLI version change, API key rotation) ¡ú force re-verify
+- Capability cited in Gate 0 for the first time this session ¡ú recommended re-verify
+
+
 ### Removing or Disabling a Capability
 
-- Change `Status: approved` ï¿½?`Status: disabled` with a reason and date.
+- Change `Status: approved` ï¿?`Status: disabled` with a reason and date.
 - Remove the capability from the target platform (e.g., `codex plugin disable` or edit `config.toml`).
 - Do not delete the entry from this file -- disabled entries serve as a historical record.
 
@@ -67,6 +98,13 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Must explain if skipped**: yes
 - **Evidence**: codegraph_status output, index_freshness, target_root match
 
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.95
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: external_dependency
+
 ## 2. rg / Grep / Read (filesystem search)
 - **Platform**: Both
 - **Type**: search
@@ -78,6 +116,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: no
 - **Must explain if skipped**: no
 - **Evidence**: command output
+
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
 
 ## 3. PowerShell read-only commands
 - **Platform**: Both
@@ -91,6 +135,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Must explain if skipped**: no
 - **Evidence**: command output
 
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.95
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+
 ## 4. JSON Schema Validation
 - **Platform**: Both
 - **Type**: validation
@@ -101,7 +151,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Fallback**: manual review
 - **Human gate**: no
 - **Must explain if skipped**: no
-- **Evidence**: ConvertFrom-Json output, parse result
+JSON
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
 
 ## 5. Runtime Docs
 - **Platform**: Both
@@ -114,6 +169,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: no
 - **Must explain if skipped**: no
 - **Evidence**: doc path + section reference
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: local_static
 
 ## 6. Runtime Rules
 - **Platform**: Both
@@ -126,6 +187,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: no
 - **Must explain if skipped**: no
 - **Evidence**: rule ID + file reference
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.95
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: local_static
 
 ## 7. Negative Tests
 - **Platform**: Both
@@ -138,6 +205,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: no
 - **Must explain if skipped**: no
 - **Evidence**: test ID + expected_gate_decision
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.7
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: false
+- **Passport dependency_type**: local_static
 
 ## 8. Reviewer Playbooks
 - **Platform**: Both
@@ -150,6 +223,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: no
 - **Must explain if skipped**: no
 - **Evidence**: playbook reference + decision path
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.85
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: local_static
 
 ## 9. Blackboard MCP
 - **Platform**: Claude
@@ -162,6 +241,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: yes (any MCP enable)
 - **Must explain if skipped**: no (not expected to be used)
 - **Evidence**: R1 policy docs, state.json checksum
+- **Passport verified_status**: broken
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.95
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: external_dependency
 
 ## 10. test-frame
 - **Platform**: Both
@@ -174,6 +259,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: yes (any execution)
 - **Must explain if skipped**: no
 - **Evidence**: R2 policy docs
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.8
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: false
+- **Passport dependency_type**: local_static
 
 ## 11. dev-frame
 - **Platform**: Both
@@ -186,6 +277,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: yes (any execution)
 - **Must explain if skipped**: no
 - **Evidence**: R3 policy docs
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.8
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: false
+- **Passport dependency_type**: local_static
 
 ## 12. Local Skills
 - **Platform**: Both
@@ -198,6 +295,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: yes (any skill execution)
 - **Must explain if skipped**: no (not expected to be used)
 - **Evidence**: R5 intake docs
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: false
+- **Passport dependency_type**: local_static
 
 ## 13. RD2100 Memory
 - **Platform**: Both
@@ -210,6 +313,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: yes (any write)
 - **Must explain if skipped**: no
 - **Evidence**: R6 policy docs, stale_risk, conflict_check
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: false
+- **Passport dependency_type**: local_static
 
 ## 14. WorkQueue
 - **Platform**: Both
@@ -223,6 +332,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Must explain if skipped**: no
 - **Evidence**: R7 policy docs
 
+- **Passport verified_status**: degraded
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.5
+- **Passport usable_for_gate0**: false
+- **Passport usable_for_execution**: false
+
 ## 15. Scripts (PowerShell runners)
 - **Platform**: Both
 - **Type**: script
@@ -234,6 +349,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: yes (per-script, per-execution)
 - **Must explain if skipped**: no
 - **Evidence**: R7 ScriptSafetyRecord
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: false
+- **Passport dependency_type**: local_static
 
 ## 16. Governance Hooks
 - **Platform**: Claude
@@ -246,6 +367,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: yes (any new registration beyond pre-edit)
 - **Must explain if skipped**: no
 - **Evidence**: pre-edit: settings.json + hook-diag-*.txt. Drafts: hook file + AUDIT-ONLY DRAFT header
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: local_static
 
 ## 17. Phase 6 SourceLock / Quarantine
 - **Platform**: Both
@@ -258,6 +385,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: yes (clone, any Phase 6C action)
 - **Must explain if skipped**: no
 - **Evidence**: Phase 6 design docs, SourceLockRecord schema
+- **Passport verified_status**: stale
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.3
+- **Passport usable_for_gate0**: false
+- **Passport usable_for_execution**: false
+- **Passport dependency_type**: local_static
 
 ## 18. Sealed Files Manifest
 - **Platform**: Claude
@@ -270,6 +403,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: yes (any manifest modification)
 - **Must explain if skipped**: no
 - **Evidence**: sealed-files-manifest.json (22 files, 3 dirs, 2 memory paths)
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: local_static
 
 ## 19. Hook Registration Script
 - **Platform**: Claude
@@ -282,6 +421,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Human gate**: yes (per-execution)
 - **Must explain if skipped**: no
 - **Evidence**: register-hooks.ps1 + settings.json.bak.<timestamp>
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.85
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: false
+- **Passport dependency_type**: local_static
 
 ---
 
@@ -297,6 +442,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Must explain if skipped**: no
 - **Phase 0-5**: allowed (read-only review, no mutation)
 - **Evidence**: codex plugin list output
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: external_dependency
 
 ## 21. codex-security
 - **Platform**: Codex
@@ -310,6 +461,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Must explain if skipped**: no
 - **Phase 0-5**: allowed (read-only scan, no mutation)
 - **Evidence**: codex plugin list output
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: external_dependency
 
 ## 22. supabase
 - **Platform**: Codex
@@ -323,6 +480,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Must explain if skipped**: no
 - **Phase 0-5**: restricted (writes blocked)
 - **Evidence**: codex plugin list output
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: external_dependency
 
 ## 23. github
 - **Platform**: Codex
@@ -336,6 +499,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Must explain if skipped**: no
 - **Phase 0-5**: restricted (writes blocked)
 - **Evidence**: codex plugin list output
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: external_dependency
 
 ## 24. browser
 - **Platform**: Codex
@@ -349,6 +518,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Must explain if skipped**: no
 - **Phase 0-5**: restricted (localhost only)
 - **Evidence**: codex plugin list output
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: external_dependency
 
 ## 25. superpowers
 - **Platform**: Codex
@@ -362,6 +537,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Must explain if skipped**: no
 - **Phase 0-5**: allowed (methodology reference)
 - **Evidence**: codex plugin list output
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: external_dependency
 
 ## 26. linear
 - **Platform**: Codex
@@ -375,6 +556,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Must explain if skipped**: no
 - **Phase 0-5**: restricted (no use case; kept for Phase 1+)
 - **Evidence**: codex plugin list output
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: external_dependency
 
 ## 27. notion
 - **Platform**: Codex
@@ -388,6 +575,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Must explain if skipped**: no
 - **Phase 0-5**: restricted (no use case; kept for Phase 1+)
 - **Evidence**: codex plugin list output
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: external_dependency
 
 ---
 
@@ -446,6 +639,12 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 - **Must explain if skipped**: yes (if TaskSpec format not used, explain why)
 - **Evidence**: sub-agent-dispatch-protocol.md exists (194 lines), bootstrap copies it, AGENTS.md references it as default process
 
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-05-28
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+
 ### Status Legend
 
 | Status | Meaning |
@@ -454,3 +653,108 @@ Rule: A capability with verified_status = unknown, stale, or broken must NOT be 
 | proposed | Awaiting reviewer approval; not yet enabled |
 | disabled | Previously approved, now disabled (kept for historical record) |
 | rejected | Proposal rejected; capability must not be used |
+
+
+---
+
+
+## Capability Passport Summary (2026-05-28)
+
+Evidence-based verification status. **28 of 28 classified** (Batch C3C-Passport, 2026-05-28).
+
+| Status | Count | IDs |
+|--------|:-----:|-----|
+| verified | 25 | CAP-001~008, CAP-010~013, CAP-015~016, CAP-018~028 |
+| degraded | 0 | ¡ª | |
+| broken | 1 | CAP-009 (Blackboard MCP: Phase 0-5 disabled) |
+| stale | 1 | CAP-017 (Phase 6 SourceLock: not yet active) |
+| unknown | 0 | ¡ª |
+
+| Type | Count | Expiry |
+|------|:-----:|--------|
+| local_static | 20 | 90 days |
+| external_dependency | 8 | 30 days |
+
+**Rule**: unknown/stale/broken must NOT be sole basis to reject new construction in Gate 0.
+
+**Verification evidence**:
+- Local static (20): 12 Test-Path confirmed 2026-05-28, 5 session-usage confirmed, 2 reference-only (docs exist), 1 stale (Phase 6 not yet active)
+- External dependency (8): 8 codex plugin list confirmed 2026-05-28
+
+## External Skills Intake (Phase 0-5: classification only)
+
+> No install, no clone, no execution. All dispositions in skills-inbox/external/candidate-index.md.
+
+| # | Skill | Disposition | Risk | Phase Target |
+|---|-------|-------------|------|--------------|
+| 1 | ECC | defer | high | Phase 6: quarantine clone + static scan |
+| 2 | Taste-Skill | candidate | medium | Phase 6: SkillIntakeRecord + review |
+| 3 | AnySearch Skill | defer | high | Phase 6: network-isolated quarantine |
+| 4 | AnySearch MCP Server | reject | critical | N/A (MCP config mutation out of scope) |
+| 5 | Understand Anything | candidate | medium | Phase 6: codebase search integration |
+| 6 | Anthropic Cybersecurity | reject | critical | N/A (security tool execution out of scope) |
+| 7 | Andrej Karpathy Skills | reference_only | medium | Indefinite |
+| 8 | UI-TARS Desktop | reject | critical | N/A (desktop automation out of scope) |
+| 9 | addyosmani-agent-skills-zh | defer | high | Phase 6: quarantine + sub-skill classification |
+
+### Taste-Skill Sub-Skills (Phase 6 classification pending)
+
+13 sub-skills in skills-inbox/taste-skill/skills/: brandkit, brutalist-skill, gpt-tasteskill,
+image-to-code-skill, imagegen-frontend-mobile, imagegen-frontend-web, minimalist-skill,
+output-skill, redesign-skill, soft-skill, stitch-skill, taste-skill, taste-skill-v1.
+
+All deferred to Phase 6 for individual SkillIntakeRecord creation.
+
+### Disposition Summary
+
+| Disposition | Count |
+|-------------|:-----:|
+| reference_only | 1 |
+| candidate | 2 |
+| defer | 3 |
+| reject | 3 |
+
+**Phase 0-5 rule**: External skills must not be installed, cloned, or executed.
+All entries remain at their current disposition until Phase 6 Source Lock review.
+
+## Taste-Skill Sub-Skills Classification (Batch C3E, 2026-05-28)
+
+> 13 sub-skills from \skills-inbox/taste-skill/skills/\. All deferred to Phase 6 for SkillIntakeRecord creation.
+> Phase 0-5: classification only. No install, no execution.
+
+| # | Skill | Type | Risk | Disposition | Description |
+|---|-------|------|------|-------------|-------------|
+| 1 | brandkit | image_generation | medium | candidate | Premium brand-kit image generation |
+| 2 | brutalist-skill | frontend_design | medium | candidate | Brutalist web design system |
+| 3 | gpt-tasteskill | ux_animation | medium | candidate | UX/UI + GSAP animation engineering |
+| 4 | image-to-code-skill | image_to_code | medium | candidate | Website image-to-code generation |
+| 5 | imagegen-frontend-mobile | image_generation | medium | candidate | Mobile app screen concept generation |
+| 6 | imagegen-frontend-web | image_generation | medium | candidate | Web design reference image generation |
+| 7 | minimalist-skill | frontend_design | low | candidate | Clean editorial-style interfaces |
+| 8 | output-skill | code_output | low | candidate | Override LLM truncation, enforce complete output |
+| 9 | redesign-skill | frontend_design | medium | candidate | Website upgrade/redesign to premium quality |
+| 10 | soft-skill | design_teaching | low | candidate | Teaches AI high-end agency design patterns |
+| 11 | stitch-skill | design_system | medium | candidate | Google Stitch semantic design system |
+| 12 | taste-skill | frontend_design | medium | candidate | Anti-slop frontend (landing pages, portfolios) |
+| 13 | taste-skill-v1 | frontend_design | low | reference_only | Legacy v1, preserved for backward compat |
+
+### Disposition Summary
+
+| Disposition | Count | Skills |
+|-------------|:-----:|--------|
+| candidate | 12 | brandkit, brutalist-skill, gpt-tasteskill, image-to-code-skill, imagegen-frontend-mobile, imagegen-frontend-web, minimalist-skill, output-skill, redesign-skill, soft-skill, stitch-skill, taste-skill |
+| reference_only | 1 | taste-skill-v1 (legacy compat only) |
+
+### Risk Distribution
+
+| Risk | Count |
+|------|:-----:|
+| medium | 9 |
+| low | 4 |
+
+### Phase 6 Next Steps
+
+1. Create SkillIntakeRecord for each of 12 candidate sub-skills
+2. Quarantine clone + static AST scan for any sub-skill with code execution surface
+3. Sandbox review for image-generation sub-skills (dependency: imagegen availability)
+4. taste-skill-v1 remains reference_only unless a project explicitly needs v1 behavior

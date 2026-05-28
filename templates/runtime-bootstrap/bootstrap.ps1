@@ -57,6 +57,8 @@ $Placeholders = @{
     "{{CURRENT_DATE}}" = $CurrentDate; "{{GIT_REMOTE}}" = $GitRemote
     "{{PHASE}}" = $Phase; "{{PLATFORM}}" = $Platform
 }
+# Governance manifest placeholders filled after GEN step
+$ManifestPlaceholders = @{}
 
 $SourceRoot = "D:\agent-acceptance"
 if (-not (Test-Path $SourceRoot)) { Write-Error "Source not found: $SourceRoot"; exit 1 }
@@ -76,6 +78,7 @@ function New-FromTemplate($templateFile, $targetRel, $desc) {
     if ((Test-Path $tgt) -and -not $Force) { Write-Output "[SKIP] $targetRel (use -Force)"; return }
     if ($DryRun) { Write-Output "[DRY-RUN] Generate: $templateFile -> $targetRel ($desc)"; return }
     $c = Get-Content $tpl -Raw; foreach ($k in $Placeholders.Keys) { $c = $c.Replace($k, $Placeholders[$k]) }
+    foreach ($k in $ManifestPlaceholders.Keys) { $c = $c.Replace($k, $ManifestPlaceholders[$k]) }
     New-Item -ItemType Directory -Force -Path (Split-Path $tgt -Parent) | Out-Null
     Set-Content $tgt $c -NoNewline
     Write-Output "[GEN] $targetRel"
@@ -108,6 +111,19 @@ Write-Output "`n=== Step 2: Project-Specific Files ==="
 New-FromTemplate "AGENTS.template.md" "AGENTS.md" "Agent entry point"
 New-FromTemplate "capability-inventory.template.md" "docs/agent-runtime/capability-inventory.md" "Capability inventory"
 New-FromTemplate "tool-policy.template.md" "docs/agent-runtime/tool-policy.md" "Tool policy"
+
+# --- Governance Manifest (hash-locked, generated after all files exist) ---
+$p0Hash = (Get-FileHash (Join-Path $ProjectRoot "rules\core.md") -Algorithm SHA256).Hash
+$sadpHash = (Get-FileHash (Join-Path $ProjectRoot "docs\agent-runtime\sub-agent-dispatch-protocol.md") -Algorithm SHA256).Hash
+$agentsHash = (Get-FileHash (Join-Path $ProjectRoot "AGENTS.md") -Algorithm SHA256).Hash
+$ManifestPlaceholders = @{
+    "{{P0_HASH}}" = $p0Hash
+    "{{GATE0_HASH}}" = $sadpHash
+    "{{VETO_HASH}}" = $sadpHash
+    "{{PROTECTED_HASH}}" = $agentsHash
+    "{{CUMULATIVE_HASH}}" = $sadpHash
+}
+New-FromTemplate "governance-manifest.template.md" "docs/agent-runtime/governance-manifest.md" "Governance manifest (hash-locked)"
 
 Write-Output "`n=== Step 3: Verification ==="
 if ($DryRun) { Write-Output "[DRY-RUN] Done."; exit 0 }

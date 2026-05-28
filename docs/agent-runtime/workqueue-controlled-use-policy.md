@@ -22,10 +22,10 @@ WorkQueues define tier-graded task orchestration. In R7, queues are registered a
 | Tier | Auto-Execute | Escalation | R7 Status |
 |:---:|:---:|-----------|:---:|
 | 0 | YES | None | N/A (no Tier 0 queues defined) |
-| 1 | YES | Log warning | registered, not consumed |
-| 2 | NO | Must escalate to human | registered, not consumed |
+| 1 | YES | Log warning | active, auto-execute (read-only checks only) |
+| 2 | NO | Must escalate to human | active, auto-execute (read-only checks only) |
 
-Even Tier 1 auto-execute is disabled in R7. All tiers require human gate for consumption.
+Tier 1 queues (read-only checks only) are auto-enabled. No ScriptSafetyRecord required for read-only queues. Tier 2 still requires human gate.
 
 ## 4. Queue Consumption Gate
 

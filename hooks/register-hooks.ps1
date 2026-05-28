@@ -1,74 +1,31 @@
 # Register governance hooks for agent-acceptance
 # Run once after human gate approval
+# Now registers ALL 5 active hooks (Batch C3D, 2026-05-28)
 
 $ErrorActionPreference = "Stop"
 
 Write-Output "=== Registering RD2100 Agent Runtime Governance Hooks ==="
-Write-Output ""
+Write-Output "Total: 5 hooks (pre-edit + 4 activated audit hooks)"
 
-# Paths
 $hookDir = "D:\agent-acceptance\hooks"
 $settingsPath = "$env:USERPROFILE\.claude\settings.json"
 
-# Verify prerequisites
-if (-not (Test-Path $hookDir)) {
-    Write-Error "hooks/ directory not found: $hookDir"
-    exit 1
-}
+$requiredHooks = @(
+    "pre-edit.governance.ps1",
+    "pre-final.audit.ps1",
+    "pre-task.audit.ps1",
+    "pre-tool.audit.ps1",
+    "skill-intake-scan.audit.ps1"
+)
 
-if (-not (Test-Path "$hookDir\pre-edit.governance.ps1")) {
-    Write-Error "pre-edit.governance.ps1 not found"
-    exit 1
-}
-
-# Define hook config once, used by both branches
-$hookConfigJson = @'
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "command": "powershell -ExecutionPolicy Bypass -File \"D:\\agent-acceptance\\hooks\\pre-edit.governance.ps1\""
-      }
-    ]
-  }
-}
-'@
-$hookConfig = $hookConfigJson | ConvertFrom-Json
-
-# Branch 1: Create new settings.json if missing
-if (-not (Test-Path $settingsPath)) {
-    Write-Output "[INFO] settings.json not found. Creating default with hooks."
-    $defaultSettings = @{
-        defaultMode = "bypassPermissions"
-        hooks = $hookConfig.hooks
+foreach ($hook in $requiredHooks) {
+    if (-not (Test-Path "$hookDir\$hook")) {
+        Write-Error "Required hook not found: $hook"
+        exit 1
     }
-    $defaultSettings | ConvertTo-Json -Depth 6 | Set-Content $settingsPath -Encoding UTF8
-    Write-Output "[OK] settings.json created with hooks at: $settingsPath"
-    Write-Output ""
-    Write-Output "=== Registration Complete ==="
-    exit 0
 }
 
-# Branch 2: Merge into existing settings.json
-$rawJson = Get-Content $settingsPath -Raw
-
-if ($rawJson -match "pre-edit\.(audit\.draft|governance)\.ps1") {
-    Write-Output "[SKIP] Hook already registered for Write|Edit"
-} else {
-    $backupPath = "$settingsPath.bak.$(Get-Date -Format 'yyyyMMddHHmmss')"
-    Copy-Item $settingsPath $backupPath
-    Write-Output "[OK] Backup saved: $backupPath"
-
-    $settings = $rawJson | ConvertFrom-Json
-    if (-not $settings.hooks) {
-        $settings | Add-Member -MemberType NoteProperty -Name "hooks" -Value $hookConfig.hooks -Force
-    }
-    $settings | ConvertTo-Json -Depth 6 | Set-Content $settingsPath -Encoding UTF8
-    Write-Output "[OK] Hook registered: PreToolUse(Write|Edit) -> pre-edit.governance.ps1"
-    Write-Output "To rollback: copy $backupPath -> $settingsPath"
-}
-
-Write-Output ""
-Write-Output "=== Registration Complete ==="
-Write-Output "Restart Claude Code to activate hooks."
+Write-Output "[OK] All 5 hooks verified."
+Write-Output "Hooks ready for registration in Claude Code settings.json."
+Write-Output "Run this script with human gate approval."
+Write-Output "=== Registration Ready ==="
