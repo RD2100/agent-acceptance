@@ -1,3 +1,5 @@
+## 注意：本文与 resource-integration-handoff.md 存在内容重叠
+## 两者同属 Batch Z，描述同一批 R0-R7 资源集成工作；final-audit 是 handoff 的详细版本
 # Resource Integration Final Audit -- RD2100 Agent Runtime v2
 
 > Batch Z, 2026-05-27

@@ -1,3 +1,5 @@
+## 注意：本文与 phase-6b-handoff.md 存在内容重叠
+## 两者同属 Phase 6B，描述同一批项目（Taste-Skill + Understand Anything）的 source lock 规划；plan 包含详细计划 JSON 结构和 gate 条件，handoff 包含交接上下文
 # Phase 6B Source Lock Plan -- RD2100 Agent Runtime v2
 
 > Date: 2026-05-27

@@ -1,3 +1,5 @@
+## 注意：本文与 capability-routing-final-audit.md 存在内容重叠
+## 两者同属 Batch CR-B，描述同一批 CR0-CR5 能力路由工作；handoff 是 final-audit 的过渡/操作版本
 # Capability Routing Handoff -- CR5
 
 > Batch CR-B, 2026-05-27

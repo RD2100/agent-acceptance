@@ -60,7 +60,7 @@ The runtime now has:
 - Audit-only hook drafts
 - JSON schemas
 
-Important: hook files under `hooks/` are draft/audit-only. They are not registered and must not be made blocking without a new human gate.
+Important: pre-edit.governance.ps1 is ACTIVE (registered in Claude Code settings.json, blocks memory/sealed/secrets writes). The other 4 hook files under `hooks/` remain draft/audit-only and must not be registered without a new human gate.
 
 ### Resource Integration R0-R7
 
@@ -159,7 +159,10 @@ If the user asks "what should we do next?", recommend one of:
 - Do not execute any quarantined source.
 - Do not run `npm install`, `pnpm install`, `pip install`, build, or tests in quarantine.
 - Do not enable MCP.
-- Do not register hooks.
+- Do not register additional hooks beyond pre-edit (human gate required per hook).
+- Do not use any capability that does not appear in `docs/agent-runtime/capability-inventory.md` with Status: approved.
+- Do not install plugins or register hooks without first proposing and getting approval for the capability in capability-inventory.md.
+- Do not assume a Both-platform capability is available on both platforms -- verify it is enabled on the specific platform before use.
 - Do not modify `.git/hooks`.
 - Do not write RD2100 memory.
 - Do not consume WorkQueue.

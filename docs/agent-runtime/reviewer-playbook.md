@@ -147,7 +147,7 @@ Forbidden command classes:
 - `git clone`, `git pull`, `git fetch`, submodule update
 - `npm install`, `npm ci`, `pip install`, `yarn add`, `pnpm install`
 - remote script execution
-- hook registration
+- unauthorized hook registration (pre-edit is authorized; other 4 require human gate)
 - MCP config mutation
 - UI-TARS or real desktop automation
 - dangerous git mutation
@@ -185,6 +185,23 @@ Use these checks by batch:
 - Skill intake: confirm `reference_only`, `candidate`, `defer`, or `reject`; never install/absorb/approved in Phase 0-5.
 - Memory: confirm proposals only; no write or solidify.
 - Phase 6: confirm SourceLock and quarantine only; no install/run/enable.
+
+### Step 8a: Verify Capability Registration
+
+For every capability used in the batch, verify:
+
+1. Does it appear in `capability-inventory.md`?
+2. Is its Status `approved`?
+3. Is its Platform field compatible with the executing platform?
+4. Is its Phase 0-5 constraint being respected?
+
+Decision:
+
+- Capability used but not in inventory: `blocked`
+- Capability in inventory but Status is `proposed`: `blocked`
+- Capability in inventory, approved, but Platform mismatch: `needs_revision`
+- Capability in inventory, approved, correct platform, Phase constraint violated: `blocked`
+- All capabilities registered and approved: continue
 
 ### Step 9: Apply Invariants and Negative Tests
 
@@ -317,15 +334,16 @@ Pass requirements:
 
 - `rules/*` use IDs, priorities, triggers, actions, verification, conflict handling.
 - P0 > P1 > P2 > P3 > P4 is explicit.
-- Hooks are named `*.audit.draft.ps1`.
-- Hooks have audit-only header.
-- Hooks never write, register, block, or call network.
+- pre-edit hook: named `*.audit.draft.ps1` (known naming gap), is ACTIVE + REGISTERED + BLOCKING (exit 1 on hard violations). Other hooks: named `*.audit.draft.ps1`, audit-only draft, exit 0 always.
+- Active hook blocks: memory writes, sealed file edits, secret file edits. Permits: approved-scope writes, dirty baseline warnings (exit 0).
+- Hooks never call network.
 - `AGENTS.md` is navigation-only.
 
 Blockers:
 
-- Hook registered or placed in `.git/hooks`.
-- Hook exits nonzero by default.
+- Draft hook (not pre-edit) registered without human gate.
+- Hook placed in `.git/hooks`.
+- pre-edit hook modified to allow memory/sealed/secrets edits without reviewer approval.
 - AGENTS.md copies full rules and becomes a rule dump.
 - README edited without separate approval.
 
@@ -410,6 +428,10 @@ Blockers:
 5. Did any forbidden command run?
    yes -> blocked
    no -> continue
+
+5a. Were all used capabilities registered and approved in capability-inventory.md?
+   no -> blocked or needs_revision
+   yes -> continue
 
 6. Are validations honest?
    fake green -> blocked

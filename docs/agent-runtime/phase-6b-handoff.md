@@ -1,3 +1,5 @@
+## 注意：本文与 phase-6b-source-lock-plan.md 存在内容重叠
+## 两者同属 Phase 6B，描述同一批项目（Taste-Skill + Understand Anything）的 source lock 规划；handoff 包含交接上下文和 dispositions，plan 包含具体计划细节
 # Phase 6B Handoff -- RD2100 Agent Runtime v2
 
 > Handoff prepared: 2026-05-27

@@ -44,11 +44,11 @@ This matrix classifies risks across all resource categories discovered in R0. It
 | **affected_resources** | res-agentacceptance-008 |
 | **risk_level** | high |
 | **primary_threat** | Hooks directory contains draft audit scripts (ps1). If auto-loaded, these could intercept git operations (commit, push) or inject behavior into the agent runtime before capability gates are passed. |
-| **current_control** | hooks/ directory is untracked (dirty baseline, 6 untracked files include .claude/ and other infrastructure). No hook registration has occurred. Hooks are not loaded. |
-| **control_gap** | hooks/ contents not inventoried in detail. Unknown hook scripts may exist. No hook policy enforcement -- relies on agent not loading them. |
-| **forbidden_actions** | Register hooks, execute hook scripts, modify hook configuration, auto-load hooks on git events |
-| **gate_decision** | Any hook registration before capability approval (R6-R7) is a bypass of promotion gates. Hooks at phase level are blind injections into the agent pipeline. |
-| **next_phase_policy** | Hooks must be inventoried and source-reviewed (R5-R6 range). Any hook intended for production use must go through the full promotion gate chain. Hooks that modify git behavior (pre-commit, pre-push) require specific human approval. |
+| **current_control** | pre-edit.governance.ps1 is ACTIVE: registered in ~/.claude/settings.json as PreToolUse(Write|Edit), blocks memory/sealed/secrets writes (exit 1). Other 4 hooks remain audit-only drafts (not registered, exit 0 always). sealed-files-manifest.json (22 files, 3 dirs) is the single source of truth for what is sealed. register-hooks.ps1 backs up settings.json before modification. |
+| **control_gap** | pre-edit hook file still named *.audit.draft.ps1 despite being active. No monitoring for settings.json reset on Claude Code restart (register-hooks.ps1 supports auto-recreation). |
+| **forbidden_actions** | Register additional hooks without human gate, modify sealed-files-manifest.json without human approval, modify active hook logic without gate. Draft hooks must not be registered without full promotion review. |
+| **gate_decision** | pre-edit registration was human-gated (2026-05-28). Any additional hook registration beyond pre-edit requires separate human gate. Draft hooks must go through full promotion chain before activation. |
+| **next_phase_policy** | Consider renaming active hook from *.audit.draft.ps1 to *.governance.ps1 to eliminate naming contradiction. Additional hooks may be proposed for activation with reviewer approval. Hook registration changes must include settings.json backup and rollback plan. |
 
 ---
 

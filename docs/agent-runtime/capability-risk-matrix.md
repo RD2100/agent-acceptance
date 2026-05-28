@@ -29,7 +29,7 @@
 | Memory | high | used_as_fact; memory write | write_allowed=false; used_as_fact=false in R6 | blocked |
 | WorkQueue | high | task dispatch without approval | read_only in R7; consumption forbidden | blocked |
 | Scripts | high | execution without ScriptSafetyRecord | not_run in R7; human gate required | blocked |
-| Hooks Draft | medium | accidental registration | AUDIT-ONLY DRAFT; not registered | blocked |
+| Hooks | medium | accidental registration of additional hooks | pre-edit: ACTIVE (registered, blocks memory/sealed/secrets). Other 4: audit-only draft, not registered. No further registration without human gate. | blocked |
 | Phase 6 SourceLock | critical | clone without source URL / approval | Phase 6C blocked; planning != clone approval | blocked |
 
 ## Risk Mitigation Summary

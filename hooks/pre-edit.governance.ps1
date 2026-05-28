@@ -1,4 +1,4 @@
-# ACTIVE HOOK â€” Governance Gate
+# ACTIVE HOOK â€?Governance Gate
 # Registered - Blocking on hard violations - No mutation - No secret access
 #
 # pre-edit.audit.draft.ps1
@@ -21,6 +21,14 @@ $AUDIT_HEADER = @"
 
 Write-Output $AUDIT_HEADER
 
+# DIAGNOSTIC: log raw input to temp file
+$diagPath = Join-Path $env:TEMP "hook-diag-$(Get-Date -Format 'yyyyMMddHHmmss').txt"
+"=== HOOK FIRED ===" | Out-File $diagPath
+"EditInfo length: $($EditInfo.Length)" | Out-File $diagPath -Append
+"EditInfo: [$EditInfo]" | Out-File $diagPath -Append
+"All args: [$args]" | Out-File $diagPath -Append
+"Input: [$input]" | Out-File $diagPath -Append
+
 if (-not $EditInfo) {
     Write-Output "[AUDIT] No edit info provided. Suggest: pass file path and edit type."
     Write-Output "[AUDIT] STATUS: INCOMPLETE_INPUT"
@@ -34,7 +42,7 @@ if (-not $filePath -and $EditInfo -match '"path"\s*:\s*"([^"]+)"')  { $filePath 
 
 Write-Output "[AUDIT] Target file: $filePath"
 
-# P0: Block edits to memory directories â€” HARD STOP
+# P0: Block edits to memory directories â€?HARD STOP
 $memoryPaths = @(
     "C:\Users\RD\.claude\projects\D--agent-acceptance\memory\",
     "C:\Users\RD\.claude\memory\"
@@ -43,13 +51,13 @@ foreach ($memPath in $memoryPaths) {
     $memPattern = [regex]::Escape($memPath)
     if ($filePath -match $memPattern) {
         Write-Output "[AUDIT] HARD STOP: Target is in RD2100 memory directory."
-        Write-Output "[AUDIT]   Handoff 'Do Not write RD2100 memory' â€” BLOCKED."
+        Write-Output "[AUDIT]   Handoff 'Do Not write RD2100 memory' â€?BLOCKED."
         Write-Output "[AUDIT] STATUS: BLOCKED_MEMORY_WRITE"
         exit 1
     }
 }
 
-# P0: Block edits to sealed files â€” HARD STOP
+# P0: Block edits to sealed files â€?HARD STOP
 # Load sealed files from manifest (single source of truth)
 $manifestPath = Join-Path $PSScriptRoot "sealed-files-manifest.json"
 $sealedFiles = @()

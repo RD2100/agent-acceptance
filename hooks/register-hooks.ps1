@@ -16,8 +16,8 @@ if (-not (Test-Path $hookDir)) {
     exit 1
 }
 
-if (-not (Test-Path "$hookDir\pre-edit.audit.draft.ps1")) {
-    Write-Error "pre-edit.audit.draft.ps1 not found"
+if (-not (Test-Path "$hookDir\pre-edit.governance.ps1")) {
+    Write-Error "pre-edit.governance.ps1 not found"
     exit 1
 }
 
@@ -28,7 +28,7 @@ $hookConfigJson = @'
     "PreToolUse": [
       {
         "matcher": "Write|Edit",
-        "command": "powershell -ExecutionPolicy Bypass -File \"D:\\agent-acceptance\\hooks\\pre-edit.audit.draft.ps1\""
+        "command": "powershell -ExecutionPolicy Bypass -File \"D:\\agent-acceptance\\hooks\\pre-edit.governance.ps1\""
       }
     ]
   }
@@ -53,7 +53,7 @@ if (-not (Test-Path $settingsPath)) {
 # Branch 2: Merge into existing settings.json
 $rawJson = Get-Content $settingsPath -Raw
 
-if ($rawJson -match "pre-edit\.audit\.draft\.ps1") {
+if ($rawJson -match "pre-edit\.(audit\.draft|governance)\.ps1") {
     Write-Output "[SKIP] Hook already registered for Write|Edit"
 } else {
     $backupPath = "$settingsPath.bak.$(Get-Date -Format 'yyyyMMddHHmmss')"
@@ -65,7 +65,7 @@ if ($rawJson -match "pre-edit\.audit\.draft\.ps1") {
         $settings | Add-Member -MemberType NoteProperty -Name "hooks" -Value $hookConfig.hooks -Force
     }
     $settings | ConvertTo-Json -Depth 6 | Set-Content $settingsPath -Encoding UTF8
-    Write-Output "[OK] Hook registered: PreToolUse(Write|Edit) -> pre-edit.audit.draft.ps1"
+    Write-Output "[OK] Hook registered: PreToolUse(Write|Edit) -> pre-edit.governance.ps1"
     Write-Output "To rollback: copy $backupPath -> $settingsPath"
 }
 

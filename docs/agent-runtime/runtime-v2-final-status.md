@@ -75,17 +75,25 @@
 
 **Total**: 8 files, 44 rules
 
-### 2.4 hooks/ (5 audit-only draft ps1)
+### 2.4 hooks/ (1 active + 4 audit-only draft + 3 config)
 
-| Hook | Description |
+| Hook | Description | Status |
+|------|-------------|--------|
+| `pre-edit.governance.ps1` | Pre-edit governance gate | **ACTIVE** (registered, blocks memory/sealed/secrets via exit 1) |
+| `pre-task.audit.draft.ps1` | Pre-task audit check | Audit-only draft (not registered, exit 0 always) |
+| `pre-tool.audit.draft.ps1` | Pre-tool audit check | Audit-only draft (not registered, exit 0 always) |
+| `pre-final.audit.draft.ps1` | Pre-final audit check | Audit-only draft (not registered, exit 0 always) |
+| `skill-intake-scan.audit.draft.ps1` | Skill intake scan | Audit-only draft (not registered, exit 0 always) |
+
+Supporting files:
+| File | Description |
 |------|-------------|
-| `pre-task.audit.draft.ps1` | Pre-task audit check |
-| `pre-edit.audit.draft.ps1` | Pre-edit audit check |
-| `pre-tool.audit.draft.ps1` | Pre-tool audit check |
-| `pre-final.audit.draft.ps1` | Pre-final audit check |
-| `skill-intake-scan.audit.draft.ps1` | Skill intake scan |
+| `register-hooks.ps1` | Registration script (human-gated, auto-creates settings.json if missing) |
+| `sealed-files-manifest.json` | 22 sealed files + 3 sealed dirs + memory paths |
+| `registration-config.json` | Manual merge config snippet |
 
-Status: NOT registered, NOT blocking, exit 0 always.
+pre-edit hook registered in `~/.claude/settings.json` as PreToolUse matcher (`Write|Edit`).
+Registration was human-gated (2026-05-28). Other 4 hooks remain audit-only draft.
 
 ### 2.5 schemas/agent-runtime/ (10 JSON Schema files)
 
