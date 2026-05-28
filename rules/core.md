@@ -67,3 +67,91 @@
 - **Rule**: Every claim must be backed by evidence. "X works" requires a test result, file listing, or command output. "Y exists" requires `test -f` or equivalent.
 - **Verification**: Each claim in ExecutionReport has a corresponding evidence reference.
 - **Conflict Handling**: If evidence cannot be collected (e.g., tool unavailable), note the limitation, downgrade claim confidence.
+
+---
+
+## RULE core-007: No Capability Without Inventory Registration
+
+- **Priority**: P0 (Hard Stop)
+- **Trigger**: Installing a plugin, registering a hook, enabling MCP, loading a skill, authorizing script execution -- any action that introduces or activates a new capability
+- **Scope**: All phases, both platforms (Claude Code + Codex)
+- **Rule**: Any capability must be registered in `docs/agent-runtime/capability-inventory.md` and receive reviewer approval BEFORE it is enabled. The `Platform` field in the inventory entry determines which platform(s) the capability is available on. A capability that does not appear in the inventory does not exist -- it must not be used, even if technically callable.
+- **Registration Procedure**:
+  1. Propose the capability in `capability-inventory.md` with `Status: proposed`
+  2. Reviewer approves ï¿?change to `Status: approved`
+  3. Enable the capability on the target platform
+  4. Verify via `codex plugin list` (Codex) or `settings.json` (Claude)
+  5. Report the registration in the batch ExecutionReport
+- **Platform Synchronization**:
+  - Platform: Both ï¿?enable on both platforms (if applicable)
+  - Platform: Claude ï¿?enable on Claude Code only
+  - Platform: Codex ï¿?enable on Codex only
+  - Cross-platform capabilities (Both) registered once, enabled per-platform as needed
+- **Verification**: Compare `codex plugin list` enabled entries and Claude `settings.json` hooks/MCP against `capability-inventory.md`. Every enabled capability must have a matching approved inventory entry.
+- **Conflict Handling**: If a task requires a capability not in the inventory, stop and propose registration. Do not use it first and register later.
+
+---
+
+## RULE core-008: Resource Sufficiency ï¿½ï¿½ Prove Gap Before Any Action
+
+- **Priority**: P0 (Hard Stop)
+- **Trigger**: ANY agent action that proposes creating, adding, modifying, or introducing something new. This includes code, documents, rules, frameworks, abstractions, processes, configurations, and protocols.
+- **Scope**: All phases, all platforms, all task types.
+
+**Principle**: The agent's default answer to "should I create X?" is "what already exists that makes X unnecessary?" The burden of proof is on the NEW action.
+
+**Resource Sufficiency Check (mandatory before any additive action):**
+
+| Check | Question |
+|-------|----------|
+| **Existence** | Does something already exist that covers this need? |
+| **Coverage** | Does an existing resource partially cover it ï¿½ï¿½ and can the gap be filled with a minimal change? |
+| **Composition** | Can multiple existing resources be combined to satisfy the need? |
+| **Protocol** | Does an existing workflow, dispatch rule, or governance mechanism already handle this? |
+| **Precedent** | Has this situation occurred before? What did the lesson log say? |
+
+**Decision Matrix (universal):**
+
+| Finding | Action |
+|---------|--------|
+| Exact match exists | **Stop.** Point to existing. Do nothing new. |
+| Partial coverage + gap is ï¿½ï¿½20% | **Minimal patch.** Edit existing, don't create new. |
+| Composition of 2+ existing covers need | **Compose.** Write glue only if necessary. |
+| Truly novel need confirmed | **Proceed.** Document which resources were checked. |
+
+**False Positives (model must recognize these as NOT sufficient justification):**
+- "The existing resource is in a different format" ï¿½ï¿½ format conversion is not a reason to recreate
+- "The existing resource is not organized how I would" ï¿½ï¿½ preference is not a gap
+- "It would be cleaner as a new thing" ï¿½ï¿½ aesthetics is not a gap
+- "This is a common pattern so we should have it" ï¿½ï¿½ commonality is not a gap
+- "User asked for it" ï¿½ï¿½ user request is a hypothesis, not proof of need
+
+### Execute Agent Veto Contract
+
+1. **Veto validity**: A veto is valid only if it cites specific capability IDs, rule IDs, and proposes an alternative execution path. A veto without executable alternative is invalid unless the task is unsafe or irreversible.
+
+2. **Veto decision types**:
+   - `accept` â€?task is necessary, proceed
+   - `reject_redundant` â€?existing capabilities cover this; must provide reuse plan
+   - `reject_unsafe` â€?task poses security/irreversibility risk; cannot be appealed
+   - `request_revision` â€?task needs clarification or scope reduction
+   - `escalate` â€?cannot decide, defer to human reviewer
+
+3. **Appeal mechanism**: Plan agent can appeal `reject_redundant` to human reviewer. `reject_unsafe` cannot be appealed.
+
+4. **Risk-based escalation**: Low-risk + reversible tasks â†?execute agent veto can be final. High-risk + irreversible tasks â†?must escalate to human if either agent disagrees.
+
+5. **Anti-abuse constraint**: Execute agent must not systematically reject all new construction. If >50% of TaskSpecs in a batch are rejected, the veto authority is suspended pending human review.
+
+**Verification**: Every ExecutionReport for a construction task must include a `gate_0_reuse_check` section proving that inventory was checked, existing capabilities were evaluated, and delta was justified.
+
+**Conflict Handling**: If Gate 0 is skipped or incomplete, the execute agent MUST reject the TaskSpec. Plan agent must re-submit with Gate 0 completed.
+
+
+---
+
+## Knowledge Metabolism Rule
+
+P0 rules are capped at 7. If a new P0 rule is proposed, an existing P0 must be downgraded to P1, merged into another P0, or deprecated with justification. This prevents rule inflation where too many mandatory checks cause agent attention dilution.
+
+Current P0 count: core-001, core-002, core-003, core-004, core-005, core-007, core-008 = 7 (at cap).

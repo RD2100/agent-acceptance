@@ -7,19 +7,24 @@
 
 ---
 
+
+> **Phase Exit Authorization**: 2026-05-28. Reviewer: RD. R2 exit gate satisfied.
+> Current evidence collection now authorized. `dir` listing and `cat` inspection of evidence/, reports/, test-results/ permitted.
+> Executing tests, aggregator, attribution, orchestrator still requires separate human gate per ScriptSafetyRecord.
+
 ## R2 Boundary Banner
 
 ```
 R2 = evidence provider registration only.
-No test execution. No aggregator. No attribution. No CLI. No orchestrator.
-All reports are historical evidence. No current result is produced.
+Test execution still forbidden. Read-only evidence inspection authorized (2026-05-28).
+Reports may be inspected. Current evidence can be collected from existing artifacts.
 ```
 
 ---
 
 ## Provider Status
 
-**test-frame is registered as a potential evidence source. It is NOT an active provider.**
+**test-frame is registered as an evidence source. Read-only inspection authorized (2026-05-28).**
 
 All evidence from test-frame is classified as **historical** until a future approved run. No test execution has been performed in this runtime. No aggregator has been invoked. No attribution has produced a GateResult. No orchestrator has dispatched a task. No CLI command has been triggered.
 
@@ -31,9 +36,9 @@ The provider is in **candidate** status. It must pass the R2 exit gate (section 
 
 | Component | Path | R2 Access | R2 Status | Forbidden Actions |
 |-----------|------|:---:|:---:|-------------------|
-| evidence/ | D:\test-frame\evidence | read_only (directory listing) | historical | read/modify evidence files |
-| reports/ | D:\test-frame\reports | read_only (directory listing) | historical | read/modify report files, treat as current |
-| test-results/ | D:\test-frame\test-results | read_only (directory listing) | historical | read/modify result files, treat as current |
+| evidence/ | D:\test-frame\evidence | read_only (list + read) | current (authorized 2026-05-28) | modify evidence files |
+| reports/ | D:\test-frame\reports | read_only (list + read) | current (authorized 2026-05-28) | modify report files, treat as current |
+| test-results/ | D:\test-frame\test-results | read_only (list + read) | current (authorized 2026-05-28) | modify result files, treat as current |
 | aggregator/ | D:\test-frame\aggregator | forbidden | human_gated | execute, import, call any function |
 | attribution/ | D:\test-frame\attribution | forbidden | human_gated | execute, import, produce GateResult |
 | cli/ | D:\test-frame\cli | forbidden | human_gated | execute, trigger any command |
@@ -59,7 +64,7 @@ All existing reports/, test-results/, and evidence/ artifacts are classified as 
 
 ### Current Evidence
 
-**NONE.** R2 produces no current evidence. No test is executed. No report is generated. No aggregator runs. No attribution produces GateResult.
+Read-only inspection authorized (2026-05-28). Evidence listing and reading permitted. No new evidence generated. No test is executed. No report is generated. No aggregator runs. No attribution produces GateResult.
 
 ### Future Evidence
 

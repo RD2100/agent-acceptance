@@ -1,9 +1,62 @@
-# Capability Inventory -- CR0
+# Capability Inventory -- Cross-Platform
 
-> Batch CR-A, 2026-05-27
-> 17 capabilities registered. All: auto_use_allowed=false, execution_allowed=false, mutation_allowed=false.
+> Batch C3C, 2026-05-28
+> 27 capabilities across Claude Code + Codex.
+> All: auto_use_allowed=false, execution_allowed=false, mutation_allowed=false.
+
+## Registration Procedure
+
+This inventory is the single source of truth for all capabilities. No capability may be used unless it appears in this file with `Status: approved`.
+
+### Adding a New Capability
+
+1. **Propose**: Add an entry to this file with `Status: proposed`. Include all required fields: Platform, Type, Access, Risk, Preferred for, Forbidden for, Fallback, Human gate, Must explain if skipped, Evidence, and Capability Passport fields (verified_status, last_verified_at, confidence, usable_for_gate0, usable_for_execution).
+2. **Review**: Submit the proposal to the human reviewer. The reviewer checks: (a) Platform field is correct, (b) Risk level matches existing classifications, (c) Phase 0-5 constraints are appropriate, (d) Forbidden actions are explicitly listed.
+3. **Approve**: Reviewer changes `Status: proposed` → `Status: approved` and signs off.
+4. **Enable**: Enable the capability on the target platform (e.g., `codex plugin add` for Codex, `register-hooks.ps1` for Claude hooks).
+5. **Verify**: Confirm the capability appears in `codex plugin list` (Codex) or relevant config (Claude). Update the Evidence field with the verification output.
+6. **Report**: Include the new registration in the batch ExecutionReport.
+
+### Capability Passport (Verification Fields)
+
+Each capability entry must include verification fields in addition to the base fields (Platform, Type, Access, Risk, etc.):
+
+| Field | Values | Purpose |
+|-------|--------|---------|
+| verified_status | unknown / verified / degraded / stale / broken | Whether capability has been proven available |
+| last_verified_at | ISO-8601 date | When last verified |
+| confidence | 0.0 – 1.0 | Evidence strength for current status |
+| usable_for_gate0 | true / false | Can this capability be cited in Gate 0 sufficiency checks? |
+| usable_for_execution | true / false | Can this capability be dispatched to in SADP? |
+
+Rule: A capability with verified_status = unknown, stale, or broken must NOT be used as the sole basis to reject new construction in Gate 0 sufficiency checks.
+
+### Removing or Disabling a Capability
+
+- Change `Status: approved` �?`Status: disabled` with a reason and date.
+- Remove the capability from the target platform (e.g., `codex plugin disable` or edit `config.toml`).
+- Do not delete the entry from this file -- disabled entries serve as a historical record.
+
+### Platform Field Rules
+
+| Platform | Meaning | Enablement |
+|----------|---------|------------|
+| Both | Available on Claude Code and Codex | Enable on both platforms (registration once, enablement per-platform) |
+| Claude | Claude Code only | Enable via Claude-specific mechanism (hooks, MCP, settings.json) |
+| Codex | Codex only | Enable via Codex-specific mechanism (plugins, config.toml) |
+
+## Platform Key
+
+| Label | Meaning |
+|-------|---------|
+| Both | Available on both platforms (same filesystem, same governance assets) |
+| Claude | Claude Code only (hooks, settings.json) |
+| Codex | Codex only (plugins, config.toml, in-app browser) |
+
+---
 
 ## 1. CodeGraph
+- **Platform**: Both
 - **Type**: code_intelligence
 - **Access**: read_only
 - **Risk**: high
@@ -15,6 +68,7 @@
 - **Evidence**: codegraph_status output, index_freshness, target_root match
 
 ## 2. rg / Grep / Read (filesystem search)
+- **Platform**: Both
 - **Type**: search
 - **Access**: read_only
 - **Risk**: low
@@ -26,6 +80,7 @@
 - **Evidence**: command output
 
 ## 3. PowerShell read-only commands
+- **Platform**: Both
 - **Type**: shell
 - **Access**: read_only
 - **Risk**: medium
@@ -37,6 +92,7 @@
 - **Evidence**: command output
 
 ## 4. JSON Schema Validation
+- **Platform**: Both
 - **Type**: validation
 - **Access**: read_only
 - **Risk**: low
@@ -48,6 +104,7 @@
 - **Evidence**: ConvertFrom-Json output, parse result
 
 ## 5. Runtime Docs
+- **Platform**: Both
 - **Type**: documentation
 - **Access**: read_only
 - **Risk**: low
@@ -59,6 +116,7 @@
 - **Evidence**: doc path + section reference
 
 ## 6. Runtime Rules
+- **Platform**: Both
 - **Type**: rules
 - **Access**: read_only
 - **Risk**: low
@@ -70,6 +128,7 @@
 - **Evidence**: rule ID + file reference
 
 ## 7. Negative Tests
+- **Platform**: Both
 - **Type**: testing
 - **Access**: reference_only
 - **Risk**: low
@@ -81,6 +140,7 @@
 - **Evidence**: test ID + expected_gate_decision
 
 ## 8. Reviewer Playbooks
+- **Platform**: Both
 - **Type**: review
 - **Access**: reference_only
 - **Risk**: low
@@ -91,24 +151,32 @@
 - **Must explain if skipped**: no
 - **Evidence**: playbook reference + decision path
 
+## 9. Blackboard MCP
+- **Platform**: Claude
 - **Type**: mcp
+- **Access**: forbidden (MCP disabled)
 - **Risk**: critical
 - **Preferred for**: N/A (not authorized in current phase)
+- **Forbidden for**: MCP enable, config mutation, bb_* tool calls
+- **Fallback**: N/A
+- **Human gate**: yes (any MCP enable)
 - **Must explain if skipped**: no (not expected to be used)
 - **Evidence**: R1 policy docs, state.json checksum
 
 ## 10. test-frame
+- **Platform**: Both
 - **Type**: evidence
 - **Access**: read_only (docs + directory listing)
 - **Risk**: high
 - **Preferred for**: evidence provider candidate reference
 - **Forbidden for**: aggregator execution, attribution execution, CLI execution, orchestrator execution, test execution, producing GateResult
-- **Fallback**: historical evidence (reports/test-results directory listing)
+- **Fallback**: historical evidence
 - **Human gate**: yes (any execution)
 - **Must explain if skipped**: no
 - **Evidence**: R2 policy docs
 
 ## 11. dev-frame
+- **Platform**: Both
 - **Type**: orchestration
 - **Access**: read_only (docs + directory listing)
 - **Risk**: high
@@ -120,6 +188,7 @@
 - **Evidence**: R3 policy docs
 
 ## 12. Local Skills
+- **Platform**: Both
 - **Type**: skill
 - **Access**: reference_only
 - **Risk**: high
@@ -131,16 +200,19 @@
 - **Evidence**: R5 intake docs
 
 ## 13. RD2100 Memory
+- **Platform**: Both
 - **Type**: memory
 - **Access**: read_only
 - **Risk**: high
 - **Preferred for**: context reference (read-only)
+- **Forbidden for**: memory write, used_as_fact without cross-reference
 - **Fallback**: filesystem/git verification
 - **Human gate**: yes (any write)
 - **Must explain if skipped**: no
 - **Evidence**: R6 policy docs, stale_risk, conflict_check
 
 ## 14. WorkQueue
+- **Platform**: Both
 - **Type**: workqueue
 - **Access**: read_only (inspect definitions)
 - **Risk**: high
@@ -152,28 +224,31 @@
 - **Evidence**: R7 policy docs
 
 ## 15. Scripts (PowerShell runners)
+- **Platform**: Both
 - **Type**: script
 - **Access**: human_gated (not_run)
 - **Risk**: high
 - **Preferred for**: N/A (not authorized for execution)
-- **Forbidden for**: execution without ScriptSafetyRecord + human gate, Run-AllQueues, Run-QueueGroup
+- **Forbidden for**: execution without ScriptSafetyRecord + human gate
 - **Fallback**: N/A
 - **Human gate**: yes (per-script, per-execution)
 - **Must explain if skipped**: no
 - **Evidence**: R7 ScriptSafetyRecord
 
-## 16. Hooks Draft
+## 16. Governance Hooks
+- **Platform**: Claude
 - **Type**: hook
-- **Access**: reference_only (audit-only draft)
+- **Access**: pre-edit: active (registered, blocking). Other 4: reference_only (audit-only draft)
 - **Risk**: medium
-- **Preferred for**: audit draft reference
-- **Forbidden for**: registration, execution, blocking (exit 1), file modification
+- **Preferred for**: pre-edit: governance gate (blocks memory/sealed/secrets edits). Drafts: audit reference
+- **Forbidden for**: registering additional hooks without human gate, draft hook execution
 - **Fallback**: N/A
-- **Human gate**: yes (any registration)
+- **Human gate**: yes (any new registration beyond pre-edit)
 - **Must explain if skipped**: no
-- **Evidence**: hook file + AUDIT-ONLY DRAFT header
+- **Evidence**: pre-edit: settings.json + hook-diag-*.txt. Drafts: hook file + AUDIT-ONLY DRAFT header
 
 ## 17. Phase 6 SourceLock / Quarantine
+- **Platform**: Both
 - **Type**: source_lock
 - **Access**: reference_only (design only)
 - **Risk**: critical
@@ -183,3 +258,199 @@
 - **Human gate**: yes (clone, any Phase 6C action)
 - **Must explain if skipped**: no
 - **Evidence**: Phase 6 design docs, SourceLockRecord schema
+
+## 18. Sealed Files Manifest
+- **Platform**: Claude
+- **Type**: governance_manifest
+- **Access**: reference_only
+- **Risk**: medium
+- **Preferred for**: determining which files are sealed against unauthorized edits
+- **Forbidden for**: modification without human approval
+- **Fallback**: hardcoded 7 core files in pre-edit hook
+- **Human gate**: yes (any manifest modification)
+- **Must explain if skipped**: no
+- **Evidence**: sealed-files-manifest.json (22 files, 3 dirs, 2 memory paths)
+
+## 19. Hook Registration Script
+- **Platform**: Claude
+- **Type**: governance_script
+- **Access**: human_gated (not auto-executed)
+- **Risk**: high
+- **Preferred for**: registering pre-edit governance hook in Claude Code settings.json
+- **Forbidden for**: auto-execution, registering hooks beyond pre-edit, modifying settings without backup
+- **Fallback**: manual merge via registration-config.json
+- **Human gate**: yes (per-execution)
+- **Must explain if skipped**: no
+- **Evidence**: register-hooks.ps1 + settings.json.bak.<timestamp>
+
+---
+
+## 20. coderabbit
+- **Platform**: Codex
+- **Type**: plugin (ai_code_review)
+- **Access**: read_only (code review suggestions only; does not mutate code)
+- **Risk**: low
+- **Preferred for**: AI code review, complements `rules/review.md` P0/P1 gate enforcement
+- **Forbidden for**: auto-committing changes, modifying code without human approval
+- **Fallback**: manual review against reviewer-playbook.md
+- **Human gate**: no (review-only; does not modify state)
+- **Must explain if skipped**: no
+- **Phase 0-5**: allowed (read-only review, no mutation)
+- **Evidence**: codex plugin list output
+
+## 21. codex-security
+- **Platform**: Codex
+- **Type**: plugin (security_scanning)
+- **Access**: read_only (security analysis only; does not mutate code)
+- **Risk**: low
+- **Preferred for**: security scanning, complements `rules/security.md` sec-001~008 hard stops
+- **Forbidden for**: auto-fixing security issues without human approval, modifying config
+- **Fallback**: manual STRIDE/FMEA review
+- **Human gate**: no (scan-only; does not modify state)
+- **Must explain if skipped**: no
+- **Phase 0-5**: allowed (read-only scan, no mutation)
+- **Evidence**: codex plugin list output
+
+## 22. supabase
+- **Platform**: Codex
+- **Type**: plugin (database_backend)
+- **Access**: human_gated (database operations)
+- **Risk**: high
+- **Preferred for**: database/API operations (Phase 1+ data layer)
+- **Forbidden for**: schema migration, data mutation, table creation without human gate in Phase 0-5
+- **Fallback**: N/A (no Phase 0-5 use case)
+- **Human gate**: yes (any database write operation)
+- **Must explain if skipped**: no
+- **Phase 0-5**: restricted (writes blocked)
+- **Evidence**: codex plugin list output
+
+## 23. github
+- **Platform**: Codex
+- **Type**: plugin (git_platform)
+- **Access**: human_gated (git operations)
+- **Risk**: high
+- **Preferred for**: GitHub integration (Phase 1+)
+- **Forbidden for**: push, force-push, delete branch, modify protected branches in Phase 0-5
+- **Fallback**: local git CLI (read-only in Phase 0-5)
+- **Human gate**: yes (push, PR creation, branch deletion)
+- **Must explain if skipped**: no
+- **Phase 0-5**: restricted (writes blocked)
+- **Evidence**: codex plugin list output
+
+## 24. browser
+- **Platform**: Codex
+- **Type**: plugin (browser_automation)
+- **Access**: human_gated (in-app browser)
+- **Risk**: medium
+- **Preferred for**: localhost testing, in-app webpage inspection (Phase 2+)
+- **Forbidden for**: automated browsing of external sites, form submission without human gate
+- **Fallback**: N/A (no Phase 0-5 use case)
+- **Human gate**: yes (any browser navigation to external URLs)
+- **Must explain if skipped**: no
+- **Phase 0-5**: restricted (localhost only)
+- **Evidence**: codex plugin list output
+
+## 25. superpowers
+- **Platform**: Codex
+- **Type**: plugin (dev_methodology)
+- **Access**: reference_only (methodology guidance; not a tool)
+- **Risk**: low
+- **Preferred for**: TDD, debugging, code review methodology guidance
+- **Forbidden for**: N/A (methodology only; no executable surface)
+- **Fallback**: manual methodology docs
+- **Human gate**: no
+- **Must explain if skipped**: no
+- **Phase 0-5**: allowed (methodology reference)
+- **Evidence**: codex plugin list output
+
+## 26. linear
+- **Platform**: Codex
+- **Type**: plugin (project_management)
+- **Access**: human_gated (external SaaS)
+- **Risk**: medium
+- **Preferred for**: Phase 1+ multi-agent task tracking
+- **Forbidden for**: automated task creation/modification without human gate
+- **Fallback**: N/A (no Phase 0-5 use case)
+- **Human gate**: yes (any write to Linear)
+- **Must explain if skipped**: no
+- **Phase 0-5**: restricted (no use case; kept for Phase 1+)
+- **Evidence**: codex plugin list output
+
+## 27. notion
+- **Platform**: Codex
+- **Type**: plugin (knowledge_management)
+- **Access**: human_gated (external SaaS)
+- **Risk**: medium
+- **Preferred for**: knowledge management, complements `docs/` system (Phase 1+)
+- **Forbidden for**: automated page creation/modification without human gate
+- **Fallback**: local docs/ Markdown files
+- **Human gate**: yes (any write to Notion)
+- **Must explain if skipped**: no
+- **Phase 0-5**: restricted (no use case; kept for Phase 1+)
+- **Evidence**: codex plugin list output
+
+---
+
+## Summary
+
+| # | Capability | Platform | Type | Risk | Status | Verified | Phase 0-5 |
+|---|-----------|:---:|------|:---:|:---:|:---:|:---:|
+| 1 | CodeGraph | Both | code_intelligence | high | approved | unknown | read-only |
+| 2 | rg/Grep/Read | Both | search | low | approved | unknown | read-only |
+| 3 | Shell (read-only) | Both | shell | medium | approved | unknown | read-only |
+| 4 | JSON Validation | Both | validation | low | approved | unknown | read-only |
+| 5 | Runtime Docs | Both | docs | low | approved | unknown | read-only |
+| 6 | Runtime Rules | Both | rules | low | approved | unknown | read-only |
+| 7 | Negative Tests | Both | testing | low | approved | unknown | reference |
+| 8 | Reviewer Playbooks | Both | review | low | approved | unknown | reference |
+| 9 | Blackboard MCP | Claude | mcp | critical | approved | unknown | forbidden |
+| 10 | test-frame | Both | evidence | high | approved | unknown | read+current_evidence |
+| 11 | dev-frame | Both | orchestration | high | approved | unknown | adapter_dry_run |
+| 12 | Local Skills | Both | skill | high | approved | unknown | reference_only |
+| 13 | Memory | Both | memory | high | approved | unknown | read-only |
+| 14 | WorkQueue | Both | workqueue | high | approved | unknown | dry_run_dispatch |
+| 15 | Scripts | Both | script | high | approved | unknown | source_inspection |
+| 16 | Hooks | Claude | hook | medium | approved | unknown | pre-edit active |
+| 17 | Phase 6 SourceLock | Both | source_lock | critical | approved | unknown | design_only |
+| 18 | Sealed Files Manifest | Claude | governance | medium | approved | unknown | active |
+| 19 | Hook Registration Script | Claude | governance | high | approved | unknown | human_gated |
+| 20 | coderabbit | Codex | ai_review | low | approved | unknown | allowed |
+| 21 | codex-security | Codex | security | low | approved | unknown | allowed |
+| 22 | supabase | Codex | database | high | approved | unknown | restricted |
+| 23 | github | Codex | git | high | approved | unknown | restricted |
+| 24 | browser | Codex | browser | medium | approved | unknown | restricted |
+| 25 | superpowers | Codex | methodology | low | approved | unknown | allowed |
+| 26 | linear | Codex | pm | medium | approved | unknown | restricted |
+| 28 | Sub-Agent Dispatch | Both | orchestration | medium | approved | unknown | read-only |
+| 27 | notion | Codex | knowledge | medium | approved | unknown | restricted |
+
+## Risk Distribution
+
+| Risk | Count | Capabilities |
+|:---:|:---:|------|
+| critical | 2 | Blackboard MCP, Phase 6 SourceLock |
+| high | 10 | CodeGraph, test-frame, dev-frame, Local Skills, Memory, WorkQueue, Scripts, Hook Registration Script, supabase, github |
+| medium | 6 | Shell, Hooks, Sealed Manifest, browser, linear, notion |
+| low | 9 | rg/Grep, JSON, Docs, Rules, Negative Tests, Playbooks, coderabbit, codex-security, superpowers |
+
+
+## 28. Sub-Agent Dispatch Protocol (SADP)
+- **Platform**: Both
+- **Type**: orchestration
+- **Access**: read_only (docs + protocol reference)
+- **Risk**: medium
+- **Preferred for**: default multi-agent task dispatch (Codex goal agent �� Claude Code agent)
+- **Forbidden for**: execution without TaskSpec, producing GateResult, capability use without core-007 registration
+- **Fallback**: ad-hoc goal-mode handoff
+- **Human gate**: no (protocol reference only)
+- **Must explain if skipped**: yes (if TaskSpec format not used, explain why)
+- **Evidence**: sub-agent-dispatch-protocol.md exists (194 lines), bootstrap copies it, AGENTS.md references it as default process
+
+### Status Legend
+
+| Status | Meaning |
+|--------|---------|
+| approved | Reviewer-approved and enabled on target platform |
+| proposed | Awaiting reviewer approval; not yet enabled |
+| disabled | Previously approved, now disabled (kept for historical record) |
+| rejected | Proposal rejected; capability must not be used |

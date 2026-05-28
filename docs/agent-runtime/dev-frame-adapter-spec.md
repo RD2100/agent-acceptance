@@ -1,7 +1,12 @@
 # dev-frame Orchestration Adapter Spec -- R3
 
 > Batch X (R3), 2026-05-27
-> R3 = design only. No execution. No dry-run. No smoke_test.py.
+> R3 exit granted (2026-05-28). adapter_dry_run authorized. Read-only command inspection permitted. No test execution yet.
+
+
+> **Phase Exit Authorization**: 2026-05-28. Reviewer: RD. R3 exit gate satisfied.
+> adapter_dry_run now authorized. Read-only command inspection (`dir`, `git log`, `cat`) permitted on dev-frame components.
+> Test execution (smoke_test.py, e2e) still requires separate human gate per ScriptSafetyRecord.
 
 ## 1. dev-frame Role
 
@@ -37,8 +42,8 @@ dev-frame MUST NOT produce GateResult. Smoke reports and test results are eviden
 |-----------|------|:---:|:---:|---|
 | ai-workflow-hub | `D:\dev-frame\ai-workflow-hub` | read_only (dir listing) | design_only | no execution |
 | ai-workflow-hub-e2e | `D:\dev-frame\ai-workflow-hub-e2e` | read_only (dir listing) | design_only | no execution |
-| smoke_test.py | `D:\dev-frame\smoke_test.py` | forbidden | design_only | script safety required |
-| smoke_report.txt | `D:\dev-frame\smoke_report.txt` | read_only (historical) | historical_only | 2026-05-27: 3/3 PASS (historical) |
+| smoke_test.py | D:\dev-frame\smoke_test.py | read_only (source) | adapter_dry_run | read source, do not execute | |
+| smoke_report.txt | D:\dev-frame\smoke_report.txt | read_only | current (2026-05-27 baseline) | 3/3 PASS (historical baseline) |
 | agent-acceptance (clone) | `D:\dev-frame\agent-acceptance` | read_only (dir listing) | duplicate | secondary clone; canonical is `D:\agent-acceptance` |
 | .aiworkflow | `D:\dev-frame\.aiworkflow` | read_only (dir listing) | reference | no modification |
 | aihub-worktrees | `D:\dev-frame\aihub-worktrees` | read_only (dir listing) | reference | no modification |
@@ -61,9 +66,9 @@ dev-frame MUST NOT produce GateResult. Smoke reports and test results are eviden
 | **Human gate** | Not required (design phase) | Required (separate approval) |
 | **Evidence** | Document existence | Command output inspection |
 
-## 8. Future Dry-Run Human Gate
+## 8. Dry-Run Human Gate (Authorized 2026-05-28)
 
-Before any dry-run in a future phase:
+Before any dry-run:
 1. ScriptSafetyRecord must exist (script path, expected side effects, timeout, rollback)
 2. Reviewer must explicitly approve the dry-run
 3. Expected side effects must be documented before execution
