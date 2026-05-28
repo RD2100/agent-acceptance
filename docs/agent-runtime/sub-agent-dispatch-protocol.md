@@ -52,6 +52,25 @@ If the check finds existing coverage ï¿½ï¿½ **Do not create TaskSpec. Return reu
 
 Execute agent MUST reject any additive TaskSpec that lacks documented sufficiency check.
 
+
+### 0.0 Auto-Trigger Rules (When SADP Activates)
+
+SADP is not optional. The following conditions automatically trigger the full SADP workflow (Gate 0 ¡ú TaskSpec ¡ú dispatch ¡ú review ¡ú regression), even without the user saying `@go`:
+
+| Condition | Trigger |
+|-----------|---------|
+| Task modifies 3+ files | Auto-trigger SADP |
+| Task modifies any governance file (rules/*, AGENTS.md, SADP, inventory, lessons) | Auto-trigger SADP + full regression |
+| Task creates new files in docs/agent-runtime/ | Auto-trigger SADP |
+| User says any task-like instruction without `@go` | Agent MUST ask: "SADP or direct?" |
+| Task involves git commit/push | Auto-trigger SADP (core-001 human gate) |
+| Task involves capability registration | Auto-trigger SADP (core-007) |
+
+**Only exempt:** Single-file read-only tasks (inspect, search, query), Q&A, and trivial text fixes to non-governance files.
+
+**Plan agent violation:** If the plan agent executes a triggered task without creating a TaskSpec and running Gate 0, the human reviewer should reject the output and require SADP re-execution.
+
+
 ### 0.1 Gate 0 Ledger (Mandatory TaskSpec Field)
 
 Every TaskSpec MUST include a `gate_0` YAML block recording the outcome of the Gate 0 Resource Sufficiency Check.
