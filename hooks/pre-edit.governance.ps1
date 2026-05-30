@@ -1,4 +1,4 @@
-# ACTIVE HOOK â€?Governance Gate
+# ACTIVE HOOK ï¿½?Governance Gate
 # Registered - Blocking on hard violations - No mutation - No secret access
 #
 # pre-edit.audit.draft.ps1
@@ -42,16 +42,16 @@ if (-not $filePath -and $EditInfo -match '"path"\s*:\s*"([^"]+)"')  { $filePath 
 
 Write-Output "[AUDIT] Target file: $filePath"
 
-# P0: Block edits to memory directories â€?HARD STOP
+# P0: Block edits to memory directories ï¿½?HARD STOP
 $memoryPaths = @(
-    "C:\Users\RD\.claude\projects\D--agent-acceptance\memory\",
-    "C:\Users\RD\.claude\memory\"
+    "$env:USERPROFILE\.claude\projects\D--agent-acceptance\memory\",
+    "$env:USERPROFILE\.claude\memory\"
 )
 foreach ($memPath in $memoryPaths) {
     $memPattern = [regex]::Escape($memPath)
     if ($filePath -match $memPattern) {
         Write-Output "[AUDIT] HARD STOP: Target is in RD2100 memory directory."
-        Write-Output "[AUDIT]   Handoff 'Do Not write RD2100 memory' â€?BLOCKED."
+        Write-Output "[AUDIT]   Handoff 'Do Not write RD2100 memory' ï¿½?BLOCKED."
         Write-Output "[AUDIT] STATUS: BLOCKED_MEMORY_WRITE"
         exit 1
     }
@@ -119,7 +119,7 @@ if ($isGovernanceFile) {
     
     Write-Output "[AUDIT]   Governance file edit authorized by existing TaskSpec."
 }
-# P0: Block edits to sealed files â€?HARD STOP
+# P0: Block edits to sealed files ï¿½?HARD STOP
 # Load sealed files from manifest (single source of truth)
 $manifestPath = Join-Path $PSScriptRoot "sealed-files-manifest.json"
 $sealedFiles = @()
@@ -164,10 +164,10 @@ foreach ($pattern in $secretPatterns) {
 
 # P1: Check write scope - Phase 0-5 approved directories
 $approvedScopes = @(
-    [regex]::Escape("D:\agent-acceptance\docs\agent-runtime\"),
-    [regex]::Escape("D:\agent-acceptance\rules\"),
-    [regex]::Escape("D:\agent-acceptance\hooks\"),
-    [regex]::Escape("D:\agent-acceptance\skills-inbox\")
+    [regex]::Escape("$PSScriptRoot\..\docs\agent-runtime\"),
+    [regex]::Escape("$PSScriptRoot\..\rules\"),
+    [regex]::Escape("$PSScriptRoot\..\hooks\"),
+    [regex]::Escape("$PSScriptRoot\..\skills-inbox\")
 )
 
 $inApprovedScope = $false

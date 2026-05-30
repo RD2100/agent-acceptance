@@ -148,7 +148,7 @@ The following are **NOT active** in Phase 0-5:
 
 - Hooks: pre-edit is active (blocks memory/sealed/secrets edits). Other 4 hooks are audit-only drafts. No further registration without human gate.
 - External skills: not installed, not cloned, not executed
-- Memory writes: now active (post-Audit); MemoryUpdateRecord auto-applied
+- Memory writes: blocked in Phase 0-5 (enforced by pre-edit.governance.ps1). Will be permitted in Phase 6 with MemoryUpdateRecord schema + approval gate.
 - Package install: forbidden (npm, pip, yarn)
 - MCP config changes: forbidden
 - Git mutations: no commit, stash, reset, clean, checkout, push, delete

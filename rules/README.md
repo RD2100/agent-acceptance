@@ -31,7 +31,7 @@ Each rule entry:
 
 | File | Domain | Rule Count |
 |------|--------|:---:|
-| `core.md` | Runtime core -- execution, gating, phase boundaries | 6 |
+| `core.md` | Runtime core -- execution, gating, phase boundaries | 8 |
 | `coding.md` | Code generation -- edits, style, patterns | 7 |
 | `research.md` | Read-only exploration -- reading, searching, CodeGraph | 5 |
 | `security.md` | Security hard stops -- secrets, injection, traversal | 8 |

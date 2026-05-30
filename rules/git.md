@@ -1,7 +1,7 @@
 # Git Rules -- RD2100 Agent Runtime v2
 
 > Domain: git safety
-> Phase 0-5: all P0/P1 rules active; P2 advisory
+> Phase 0-5: P0/P1 active; P2-P4 within approved task scope
 
 ---
 

@@ -1,7 +1,7 @@
 # Review Rules -- RD2100 Agent Runtime v2
 
 > Domain: review, evidence, and reporting
-> Phase 0-5: all rules active
+> Phase 0-5: P0/P1 active; P2-P4 within approved task scope
 
 ---
 

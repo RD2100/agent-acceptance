@@ -1,0 +1,52 @@
+{
+  "batch_id": "batch-smoke",
+  "mode": "smoke",
+  "description": "Minimal smoke batch for exit code canary validation (case-001 ~ case-004). All tasks must work on clean clone.",
+  "tasks": [
+    {
+      "id": "exit-0",
+      "title": "case-001: exit 0 = PASS",
+      "tier": 0,
+      "command": "powershell -Command \"exit 0\"",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 10
+    },
+    {
+      "id": "exit-1",
+      "title": "case-002: exit 1 = BLOCKED",
+      "tier": 0,
+      "command": "powershell -Command \"exit 1\"",
+      "expected_exit_codes": [1],
+      "required_artifacts": [],
+      "timeout_seconds": 10
+    },
+    {
+      "id": "exit-2",
+      "title": "case-003: exit 2 = INFRA_ERROR / FAILED",
+      "tier": 0,
+      "command": "powershell -Command \"exit 2\"",
+      "expected_exit_codes": [2],
+      "required_artifacts": [],
+      "timeout_seconds": 10
+    },
+    {
+      "id": "timeout",
+      "title": "case-004: timeout = INFRA_ERROR",
+      "tier": 0,
+      "command": "powershell -Command \"Start-Sleep -Seconds 30\"",
+      "expected_exit_codes": [2],
+      "required_artifacts": [],
+      "timeout_seconds": 2
+    },
+    {
+      "id": "docs-exist",
+      "title": "Governance docs existence check",
+      "tier": 0,
+      "command": "powershell -ExecutionPolicy Bypass -File scripts/tests/Test-DocsExist.ps1",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 10
+    }
+  ]
+}

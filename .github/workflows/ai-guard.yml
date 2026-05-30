@@ -5,10 +5,13 @@ on:
     branches: [main, master]
   push:
     branches: [main, master]
+  workflow_dispatch:
 
 jobs:
   ai-guard:
     runs-on: windows-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,6 +27,43 @@ jobs:
       - name: AI Guard — Deny Paths + Scope + Secret Scan
         run: python tools/ai_guard.py full
 
-      - name: Secret Scan (GitHub native)
-        if: always()
-        uses: actions/secret-scanning-action@v1
+  governance-drift:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Governance Manifest Check
+        run: powershell -ExecutionPolicy Bypass -File scripts/Test-GovernanceManifest.ps1
+
+      - name: Governance Drift Check
+        run: powershell -ExecutionPolicy Bypass -File scripts/Test-GovernanceDrift.ps1
+
+  governance-gate:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Test Governance (advisory mode)
+        run: powershell -ExecutionPolicy Bypass -File scripts/Test-Governance.ps1 -Mode advisory

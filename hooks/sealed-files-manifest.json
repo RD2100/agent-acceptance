@@ -1,39 +1,567 @@
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "version": "1.0",
-  "description": "Files in sealed tracks â€?edits blocked unless explicitly unsealed. Add/remove entries through human-approved change requests only.",
-  "sealed_files": [
-    "resource-integration-handoff.md",
-    "resource-integration-final-audit.md",
-    "resource-integration-plan.md",
-    "resource-integration-status-index.md",
-    "resource-registry.md",
-    "resource-risk-matrix.md",
-    "capability-routing-handoff.md",
-    "capability-routing-final-audit.md",
-    "capability-inventory.md",
-    "task-capability-routing-matrix.md",
-    "operating-model.md",
-    "integration-contracts.md",
-    "tool-policy.md",
-    "memory-architecture.md",
-    "skill-trigger-matrix.md",
-    "verification-gates.md",
-    "runtime-invariants.md",
-    "stride-threat-model.md",
-    "fmea-risk-analysis.md",
-    "phase-6b-handoff.md",
-    "phase-6b-source-lock-plan.md"
-  ],
-  "sealed_dirs": ["hooks/",
-    "schemas/",
-    "rules/",
-    "docs/agent-runtime/negative-test-fixtures/"
-  ],
-  "memory_paths": [
-    "C:\\Users\\RD\\.claude\\projects\\D--agent-acceptance\\memory\\",
-    "C:\\Users\\RD\\.claude\\memory\\"
-  ],
-  "created": "2026-05-28",
-  "note": "To unseal a file, remove it from this manifest. Requires human approval."
+ï»¿{
+    "source":  "D:\\agent-acceptance",
+    "sealed_dirs":  [
+                        "hooks/",
+                        "governance/"
+                    ],
+    "memory_paths":  [
+                         "C:\\Users\\RD\\.claude\\projects\\D--agent-acceptance\\memory\\",
+                         "C:\\Users\\RD\\.claude\\memory\\"
+                     ],
+    "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+    "generated":  "2026-05-30T21:49:51.7263530+08:00",
+    "sealed_files":  [
+                         {
+                             "sha256":  "CCF551EA1E8C0E0BAF8823F368141F19DE131E5DFFC5B864DA14E0A9348CEE58",
+                             "path":  ".ai/policy.yaml"
+                         },
+                         {
+                             "sha256":  "F5402182B1DE334FDA80D37E3E1901B4DD36E7C9CD678A49A1F4977115FDF9CA",
+                             "path":  ".backup/simplify-20260530-100839/AGENTS.md"
+                         },
+                         {
+                             "sha256":  "EF87627030DD9E94639885D6E57055D45FC9994E66CE47DF73A7BF4BA38CEF9D",
+                             "path":  ".github/workflows/ai-guard.yml"
+                         },
+                         {
+                             "sha256":  "F234EDA4140310FEDFFC851C346FA926F9DD874A3A186BAF59F28FBCC7B58B44",
+                             "path":  "AGENTS.md"
+                         },
+                         {
+                             "sha256":  "3F33141723BC1F2EE24F973389F774C7356FF00D2922AB9D5F21B79C5AF9DC55",
+                             "path":  "batches/batch-smoke.json"
+                         },
+                         {
+                             "sha256":  "076F9E4D637F0E092958E25434BA72E17CA46E608665DA951C6B447513A4597E",
+                             "path":  "batches/future/batch-local-quality.future.json"
+                         },
+                         {
+                             "sha256":  "21C58F2575FD13849D0DC762D28113D7EE6270AF9F9000A6D026778D1D2BA62A",
+                             "path":  "docs/agent-runtime/acceptance-script-registry.md"
+                         },
+                         {
+                             "sha256":  "447B69DA3816013D12887607AA99B5367F65AB372869E3C336AD3DE2F1202661",
+                             "path":  "docs/agent-runtime/audit-record.schema.md"
+                         },
+                         {
+                             "sha256":  "08D370EFB47FF84BD027F5EC9ADE95A261D2B2BDE650967913443E1FD5CF1A14",
+                             "path":  "docs/agent-runtime/authority-matrix.md"
+                         },
+                         {
+                             "sha256":  "732CA48B01F3765A5626B70156D42AEC6BCDF6692E7AFB84C91DF2BCBBB1D61B",
+                             "path":  "docs/agent-runtime/capability-fallback-policy.md"
+                         },
+                         {
+                             "sha256":  "1D3401ED71AB0CA559C2AD502F90D99A56A14259EA80C089E280676936E5816C",
+                             "path":  "docs/agent-runtime/capability-inventory.md"
+                         },
+                         {
+                             "sha256":  "4135004D7BEC2FDFB687FAFFB411D3DCEA5B5CA528EC6B8B43E358820E8FD506",
+                             "path":  "docs/agent-runtime/capability-risk-matrix.md"
+                         },
+                         {
+                             "sha256":  "BC682BE4D07D1BADC6F505366FF7B93C16C53579F4A59453A5F33AC24A76A011",
+                             "path":  "docs/agent-runtime/capability-routing-reviewer-checklist.md"
+                         },
+                         {
+                             "sha256":  "551696DEB8B84E4130820641DAEED867394232208565DF440550B80048ECC212",
+                             "path":  "docs/agent-runtime/capability-routing-reviewer-playbook.md"
+                         },
+                         {
+                             "sha256":  "3F12447FEB089E0509BB70E19DC7E5D7A6EDB87E6D86D2FD73E991BEDEBD8F19",
+                             "path":  "docs/agent-runtime/capability-routing-status-index.md"
+                         },
+                         {
+                             "sha256":  "FA4E9E726C0BDB19982409891B2F0559D490789644A95A822002BABABB5C990D",
+                             "path":  "docs/agent-runtime/capability-selection-policy.md"
+                         },
+                         {
+                             "sha256":  "68F3FE1E0F3214A3B531A0FDD16BF92892D7784DB38E65ABFCF8F76FAC62D810",
+                             "path":  "docs/agent-runtime/codegraph-negative-tests.md"
+                         },
+                         {
+                             "sha256":  "54C51F22F33EDA80DD358CB49AEA1B3F97353569052BBA82CF103A29BD8506A8",
+                             "path":  "docs/agent-runtime/codegraph-review-checklist.md"
+                         },
+                         {
+                             "sha256":  "E52088D22086F566A8F7352636D9483EBAD52F74C2BB992E174406E1DFE9D594",
+                             "path":  "docs/agent-runtime/codegraph-stale-policy.md"
+                         },
+                         {
+                             "sha256":  "55C851E95579BB79C0919B31D45407DE2CD3D7846032CC3CA1041A424B1828BA",
+                             "path":  "docs/agent-runtime/coding-agent-capability-prompt.md"
+                         },
+                         {
+                             "sha256":  "B58A262CA86787AEDA793C2E523E6EFB8C9223ECB818F0BD473FABF58095BE1C",
+                             "path":  "docs/agent-runtime/contract-evolution-policy.md"
+                         },
+                         {
+                             "sha256":  "EB0121810B9FC2DA1BB647467FDE517E0ADEC8025BBB977EE63B9576990D4F6D",
+                             "path":  "docs/agent-runtime/cr0-capability-inventory-reviewer-checklist.md"
+                         },
+                         {
+                             "sha256":  "6A920E0B6B0704782A80BBFEEE24DBB104F6ADA685702C32BA5B050C88D32992",
+                             "path":  "docs/agent-runtime/dependency-canaries.md"
+                         },
+                         {
+                             "sha256":  "DCD09F3A1C35C514F8415894F9060B72A0BC0AC8F73B2F9D298F2BB86EEE366C",
+                             "path":  "docs/agent-runtime/dev-frame-adapter-spec.md"
+                         },
+                         {
+                             "sha256":  "856AB4E1399030BCB8F9248EA8B0042041E34833D7792972C0988FB0972824EB",
+                             "path":  "docs/agent-runtime/dev-frame-negative-tests.md"
+                         },
+                         {
+                             "sha256":  "BE3F1B44776624B9C37B661E9711AC1D8F51628B80C33E3B60B6A56FEA088C9B",
+                             "path":  "docs/agent-runtime/diag-test.md"
+                         },
+                         {
+                             "sha256":  "36F9443B4F326DFDFAE108781FC9D495D6322E1A1F5F9DBCC94E54F4DEA28AF1",
+                             "path":  "docs/agent-runtime/dispatch-model-profiles.md"
+                         },
+                         {
+                             "sha256":  "9F95CE3C6C2F70A81D5D95DC2EB855840F39223CF82EBE8CB89D5E138FAE8D3D",
+                             "path":  "docs/agent-runtime/external-skill-intake.md"
+                         },
+                         {
+                             "sha256":  "537A105B9AF03C3332C7AE549566AB423B94F7689C3ABFF0C4ABB43834CEAE0C",
+                             "path":  "docs/agent-runtime/fmea-risk-analysis.md"
+                         },
+                         {
+                             "sha256":  "ACC7020CD5D7077025A997D5D61028E4C44A044D887E03367DB465C46D0DDA81",
+                             "path":  "docs/agent-runtime/frame-fusion-analysis.md"
+                         },
+                         {
+                             "sha256":  "75E7B816BF693AE2E3D8E50ED358530BD89AFC7819E3C964E9BC5691430B5E6B",
+                             "path":  "docs/agent-runtime/governance-manifest.md"
+                         },
+                         {
+                             "sha256":  "DC1DBF31F687AB0CE122CA2C48446A98F345AA5C4E747761A3B24F765F0B693C",
+                             "path":  "docs/agent-runtime/handoff-to-next-agent.md"
+                         },
+                         {
+                             "sha256":  "9A4D978D646647C17446E1741C13A19EE4DC8A814D7A8FAD85F2AEE648436123",
+                             "path":  "docs/agent-runtime/historical-evidence-policy.md"
+                         },
+                         {
+                             "sha256":  "45AD5284DD53F2338330F44FC2BF313291EA90316868CB81ACE8AC4C1F97B1DF",
+                             "path":  "docs/agent-runtime/hook-governance-upgrade-decision.md"
+                         },
+                         {
+                             "sha256":  "F34E223DA4A3EE3D8F03DA51DA021AA561006AC6C4192C7849748ABD54C2A754",
+                             "path":  "docs/agent-runtime/inactive-frame-registry.md"
+                         },
+                         {
+                             "sha256":  "3B75300D5796686A6DB3AD9F5B8B634ACC11779BD72AE9F6AD2804E9F4ACFDFC",
+                             "path":  "docs/agent-runtime/integration-contracts.md"
+                         },
+                         {
+                             "sha256":  "7E14256DF15344CCAF382C09DB75C71F14131E7879025D6394B8B483C8762E4A",
+                             "path":  "docs/agent-runtime/lessons-learned.md"
+                         },
+                         {
+                             "sha256":  "1BB6BB2823DEFEE7096F017CBEC8B66F193222C53127DEE75BA768D8533414A7",
+                             "path":  "docs/agent-runtime/local-skill-intake.md"
+                         },
+                         {
+                             "sha256":  "7FE8C176EDEB3DE7A6859D07786065AE5542C9187BE8B5F2797BEAFA9EA73377",
+                             "path":  "docs/agent-runtime/memory-architecture.md"
+                         },
+                         {
+                             "sha256":  "252BB3A9D08E019DD0C7E535EF2026215B346774DDF8F8C26AB634659B12ECF9",
+                             "path":  "docs/agent-runtime/memory-context-map.md"
+                         },
+                         {
+                             "sha256":  "26EA6ED024CA31279A1D9569B7DF109DC6455C46C69B03F9A0146C808F5789AD",
+                             "path":  "docs/agent-runtime/negative-acceptance-tests.md"
+                         },
+                         {
+                             "sha256":  "AF56CDFEB05BE94913AFA1B631780F27FE0F448717A2684D56231AF1F1B93E3E",
+                             "path":  "docs/agent-runtime/negative-test-fixtures/README.md"
+                         },
+                         {
+                             "sha256":  "788908F0E2741DB7801FF48B115EDDDF8C10A53D9F40376F7F387C1EB7303E75",
+                             "path":  "docs/agent-runtime/next-agent-handoff.md"
+                         },
+                         {
+                             "sha256":  "F415C9CBF801A049521F966447C0AF259934B69FA352588E67C212F41B99CCB0",
+                             "path":  "docs/agent-runtime/operating-model.md"
+                         },
+                         {
+                             "sha256":  "022DA04B67020CC2D0FF3224B9204D6317802814E6A89B91852265A2E87C977F",
+                             "path":  "docs/agent-runtime/path-drift-register.md"
+                         },
+                         {
+                             "sha256":  "5C4E76709E1E1DD05D7C2C202B00BF6E6CBDF541911C90C2DAE10AD851312419",
+                             "path":  "docs/agent-runtime/r0-negative-tests.md"
+                         },
+                         {
+                             "sha256":  "7B3221B4F24B45D337AD46198727E8B818242A65DD91181CE526509D3DB00ACC",
+                             "path":  "docs/agent-runtime/r0-reviewer-checklist.md"
+                         },
+                         {
+                             "sha256":  "7BBFB4322DB572957BD411C36A2532FAB01061AB0F02F38D9F7CC49FA1D91C1A",
+                             "path":  "docs/agent-runtime/r2-test-frame-negative-tests.md"
+                         },
+                         {
+                             "sha256":  "7278F71446739C797EB9C9432EA4761D5E8CBC883BA43CE4A9B859903C707DE1",
+                             "path":  "docs/agent-runtime/r2-test-frame-reviewer-checklist.md"
+                         },
+                         {
+                             "sha256":  "DD9A191AD59CCD0E5FDF408C6F7C3EAD1BFC0EB792162092F247191EE9BB4447",
+                             "path":  "docs/agent-runtime/r5-local-skill-negative-tests.md"
+                         },
+                         {
+                             "sha256":  "735D1035929D75198E46F4B520F9916C15C33B8E8F891E466FCAE8BB5C72377E",
+                             "path":  "docs/agent-runtime/r5-local-skill-reviewer-checklist.md"
+                         },
+                         {
+                             "sha256":  "6EB3645594FA9D64F75983A07BDF1CCF9B802EABD94562F45625AACA707F27E1",
+                             "path":  "docs/agent-runtime/r6-memory-negative-tests.md"
+                         },
+                         {
+                             "sha256":  "B0C6303F40753992A9D7598ACAD6024D83FDBB93FBDE8D26E1630A5F6FB392C6",
+                             "path":  "docs/agent-runtime/r6-memory-reviewer-checklist.md"
+                         },
+                         {
+                             "sha256":  "77C092D7315A09B571A1058696170C9F8986D7EE2A9D4F02559251C8B45FF37B",
+                             "path":  "docs/agent-runtime/r7-acceptance-native-negative-tests.md"
+                         },
+                         {
+                             "sha256":  "9F8C898C42A86409A8DC0C8C538F9D7EB6BD5DE6EFBF80FF14BE3050A04CB410",
+                             "path":  "docs/agent-runtime/r7-acceptance-native-reviewer-checklist.md"
+                         },
+                         {
+                             "sha256":  "2EE16B328DA5E97B64BC7B13D2B5B7D06539548BAF01BA105F3D6F020571E657",
+                             "path":  "docs/agent-runtime/README.md"
+                         },
+                         {
+                             "sha256":  "A6E126C00D9C4AD23D9FF3BCEAE05C40B3182A6C3B9D5A483493DA2A18EB8772",
+                             "path":  "docs/agent-runtime/red-team/hook-acceptance-test.md"
+                         },
+                         {
+                             "sha256":  "006A09CDC294384BCEF99646F71B587378D34D5D1DB7920E68201086495BE8EA",
+                             "path":  "docs/agent-runtime/red-team/injection-prompt.md"
+                         },
+                         {
+                             "sha256":  "78D5B90E01453F197B83275DAEBA3B92DE1210FE29332F2CD13DEF44CB830B4A",
+                             "path":  "docs/agent-runtime/red-team/probe-script.md"
+                         },
+                         {
+                             "sha256":  "8153FCF96F69787A4A81FDF09AD6C061E3D74207DE00DFE3BD79DFF6406FA5B6",
+                             "path":  "docs/agent-runtime/red-team/README.md"
+                         },
+                         {
+                             "sha256":  "509CDD234CDC845427B522975A8FC710E8A0384D0668E6BFE6929CE23D2FCE16",
+                             "path":  "docs/agent-runtime/resource-integration-final-audit.md"
+                         },
+                         {
+                             "sha256":  "4B7777CF98DDECA4274BABF81251984C0F555A9B37B9C30D5C99FA6755FFD35B",
+                             "path":  "docs/agent-runtime/resource-integration-handoff.md"
+                         },
+                         {
+                             "sha256":  "CB0D966BBD5818981166BC159B33D55D92C363A544436DE178B199C952D98142",
+                             "path":  "docs/agent-runtime/resource-integration-open-items.md"
+                         },
+                         {
+                             "sha256":  "082C07A80A54ADF3AA7F1C5F32EBED627BF8E02BD59EA4CA47FD4A43ED0B842C",
+                             "path":  "docs/agent-runtime/resource-integration-plan.md"
+                         },
+                         {
+                             "sha256":  "BFB25695A8250736B0A5ED1A82AD3B74FB5AC20D155D224AC2D1A065939E554F",
+                             "path":  "docs/agent-runtime/resource-integration-reviewer-playbook.md"
+                         },
+                         {
+                             "sha256":  "F424A298C3C5A3A91E00B1CED578C9CF49AED3904D85B5F45F3A0CC611D890D8",
+                             "path":  "docs/agent-runtime/resource-integration-status-index.md"
+                         },
+                         {
+                             "sha256":  "19A33EE8BD6176038D5C6F0B0AD67E9A7852859511C3B2B28FA52D7EB4A8C724",
+                             "path":  "docs/agent-runtime/resource-inventory.md"
+                         },
+                         {
+                             "sha256":  "F8BBA977E3D93F7F7F8DDF19BCECE5180E2307A17D85E3C1427CFC78CDFA9A87",
+                             "path":  "docs/agent-runtime/resource-registry.md"
+                         },
+                         {
+                             "sha256":  "3D65D08F71232039ED6C61BB555E26CFADC76A192169BAA361D9B8168B5D97D9",
+                             "path":  "docs/agent-runtime/resource-registry-reference-count.md"
+                         },
+                         {
+                             "sha256":  "0ECDB007D752B976502EFA015A24D505380928A5508FBF5ED40667717C98B7FE",
+                             "path":  "docs/agent-runtime/resource-risk-matrix.md"
+                         },
+                         {
+                             "sha256":  "45E1A96706D066C2D14333532864166949792C2DA7E576447CF3AAD86C6048FC",
+                             "path":  "docs/agent-runtime/reviewer-capability-prompt.md"
+                         },
+                         {
+                             "sha256":  "E20618A65BC7046F8C151D7F485D3110D8CDF30EE8040A30F6716A3E9F624FF1",
+                             "path":  "docs/agent-runtime/reviewer-playbook.md"
+                         },
+                         {
+                             "sha256":  "3CBC22A3623639A882E342AC51724ABE20BFF86696B3C17EB703D6404389225A",
+                             "path":  "docs/agent-runtime/routing-matrix-summary.md"
+                         },
+                         {
+                             "sha256":  "4F9DC6DCFDA5F3EB8806443D453CD6A8A8DB37B856F93D7BEBA8CAA97ABE9EFD",
+                             "path":  "docs/agent-runtime/rule-dedup-map.md"
+                         },
+                         {
+                             "sha256":  "D9300C8BE7F208013BE316522A42E159E37A4FD99892A6F0F264C7C1EA3486C9",
+                             "path":  "docs/agent-runtime/run-history-policy.md"
+                         },
+                         {
+                             "sha256":  "2C830EE77E355048CF4C08C18D9210FA82EC5698D242D91F7C9645426326AE2C",
+                             "path":  "docs/agent-runtime/runtime-invariants.md"
+                         },
+                         {
+                             "sha256":  "95D4203D4EA57EAA20120ECB957F835EA7BB00BAF4DDF9834ADC4A645BC28F35",
+                             "path":  "docs/agent-runtime/runtime-v2-final-status.md"
+                         },
+                         {
+                             "sha256":  "1A3B49C2812184A3EFF282D4EBB09D6E413A6D0F607B25A188C95A5989AABD5B",
+                             "path":  "docs/agent-runtime/schema-reference-integrity-check.md"
+                         },
+                         {
+                             "sha256":  "A08CE60025E487E39B512D26B1E00F8E579A381E2D68A58977567501EAE01E79",
+                             "path":  "docs/agent-runtime/self-evolution-quarantine-policy.md"
+                         },
+                         {
+                             "sha256":  "8CE41489D5C4A23F6292D2DE2C1BF7AFA655B7B87002996A17E6AC6959465B62",
+                             "path":  "docs/agent-runtime/session-ledger.schema.md"
+                         },
+                         {
+                             "sha256":  "9164BAE53BBC84FD39F767973579335A95F80FC50C2D4499EF3E1551ECD20F78",
+                             "path":  "docs/agent-runtime/skills-inbox-inventory.md"
+                         },
+                         {
+                             "sha256":  "A0F4BA1DC86A8F06E1E5D0D947F7E108422E38F5BD3A30F9CD2224F264783863",
+                             "path":  "docs/agent-runtime/skill-trigger-matrix.md"
+                         },
+                         {
+                             "sha256":  "5FD09FBAF40EF1D263CC296CF71F6CB14E4F0E6235AD43C2B5FF369046FBA4F4",
+                             "path":  "docs/agent-runtime/smoke-validation-policy.md"
+                         },
+                         {
+                             "sha256":  "99377D406603FD7306407EE581CB8D077AA76C8DFE20F27A736F7410A468BC85",
+                             "path":  "docs/agent-runtime/sourcelock-contract.md"
+                         },
+                         {
+                             "sha256":  "4DEBB449DCAB61BD4BA79FD29BE888FD80A01C1B5093117602E095D39577F51A",
+                             "path":  "docs/agent-runtime/source-of-truth-decision.md"
+                         },
+                         {
+                             "sha256":  "D787C3D08246903054B52B903DDA426A183EDD2BD9FB4AB8D91FE4A3DE5AD470",
+                             "path":  "docs/agent-runtime/stale-memory-review-checklist.md"
+                         },
+                         {
+                             "sha256":  "595A251DE8B1E5CDCA1FC415999ADD8A09C7E638706807B75CF0BBA56AA53087",
+                             "path":  "docs/agent-runtime/stride-threat-model.md"
+                         },
+                         {
+                             "sha256":  "0165F92B417A2CBE8BF0E6FF99192C64E878A38412ECA4CEA5400C852D4B05C9",
+                             "path":  "docs/agent-runtime/sub-agent-dispatch-protocol.md"
+                         },
+                         {
+                             "sha256":  "92702B851DA048305B4ACB049AB79BD5CDCA02E0A18A980E44C78ADEFC177B89",
+                             "path":  "docs/agent-runtime/task-capability-routing-matrix.md"
+                         },
+                         {
+                             "sha256":  "76DCB88D30808AE48F9826361692C862E4E3E17C030C1397D001863A32029DAA",
+                             "path":  "docs/agent-runtime/taste-skill-dryrun-report.md"
+                         },
+                         {
+                             "sha256":  "B228C562DEA457A5CF637123DAE436957BCE15160D8C2D16AB4E5D199A9B6007",
+                             "path":  "docs/agent-runtime/test-frame-attribution-alignment.md"
+                         },
+                         {
+                             "sha256":  "C53AA90A0F292494ADC256019E3F1360750B5A3FB92B58FFECDC1A2DE41842E2",
+                             "path":  "docs/agent-runtime/test-frame-evidence-map.md"
+                         },
+                         {
+                             "sha256":  "4EC3A1D0D6D0AE104F34AF75AC0DC6D8EBBFBC7E80AB108FED359675D76BDDCD",
+                             "path":  "docs/agent-runtime/test-frame-evidence-provider.md"
+                         },
+                         {
+                             "sha256":  "9746BF29A799C90B0FE4BEFFE5FB1F029745473DFC60E3BD6CF33A8F8EEDCBD6",
+                             "path":  "docs/agent-runtime/tool-policy.md"
+                         },
+                         {
+                             "sha256":  "3821028EA5A7DF777986E7B62008C5682200064A3F65886972C19E0B4B80CAC0",
+                             "path":  "docs/agent-runtime/verification-gates.md"
+                         },
+                         {
+                             "sha256":  "2AFA0E37D746DA663AF6B38A933492E001AD94C3B7FF1C9DD357FFA44610FFB1",
+                             "path":  "docs/agent-runtime/workqueue-controlled-use-policy.md"
+                         },
+                         {
+                             "sha256":  "4516D862ABA423C59C099D9B07F9C6A147F20D5A3BA8D951DA53E87B634706F9",
+                             "path":  "governance/expected-files.txt"
+                         },
+                         {
+                             "sha256":  "4BB2D794248E4C30D760DE760DDA0B412D72B5004729BE0AA061A1CDE463FE76",
+                             "path":  "governance/manifest-ignore.txt"
+                         },
+                         {
+                             "sha256":  "D86B14269ED406A799FE9268F5436D42D5A2DF05A4F3B65BB4388775F452F479",
+                             "path":  "hooks/pre-edit.governance.ps1"
+                         },
+                         {
+                             "sha256":  "BC7D7A485B64F639683F1E1DE71BF595E3F995A76B0D0B16A4EF9EDC0444A756",
+                             "path":  "hooks/register-hooks.ps1"
+                         },
+                         {
+                             "sha256":  "071352505D92085E28F2B35269CB87870FB5090672938C2548DF005B1159AA63",
+                             "path":  "hooks/registration-config.json"
+                         },
+                         {
+                             "sha256":  "85ECD027EED822F1290606E67D1B1944690345155CEB97063356CEDA37176B7B",
+                             "path":  "rules/coding.md"
+                         },
+                         {
+                             "sha256":  "814AA219195F3CD057806E9DD6DCBF1E7EBAF3051FA7549F023CC97A0EC12FD6",
+                             "path":  "rules/core.md"
+                         },
+                         {
+                             "sha256":  "EE5EDE797CAE916ED2A0EAC66EC4835910806D6D971B51CCD84856C5D0DA0119",
+                             "path":  "rules/frontend.md"
+                         },
+                         {
+                             "sha256":  "40911C2A7273948710D2C5C9A78BEA6C6DBEDF50DB4FE91B8C7E13C716515CD9",
+                             "path":  "rules/git.md"
+                         },
+                         {
+                             "sha256":  "7E41D437FF8A97DC8306B695EDEE548890C9C01EF8C4A01D97695B058B007D8E",
+                             "path":  "rules/README.md"
+                         },
+                         {
+                             "sha256":  "335249FEE29CADD309DE2E6C518423804E555030C75EDECE11C7BEF18F95745E",
+                             "path":  "rules/research.md"
+                         },
+                         {
+                             "sha256":  "42CCDF5A1A24BFF0D2077BA5FA02556DB46BFD28548A856962FA7099B39CCBE7",
+                             "path":  "rules/review.md"
+                         },
+                         {
+                             "sha256":  "DD857F9B66E7B4B73C797E17F2F29D759E44102FA37D6B0EB0A60DE45FAFD09F",
+                             "path":  "rules/security.md"
+                         },
+                         {
+                             "sha256":  "B50CDDEFF4980D0075A07462191CCA876C188A6C62BD690939F2125FFD81F862",
+                             "path":  "schemas/agent-runtime/evidence-index.schema.json"
+                         },
+                         {
+                             "sha256":  "1B8AA1614C719BC44E59834701764C413491C1BC9F97B883D4AADDAE51AB6E9C",
+                             "path":  "schemas/agent-runtime/execution-report.schema.json"
+                         },
+                         {
+                             "sha256":  "EE51A05EEE18D7A12CD64E5D03552F76D5818BFAB2AC9A1EDE00E691C5D55F76",
+                             "path":  "schemas/agent-runtime/gate-result.schema.json"
+                         },
+                         {
+                             "sha256":  "9CEBA492B471715234ADCB1404D726C2C73BB509BC4263229A2256A6E15FD10D",
+                             "path":  "schemas/agent-runtime/memory-update-record.schema.json"
+                         },
+                         {
+                             "sha256":  "005C08EC71B619DE84C843E6FE81F54534354BFDACD057B2AE43C664D3F3E2F7",
+                             "path":  "schemas/agent-runtime/run-spec.schema.json"
+                         },
+                         {
+                             "sha256":  "7E513408E324240EE28253459DA993977FF9174C4C877D586C4184B8EE0D1464",
+                             "path":  "schemas/agent-runtime/skill-intake-record.schema.json"
+                         },
+                         {
+                             "sha256":  "BBA8F6CD16FEEC412406E4906D1605BE26102AEFD3945EBFA996B5BE61488722",
+                             "path":  "schemas/agent-runtime/source-lock-record.schema.json"
+                         },
+                         {
+                             "sha256":  "410530E7555A11493A8DD30A8FDF26EFDF2FFEE1FC9EF8D2DBBACD7BDCC2CE17",
+                             "path":  "schemas/agent-runtime/task-spec.schema.json"
+                         },
+                         {
+                             "sha256":  "38D568B1FFA1DD900BF03B02E299A740F857FA39973DA840A1AFEAE3EE124FAB",
+                             "path":  "schemas/agent-runtime/tool-risk-record.schema.json"
+                         },
+                         {
+                             "sha256":  "14105698613B9E170D990D075126F9AA5D07C76ADC2452D58D81A0B83634F96F",
+                             "path":  "scripts/checks/shared/GovernanceShared.psm1"
+                         },
+                         {
+                             "sha256":  "AF679E1D4C9A0C306E96E9C38E2BC118DB2EFC68E0A2B3BDE7DDBFA6DE02133A",
+                             "path":  "scripts/checks/Test-BatchReferences.ps1"
+                         },
+                         {
+                             "sha256":  "7344A74BB8790C65AE9A6DE4D01F0163ADAEC3BE4C31A137CC342EA773A9217C",
+                             "path":  "scripts/checks/Test-CredentialScan.ps1"
+                         },
+                         {
+                             "sha256":  "F28DB1346256E864A6733D9B270D2DAE61A387C8B0EFCFE536CFE4B3FCF8975E",
+                             "path":  "scripts/checks/Test-ProtectedPaths.ps1"
+                         },
+                         {
+                             "sha256":  "6C62C17B2D00053251F110310E1C3C070498BDA932DA29DC3D678FD986AD4D32",
+                             "path":  "scripts/lib/Process.psm1"
+                         },
+                         {
+                             "sha256":  "3793675664AC935DFBAAA95DA665253566FF19064D45155FE96BD0CC16FD00C0",
+                             "path":  "scripts/New-SessionLedger.ps1"
+                         },
+                         {
+                             "sha256":  "051FE507B5E03B6ADB9A405411676757514A50A5B4CCA6B5147C6345DEC46CFC",
+                             "path":  "scripts/Run-AllQueues.ps1"
+                         },
+                         {
+                             "sha256":  "5981CE18F5FC95B194C837B9B6B8F2B983F673D4EEE3D61F1346FF41B0F8BFA0",
+                             "path":  "scripts/Run-Batch.ps1"
+                         },
+                         {
+                             "sha256":  "19356C17F60D21011A81CAE3D14035CECF1C3E4BCF46ECB276EB45752D7B7DB0",
+                             "path":  "scripts/Run-QueueGroup.ps1"
+                         },
+                         {
+                             "sha256":  "7399B175711B702F628F3DFF28CDC50F1029A2E6D8005703A5EF6D14B0021B11",
+                             "path":  "scripts/Run-Smoke.ps1"
+                         },
+                         {
+                             "sha256":  "EC73B1492C7805487894AF597D6DCC37961089667B2471AA6E0B5B30CBDD7830",
+                             "path":  "scripts/Run-WorkQueue.ps1"
+                         },
+                         {
+                             "sha256":  "EB4A32E9E73F1A24FD1DF617572A3886CCC572E093104DD2852D6B7E17785A82",
+                             "path":  "scripts/sadp-audit.ps1"
+                         },
+                         {
+                             "sha256":  "6916A37F7196D5D30B5B9FB6C68A518713BDEBC7B0588759C30AFD793B151CA5",
+                             "path":  "scripts/Test-Governance.ps1"
+                         },
+                         {
+                             "sha256":  "1C73D7679376A2AB40BB423F2B08A20C13DA6D4D546068DB8C1E3103B1415C94",
+                             "path":  "scripts/Test-GovernanceDrift.ps1"
+                         },
+                         {
+                             "sha256":  "F06AE4B943CF9498021D67DE0232DE06FFD8F3E48D357B3DA8D8D6404B8833B3",
+                             "path":  "scripts/Test-GovernanceManifest.ps1"
+                         },
+                         {
+                             "sha256":  "69A60754DF0439C593B0A01B4EF1A250C6FDD74193D39747F60F5D01EAAA7592",
+                             "path":  "scripts/tests/Invoke-GovernanceCanarySuite.ps1"
+                         },
+                         {
+                             "sha256":  "FB918DAAEA2CBF12485FF08BC627B1909F26A22087440F1FCF29828108B49D43",
+                             "path":  "scripts/tests/Test-DocsExist.ps1"
+                         },
+                         {
+                             "sha256":  "38943A495FEE792E911034A4F9E4E3B563EFE46DAA602C5BB9CAF35E6E8AAC48",
+                             "path":  "scripts/Test-WorkQueue.ps1"
+                         },
+                         {
+                             "sha256":  "FC34EDBBEBB8416B5ED74D4039E4375A1E3D3C334F57F2DC9A98BD72A523F721",
+                             "path":  "scripts/Update-GovernanceManifest.ps1"
+                         },
+                         {
+                             "sha256":  "FEF66AD493EA58D88246EE60703368BEA68C8A3B5FBEA4AA3E5022BD275F5087",
+                             "path":  "scripts/Write-Report.ps1"
+                         }
+                     ]
 }

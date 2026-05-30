@@ -7,7 +7,7 @@ $ErrorActionPreference = "Stop"
 Write-Output "=== Registering RD2100 Agent Runtime Governance Hooks ==="
 Write-Output "Total: 5 hooks (pre-edit + 4 activated audit hooks)"
 
-$hookDir = "D:\agent-acceptance\hooks"
+$hookDir = "$PSScriptRoot"
 $settingsPath = "$env:USERPROFILE\.claude\settings.json"
 
 $requiredHooks = @(

@@ -23,14 +23,16 @@ def load_yaml(path):
         return yaml.safe_load(f)
 
 
-def git_changed_files(base="HEAD"):
+def git_changed_files(base="HEAD", repo_root=None):
     """Return list of changed files relative to base."""
+    cwd = str(repo_root) if repo_root else None
     try:
         result = subprocess.run(
             ["git", "diff", "--name-only", base],
             text=True,
             capture_output=True,
             check=True,
+            cwd=cwd,
         )
     except subprocess.CalledProcessError:
         # May fail in shallow clones; try diff against HEAD~1
@@ -38,6 +40,7 @@ def git_changed_files(base="HEAD"):
             ["git", "diff", "--name-only", "HEAD~1"],
             text=True,
             capture_output=True,
+            cwd=cwd,
         )
     return [
         line.strip().replace("\\", "/")
@@ -46,12 +49,14 @@ def git_changed_files(base="HEAD"):
     ]
 
 
-def git_staged_files():
+def git_staged_files(repo_root=None):
     """Return list of staged files."""
+    cwd = str(repo_root) if repo_root else None
     result = subprocess.run(
         ["git", "diff", "--name-only", "--cached"],
         text=True,
         capture_output=True,
+        cwd=cwd,
     )
     return [
         line.strip().replace("\\", "/")
@@ -65,17 +70,19 @@ def matches(path, patterns):
     return any(fnmatch.fnmatch(path, p) for p in patterns)
 
 
-def scan_secrets(files, patterns):
-    """Scan changed files for secret patterns."""
+def scan_secrets(files, patterns, repo_root=None):
+    """Scan changed files for secret patterns. Paths resolved relative to repo_root."""
     findings = []
+    base = repo_root if repo_root else Path.cwd()
     for fpath in files:
-        if not os.path.isfile(fpath):
+        full_path = base / fpath
+        if not full_path.is_file():
             continue
         # Skip binary and large files
-        if os.path.getsize(fpath) > 1_000_000:
+        if full_path.stat().st_size > 1_000_000:
             continue
         try:
-            with open(fpath, "r", encoding="utf-8", errors="ignore") as f:
+            with open(str(full_path), "r", encoding="utf-8", errors="ignore") as f:
                 content = f.read()
         except OSError:
             continue
@@ -104,7 +111,7 @@ def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else "full"
 
     if mode == "staged":
-        changed = git_staged_files()
+        changed = git_staged_files(repo_root=repo_root)
     elif mode == "task":
         # Read task allow_write from .ai/current-task.yaml or argv
         task_file = sys.argv[2] if len(sys.argv) > 2 else None
@@ -113,10 +120,10 @@ def main():
         else:
             task_path = repo_root / ".ai" / "current-task.yaml"
             task = load_yaml(str(task_path)) if task_path.exists() else {}
-        changed = git_changed_files()
+        changed = git_changed_files(repo_root=repo_root)
         allow_write = task.get("allow_write", [])
     else:
-        changed = git_changed_files("origin/main") if _has_remote() else git_changed_files("HEAD~1")
+        changed = git_changed_files("origin/main", repo_root=repo_root) if _has_remote(repo_root) else git_changed_files("HEAD~1", repo_root=repo_root)
         allow_write = ["**"]  # CI full mode: everything allowed unless denied
 
     errors = []
@@ -136,7 +143,7 @@ def main():
             warnings.append(f"RESTRICTED: {path} requires human review")
 
     # 3. Secret scan
-    secret_findings = scan_secrets(changed, secret_patterns)
+    secret_findings = scan_secrets(changed, secret_patterns, repo_root=repo_root)
     for f in secret_findings:
         errors.append(f"SECRET: {f}")
 
@@ -157,9 +164,10 @@ def main():
         sys.exit(0)
 
 
-def _has_remote():
+def _has_remote(repo_root=None):
+    cwd = str(repo_root) if repo_root else None
     result = subprocess.run(
-        ["git", "remote"], text=True, capture_output=True
+        ["git", "remote"], text=True, capture_output=True, cwd=cwd
     )
     return bool(result.stdout.strip())
 

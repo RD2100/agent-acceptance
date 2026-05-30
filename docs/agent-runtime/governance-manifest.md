@@ -1,6 +1,6 @@
-# Governance Manifest ¡ª RD2100 Agent Runtime v2
+# Governance Manifest ï¿½ï¿½ RD2100 Agent Runtime v2
 
-> Generated: 2026-05-28 | Source: RD2100 Agent Runtime v2 | This manifest locks protected governance sections.
+> **LEGACY DOCUMENT**: Retained for historical audit reference. Active manifest: `hooks/sealed-files-manifest.json`. Do not rely on hashes here for drift detection. Generated: 2026-05-28 | Archived: 2026-05-30
 
 ## Protected Sections (Hash-Verified)
 

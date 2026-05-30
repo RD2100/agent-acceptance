@@ -3,7 +3,7 @@
 > Batch D1, 2026-05-27
 > JSON Schema Draft 2020-12
 
-This directory contains JSON Schema definitions for the 8 core integration contracts defined in `docs/agent-runtime/integration-contracts.md`.
+This directory contains JSON Schema definitions for the 9 core integration contracts.
 
 ## Schemas
 
@@ -17,6 +17,7 @@ This directory contains JSON Schema definitions for the 8 core integration contr
 | 6 | `skill-intake-record.schema.json` | Intake evaluation record of an external skill |
 | 7 | `tool-risk-record.schema.json` | Risk assessment of a tool available to agents |
 | 8 | `memory-update-record.schema.json` | Proposed memory update subject to human approval |
+| 9 | `source-lock-record.schema.json` | External skill source lock record (Phase 6) |
 
 ## Constraints
 

@@ -14,6 +14,7 @@ param(
 )
 
 $ErrorActionPreference = 'Continue'
+Import-Module (Join-Path $PSScriptRoot "lib\Process.psm1") -Force
 $script:batchStart = Get-Date
 
 # ---- Forbidden command patterns ----
@@ -77,16 +78,12 @@ foreach ($task in $tasks) {
 
     # Execute
     try {
-        $job = Start-Job -ScriptBlock {
-            param($c, $d, $p)
-            Set-Location $p
-            Invoke-Expression $c 2>&1 | Out-File (Join-Path $d 'stdout.log')
-        } -ArgumentList $cmd, $tdir, (Get-Location).Path
+        $result = Invoke-CheckedCommand -Command $cmd -OutputDir $tdir `
+            -WorkingDirectory (Get-Location).Path -TimeoutSeconds $timeout
 
-        $done = Wait-Job $job -Timeout $timeout
-        if (-not $done) {
-            Stop-Job $job -PassThru | Remove-Job -Force
-            $ts = [math]::Round(((Get-Date) - $t0).TotalSeconds, 1)
+        $ts = $result.Duration
+
+        if ($result.TimedOut) {
             Write-Host " [FAILED] timeout after ${timeout}s"
             [void]$taskResults.Add(@{
                 id = $tid; title = $task.title; tier = $task.tier
@@ -98,17 +95,16 @@ foreach ($task in $tasks) {
             continue
         }
 
-        Receive-Job $job 2>&1 | Out-Null
-        $ec = $job.ChildJobs[0].JobStateInfo.State
-        Remove-Job $job -Force
-
-        $ts = [math]::Round(((Get-Date) - $t0).TotalSeconds, 1)
-
-        # Determine verdict
-        $actualExit = if ($LASTEXITCODE) { $LASTEXITCODE } else { 0 }
+        $actualExit = $result.ExitCode
         $expected = $task.expected_exit_codes
         if ($actualExit -in $expected) {
-            $verdict = if ($actualExit -eq 0) { 'PASS' } else { 'BLOCKED' }
+            if ($actualExit -eq 0) {
+                $verdict = 'PASS'
+            } elseif ($actualExit -eq 1) {
+                $verdict = 'BLOCKED'
+            } else {
+                $verdict = 'FAILED'
+            }
         } else {
             $verdict = 'FAILED'
         }
@@ -138,16 +134,17 @@ foreach ($task in $tasks) {
             report_path = ''
         })
         $_.Exception.Message | Out-File (Join-Path $tdir 'stderr.log')
-    }
-
-    $LASTEXITCODE = 0  # reset after each task
+    }  # end try/catch for task execution
 }
 
 # ---- Batch report ----
 $elapsed = [math]::Round(((Get-Date) - $script:batchStart).TotalSeconds, 1)
-$passed = ($taskResults | Where-Object { $_.verdict -eq 'PASS' }).Count
-$blocked = ($taskResults | Where-Object { $_.verdict -eq 'BLOCKED' }).Count
-$failed = ($taskResults | Where-Object { $_.verdict -eq 'FAILED' }).Count
+$passed = 0; $blocked = 0; $failed = 0
+foreach ($r in $taskResults) {
+    if ($r.verdict -eq 'PASS') { $passed++ }
+    elseif ($r.verdict -eq 'BLOCKED') { $blocked++ }
+    else { $failed++ }
+}
 $total = $taskResults.Count
 
 $lines = @()

@@ -12,7 +12,7 @@ This inventory is the single source of truth for all capabilities. No capability
 
 1. **Propose**: Add an entry to this file with `Status: proposed`. Include all required fields: Platform, Type, Access, Risk, Preferred for, Forbidden for, Fallback, Human gate, Must explain if skipped, Evidence, and Capability Passport fields (verified_status, last_verified_at, confidence, usable_for_gate0, usable_for_execution).
 2. **Review**: Submit the proposal to the human reviewer. The reviewer checks: (a) Platform field is correct, (b) Risk level matches existing classifications, (c) Phase 0-5 constraints are appropriate, (d) Forbidden actions are explicitly listed.
-3. **Approve**: Reviewer changes `Status: proposed` â†?`Status: approved` and signs off.
+3. **Approve**: Reviewer changes `Status: proposed` ï¿½?`Status: approved` and signs off.
 4. **Enable**: Enable the capability on the target platform (e.g., `codex plugin add` for Codex, `register-hooks.ps1` for Claude hooks).
 5. **Verify**: Confirm the capability appears in `codex plugin list` (Codex) or relevant config (Claude). Update the Evidence field with the verification output.
 6. **Report**: Include the new registration in the batch ExecutionReport.
@@ -25,7 +25,7 @@ Each capability entry must include verification fields in addition to the base f
 |-------|--------|---------|
 | verified_status | unknown / verified / degraded / stale / broken | Whether capability has been proven available |
 | last_verified_at | ISO-8601 date | When last verified |
-| confidence | 0.0 â€?1.0 | Evidence strength for current status |
+| confidence | 0.0 ï¿½?1.0 | Evidence strength for current status |
 | usable_for_gate0 | true / false | Can this capability be cited in Gate 0 sufficiency checks? |
 | usable_for_execution | true / false | Can this capability be dispatched to in SADP? |
 
@@ -47,24 +47,24 @@ The inventory must reflect reality, not declaration.
 **Expiry rules:**
 - External dependency capabilities (API, MCP, CLI): expire after **30 days** without re-verification
 - Local static capabilities (scripts, files, templates): expire after **90 days** without re-verification
-- Any capability that fails 2 consecutive verification attempts ¡ú auto-degrade to broken
+- Any capability that fails 2 consecutive verification attempts ï¿½ï¿½ auto-degrade to broken
 - `last_verified_at` must be updated on every successful verification
 
 **Gate 0 constraint:**
-- `verified` ¡ú may be cited as sufficient coverage evidence
-- `degraded` ¡ú may be cited for partial coverage only; must note which parts are unavailable
-- `stale` or `unknown` ¡ú may be cited only as candidates; must NOT be sole basis for rejecting new construction
-- `broken` ¡ú must not be cited at all
+- `verified` ï¿½ï¿½ may be cited as sufficient coverage evidence
+- `degraded` ï¿½ï¿½ may be cited for partial coverage only; must note which parts are unavailable
+- `stale` or `unknown` ï¿½ï¿½ may be cited only as candidates; must NOT be sole basis for rejecting new construction
+- `broken` ï¿½ï¿½ must not be cited at all
 
 **Re-verification triggers:**
-- Expiry window exceeded ¡ú auto-mark stale
-- Dependency change (MCP server update, CLI version change, API key rotation) ¡ú force re-verify
-- Capability cited in Gate 0 for the first time this session ¡ú recommended re-verify
+- Expiry window exceeded ï¿½ï¿½ auto-mark stale
+- Dependency change (MCP server update, CLI version change, API key rotation) ï¿½ï¿½ force re-verify
+- Capability cited in Gate 0 for the first time this session ï¿½ï¿½ recommended re-verify
 
 
 ### Removing or Disabling a Capability
 
-- Change `Status: approved` ï¿?`Status: disabled` with a reason and date.
+- Change `Status: approved` ï¿½?`Status: disabled` with a reason and date.
 - Remove the capability from the target platform (e.g., `codex plugin disable` or edit `config.toml`).
 - Do not delete the entry from this file -- disabled entries serve as a historical record.
 
@@ -586,36 +586,38 @@ JSON
 
 ## Summary
 
-| # | Capability | Platform | Type | Risk | Status | Verified | Phase 0-5 |
-|---|-----------|:---:|------|:---:|:---:|:---:|:---:|
-| 1 | CodeGraph | Both | code_intelligence | high | approved | unknown | read-only |
-| 2 | rg/Grep/Read | Both | search | low | approved | unknown | read-only |
-| 3 | Shell (read-only) | Both | shell | medium | approved | unknown | read-only |
-| 4 | JSON Validation | Both | validation | low | approved | unknown | read-only |
-| 5 | Runtime Docs | Both | docs | low | approved | unknown | read-only |
-| 6 | Runtime Rules | Both | rules | low | approved | unknown | read-only |
-| 7 | Negative Tests | Both | testing | low | approved | unknown | reference |
-| 8 | Reviewer Playbooks | Both | review | low | approved | unknown | reference |
-| 9 | Blackboard MCP | Claude | mcp | critical | approved | unknown | forbidden |
-| 10 | test-frame | Both | evidence | high | approved | unknown | read+current_evidence |
-| 11 | dev-frame | Both | orchestration | high | approved | unknown | adapter_dry_run |
-| 12 | Local Skills | Both | skill | high | approved | unknown | reference_only |
-| 13 | Memory | Both | memory | high | approved | unknown | read-only |
-| 14 | WorkQueue | Both | workqueue | high | approved | unknown | dry_run_dispatch |
-| 15 | Scripts | Both | script | high | approved | unknown | source_inspection |
-| 16 | Hooks | Claude | hook | medium | approved | unknown | pre-edit active |
-| 17 | Phase 6 SourceLock | Both | source_lock | critical | approved | unknown | design_only |
-| 18 | Sealed Files Manifest | Claude | governance | medium | approved | unknown | active |
-| 19 | Hook Registration Script | Claude | governance | high | approved | unknown | human_gated |
-| 20 | coderabbit | Codex | ai_review | low | approved | unknown | allowed |
-| 21 | codex-security | Codex | security | low | approved | unknown | allowed |
-| 22 | supabase | Codex | database | high | approved | unknown | restricted |
-| 23 | github | Codex | git | high | approved | unknown | restricted |
-| 24 | browser | Codex | browser | medium | approved | unknown | restricted |
-| 25 | superpowers | Codex | methodology | low | approved | unknown | allowed |
-| 26 | linear | Codex | pm | medium | approved | unknown | restricted |
-| 28 | Sub-Agent Dispatch | Both | orchestration | medium | approved | unknown | read-only |
-| 27 | notion | Codex | knowledge | medium | approved | unknown | restricted |
+| # | Capability | Platform | Type | Risk | Status | Phase 0-5 |
+|---|-----------|:---:|------|:---:|:---:|:---:|
+| 1 | CodeGraph | Both | code_intelligence | high | approved | read-only |
+| 2 | rg/Grep/Read | Both | search | low | approved | read-only |
+| 3 | Shell (read-only) | Both | shell | medium | approved | read-only |
+| 4 | JSON Validation | Both | validation | low | approved | read-only |
+| 5 | Runtime Docs | Both | docs | low | approved | read-only |
+| 6 | Runtime Rules | Both | rules | low | approved | read-only |
+| 7 | Negative Tests | Both | testing | low | approved | reference |
+| 8 | Reviewer Playbooks | Both | review | low | approved | reference |
+| 9 | Blackboard MCP | Claude | mcp | critical | approved | forbidden |
+| 10 | test-frame | Both | evidence | high | approved | read+current_evidence |
+| 11 | dev-frame | Both | orchestration | high | approved | adapter_dry_run |
+| 12 | Local Skills | Both | skill | high | approved | reference_only |
+| 13 | Memory | Both | memory | high | approved | read-only |
+| 14 | WorkQueue | Both | workqueue | high | approved | dry_run_dispatch |
+| 15 | Scripts | Both | script | high | approved | source_inspection |
+| 16 | Hooks | Claude | hook | medium | approved | pre-edit active |
+| 17 | Phase 6 SourceLock | Both | source_lock | critical | approved | design_only |
+| 18 | Sealed Files Manifest | Claude | governance | medium | approved | active |
+| 19 | Hook Registration Script | Claude | governance | high | approved | human_gated |
+| 20 | coderabbit | Codex | ai_review | low | approved | allowed |
+| 21 | codex-security | Codex | security | low | approved | allowed |
+| 22 | supabase | Codex | database | high | approved | restricted |
+| 23 | github | Codex | git | high | approved | restricted |
+| 24 | browser | Codex | browser | medium | approved | restricted |
+| 25 | superpowers | Codex | methodology | low | approved | allowed |
+| 26 | linear | Codex | pm | medium | approved | restricted |
+| 28 | Sub-Agent Dispatch | Both | orchestration | medium | approved | read-only |
+| 27 | notion | Codex | knowledge | medium | approved | restricted |
+
+> Verified status removed from summary table. See Capability Passport Summary below for verification status. Detailed entries are the source of truth.
 
 ## Risk Distribution
 
@@ -665,10 +667,10 @@ Evidence-based verification status. **28 of 28 classified** (Batch C3C-Passport,
 | Status | Count | IDs |
 |--------|:-----:|-----|
 | verified | 25 | CAP-001~008, CAP-010~013, CAP-015~016, CAP-018~028 |
-| degraded | 0 | ¡ª | |
+| degraded | 0 | ï¿½ï¿½ | |
 | broken | 1 | CAP-009 (Blackboard MCP: Phase 0-5 disabled) |
 | stale | 1 | CAP-017 (Phase 6 SourceLock: not yet active) |
-| unknown | 0 | ¡ª |
+| unknown | 0 | ï¿½ï¿½ |
 
 | Type | Count | Expiry |
 |------|:-----:|--------|

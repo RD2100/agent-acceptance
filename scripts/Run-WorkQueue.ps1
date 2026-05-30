@@ -117,11 +117,20 @@ foreach ($item in $queue.items) {
             continue
         }
 
+        $exitCodeFile = Join-Path $idir 'exit.code'
+        if (Test-Path $exitCodeFile) { Remove-Item $exitCodeFile -Force }
+
         $job = Start-Job -ScriptBlock {
-            param($c, $d, $p)
+            param($c, $d, $p, $eFile)
             Set-Location $p
-            Invoke-Expression $c 2>&1 | Out-File (Join-Path $d 'stdout.log')
-        } -ArgumentList $cmd, $idir, (Get-Location).Path
+            try {
+                Invoke-Expression $c 2>&1 | Out-File (Join-Path $d 'stdout.log')
+                $ec = if ($LASTEXITCODE) { $LASTEXITCODE } else { 0 }
+                $ec.ToString() | Out-File -FilePath $eFile -NoNewline
+            } catch {
+                "2" | Out-File -FilePath $eFile -NoNewline
+            }
+        } -ArgumentList $cmd, $idir, (Get-Location).Path, $exitCodeFile
 
         $done = Wait-Job $job -Timeout 300
         if (-not $done) {
@@ -136,8 +145,20 @@ foreach ($item in $queue.items) {
         }
 
         Receive-Job $job 2>&1 | Out-Null
-        $ec = if ($job.ChildJobs[0].JobStateInfo.State -eq 'Completed') { 0 } else { $LASTEXITCODE }
         Remove-Job $job -Force
+
+        # Read exit code from file (NOT from JobStateInfo.State or $LASTEXITCODE)
+        $ec = 0
+        if (Test-Path $exitCodeFile) {
+            $content = (Get-Content -Path $exitCodeFile -Raw).Trim()
+            if ($content -match '^\d+$') {
+                $ec = [int]$content
+            } else {
+                $ec = 2
+            }
+        } else {
+            $ec = 2  # exit.code missing = infra error
+        }
 
         $ts = [math]::Round(((Get-Date) - $t0).TotalSeconds, 1)
         $executed++
@@ -180,18 +201,19 @@ foreach ($item in $queue.items) {
             id = $iid; status = 'failed'; verdict = 'FAILED'
             reason = $_.Exception.Message; duration = $ts
         })
-    }
-
-    $LASTEXITCODE = 0
+    }  # end try/catch for item execution
 }
 
 # ---- Queue report ----
 $elapsed = [math]::Round(((Get-Date) - $script:qStart).TotalSeconds, 1)
-$passed = ($itemResults | Where-Object verdict -eq 'PASS').Count
-$blocked = ($itemResults | Where-Object verdict -eq 'BLOCKED').Count
-$failed = ($itemResults | Where-Object verdict -eq 'FAILED').Count
-$escalated = ($itemResults | Where-Object verdict -eq 'ESCALATED').Count
-$skipped = ($itemResults | Where-Object verdict -eq 'SKIPPED').Count
+$passed = 0; $blocked = 0; $failed = 0; $escalated = 0; $skipped = 0
+foreach ($r in $itemResults) {
+    if ($r.verdict -eq 'PASS') { $passed++ }
+    elseif ($r.verdict -eq 'BLOCKED') { $blocked++ }
+    elseif ($r.verdict -eq 'FAILED') { $failed++ }
+    elseif ($r.verdict -eq 'ESCALATED') { $escalated++ }
+    else { $skipped++ }
+}
 $total = $itemResults.Count
 
 $lines = @()

@@ -5,9 +5,9 @@
 # Checks: git diff → TaskSpec existence → Audit Record existence.
 #
 # Usage: .\sadp-audit.ps1 [-ProjectRoot <path>] [-Strict]
-# Exit 0: PASS (compliant or no changes)
-# Exit 1: FAIL (SADP required but artifacts missing)
-# Exit 2: WARN (minor issues, non-blocking)
+# Exit 0: PASS (compliant, or warnings only)
+# Exit 1: BLOCKED (SADP required but artifacts missing)
+# Exit 2: INFRA_ERROR (script error — reserved, not currently emitted)
 
 param(
     [string]$ProjectRoot = ".",
@@ -107,6 +107,10 @@ function Test-TaskSpecCoverage {
     return @{ Uncovered = $uncovered; CoveredBy = $coveredBy }
 }
 
+# Initialize decision variables BEFORE V2 check (so V2 can set $block/$warn)
+$block = $false
+$warn = $false
+
 # Only run V2 check when TaskSpecs exist
 if ($taskSpecs.Count -gt 0) {
     $coverage = Test-TaskSpecCoverage -ChangedFiles $changedFiles -TaskDir $taskDir
@@ -134,10 +138,7 @@ if ($taskSpecs.Count -gt 0) {
     }
 }
 
-# Decision logic
-
-$block = $false
-    $warn = $false
+# Decision logic — $block and $warn initialized above (before V2 check)
 
     # RULE 1: 3+ files → SADP required → TaskSpec must exist
     if ($changedCount -ge 3 -and $taskSpecs.Count -eq 0) {

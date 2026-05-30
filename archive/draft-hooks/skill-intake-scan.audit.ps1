@@ -20,7 +20,7 @@ $AUDIT_HEADER = @"
 
 Write-Output $AUDIT_HEADER
 
-$inboxPath = "D:\agent-acceptance\skills-inbox\external"
+$inboxPath = Join-Path $PSScriptRoot "..\skills-inbox\external"
 
 if (-not (Test-Path $inboxPath)) {
     Write-Output "[AUDIT] Inbox path does not exist: $inboxPath"

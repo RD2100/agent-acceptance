@@ -1,7 +1,7 @@
 # Research Rules -- RD2100 Agent Runtime v2
 
 > Domain: read-only exploration and code intelligence
-> Phase 0-5: all rules active
+> Phase 0-5: P0/P1 active; P2-P4 within approved task scope
 
 ---
 

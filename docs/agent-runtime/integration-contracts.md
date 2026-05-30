@@ -1,8 +1,7 @@
 ﻿# Integration Contracts -- RD2100 Agent Runtime v2
 
-> **Phase 2 Update (2026-05-30)**: BoundaryEnvelope schema added for all cross-project data flows.
-> EvidenceIndex extended with freshness/currency_basis/approved_run_id fields.
-> See `schemas/agent-runtime/boundary-envelope.schema.json` and `runtime-compatibility-lock.yaml`.
+> **Phase 2 Update (2026-05-30)**: BoundaryEnvelope schema defined for future cross-project data flows (Phase 6).
+> See `schemas/draft/boundary-envelope.schema.draft.json` (inactive, Phase 6 candidate).
 
 
 > Batch B1R, 2026-05-27

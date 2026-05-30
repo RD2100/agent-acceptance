@@ -1,7 +1,7 @@
 # Security Rules -- RD2100 Agent Runtime v2
 
 > Domain: security hard stops
-> Phase 0-5: all P0 rules unconditionally active
+> Phase 0-5: P0/P1 active; P2-P4 within approved task scope
 
 ---
 

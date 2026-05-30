@@ -1,7 +1,7 @@
 # Core Rules -- RD2100 Agent Runtime v2
 
 > Domain: runtime core
-> Phase 0-5: all P0/P1 rules active
+> Phase 0-5: P0/P1 active; P2-P4 within approved task scope
 
 ---
 
@@ -78,14 +78,14 @@
 - **Rule**: Any capability must be registered in `docs/agent-runtime/capability-inventory.md` and receive reviewer approval BEFORE it is enabled. The `Platform` field in the inventory entry determines which platform(s) the capability is available on. A capability that does not appear in the inventory does not exist -- it must not be used, even if technically callable.
 - **Registration Procedure**:
   1. Propose the capability in `capability-inventory.md` with `Status: proposed`
-  2. Reviewer approves ï¿?change to `Status: approved`
+  2. Reviewer approves ï¿½?change to `Status: approved`
   3. Enable the capability on the target platform
   4. Verify via `codex plugin list` (Codex) or `settings.json` (Claude)
   5. Report the registration in the batch ExecutionReport
 - **Platform Synchronization**:
-  - Platform: Both ï¿?enable on both platforms (if applicable)
-  - Platform: Claude ï¿?enable on Claude Code only
-  - Platform: Codex ï¿?enable on Codex only
+  - Platform: Both ï¿½?enable on both platforms (if applicable)
+  - Platform: Claude ï¿½?enable on Claude Code only
+  - Platform: Codex ï¿½?enable on Codex only
   - Cross-platform capabilities (Both) registered once, enabled per-platform as needed
 - **Verification**: Compare `codex plugin list` enabled entries and Claude `settings.json` hooks/MCP against `capability-inventory.md`. Every enabled capability must have a matching approved inventory entry.
 - **Conflict Handling**: If a task requires a capability not in the inventory, stop and propose registration. Do not use it first and register later.
@@ -131,15 +131,15 @@
 1. **Veto validity**: A veto is valid only if it cites specific capability IDs, rule IDs, and proposes an alternative execution path. A veto without executable alternative is invalid unless the task is unsafe or irreversible.
 
 2. **Veto decision types**:
-   - `accept` â€?task is necessary, proceed
-   - `reject_redundant` â€?existing capabilities cover this; must provide reuse plan
-   - `reject_unsafe` â€?task poses security/irreversibility risk; cannot be appealed
-   - `request_revision` â€?task needs clarification or scope reduction
-   - `escalate` â€?cannot decide, defer to human reviewer
+   - `accept` ï¿½?task is necessary, proceed
+   - `reject_redundant` ï¿½?existing capabilities cover this; must provide reuse plan
+   - `reject_unsafe` ï¿½?task poses security/irreversibility risk; cannot be appealed
+   - `request_revision` ï¿½?task needs clarification or scope reduction
+   - `escalate` ï¿½?cannot decide, defer to human reviewer
 
 3. **Appeal mechanism**: Plan agent can appeal `reject_redundant` to human reviewer. `reject_unsafe` cannot be appealed.
 
-4. **Risk-based escalation**: Low-risk + reversible tasks â†?execute agent veto can be final. High-risk + irreversible tasks â†?must escalate to human if either agent disagrees.
+4. **Risk-based escalation**: Low-risk + reversible tasks ï¿½?execute agent veto can be final. High-risk + irreversible tasks ï¿½?must escalate to human if either agent disagrees.
 
 5. **Anti-abuse constraint**: Execute agent must not systematically reject all new construction. If >50% of TaskSpecs in a batch are rejected, the veto authority is suspended pending human review.
 
@@ -154,4 +154,4 @@
 
 P0 rules are capped at 7. If a new P0 rule is proposed, an existing P0 must be downgraded to P1, merged into another P0, or deprecated with justification. This prevents rule inflation where too many mandatory checks cause agent attention dilution.
 
-Current P0 count: core-001, core-002, core-003, core-004, core-005, core-007, core-008 = 7 (at cap).
+Current P0 count (core.md internal): core-001, core-002, core-003, core-005, core-007, core-008 = 6. Cap of 7 not reached. (core-004 is P1 and is not counted in P0 cap.)

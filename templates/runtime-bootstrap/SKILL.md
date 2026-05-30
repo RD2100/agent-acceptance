@@ -124,5 +124,5 @@ Every claim needs: command + exit code + output summary. "Looks correct" is inva
 
 After non-trivial work, auto-write summary report 鈫?dispatch to audit agent 鈫?apply fixes 鈫?verify.
 
-Full protocol: [references/sadp-protocol.md](references/sadp-protocol.md)
-Full rules: [references/p0-rules.md](references/p0-rules.md)
+Full protocol: `docs/agent-runtime/sub-agent-dispatch-protocol.md`
+Full rules: `rules/core.md`, `rules/security.md`
