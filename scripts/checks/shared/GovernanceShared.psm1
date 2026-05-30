@@ -40,6 +40,20 @@ function Resolve-ExpectedFiles {
             }
         }
     }
+    # Apply manifest-ignore.txt filtering
+    $ignorePath = Join-Path $ProjectRoot "governance\manifest-ignore.txt"
+    if (Test-Path $ignorePath) {
+        $ignorePatterns = Get-Content $ignorePath | Where-Object { $_ -notmatch '^\s*(#|$)' } | ForEach-Object { $_.Trim() }
+        $results = $results | Where-Object {
+            $keep = $true
+            foreach ($ip in $ignorePatterns) {
+                $wc = $ip -replace '\*\*/', '*' -replace '/', '/'
+                if ($_ -like $wc) { $keep = $false; break }
+            }
+            $keep
+        }
+    }
+
     return $results | Sort-Object -Unique
 }
 

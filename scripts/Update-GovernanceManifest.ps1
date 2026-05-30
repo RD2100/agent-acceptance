@@ -49,6 +49,21 @@ foreach ($pattern in $patterns) {
 
 $files = $files | Sort-Object -Unique
 
+# Apply manifest-ignore.txt
+$ignorePath = Join-Path $ProjectRoot "governance\manifest-ignore.txt"
+if (Test-Path $ignorePath) {
+    $ignorePatterns = Get-Content $ignorePath | Where-Object { $_ -notmatch '^\s*(#|$)' } | ForEach-Object { $_.Trim() }
+    $files = $files | Where-Object {
+        $keep = $true
+        foreach ($ip in $ignorePatterns) {
+            # Convert glob to wildcard: ** matches any depth
+            $wc = $ip -replace '\*\*/', '*' -replace '/', '/'
+            if ($_ -like $wc) { $keep = $false; break }
+        }
+        $keep
+    }
+}
+
 Write-Host "Files to hash: $($files.Count)"
 
 # Calculate hashes

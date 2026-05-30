@@ -9,15 +9,11 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-05-30T22:14:59.4932035+08:00",
+    "generated":  "2026-05-30T22:20:02.2432766+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "CCF551EA1E8C0E0BAF8823F368141F19DE131E5DFFC5B864DA14E0A9348CEE58",
                              "path":  ".ai/policy.yaml"
-                         },
-                         {
-                             "sha256":  "F5402182B1DE334FDA80D37E3E1901B4DD36E7C9CD678A49A1F4977115FDF9CA",
-                             "path":  ".backup/simplify-20260530-100839/AGENTS.md"
                          },
                          {
                              "sha256":  "52CB0F495E8F2EDAC896B84BEE35636C14B02B90AC0AED90CBCDA357E040B3D7",
@@ -30,10 +26,6 @@
                          {
                              "sha256":  "3F33141723BC1F2EE24F973389F774C7356FF00D2922AB9D5F21B79C5AF9DC55",
                              "path":  "batches/batch-smoke.json"
-                         },
-                         {
-                             "sha256":  "076F9E4D637F0E092958E25434BA72E17CA46E608665DA951C6B447513A4597E",
-                             "path":  "batches/future/batch-local-quality.future.json"
                          },
                          {
                              "sha256":  "21C58F2575FD13849D0DC762D28113D7EE6270AF9F9000A6D026778D1D2BA62A",
@@ -424,7 +416,7 @@
                              "path":  "rules/coding.md"
                          },
                          {
-                             "sha256":  "814AA219195F3CD057806E9DD6DCBF1E7EBAF3051FA7549F023CC97A0EC12FD6",
+                             "sha256":  "1F9E1F84BA39C95B43CF08DA4E4660E931996ED12917447D20470F936C1A5370",
                              "path":  "rules/core.md"
                          },
                          {
@@ -560,7 +552,7 @@
                              "path":  "scripts/Test-WorkQueue.ps1"
                          },
                          {
-                             "sha256":  "FC34EDBBEBB8416B5ED74D4039E4375A1E3D3C334F57F2DC9A98BD72A523F721",
+                             "sha256":  "14B857786AB644151465C16365F5BEC6F9BAC0731CB52AB960BA800FD8529F49",
                              "path":  "scripts/Update-GovernanceManifest.ps1"
                          },
                          {
