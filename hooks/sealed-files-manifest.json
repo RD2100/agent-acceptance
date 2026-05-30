@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-05-30T21:57:51.6872563+08:00",
+    "generated":  "2026-05-30T22:07:50.6058397+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "CCF551EA1E8C0E0BAF8823F368141F19DE131E5DFFC5B864DA14E0A9348CEE58",
@@ -20,7 +20,7 @@
                              "path":  ".backup/simplify-20260530-100839/AGENTS.md"
                          },
                          {
-                             "sha256":  "7790A0356F71802E40726D3C8D69B966C8A1104E40F22FE0584E6D29C4670296",
+                             "sha256":  "52CB0F495E8F2EDAC896B84BEE35636C14B02B90AC0AED90CBCDA357E040B3D7",
                              "path":  ".github/workflows/ai-guard.yml"
                          },
                          {
@@ -408,6 +408,10 @@
                              "path":  "hooks/pre-edit.governance.ps1"
                          },
                          {
+                             "sha256":  "BEAC5795F3942F37C3AB4F6DCDA94912FBC92F1E15BADD6C22DF2821A61EF73C",
+                             "path":  "hooks/pre-push.governance.ps1"
+                         },
+                         {
                              "sha256":  "BC7D7A485B64F639683F1E1DE71BF595E3F995A76B0D0B16A4EF9EDC0444A756",
                              "path":  "hooks/register-hooks.ps1"
                          },
@@ -536,7 +540,7 @@
                              "path":  "scripts/Test-Governance.ps1"
                          },
                          {
-                             "sha256":  "1C73D7679376A2AB40BB423F2B08A20C13DA6D4D546068DB8C1E3103B1415C94",
+                             "sha256":  "99D3F2CA4008F78880F3F288C2ADB449CD2BB25CCD561D3F0E88FD06857D22F4",
                              "path":  "scripts/Test-GovernanceDrift.ps1"
                          },
                          {
