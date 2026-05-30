@@ -24,24 +24,8 @@ jobs:
       - name: Install dependencies
         run: pip install pyyaml
 
-      - name: AI Guard — Deny Paths + Scope + Secret Scan
+      - name: Deny Paths + Scope + Secret Scan
         run: python tools/ai_guard.py full
-
-  governance-drift:
-    runs-on: windows-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install pyyaml
 
       - name: Governance Manifest Check
         run: powershell -ExecutionPolicy Bypass -File scripts/Test-GovernanceManifest.ps1
@@ -49,21 +33,5 @@ jobs:
       - name: Governance Drift Check
         run: powershell -ExecutionPolicy Bypass -File scripts/Test-GovernanceDrift.ps1
 
-  governance-gate:
-    runs-on: windows-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install pyyaml
-
-      - name: Test Governance (blocking mode)
+      - name: Governance Gate (blocking)
         run: powershell -ExecutionPolicy Bypass -File scripts/Test-Governance.ps1 -Mode blocking
