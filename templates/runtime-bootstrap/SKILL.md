@@ -126,3 +126,22 @@ After non-trivial work, auto-write summary report 鈫?dispatch to audit agent �
 
 Full protocol: `docs/agent-runtime/sub-agent-dispatch-protocol.md`
 Full rules: `rules/core.md`, `rules/security.md`
+
+## CI Preflight Activation (per-project, one-time)
+
+After `bootstrap.ps1` completes, activate governance hooks:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File register-hooks.ps1
+```
+
+This sets `git config core.hooksPath hooks` and activates:
+
+| Hook | Trigger | Checks |
+|------|---------|--------|
+| pre-commit | `git commit` | manifest auto-regen + ai_guard staged |
+| pre-push | `git push` | ai_guard full + drift check + governance gate |
+
+Agent does not need to remember these — git enforces them automatically on every commit and push.
+
+Customize `governance/expected-files.txt` for the project's governance file set.

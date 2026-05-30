@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-05-30T22:29:33.9083515+08:00",
+    "generated":  "2026-05-30T22:44:44.3067730+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "CCF551EA1E8C0E0BAF8823F368141F19DE131E5DFFC5B864DA14E0A9348CEE58",
@@ -432,7 +432,7 @@
                              "path":  "rules/git.md"
                          },
                          {
-                             "sha256":  "7E41D437FF8A97DC8306B695EDEE548890C9C01EF8C4A01D97695B058B007D8E",
+                             "sha256":  "AAABFA3745AAA83B4FBF49803A268BCE0E46D12CA295E63217216190A9395704",
                              "path":  "rules/README.md"
                          },
                          {
