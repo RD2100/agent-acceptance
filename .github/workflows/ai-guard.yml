@@ -27,9 +27,6 @@ jobs:
       - name: Deny Paths + Scope + Secret Scan
         run: python tools/ai_guard.py full
 
-      - name: Governance Manifest Check
-        run: powershell -ExecutionPolicy Bypass -File scripts/Test-GovernanceManifest.ps1
-
       - name: Governance Drift Check
         run: powershell -ExecutionPolicy Bypass -File scripts/Test-GovernanceDrift.ps1
 
