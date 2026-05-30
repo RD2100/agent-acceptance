@@ -1,0 +1,72 @@
+﻿{
+  "task_id": "t-review-stage2-20260530",
+  "title": "审核 + 回归测试: voicebox stage2 落地变更",
+  "priority": "P0",
+  "status": "ready",
+  "description": "对 voicebox stage2 落地的 7 个文件变更执行完整审核和回归测试。审核内容包括: Rust Linux stub 错误消息、WASAPI 16/24-bit PCM 支持、ApiClient AbortController、SSE 断连 toast。回归测试覆盖 MCP 工具测试 (41 cases) 和后端交叉测试 (events/task_queue/generation/chat)。产出 ExecutionReport 并判决 Pass/Block/Fail。",
+  "depends_on": [],
+  "assumptions": [
+    "Python 3.10+ 可用",
+    "voicebox 后端依赖已安装",
+    "Git 可用",
+    "审核者具备 Rust + TypeScript + Python 阅读能力"
+  ],
+  "risk_notes": "预存环境相关失败 (offline_guard x5, offline_patch x4, progress x1, profile_duplicate_names x1) 非本次变更引入，审核时应区分处理。",
+  "estimated_tools": [
+    "git checkout/clone",
+    "python -m pytest",
+    "rg / Select-String",
+    "git diff",
+    "文件读取"
+  ],
+  "gate_0": {
+    "triggered": false,
+    "inventory_evidence": "已有 HANDOFF.md + ExecutionReport 覆盖所有变更，审核任务是只读验证，无新增构建。",
+    "sufficiency_decision": "reuse_existing"
+  },
+  "context": {
+    "branch": "codex/stage2-land-2026-05-29",
+    "repo": "https://github.com/RD2100/agent-memory",
+    "handoff": "D:\\agent-memory\\.backup\\2026-05-29\\HANDOFF.md",
+    "execution_report": "D:\\agent-acceptance\\reports\\voicebox-stage2-execution-report.md",
+    "batch_spec": "D:\\agent-memory\\.backup\\2026-05-29\\batch-voicebox-stage2.json",
+    "backup_dir": "D:\\agent-memory\\.backup\\2026-05-29\\"
+  },
+  "acceptance_criteria": {
+    "regression_tests": {
+      "command": "cd D:\\agent-memory\\voicebox && python -m pytest backend/tests/test_mcp_tools.py backend/tests/test_events.py backend/tests/test_task_queue_cancellation.py backend/tests/test_generation_db_sessions.py backend/tests/test_chat_adapters.py -v --tb=short -W ignore",
+      "expected": "82 passed, 0 failed"
+    },
+    "stub_verification": {
+      "command": "rg -c 'not yet supported on Linux' voicebox/tauri/src-tauri/src/clipboard.rs voicebox/tauri/src-tauri/src/synthetic_keys.rs voicebox/tauri/src-tauri/src/focus_capture.rs",
+      "expected": "clipboard.rs:4, synthetic_keys.rs:1, focus_capture.rs:2"
+    },
+    "code_review_checklist": [
+      "Rust 字符串换行符 \\ 语法正确",
+      "WASAPI 24-bit PCM 符号扩展 (0x80 mask) 正确",
+      "TypeScript createAbortController 类型推导正确",
+      "SSE toastedRef 不泄漏",
+      "所有 7 个文件变更与报告一致",
+      "无意外文件被修改"
+    ]
+  },
+  "secret_checklist": {
+    "new_external_api": false,
+    "env_example_placeholders_only": true,
+    "real_key_patterns_found": false,
+    "staged_diff_secret_scan_run": true,
+    "key_rotation_needed": false
+  },
+  "conflict_registry": {
+    "checked_files": [
+      "voicebox/app/src/lib/api/client.ts",
+      "voicebox/app/src/lib/hooks/useGenerationProgress.ts",
+      "voicebox/backend/tests/test_mcp_tools.py",
+      "voicebox/tauri/src-tauri/src/audio_capture/windows.rs",
+      "voicebox/tauri/src-tauri/src/clipboard.rs",
+      "voicebox/tauri/src-tauri/src/focus_capture.rs",
+      "voicebox/tauri/src-tauri/src/synthetic_keys.rs"
+    ],
+    "no_conflict": true
+  }
+}

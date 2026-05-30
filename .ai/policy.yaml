@@ -1,0 +1,45 @@
+# AI Governance Policy
+# Canonical rule source. ai_guard.py reads this file.
+
+deny_paths:
+  - ".env"
+  - ".env.*"
+  - "**/*.pem"
+  - "**/*secret*"
+  - "**/*token*"
+  - "**/*credential*"
+  - "**/*key.json"
+  - "**/.secrets.baseline"
+  - "**/service-account*.json"
+  - "**/credentials*.json"
+
+restricted_paths:
+  - ".github/**"
+  - ".codex/**"
+  - ".agents/**"
+  - "package-lock.json"
+  - "pnpm-lock.yaml"
+  - "yarn.lock"
+  - "Dockerfile"
+  - "docker-compose*.yml"
+  - "rules/**"
+  - "hooks/**"
+
+dangerous_commands:
+  - "git push --force"
+  - "git reset --hard"
+  - "git clean -fd"
+  - "git clean -xdf"
+  - "git branch -D"
+
+secret_patterns:
+  - "sk-[A-Za-z0-9]{32,}"
+  - "AIza[0-9A-Za-z\\-_]{35}"
+  - "ghp_[A-Za-z0-9]{36}"
+  - "gho_[A-Za-z0-9]{36}"
+  - "ghu_[A-Za-z0-9]{36}"
+  - "ghs_[A-Za-z0-9]{36}"
+  - "ghr_[A-Za-z0-9]{36}"
+  - "xox[baprs]-[A-Za-z0-9]{10,}"
+  - "AKIA[0-9A-Z]{16}"
+  - "eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}"

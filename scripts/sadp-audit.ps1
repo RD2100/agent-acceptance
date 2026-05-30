@@ -1,4 +1,4 @@
-﻿# sadp-audit.ps1 — External SADP Compliance Auditor
+# sadp-audit.ps1 — External SADP Compliance Auditor
 # ==================================================
 # Runs INDEPENDENTLY of Plan Agent decision.
 # Triggered by git pre-commit hook.
@@ -248,6 +248,22 @@ $addedContent = ($addedLines | Where-Object { $_ -notmatch '@\{ Name =' }) -join
         }
     }
 
+
+    
+    # RULE 7: ai_guard.py unified security scan
+    $aiGuardPath = Join-Path $ProjectRoot "tools\ai_guard.py"
+    if (Test-Path $aiGuardPath) {
+        Write-Host "[SADP-AUDIT] Running ai_guard.py security scan..."
+        $guardResult = python $aiGuardPath staged 2>&1
+        $guardExit = $LASTEXITCODE
+        Write-Host $guardResult
+        if ($guardExit -ne 0) {
+            $block = $true
+            Write-Host "[SADP-AUDIT] ai_guard.py found security issues."
+        }
+    } else {
+        Write-Host "[SADP-AUDIT] WARN: ai_guard.py not found at $aiGuardPath"
+    }
 
     if ($block) {
         Write-Host "[SADP-AUDIT] STATUS: BLOCKED"
