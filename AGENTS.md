@@ -1,4 +1,4 @@
-﻿# AGENTS.md -- RD2100 Agent Runtime v2
+# AGENTS.md -- RD2100 Agent Runtime v2
 
 > Canonical root: D:\agent-acceptance
 > Phase: 0-5 (bootstrap)
@@ -26,6 +26,26 @@ Gate 0 -> TaskSpec -> Execute -> ExecutionReport -> Plan Auditor -> Pass/Block/E
 - Capability usage tracked per ExecutionReport, audited against `capability-inventory.md` (core-007).
 - Integration: dev-frame (`D:\dev-frame\ai-workflow-hub`), test-frame (`D:\test-frame`).
 
+
+## Anti-Overengineering Gate
+
+When the user proposes a plan, architecture, or feature, apply these criteria before agreeing:
+
+| Signal | Meaning |
+|--------|---------|
+| No real data flow exists yet | Don't build runtime for hypothetical future |
+| Dormant/inactive dependency | Register, don't integrate |
+| "Just in case" / "future-proof" | Red flag — ask what concrete trigger makes this necessary now |
+| Checker/validator for non-existent input | Will become noise, not safety |
+| The proposal solves a problem that hasn't happened | Flag it, explain why it may be premature |
+
+**Rules:**
+- Always distinguish "registered/referenced" from "integrated/active"
+- If you hear yourself thinking "we might need this later", say it out loud and ask the user to confirm
+- Prefer "activation trigger list" over "runtime system that sits idle"
+- A 50-line boundary doc is better than an 800-line compatibility layer with no real consumers
+
+This is not about refusing user requests — it's about preventing "layperson guiding expert" dynamics where the human proposes and the agent executes without pushing back.
 ## Hard Stops (P0)
 
 These rules block delivery. Do not violate:
