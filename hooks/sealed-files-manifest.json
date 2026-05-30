@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-05-30T22:20:02.2432766+08:00",
+    "generated":  "2026-05-30T22:26:14.6197656+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "CCF551EA1E8C0E0BAF8823F368141F19DE131E5DFFC5B864DA14E0A9348CEE58",
@@ -20,7 +20,7 @@
                              "path":  ".github/workflows/ai-guard.yml"
                          },
                          {
-                             "sha256":  "F234EDA4140310FEDFFC851C346FA926F9DD874A3A186BAF59F28FBCC7B58B44",
+                             "sha256":  "1DF81235D944D4EA554E6F2DC8453C0FEA36776E4AEF3E123CF54987CFB61777",
                              "path":  "AGENTS.md"
                          },
                          {
@@ -396,6 +396,10 @@
                              "path":  "governance/manifest-ignore.txt"
                          },
                          {
+                             "sha256":  "B1128408ECA0749410A104FD0473C19C1390D94350ED52D579B114C80B1B596C",
+                             "path":  "hooks/pre-commit.governance.ps1"
+                         },
+                         {
                              "sha256":  "B2BB95AA42FA832401E417AE306CDF08BCF0DF09355A24D704A4044F7030473F",
                              "path":  "hooks/pre-edit.governance.ps1"
                          },
@@ -480,7 +484,7 @@
                              "path":  "schemas/agent-runtime/tool-risk-record.schema.json"
                          },
                          {
-                             "sha256":  "14105698613B9E170D990D075126F9AA5D07C76ADC2452D58D81A0B83634F96F",
+                             "sha256":  "F14E1D94CB79E1ACAE9A395AB7687242CB791FECF9ED87E6CFF102E4A43793C7",
                              "path":  "scripts/checks/shared/GovernanceShared.psm1"
                          },
                          {
