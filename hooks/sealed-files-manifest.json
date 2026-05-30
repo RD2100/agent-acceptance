@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-05-30T21:49:51.7263530+08:00",
+    "generated":  "2026-05-30T21:55:53.6624429+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "CCF551EA1E8C0E0BAF8823F368141F19DE131E5DFFC5B864DA14E0A9348CEE58",
@@ -20,7 +20,7 @@
                              "path":  ".backup/simplify-20260530-100839/AGENTS.md"
                          },
                          {
-                             "sha256":  "EF87627030DD9E94639885D6E57055D45FC9994E66CE47DF73A7BF4BA38CEF9D",
+                             "sha256":  "7790A0356F71802E40726D3C8D69B966C8A1104E40F22FE0584E6D29C4670296",
                              "path":  ".github/workflows/ai-guard.yml"
                          },
                          {
@@ -404,7 +404,7 @@
                              "path":  "governance/manifest-ignore.txt"
                          },
                          {
-                             "sha256":  "D86B14269ED406A799FE9268F5436D42D5A2DF05A4F3B65BB4388775F452F479",
+                             "sha256":  "B2BB95AA42FA832401E417AE306CDF08BCF0DF09355A24D704A4044F7030473F",
                              "path":  "hooks/pre-edit.governance.ps1"
                          },
                          {
@@ -493,7 +493,7 @@
                          },
                          {
                              "sha256":  "7344A74BB8790C65AE9A6DE4D01F0163ADAEC3BE4C31A137CC342EA773A9217C",
-                             "path":  "scripts/checks/Test-CredentialScan.ps1"
+                             "path":  "scripts/checks/Test-KeyScan.ps1"
                          },
                          {
                              "sha256":  "F28DB1346256E864A6733D9B270D2DAE61A387C8B0EFCFE536CFE4B3FCF8975E",
@@ -532,7 +532,7 @@
                              "path":  "scripts/sadp-audit.ps1"
                          },
                          {
-                             "sha256":  "6916A37F7196D5D30B5B9FB6C68A518713BDEBC7B0588759C30AFD793B151CA5",
+                             "sha256":  "C9EAB7DEAED237FD80A31D851E3D002021BFBC2DC342EF249645FA0C201B7F26",
                              "path":  "scripts/Test-Governance.ps1"
                          },
                          {
