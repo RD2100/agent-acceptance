@@ -1,138 +1,81 @@
-﻿// DRAFT: Not wired into runtime. See inactive-frame-registry.md for activation conditions.
-// 2026-05-30
-{"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.",
   "title": "BoundaryEnvelope",
   "description": "Every cross-project data flow MUST be wrapped in this envelope. Separates format compatibility from authority compatibility. The payload is the actual contract (TaskSpec, EvidenceIndex, etc.); the envelope declares who produced it, under what authority, and with what freshness.",
   "type": "object",
   "required": ["envelope_version", "contract_type", "contract_version", "producer", "authority", "freshness", "payload"],
-  "properties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
-    "envelope_version": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+  "properties": {
+    "envelope_version": {
       "type": "string",
       "pattern": "^\\d+\\.\\d+\\.\\d+$",
       "description": "Version of the envelope schema itself"
     },
-    "contract_type": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+    "contract_type": {
       "type": "string",
       "enum": ["TaskSpec", "RunSpec", "EvidenceIndex", "GateResult", "ExecutionReport", "SkillIntakeRecord", "ToolRiskRecord", "MemoryUpdateRecord"],
       "description": "Which core contract is wrapped"
     },
-    "contract_version": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+    "contract_version": {
       "type": "string",
       "pattern": "^\\d+\\.\\d+\\.\\d+$",
       "description": "Version of the wrapped contract"
     },
-    "producer": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+    "producer": {
       "type": "object",
       "required": ["frame_id", "frame_version", "producer_role"],
-      "properties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
-        "frame_id": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{ "type": "string" },
-        "frame_version": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{ "type": "string" },
-        "capability_id": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{ "type": "string" },
-        "producer_role": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+      "properties": {
+        "frame_id": { "type": "string" },
+        "frame_version": { "type": "string" },
+        "capability_id": { "type": "string" },
+        "producer_role": {
           "type": "string",
           "enum": ["runtime", "candidate_provider", "evidence_source", "historical_source", "unknown"]
         }
       }
     },
-    "authority": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+    "authority": {
       "type": "object",
       "required": ["can_produce_contract", "decision_authority", "gate_result_allowed"],
-      "properties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
-        "can_produce_contract": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{ "type": "boolean" },
-        "decision_authority": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{ "type": "boolean", "description": "Can this producer decide pass/fail? External frames: always false." },
-        "allowed_usage": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+      "properties": {
+        "can_produce_contract": { "type": "boolean" },
+        "decision_authority": { "type": "boolean", "description": "Can this producer decide pass/fail? External frames: always false." },
+        "allowed_usage": {
           "type": "string",
           "enum": ["full", "candidate_only", "historical_observation_only", "forbidden"]
         },
-        "gate_result_allowed": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{ "type": "boolean", "description": "Can produce GateResult? External frames: always false." }
+        "gate_result_allowed": { "type": "boolean", "description": "Can produce GateResult? External frames: always false." }
       }
     },
-    "freshness": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+    "freshness": {
       "type": "object",
       "required": ["value", "currency_basis"],
-      "properties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
-        "value": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+      "properties": {
+        "value": {
           "type": "string",
           "enum": ["historical", "current", "stale_or_unknown"],
           "description": "Is this evidence current or historical?"
         },
-        "currency_basis": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+        "currency_basis": {
           "type": "string",
           "enum": ["approved_run", "existing_artifact", "manual_inspection", "unknown"],
           "description": "What makes this evidence current?"
         },
-        "approved_run_id": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+        "approved_run_id": {
           "type": "string",
           "description": "If currency_basis=approved_run, the RunSpec ID that produced this evidence"
         }
       }
     },
-    "source_binding": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+    "source_binding": {
       "type": "object",
-      "properties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
-        "frame_manifest_digest": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{ "type": "string", "description": "SHA256 of the frame manifest at time of production" },
-        "path_key": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{ "type": "string", "description": "Manifest path_key for this artifact's source" },
-        "artifact_checksum": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{ "type": "string", "description": "SHA256 of the artifact itself" }
+      "properties": {
+        "frame_manifest_digest": { "type": "string", "description": "SHA256 of the frame manifest at time of production" },
+        "path_key": { "type": "string", "description": "Manifest path_key for this artifact's source" },
+        "artifact_checksum": { "type": "string", "description": "SHA256 of the artifact itself" }
       }
     },
-    "payload": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
-",
-{
+    "payload": {
       "type": "object",
       "description": "The actual contract data. Schema validated against contract_type + contract_version."
     }
