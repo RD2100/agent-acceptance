@@ -1,4 +1,4 @@
-# Sub-Agent Dispatch Protocol (SADP) v1.0
+﻿# Sub-Agent Dispatch Protocol (SADP) v1.0
 
 > RD2100 Agent Runtime v2 | 2026-05-28
 > Canonical root: `D:\agent-acceptance`
@@ -13,7 +13,7 @@ SADP defines the default pattern for multi-agent development:
 ```
 [Codex Goal Agent]                      [Claude Code Agent]
      |                                         |
-     |  1. Decompose goal �� TaskSpec            |
+     |  1. Decompose goal 锟斤拷 TaskSpec            |
      |  2. Dispatch TaskSpec to sub-agent       |
      |---------------------------------------->|
      |                                         | 3. Execute task with full context
@@ -30,7 +30,7 @@ SADP defines the default pattern for multi-agent development:
 - **Claude Code Agent** (execution tier): Receives TaskSpec, executes implementation, collects evidence, returns ExecutionReport. Uses filesystem, git, test runners.
 - **Human Reviewer** (oversight tier): Reviews ExecutionReports for P0/P1 tasks, approves gate decisions, signs off on capability registrations.
 
-**Key Principle**: TaskSpec is a self-contained contract. The sub-agent receives ALL context it needs in the dispatch �� it does not re-derive the goal.
+**Key Principle**: TaskSpec is a self-contained contract. The sub-agent receives ALL context it needs in the dispatch 锟斤拷 it does not re-derive the goal.
 
 ---
 
@@ -41,14 +41,14 @@ SADP defines the default pattern for multi-agent development:
 Before creating any TaskSpec that adds, creates, or introduces something new, the plan agent MUST run the Resource Sufficiency Check per core-008:
 
 ```
-1. Existence    �� Does something already cover this need?
-2. Coverage     �� Can minimal change to existing cover it?
-3. Composition  �� Can existing resources be combined?
-4. Protocol     �� Does existing workflow already handle this?
-5. Precedent    �� Have lessons learned recorded this pattern?
+1. Existence    锟斤拷 Does something already cover this need?
+2. Coverage     锟斤拷 Can minimal change to existing cover it?
+3. Composition  锟斤拷 Can existing resources be combined?
+4. Protocol     锟斤拷 Does existing workflow already handle this?
+5. Precedent    锟斤拷 Have lessons learned recorded this pattern?
 ```
 
-If the check finds existing coverage �� **Do not create TaskSpec. Return reuse plan.**
+If the check finds existing coverage 锟斤拷 **Do not create TaskSpec. Return reuse plan.**
 
 Execute agent MUST reject any additive TaskSpec that lacks documented sufficiency check.
 
@@ -88,7 +88,7 @@ This ensures quality assurance without burdening normal conversation with pre-ex
 
 ### 0.0a Cumulative Trigger Window (Advisory in @go-Only Mode)
 
-> **@go-only mode**: This section is advisory. Cumulative thresholds inform human judgment but do NOT force SADP activation. SADP activates only via explicit `@go` signal (��0.0).
+> **@go-only mode**: This section is advisory. Cumulative thresholds inform human judgment but do NOT force SADP activation. SADP activates only via explicit `@go` signal (§0.0).
 
 
 Governance triggers are evaluated **cumulatively** across the session and objective,
@@ -130,7 +130,7 @@ gate_0:
   triggered: true
   trigger_reason: [why Gate 0 was triggered]
   
-  # Evidence block �� replaces boolean self-attestation.
+  # Evidence block — replaces boolean self-attestation.
   # A gate_0 without inventory_evidence is INVALID.
   inventory_evidence:
     queried_sources:           # Which files/registries were actually consulted
@@ -226,7 +226,7 @@ Every task dispatched from Codex Goal Agent to Claude Code Agent uses this forma
   3. ...
 - **Expected Output**: [files created/modified, artifacts produced]
 - **Rollback**: [command to undo if blocked]
-- **Report To**: [where to return ExecutionReport �� default: calling agent session]
+- **Report To**: [where to return ExecutionReport 锟斤拷 default: calling agent session]
 ```
 
 ### Example
@@ -305,10 +305,10 @@ Every task completion returns this format:
 - **Status**: PASS | FAIL | BLOCKED
 - **Summary**: [1-3 sentences: what was done, what was found]
 - **Changed Files**:
-  - `path/to/file.ts` (+N lines, -M lines) �� [what changed]
+  - `path/to/file.ts` (+N lines, -M lines) 锟斤拷 [what changed]
   - ...
 - **Unchanged But Inspected**:
-  - `path/to/file.ts` �� [why inspected, why not changed]
+  - `path/to/file.ts` 锟斤拷 [why inspected, why not changed]
 - **Evidence**:
   - Test results: [command + output summary]
   - Build: [pass/fail]
@@ -316,12 +316,12 @@ Every task completion returns this format:
 - **Risks**:
   - [anything the next agent or reviewer should watch for]
 - **Reviewer Index**:
-  - `path/to/critical-change.ts` �� [why review recommended]
+  - `path/to/critical-change.ts` 锟斤拷 [why review recommended]
   - ...
 - **Next Steps Suggested**:
   - [optional: what logically follows]
 - **Capabilities Used**:
-  - [capability name] �� [Status: approved]
+  - [capability name] 锟斤拷 [Status: approved]
 ```
 
 ### Example
@@ -332,34 +332,34 @@ Every task completion returns this format:
 - **Status**: PASS
 - **Summary**: Added rate-limiting middleware (100 req/min per IP). All tests pass, no regression.
 - **Changed Files**:
-  - `src/middleware/rateLimiter.ts` (+45 lines) �� new middleware
-  - `src/app.ts` (+3 lines, -0 lines) �� registered middleware at line 48
-  - `tests/middleware/rateLimiter.test.ts` (+62 lines) �� 6 test cases
+  - `src/middleware/rateLimiter.ts` (+45 lines) 锟斤拷 new middleware
+  - `src/app.ts` (+3 lines, -0 lines) 锟斤拷 registered middleware at line 48
+  - `tests/middleware/rateLimiter.test.ts` (+62 lines) 锟斤拷 6 test cases
 - **Evidence**:
   - `npm test -- tests/middleware/rateLimiter.test.ts`: 6/6 PASS
   - `npm test`: 47/47 PASS (no regression)
   - `npm run build`: success
 - **Risks**: None. Rate limit window (1 min) may need tuning under real load.
 - **Reviewer Index**:
-  - `src/middleware/rateLimiter.ts:30-35` �� sliding window logic, verify correctness
+  - `src/middleware/rateLimiter.ts:30-35` 锟斤拷 sliding window logic, verify correctness
 - **Capabilities Used**:
-  - rg/Grep/Read �� Status: approved
-  - Shell (read-only) �� Status: approved
+  - rg/Grep/Read 锟斤拷 Status: approved
+  - Shell (read-only) 锟斤拷 Status: approved
 ```
 
 ---
 
 ## 3. Dispatch Flow
 
-### 3.1 Codex Goal Agent (Plan �� Dispatch)
+### 3.1 Codex Goal Agent (Plan 锟斤拷 Dispatch)
 
 1. **Goal agent** enters goal mode (`<goal_context>` active)
 2. **Decomposes** goal into batch(es) of tasks using `update_plan`
 3. **Dispatches** each task as a self-contained TaskSpec block
 4. The sub-agent session receives the TaskSpec as its primary instruction
-5. TaskSpec includes ALL context �� sub-agent does not re-derive
+5. TaskSpec includes ALL context 锟斤拷 sub-agent does not re-derive
 
-### 3.2 Claude Code Agent (Execute �� Report)
+### 3.2 Claude Code Agent (Execute 锟斤拷 Report)
 
 1. **Receives** TaskSpec as session instruction
 2. **Reads** allowed files, notes forbidden constraints
@@ -367,13 +367,13 @@ Every task completion returns this format:
 4. **Collects evidence**: test output, build results, git diff stats
 5. **Returns** ExecutionReport to the goal agent session
 
-### 3.3 Goal Agent (Evaluate �� Next)
+### 3.3 Goal Agent (Evaluate 锟斤拷 Next)
 
 
 
 ### 3.3a Plan Auditor (Independent Compliance Check)
 
-> **Session type matters**: For `@go` sessions, full SADP compliance is required. For non-`@go` sessions, compliance is governed by ��0.0b (post-completion review), not by full SADP requirements. The Plan Auditor must distinguish session types before applying audit rules.
+> **Session type matters**: For `@go` sessions, full SADP compliance is required. For non-`@go` sessions, compliance is governed by §0.0b (post-completion review), not by full SADP requirements. The Plan Auditor must distinguish session types before applying audit rules.
 
 
 Before accepting any session that produces file changes, an independent Plan Auditor must verify SADP compliance.
@@ -420,7 +420,7 @@ Before accepting any session that produces file changes, an independent Plan Aud
 
 **Anti-Bypass**: Audit trigger is based on session diff and changed_files, not Plan Agent self-report. If changed_files is non-empty and no Audit Record exists, the session is blocked by default.
 
-**Anti-Recursion**: Plan Auditor only checks structured evidence consistency. It does not create new governance rules. Uncertainty �� escalate to Human, not to another auditor. No Audit-Auditor.
+**Anti-Recursion**: Plan Auditor only checks structured evidence consistency. It does not create new governance rules. Uncertainty → escalate to Human, not to another auditor. No Audit-Auditor.
 
 **Cost Model**: Low-risk non-governance sessions pass on static ledger check (0 LLM calls). High-risk or governance-touching sessions trigger 1 LLM audit call (max 1 per session).
 
@@ -456,21 +456,21 @@ plan_agent_review:
 ```
 
 **Regression Test Triggers:**
-- `full` �� after any task that modifies governance files (rules, protocols, inventory, lessons, AGENTS.md)
-- `targeted` �� after tasks that modify only application code (check only affected modules)
+- `full` — after any task that modifies governance files (rules, protocols, inventory, lessons, AGENTS.md)
+- `targeted` — after tasks that modify only application code (check only affected modules)
 
 **Decision Rules:**
-- All gates PASS + regression PASS �� `accept`, dispatch next task
-- Gate FAIL �� `request_revision` back to execute agent with specific gate failure
-- Regression FAIL �� `reject`, halt batch, flag for human review
-- Unexpected file modifications �� `reject`, potential scope violation
+- All gates PASS + regression PASS → `accept`, dispatch next task
+- Gate FAIL → `request_revision` back to execute agent with specific gate failure
+- Regression FAIL → `reject`, halt batch, flag for human review
+- Unexpected file modifications → `reject`, potential scope violation
 
 
 1. **Receives** ExecutionReport
 2. **Evaluates** against acceptance gates:
-   - All gates PASS �� mark task complete, dispatch next if any remain
-   - Any gate FAIL �� analyze, possibly revise TaskSpec and re-dispatch
-   - BLOCKED �� escalate to human reviewer
+   - All gates PASS 锟斤拷 mark task complete, dispatch next if any remain
+   - Any gate FAIL 锟斤拷 analyze, possibly revise TaskSpec and re-dispatch
+   - BLOCKED 锟斤拷 escalate to human reviewer
 3. **Updates** `update_plan` with new status
 4. **Dispatches** next task or marks goal complete
 
@@ -484,10 +484,10 @@ AI Workflow Hub (`D:\dev-frame\ai-workflow-hub`) manages task state:
 - `tasks.yaml`: Task definitions with status, risk, dependencies
 - `projects.yaml`: Project registry with enabled/disabled state
 - SADP TaskSpec maps to ai-workflow-hub task format:
-  - `TaskSpec.ID` �� `tasks.yaml: id`
-  - `TaskSpec.Risk` �� `tasks.yaml: risk`
-  - `TaskSpec.Goal` �� `tasks.yaml: description`
-  - `ExecutionReport.Status` �� `tasks.yaml: status`
+  - `TaskSpec.ID` 锟斤拷 `tasks.yaml: id`
+  - `TaskSpec.Risk` 锟斤拷 `tasks.yaml: risk`
+  - `TaskSpec.Goal` 锟斤拷 `tasks.yaml: description`
+  - `ExecutionReport.Status` 锟斤拷 `tasks.yaml: status`
 
 When a task completes, update `tasks.yaml` status in the project:
 ```yaml
@@ -502,7 +502,7 @@ TestFrame (`D:\test-frame`) provides evidence patterns:
 - ExecutionReport.Evidence follows test-frame evidence provider contract
 - Historical evidence (pre-existing test results) marked as `historical`
 - Current evidence (this session) marked as `current, collected YYYY-MM-DD`
-- GateResult: NEVER produced by sub-agent �� reviewer decides
+- GateResult: NEVER produced by sub-agent 锟斤拷 reviewer decides
 
 ### 4.3 Capability Inventory
 
@@ -519,11 +519,11 @@ Before dispatching, consult [Dispatch Model Profiles](dispatch-model-profiles.md
 
 ```
 Task involves code files (.ps1/.py)?
-  ���� Yes �� Use deepseek-chat or execute directly (Codex)
-  ���� No �� Task involves .md files?
-            ���� ��2 files �� deepseek-v4-pro (fast, cheap)
-            ���� 3-5 files �� deepseek-chat (capable)
-            ���� 6+ files �� Codex direct (no tool timeout)
+  锟斤拷锟斤拷 Yes 锟斤拷 Use deepseek-chat or execute directly (Codex)
+  锟斤拷锟斤拷 No 锟斤拷 Task involves .md files?
+            锟斤拷锟斤拷 锟斤拷2 files 锟斤拷 deepseek-v4-pro (fast, cheap)
+            锟斤拷锟斤拷 3-5 files 锟斤拷 deepseek-chat (capable)
+            锟斤拷锟斤拷 6+ files 锟斤拷 Codex direct (no tool timeout)
 ```
 
 **Operational checks before dispatch:**
@@ -537,8 +537,8 @@ Task involves code files (.ps1/.py)?
 ### 4.5 WorkQueue (Task Dispatch Queue)
 
 Agent WorkQueue (`D:\agent-acceptance\agent-workqueue`) provides tier-graded task management:
-- Tasks flow: WorkQueue.create �� SADP dispatch �� Claude Code execute �� ExecutionReport �� WorkQueue.complete
-- Priority tiers: P0 (critical) �� P1 (high) �� P2 (normal) �� P3 (low)
+- Tasks flow: WorkQueue.create 锟斤拷 SADP dispatch 锟斤拷 Claude Code execute 锟斤拷 ExecutionReport 锟斤拷 WorkQueue.complete
+- Priority tiers: P0 (critical) 锟斤拷 P1 (high) 锟斤拷 P2 (normal) 锟斤拷 P3 (low)
 - Each task gets a WorkQueue ID that maps to TaskSpec.ID
 - Dry-run mode: inspect queue without dispatch (Phase 0-5 authorized)
 
@@ -601,7 +601,7 @@ Reviewer: RD. The following Phase 0-5 constraints are lifted for SADP operation:
 | test-frame | historical_only | current_evidence | Read evidence/reports/test-results |
 | WorkQueue | read_only | dry_run_dispatch | Inspect tasks, no execution |
 | Scripts | not_run | source_inspection | Read source, no execution |
-| SADP | protocol_only | full_dispatch | TaskSpec �� ExecutionReport cycle |
+| SADP | protocol_only | full_dispatch | TaskSpec 锟斤拷 ExecutionReport cycle |
 
 Test execution, package install, git mutations, and MCP changes remain forbidden without separate human gate.
 
@@ -635,4 +635,4 @@ fallback_policy:
 **Rules:**
 1. Classify failure type (api_key_expired, cli_changed, model_unavailable, timeout, unknown) before choosing fallback.
 2. Silent fallback is forbidden at all risk levels. Every fallback must be recorded in ExecutionReport.
-3. Governance modification tasks (rules, protocols, AGENTS.md, CLAUDE.md) have zero allowed fallback �� must escalate to human.
+3. Governance modification tasks (rules, protocols, AGENTS.md, CLAUDE.md) have zero allowed fallback — must escalate to human.

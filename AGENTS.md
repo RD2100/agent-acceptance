@@ -1,4 +1,4 @@
-# AGENTS.md -- RD2100 Agent Runtime v2
+ï»¿# AGENTS.md -- RD2100 Agent Runtime v2
 
 > Canonical root: D:\agent-acceptance
 > Phase: 0-5 (bootstrap)
@@ -17,7 +17,7 @@ New to this runtime? Read in this order:
 
 **Normal conversation** (no `@go`): Direct response. Think before acting, keep changes minimal, obey P0 hard stops.
 
-After non-trivial work completes: auto-write summary report ¡ú dispatch to `deepseek/deepseek-v4-pro` ¡ú regression test + audit ¡ú apply fixes. No pre-execution formalities, but post-completion quality gate at highest standard.
+After non-trivial work completes: auto-write summary report â†’ dispatch to `deepseek/deepseek-v4-pro` â†’ regression test + audit â†’ apply fixes. No pre-execution formalities, but post-completion quality gate at highest standard.
 
 **`@go` triggers [SADP](docs/agent-runtime/sub-agent-dispatch-protocol.md)** (formal workflow):
 ```
@@ -40,7 +40,7 @@ These rules block delivery. Do not violate:
 | 6 | No capability without inventory registration | `rules/core.md` core-007 |
 
 
-## Agent Secret Safety Rules (P0 ¡ª Hard Stop)
+## Agent Secret Safety Rules (P0 â€” Hard Stop)
 
 These rules apply to ALL agent actions, regardless of @go or normal mode:
 
@@ -79,6 +79,10 @@ docs/agent-runtime/
   audit-record.schema.md       <- Independent Plan Auditor output schema
   governance-manifest.md      <- Protected section hashes + drift detection
   
+  authority-matrix.md         <- Cross-project authority boundary matrix
+  contract-evolution-policy.md <- Contract versioning + deprecation policy
+  runtime-compatibility-lock.yaml <- Frame acceptance whitelist
+  cross-project-compatibility-analysis-brief.md <- Analysis brief for web review
   (Additional: resource-inventory, frame-fusion, path-drift, source-of-truth,
    negative-test-fixtures, red-team, phase reports, etc.)
 

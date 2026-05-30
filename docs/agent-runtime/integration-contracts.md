@@ -1,4 +1,9 @@
-# Integration Contracts -- RD2100 Agent Runtime v2
+﻿# Integration Contracts -- RD2100 Agent Runtime v2
+
+> **Phase 2 Update (2026-05-30)**: BoundaryEnvelope schema added for all cross-project data flows.
+> EvidenceIndex extended with freshness/currency_basis/approved_run_id fields.
+> See `schemas/agent-runtime/boundary-envelope.schema.json` and `runtime-compatibility-lock.yaml`.
+
 
 > Batch B1R, 2026-05-27
 > Defines 8 core data contracts for the agent runtime.
@@ -141,10 +146,25 @@ Each contract defines: purpose, producer, consumer, required/optional fields, st
 }
 ```
 
+### Freshness fields (Phase 2 extension)
+| Field | Type | Description |
+|-------|------|-------------|
+| `freshness` | enum | `historical`, `current`, `stale_or_unknown` |
+| `currency_basis` | enum | `approved_run`, `existing_artifact`, `manual_inspection`, `unknown` |
+| `approved_run_id` | string | Only if currency_basis=approved_run |
+
+**Freshness policy**:
+- `historical` evidence CANNOT be used as current evidence in GateResult
+- `current` requires either an `approved_run_id` or reviewer attestation
+- Default for pre-existing artifacts: `stale_or_unknown`
+- `status=verified` without `freshness=current` is INVALID
+
 ### Validation rules
 - `run_id` must reference an existing RunSpec
 - `artifact_type` must be one of log/screenshot/diff/report/output
 - `artifact_path` must be within the project root
+- `freshness=current` requires `currency_basis=approved_run` with valid `approved_run_id` (unless reviewer-attested)
+- `status=verified` requires `freshness=current`
 
 ---
 
