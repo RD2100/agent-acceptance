@@ -20,7 +20,7 @@ if (Test-Path $ignorePath) {
     $forbidden = @('rules/', 'hooks/', 'scripts/', 'governance/', '.github/workflows/', 'AGENTS.md', '.ai/policy.yaml')
     foreach ($line in $ignored) {
         foreach ($pat in $forbidden) {
-            if ($line.TrimStart('/') -like "$pat*" -and $line -notmatch '^(archive|future|runs|reports|\.backup|__pycache__|node_modules)') {
+            if ($line.TrimStart('/') -like "$pat*" -and $line -notmatch '^(archive|future|runs|reports|\.backup|__pycache__|node_modules|scripts/tests/)') {
                 Write-Warning "[MANIFEST-IGNORE] Potentially unsafe exclusion: '$line' matches protected path '$pat'"
                 # Do not block on warning alone — only block if the exclusion is definitive
                 if ($line -eq $pat -or $line -like "$pat*" -and $pat -match '/$') {

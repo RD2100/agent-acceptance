@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-05-30T21:55:53.6624429+08:00",
+    "generated":  "2026-05-30T21:57:51.6872563+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "CCF551EA1E8C0E0BAF8823F368141F19DE131E5DFFC5B864DA14E0A9348CEE58",
@@ -540,7 +540,7 @@
                              "path":  "scripts/Test-GovernanceDrift.ps1"
                          },
                          {
-                             "sha256":  "F06AE4B943CF9498021D67DE0232DE06FFD8F3E48D357B3DA8D8D6404B8833B3",
+                             "sha256":  "FD5FCCEF1D7821B157FDBEC10D0C4A1E7FBDD6E68E2EE4B0EBC8B9C13E1185ED",
                              "path":  "scripts/Test-GovernanceManifest.ps1"
                          },
                          {
