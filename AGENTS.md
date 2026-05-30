@@ -74,15 +74,14 @@ docs/agent-runtime/
   dispatch-model-profiles.md  <- Per-model capability limits + failure patterns
   lessons-learned.md          <- LL-001 ~ LL-010 operational knowledge log
   docs/agent-runtime/capability-inventory.md     <- Cross-platform (28 capabilities, Claude + Codex)
+  authority-matrix.md         <- Who can produce what contract
+  contract-evolution-policy.md <- How contracts evolve without breaking consumers
+  inactive-frame-registry.md  <- External projects: registered but NOT integrated
   dependency-canaries.md      <- 4 canaries for external dependency behavior verification
   session-ledger.schema.md     <- Per-session compliance evidence ledger
   audit-record.schema.md       <- Independent Plan Auditor output schema
   governance-manifest.md      <- Protected section hashes + drift detection
   
-  authority-matrix.md         <- Cross-project authority boundary matrix
-  contract-evolution-policy.md <- Contract versioning + deprecation policy
-  runtime-compatibility-lock.yaml <- Frame acceptance whitelist
-  cross-project-compatibility-analysis-brief.md <- Analysis brief for web review
   (Additional: resource-inventory, frame-fusion, path-drift, source-of-truth,
    negative-test-fixtures, red-team, phase reports, etc.)
 
@@ -113,6 +112,7 @@ templates/runtime-bootstrap/
   README.md                   <- Bootstrap overview
 
 schemas/
+  schemas/draft/              <- Future schemas (NOT active)
   agent-runtime/              <- 9 JSON schemas (TaskSpec, ExecutionReport, etc.)
   resource-integration/       <- 10 resource integration schemas
 

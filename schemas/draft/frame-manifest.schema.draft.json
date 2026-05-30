@@ -1,0 +1,160 @@
+﻿// DRAFT: Not wired into runtime. See inactive-frame-registry.md for activation conditions.
+// 2026-05-30
+{"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FrameManifest",
+  "description": "Self-declaration of a frame project. Declares capabilities, NOT grants authority. Authority is determined by the runtime compatibility lock.",
+  "type": "object",
+  "required": ["manifest_version", "frame", "contracts", "capabilities", "paths"],
+  "properties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+    "manifest_version": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+      "type": "string",
+      "description": "Version of the manifest schema itself",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "frame": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+      "type": "object",
+      "required": ["id", "role", "version", "phase"],
+      "properties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+        "id": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string", "description": "Unique frame identifier, e.g. dev-frame" },
+        "role": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string", "description": "e.g. orchestration_adapter_candidate" },
+        "version": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "phase": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string", "description": "e.g. R3" },
+        "git_commit": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string", "description": "HEAD commit hash when manifest was generated" },
+        "generated_at": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string", "format": "date-time" }
+      }
+    },
+    "contracts": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+      "type": "object",
+      "properties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+        "produces": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+          "type": "object",
+          "description": "Contracts this frame claims it CAN produce. Actual acceptance is determined by compatibility lock.",
+          "additionalProperties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+            "type": "object",
+            "required": ["versions", "authority", "active"],
+            "properties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+              "versions": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "array", "items": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string" } },
+              "authority": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string", "enum": ["full", "candidate_only", "historical_only", "historical_observation_only", "forbidden"] },
+              "active": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "boolean" },
+              "allowed_status": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "array", "items": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string" } },
+              "allowed_freshness": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "array", "items": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string" } }
+            }
+          }
+        },
+        "consumes": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+          "type": "object",
+          "description": "Contracts this frame consumes",
+          "additionalProperties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+            "type": "object",
+            "required": ["versions"],
+            "properties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+              "versions": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "array", "items": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "capabilities": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+      "type": "object",
+      "additionalProperties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+        "type": "object",
+        "required": ["access", "execution_policy"],
+        "properties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+          "path_key": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string" },
+          "access": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string", "enum": ["read_only", "forbidden"] },
+          "execution_policy": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string", "enum": ["forbidden", "human_gated", "dry_run_allowed", "allowed"] },
+          "human_gate_required": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "boolean" }
+        }
+      }
+    },
+    "paths": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+      "type": "object",
+      "required": ["root"],
+      "additionalProperties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string" },
+      "properties": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{
+        "root": {"$comment": "DRAFT — NOT ACTIVE. For future activation only. See docs/agent-runtime/inactive-frame-registry.md for activation triggers.
+",
+{ "type": "string", "description": "Canonical root of this frame" }
+      }
+    }
+  }
+}
