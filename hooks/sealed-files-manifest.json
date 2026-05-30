@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-05-30T22:26:14.6197656+08:00",
+    "generated":  "2026-05-30T22:29:33.9083515+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "CCF551EA1E8C0E0BAF8823F368141F19DE131E5DFFC5B864DA14E0A9348CEE58",
@@ -396,7 +396,7 @@
                              "path":  "governance/manifest-ignore.txt"
                          },
                          {
-                             "sha256":  "B1128408ECA0749410A104FD0473C19C1390D94350ED52D579B114C80B1B596C",
+                             "sha256":  "3A476C299222FF5C054890AB9D446A19ABDE0B3EDE244DB30CAEEB009A2E76B4",
                              "path":  "hooks/pre-commit.governance.ps1"
                          },
                          {

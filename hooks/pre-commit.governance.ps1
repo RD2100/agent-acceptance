@@ -1,5 +1,7 @@
 # pre-commit.governance.ps1 — Pre-commit governance gate.
-# Runs: sadp-audit → manifest auto-regen → git add manifest if changed.
+# Runs: manifest auto-regen → sadp-audit.
+# Order matters: regenerate manifest FIRST so sadp-audit checks against current state.
+# Only git adds manifest files (never git add .).
 # Exit 0: allow commit. Exit 1: block commit.
 
 $ErrorActionPreference = 'Continue'
@@ -7,8 +9,39 @@ $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
 Write-Host "=== Pre-Commit Governance Gate ==="
 
-# ---- 1. SADP audit (secret scan + compliance check) ----
-Write-Host "[1/2] SADP audit..."
+# ---- 1. Manifest auto-regeneration (BEFORE audit) ----
+Write-Host "[1/2] Manifest auto-regeneration..."
+$updateScript = Join-Path $ProjectRoot "scripts\Update-GovernanceManifest.ps1"
+$manifestPath = "hooks\sealed-files-manifest.json"
+
+Push-Location $ProjectRoot
+try {
+    $before = if (Test-Path $manifestPath) { Get-Content $manifestPath -Raw } else { "" }
+
+    if (Test-Path $updateScript) {
+        & powershell -ExecutionPolicy Bypass -File $updateScript | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[WARN] Manifest regeneration had issues (exit=$LASTEXITCODE)"
+        }
+    } else {
+        Write-Host "[WARN] Update-GovernanceManifest.ps1 not found — continuing."
+    }
+
+    $after = if (Test-Path $manifestPath) { Get-Content $manifestPath -Raw } else { "" }
+
+    if ($before -ne $after) {
+        git add $manifestPath 2>$null
+        Write-Host "[OK] Manifest regenerated and staged for this commit."
+    } else {
+        Write-Host "[OK] Manifest already up to date."
+    }
+} finally {
+    Pop-Location
+}
+Write-Host ""
+
+# ---- 2. SADP audit (checks against NOW-CURRENT manifest) ----
+Write-Host "[2/2] SADP audit..."
 $auditScript = Join-Path $ProjectRoot "scripts\sadp-audit.ps1"
 if (Test-Path $auditScript) {
     Push-Location $ProjectRoot
@@ -24,41 +57,6 @@ if (Test-Path $auditScript) {
     }
 } else {
     Write-Host "[WARN] sadp-audit.ps1 not found — skipping."
-}
-Write-Host ""
-
-# ---- 2. Manifest auto-regeneration ----
-Write-Host "[2/2] Manifest auto-regeneration..."
-$updateScript = Join-Path $ProjectRoot "scripts\Update-GovernanceManifest.ps1"
-if (-not (Test-Path $updateScript)) {
-    Write-Host "[WARN] Update-GovernanceManifest.ps1 not found — skipping."
-    exit 0
-}
-
-Push-Location $ProjectRoot
-try {
-    # Save manifest state before regeneration
-    $manifestPath = "hooks\sealed-files-manifest.json"
-    $before = if (Test-Path $manifestPath) { Get-Content $manifestPath -Raw } else { "" }
-
-    # Regenerate
-    & powershell -ExecutionPolicy Bypass -File $updateScript | Out-Null
-    $regenerateExit = $LASTEXITCODE
-    if ($regenerateExit -ne 0) {
-        Write-Host "[WARN] Manifest regeneration had issues (exit=$regenerateExit)"
-    }
-
-    $after = if (Test-Path $manifestPath) { Get-Content $manifestPath -Raw } else { "" }
-
-    # If manifest changed, auto-stage it into the current commit
-    if ($before -ne $after) {
-        git add $manifestPath 2>$null
-        Write-Host "[OK] Manifest was out of date — auto-regenerated and staged for this commit."
-    } else {
-        Write-Host "[OK] Manifest already up to date."
-    }
-} finally {
-    Pop-Location
 }
 
 Write-Host ""
