@@ -6,7 +6,10 @@
 # [Task Name] Execution Report
 
 ## Executive Decision
-pass / blocked / needs review
+pass / fail / blocked / escalate
+
+## Review Status
+draft / submitted / reviewed / accepted / rejected
 
 ## Reviewer Index
 - Changed files:
@@ -51,7 +54,8 @@ pass / blocked / needs review
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| Executive Decision | Always | `pass` (all gates met), `blocked` (cannot proceed), `needs review` (some gates need human) |
+| Executive Decision | Always | `pass` (all gates met), `fail` (verification failed), `blocked` (cannot proceed), `escalate` (human required) |
+| Review Status | Always | Lifecycle status: `draft`, `submitted`, `reviewed`, `accepted`, or `rejected` |
 | Reviewer Index | Always | Quick scan for human reviewer: what files, what tests, what's risky |
 | Changes | If code changed | Per-change breakdown with verification evidence |
 | Evidence | Always | Exact commands + output summaries + artifact paths |

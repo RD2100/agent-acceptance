@@ -1,0 +1,8 @@
+{
+  "generated_at": "2026-05-31T09:10:30+00:00",
+  "producer": "tools/go_evidence.py guard",
+  "command": "python tools/ai_guard.py task tasks\\t-structural-governance-fix-20260531.json",
+  "exit_code": 0,
+  "stdout": "WARNING: RESTRICTED: .github/workflows/ai-guard.yml requires human review\nWARNING: RESTRICTED: hooks/pre-commit.governance.ps1 requires human review\nWARNING: RESTRICTED: hooks/pre-push.governance.ps1 requires human review\nWARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review\n\nAI Guard: 0 errors, 4 warning(s) - PASS with warnings\n",
+  "stderr": ""
+}

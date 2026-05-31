@@ -1,0 +1,1709 @@
+diff --git a/.github/workflows/ai-guard.yml b/.github/workflows/ai-guard.yml
+index d917bbb..9bacc4e 100644
+--- a/.github/workflows/ai-guard.yml
++++ b/.github/workflows/ai-guard.yml
+@@ -27,6 +27,9 @@ jobs:
+       - name: Deny Paths + Scope + Secret Scan
+         run: python tools/ai_guard.py full
+ 
++      - name: Reviewer Evidence Validation
++        run: powershell -ExecutionPolicy Bypass -File scripts/Test-ReviewerEvidence.ps1
++
+       - name: Governance Drift Check
+         run: powershell -ExecutionPolicy Bypass -File scripts/Test-GovernanceDrift.ps1
+ 
+diff --git a/docs/EXECUTION_REPORT_TEMPLATE.md b/docs/EXECUTION_REPORT_TEMPLATE.md
+index 46d30c2..e39849c 100644
+--- a/docs/EXECUTION_REPORT_TEMPLATE.md
++++ b/docs/EXECUTION_REPORT_TEMPLATE.md
+@@ -6,7 +6,10 @@
+ # [Task Name] Execution Report
+ 
+ ## Executive Decision
+-pass / blocked / needs review
++pass / fail / blocked / escalate
++
++## Review Status
++draft / submitted / reviewed / accepted / rejected
+ 
+ ## Reviewer Index
+ - Changed files:
+@@ -51,7 +54,8 @@ pass / blocked / needs review
+ 
+ | Field | Required | Description |
+ |-------|----------|-------------|
+-| Executive Decision | Always | `pass` (all gates met), `blocked` (cannot proceed), `needs review` (some gates need human) |
++| Executive Decision | Always | `pass` (all gates met), `fail` (verification failed), `blocked` (cannot proceed), `escalate` (human required) |
++| Review Status | Always | Lifecycle status: `draft`, `submitted`, `reviewed`, `accepted`, or `rejected` |
+ | Reviewer Index | Always | Quick scan for human reviewer: what files, what tests, what's risky |
+ | Changes | If code changed | Per-change breakdown with verification evidence |
+ | Evidence | Always | Exact commands + output summaries + artifact paths |
+diff --git a/docs/agent-runtime/sub-agent-dispatch-protocol.md b/docs/agent-runtime/sub-agent-dispatch-protocol.md
+index 405e4a0..7b3754e 100644
+--- a/docs/agent-runtime/sub-agent-dispatch-protocol.md
++++ b/docs/agent-runtime/sub-agent-dispatch-protocol.md
+@@ -95,7 +95,7 @@ findings:
+ The finalizer MUST run:
+ 
+ ```powershell
+-python tools/ai_guard.py evidence <run-evidence-dir>
++python tools/go_evidence.py finalize <run-evidence-dir>
+ ```
+ 
+ If reviewer artifacts are missing, reviewer role is `executor`/`fixer`/`coder`, reviewed inputs are incomplete, or any P0/P1 finding remains unresolved, the final status MUST be `blocked`.
+@@ -372,7 +372,8 @@ Every task completion returns this format:
+ ```markdown
+ ## ExecutionReport: [task-id]
+ 
+-- **Status**: PASS | FAIL | BLOCKED
++- **Status**: pass | fail | blocked | escalate
++- **Review Status**: draft | submitted | reviewed | accepted | rejected
+ - **Summary**: [1-3 sentences: what was done, what was found]
+ - **Changed Files**:
+   - `path/to/file.ts` (+N lines, -M lines) 锟斤拷 [what changed]
+@@ -399,7 +400,8 @@ Every task completion returns this format:
+ ```markdown
+ ## ExecutionReport: task-a1b2c3d4
+ 
+-- **Status**: PASS
++- **Status**: pass
++- **Review Status**: accepted
+ - **Summary**: Added rate-limiting middleware (100 req/min per IP). All tests pass, no regression.
+ - **Changed Files**:
+   - `src/middleware/rateLimiter.ts` (+45 lines) 锟斤拷 new middleware
+diff --git a/hooks/pre-commit.governance.ps1 b/hooks/pre-commit.governance.ps1
+index 1aa6cb2..2bb4793 100644
+--- a/hooks/pre-commit.governance.ps1
++++ b/hooks/pre-commit.governance.ps1
+@@ -1,7 +1,7 @@
+-# pre-commit.governance.ps1 — Pre-commit governance gate.
+-# Runs: manifest auto-regen → sadp-audit.
+-# Order matters: regenerate manifest FIRST so sadp-audit checks against current state.
+-# Only git adds manifest files (never git add .).
++# pre-commit.governance.ps1 - Pre-commit governance gate.
++# Runs: manifest auto-regen -> sadp-audit -> advisory governance scan.
++# Order matters: regenerate manifest first so sadp-audit checks current state.
++# Only git adds manifest files. Never use git add .
+ # Exit 0: allow commit. Exit 1: block commit.
+ 
+ $ErrorActionPreference = 'Continue'
+@@ -9,8 +9,8 @@ $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+ 
+ Write-Host "=== Pre-Commit Governance Gate ==="
+ 
+-# ---- 1. Manifest auto-regeneration (BEFORE audit) ----
+-Write-Host "[1/2] Manifest auto-regeneration..."
++# ---- 1. Manifest auto-regeneration (before audit) ----
++Write-Host "[1/3] Manifest auto-regeneration..."
+ $updateScript = Join-Path $ProjectRoot "scripts\Update-GovernanceManifest.ps1"
+ $manifestPath = "hooks\sealed-files-manifest.json"
+ 
+@@ -24,7 +24,7 @@ try {
+             Write-Host "[WARN] Manifest regeneration had issues (exit=$LASTEXITCODE)"
+         }
+     } else {
+-        Write-Host "[WARN] Update-GovernanceManifest.ps1 not found — continuing."
++        Write-Host "[WARN] Update-GovernanceManifest.ps1 not found - continuing."
+     }
+ 
+     $after = if (Test-Path $manifestPath) { Get-Content $manifestPath -Raw } else { "" }
+@@ -40,8 +40,8 @@ try {
+ }
+ Write-Host ""
+ 
+-# ---- 2. SADP audit (checks against NOW-CURRENT manifest) ----
+-Write-Host "[2/2] SADP audit..."
++# ---- 2. SADP audit ----
++Write-Host "[2/3] SADP audit..."
+ $auditScript = Join-Path $ProjectRoot "scripts\sadp-audit.ps1"
+ if (Test-Path $auditScript) {
+     Push-Location $ProjectRoot
+@@ -56,7 +56,22 @@ if (Test-Path $auditScript) {
+         exit 1
+     }
+ } else {
+-    Write-Host "[WARN] sadp-audit.ps1 not found — skipping."
++    Write-Host "[WARN] sadp-audit.ps1 not found - skipping."
++}
++Write-Host ""
++
++# ---- 3. Advisory governance scan ----
++Write-Host "[3/3] Governance advisory..."
++$governanceScript = Join-Path $ProjectRoot "scripts\Test-Governance.ps1"
++if (Test-Path $governanceScript) {
++    Push-Location $ProjectRoot
++    try {
++        & powershell -ExecutionPolicy Bypass -File $governanceScript -Mode advisory
++    } finally {
++        Pop-Location
++    }
++} else {
++    Write-Host "[WARN] Test-Governance.ps1 not found - skipping advisory scan."
+ }
+ 
+ Write-Host ""
+diff --git a/hooks/pre-push.governance.ps1 b/hooks/pre-push.governance.ps1
+index bbdf988..e3eda46 100644
+--- a/hooks/pre-push.governance.ps1
++++ b/hooks/pre-push.governance.ps1
+@@ -9,7 +9,7 @@ $errors = 0
+ Write-Host "=== Pre-Push Governance Gate ==="
+ 
+ # 1. AI Guard — secret scan + deny paths
+-Write-Host "[1/3] ai_guard.py..."
++Write-Host "[1/4] ai_guard.py..."
+ $result = & python (Join-Path $ProjectRoot "tools\ai_guard.py") full 2>&1
+ $ec = $LASTEXITCODE
+ Write-Host $result
+@@ -19,8 +19,19 @@ if ($ec -ne 0) {
+ }
+ Write-Host ""
+ 
+-# 2. Governance Drift Check
+-Write-Host "[2/3] Drift check..."
++# 2. Reviewer Evidence Validation
++Write-Host "[2/4] Reviewer evidence..."
++$result = & powershell -ExecutionPolicy Bypass -File (Join-Path $ProjectRoot "scripts\Test-ReviewerEvidence.ps1") 2>&1
++$ec = $LASTEXITCODE
++Write-Host $result
++if ($ec -ne 0) {
++    Write-Host "[BLOCKED] Reviewer evidence validation failed (exit=$ec)"
++    $errors++
++}
++Write-Host ""
++
++# 3. Governance Drift Check
++Write-Host "[3/4] Drift check..."
+ $result = & powershell -ExecutionPolicy Bypass -File (Join-Path $ProjectRoot "scripts\Test-GovernanceDrift.ps1") 2>&1
+ $ec = $LASTEXITCODE
+ if ($ec -ne 0) {
+@@ -29,8 +40,8 @@ if ($ec -ne 0) {
+ }
+ Write-Host ""
+ 
+-# 3. Governance Gate (blocking)
+-Write-Host "[3/3] Governance gate..."
++# 4. Governance Gate (blocking)
++Write-Host "[4/4] Governance gate..."
+ $result = & powershell -ExecutionPolicy Bypass -File (Join-Path $ProjectRoot "scripts\Test-Governance.ps1") -Mode blocking 2>&1
+ $ec = $LASTEXITCODE
+ if ($ec -ne 0) {
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index 4455aff..ded4ee5 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,14 +9,14 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-05-31T16:22:20.2747699+08:00",
++    "generated":  "2026-05-31T17:08:23.1872901+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+                              "path":  ".ai/policy.yaml"
+                          },
+                          {
+-                             "sha256":  "52CB0F495E8F2EDAC896B84BEE35636C14B02B90AC0AED90CBCDA357E040B3D7",
++                             "sha256":  "0B0659EDA9CE03B0CAFB7F91A696B59F7CA772CFFA61C233504300893FBA4121",
+                              "path":  ".github/workflows/ai-guard.yml"
+                          },
+                          {
+@@ -352,7 +352,7 @@
+                              "path":  "docs/agent-runtime/stride-threat-model.md"
+                          },
+                          {
+-                             "sha256":  "4F2031CEE17E6378E87D2AEA85217F4B4289DBBC75C06085572207DB76A7A4FE",
++                             "sha256":  "D43900921E35FFE52ACB922C86C643E319C78BAB198B9BBFEB18B4E6EE111CB5",
+                              "path":  "docs/agent-runtime/sub-agent-dispatch-protocol.md"
+                          },
+                          {
+@@ -396,7 +396,7 @@
+                              "path":  "governance/manifest-ignore.txt"
+                          },
+                          {
+-                             "sha256":  "3A476C299222FF5C054890AB9D446A19ABDE0B3EDE244DB30CAEEB009A2E76B4",
++                             "sha256":  "5325226F138B8DCFF66A83A5D056F44262E52999DC5D2F9A7EA270A187B28663",
+                              "path":  "hooks/pre-commit.governance.ps1"
+                          },
+                          {
+@@ -404,7 +404,7 @@
+                              "path":  "hooks/pre-edit.governance.ps1"
+                          },
+                          {
+-                             "sha256":  "BEAC5795F3942F37C3AB4F6DCDA94912FBC92F1E15BADD6C22DF2821A61EF73C",
++                             "sha256":  "451B28439A6A248A42689CC5C1C6C02A55AD4BAD3877DB7C087D997A4CF6CAA5",
+                              "path":  "hooks/pre-push.governance.ps1"
+                          },
+                          {
+@@ -448,25 +448,37 @@
+                              "path":  "rules/security.md"
+                          },
+                          {
+-                             "sha256":  "B50CDDEFF4980D0075A07462191CCA876C188A6C62BD690939F2125FFD81F862",
++                             "sha256":  "C0006E1F9BD68847220C18C8D7852BC536C298AF1CE108CC443B5E79B7608890",
++                             "path":  "schemas/agent-runtime/chain-evidence.schema.json"
++                         },
++                         {
++                             "sha256":  "D01ACD0B77FBA729E5AD19F176FE20DF7B13F16E8E2368BC0672EAA771002D0B",
+                              "path":  "schemas/agent-runtime/evidence-index.schema.json"
+                          },
+                          {
+-                             "sha256":  "7516A25E828DBCC0250B3989366BFE82F59F113B52F7655BF9CC0BEE5CC0DF44",
++                             "sha256":  "D8C2BCBFCB737EC086BD520D5F88FB0F2D93EF7BC551FC8CB95E051607CEB661",
+                              "path":  "schemas/agent-runtime/execution-report.schema.json"
+                          },
+                          {
+-                             "sha256":  "EE51A05EEE18D7A12CD64E5D03552F76D5818BFAB2AC9A1EDE00E691C5D55F76",
++                             "sha256":  "94341143393F8ABE56930DE52A97E60F80ABFE6C33CBB79AB12A938897FA6251",
+                              "path":  "schemas/agent-runtime/gate-result.schema.json"
+                          },
+                          {
+                              "sha256":  "9CEBA492B471715234ADCB1404D726C2C73BB509BC4263229A2256A6E15FD10D",
+                              "path":  "schemas/agent-runtime/memory-update-record.schema.json"
+                          },
++                         {
++                             "sha256":  "07C823E5C6D9865A74FDD45C2A97B377DD42BE8240B6CFDC1127138ABCD8BABD",
++                             "path":  "schemas/agent-runtime/review.schema.json"
++                         },
+                          {
+                              "sha256":  "005C08EC71B619DE84C843E6FE81F54534354BFDACD057B2AE43C664D3F3E2F7",
+                              "path":  "schemas/agent-runtime/run-spec.schema.json"
+                          },
++                         {
++                             "sha256":  "8B6D46C502905B74B2B07A59642EF8C6A4F8A613A9F417915B7B0248DEB8436B",
++                             "path":  "schemas/agent-runtime/safety-report.schema.json"
++                         },
+                          {
+                              "sha256":  "7E513408E324240EE28253459DA993977FF9174C4C877D586C4184B8EE0D1464",
+                              "path":  "schemas/agent-runtime/skill-intake-record.schema.json"
+@@ -528,7 +540,7 @@
+                              "path":  "scripts/Run-WorkQueue.ps1"
+                          },
+                          {
+-                             "sha256":  "EB4A32E9E73F1A24FD1DF617572A3886CCC572E093104DD2852D6B7E17785A82",
++                             "sha256":  "0935E88E0B5A7BFC9C66960C25D9D0AC91CEBE81E3027D96AEABF78EEDAA4AA3",
+                              "path":  "scripts/sadp-audit.ps1"
+                          },
+                          {
+@@ -543,6 +555,10 @@
+                              "sha256":  "FD5FCCEF1D7821B157FDBEC10D0C4A1E7FBDD6E68E2EE4B0EBC8B9C13E1185ED",
+                              "path":  "scripts/Test-GovernanceManifest.ps1"
+                          },
++                         {
++                             "sha256":  "E49FCA70188825F896C6F361FDB4E446593FB74F363CFF8CC978832E536CFAF3",
++                             "path":  "scripts/Test-ReviewerEvidence.ps1"
++                         },
+                          {
+                              "sha256":  "69A60754DF0439C593B0A01B4EF1A250C6FDD74193D39747F60F5D01EAAA7592",
+                              "path":  "scripts/tests/Invoke-GovernanceCanarySuite.ps1"
+diff --git a/schemas/agent-runtime/README.md b/schemas/agent-runtime/README.md
+index a2ba4ba..193af36 100644
+--- a/schemas/agent-runtime/README.md
++++ b/schemas/agent-runtime/README.md
+@@ -3,7 +3,7 @@
+ > Batch D1, 2026-05-27
+ > JSON Schema Draft 2020-12
+ 
+-This directory contains JSON Schema definitions for the 9 core integration contracts.
++This directory contains JSON Schema definitions for the core integration contracts and @go evidence artifacts.
+ 
+ ## Schemas
+ 
+@@ -18,6 +18,9 @@ This directory contains JSON Schema definitions for the 9 core integration contr
+ | 7 | `tool-risk-record.schema.json` | Risk assessment of a tool available to agents |
+ | 8 | `memory-update-record.schema.json` | Proposed memory update subject to human approval |
+ | 9 | `source-lock-record.schema.json` | External skill source lock record (Phase 6) |
++| 10 | `review.schema.json` | Independent reviewer verdict for an @go run |
++| 11 | `safety-report.schema.json` | Deterministic guard output captured for an @go run |
++| 12 | `chain-evidence.schema.json` | Role/session chain for an @go run |
+ 
+ ## Constraints
+ 
+@@ -26,5 +29,5 @@ This directory contains JSON Schema definitions for the 9 core integration contr
+ - Phase 0-5 enum constraints are enforced:
+   - SkillIntakeRecord disposition: `reference_only`, `candidate`, `defer`, `reject` only (no `install`, `absorb`, `approved`)
+   - MemoryUpdateRecord status: `proposed` only for new records (no `approved` at agent level)
+-  - GateResult signer_role: must not be `executor`
++  - GateResult signer_role: must not be `executor`, `fixer`, or `coder`
+ - Forbidden patterns (MCP config modification, UI-TARS/computer-use, package managers, external script execution) are documented in descriptions and NOT listed as permitted values.
+diff --git a/schemas/agent-runtime/chain-evidence.schema.json b/schemas/agent-runtime/chain-evidence.schema.json
+new file mode 100644
+index 0000000..32c578c
+--- /dev/null
++++ b/schemas/agent-runtime/chain-evidence.schema.json
+@@ -0,0 +1,16 @@
++{
++  "$schema": "https://json-schema.org/draft/2020-12/schema",
++  "title": "ChainEvidence",
++  "description": "Role/session chain for an @go run.",
++  "type": "object",
++  "required": ["run_id", "task_file", "executor_id", "created_at", "producer"],
++  "properties": {
++    "run_id": { "type": "string", "minLength": 1 },
++    "task_file": { "type": "string", "minLength": 1 },
++    "executor_id": { "type": "string", "minLength": 1 },
++    "reviewer_id": { "type": ["string", "null"] },
++    "created_at": { "type": "string", "format": "date-time" },
++    "producer": { "type": "string" }
++  },
++  "additionalProperties": false
++}
+diff --git a/schemas/agent-runtime/evidence-index.schema.json b/schemas/agent-runtime/evidence-index.schema.json
+index 4c2ca61..a837b56 100644
+--- a/schemas/agent-runtime/evidence-index.schema.json
++++ b/schemas/agent-runtime/evidence-index.schema.json
+@@ -39,6 +39,20 @@
+       "enum": ["collected", "verified", "disputed"],
+       "description": "Current verification status of the evidence."
+     },
++    "freshness": {
++      "type": "string",
++      "enum": ["historical", "current", "stale_or_unknown"],
++      "description": "Whether this evidence can support current gate decisions."
++    },
++    "currency_basis": {
++      "type": "string",
++      "enum": ["approved_run", "existing_artifact", "manual_inspection", "unknown"],
++      "description": "Basis for treating evidence as current."
++    },
++    "approved_run_id": {
++      "type": "string",
++      "description": "Run ID that produced this evidence when currency_basis is approved_run."
++    },
+     "checksum": {
+       "type": "string",
+       "description": "SHA256 checksum of the artifact."
+diff --git a/schemas/agent-runtime/execution-report.schema.json b/schemas/agent-runtime/execution-report.schema.json
+index 7d57708..f38be9b 100644
+--- a/schemas/agent-runtime/execution-report.schema.json
++++ b/schemas/agent-runtime/execution-report.schema.json
+@@ -26,9 +26,14 @@
+       "description": "ISO8601 report generation timestamp."
+     },
+     "status": {
++      "type": "string",
++      "enum": ["pass", "fail", "blocked", "escalate"],
++      "description": "Execution outcome. This is separate from review_status lifecycle."
++    },
++    "review_status": {
+       "type": "string",
+       "enum": ["draft", "submitted", "reviewed", "accepted", "rejected"],
+-      "description": "Current status of the report."
++      "description": "Document lifecycle status for reviewer processing."
+     },
+     "summary": {
+       "type": "string",
+@@ -133,7 +138,7 @@
+   "allOf": [
+     {
+       "if": {
+-        "properties": { "status": { "const": "accepted" } },
++        "properties": { "status": { "const": "pass" } },
+         "required": ["status"]
+       },
+       "then": {
+diff --git a/schemas/agent-runtime/gate-result.schema.json b/schemas/agent-runtime/gate-result.schema.json
+index 3c07d5d..2755f41 100644
+--- a/schemas/agent-runtime/gate-result.schema.json
++++ b/schemas/agent-runtime/gate-result.schema.json
+@@ -41,8 +41,8 @@
+     },
+     "signer_role": {
+       "type": "string",
+-      "not": { "const": "executor" },
+-      "description": "Role of the person or agent that performed this gate check. Must not be 'executor'."
++      "not": { "enum": ["executor", "fixer", "coder"] },
++      "description": "Role of the person or agent that performed this gate check. Must not be executor, fixer, or coder."
+     },
+     "details": {
+       "type": "string",
+diff --git a/schemas/agent-runtime/review.schema.json b/schemas/agent-runtime/review.schema.json
+new file mode 100644
+index 0000000..0fa2d68
+--- /dev/null
++++ b/schemas/agent-runtime/review.schema.json
+@@ -0,0 +1,73 @@
++{
++  "$schema": "https://json-schema.org/draft/2020-12/schema",
++  "title": "Review",
++  "description": "Machine-readable independent reviewer verdict for an @go run.",
++  "type": "object",
++  "required": [
++    "reviewer_role",
++    "reviewer_id",
++    "executor_id",
++    "verdict",
++    "reviewed_inputs",
++    "findings"
++  ],
++  "properties": {
++    "reviewer_role": {
++      "type": "string",
++      "not": { "enum": ["executor", "fixer", "coder"] },
++      "description": "Role that produced the review. Must be independent of executor/fixer/coder."
++    },
++    "reviewer_type": {
++      "type": "string",
++      "enum": ["ai", "human"],
++      "description": "Whether the reviewer is an AI reviewer session or a human reviewer."
++    },
++    "reviewer_id": {
++      "type": "string",
++      "minLength": 1,
++      "description": "Reviewer session or human identifier."
++    },
++    "executor_id": {
++      "type": "string",
++      "minLength": 1,
++      "description": "Executor/fixer session identifier."
++    },
++    "verdict": {
++      "type": "string",
++      "enum": ["pass", "blocked", "fail", "escalate"],
++      "description": "Reviewer verdict."
++    },
++    "reviewed_inputs": {
++      "type": "array",
++      "items": {
++        "type": "string",
++        "enum": [
++          "diff.patch",
++          "test-output.md",
++          "safety-report.json",
++          "chain-evidence.json"
++        ]
++      },
++      "uniqueItems": true,
++      "minItems": 4,
++      "description": "Evidence files the reviewer actually inspected."
++    },
++    "findings": {
++      "type": "array",
++      "items": {
++        "type": "object",
++        "required": ["id", "severity", "status", "title"],
++        "properties": {
++          "id": { "type": "string" },
++          "severity": { "type": "string", "enum": ["P0", "P1", "P2", "P3"] },
++          "status": { "type": "string", "enum": ["open", "resolved", "false_positive"] },
++          "title": { "type": "string" },
++          "details": { "type": "string" }
++        },
++        "additionalProperties": false
++      },
++      "description": "Reviewer findings."
++    }
++  },
++  "additionalProperties": false
++}
+diff --git a/schemas/agent-runtime/safety-report.schema.json b/schemas/agent-runtime/safety-report.schema.json
+new file mode 100644
+index 0000000..7655624
+--- /dev/null
++++ b/schemas/agent-runtime/safety-report.schema.json
+@@ -0,0 +1,16 @@
++{
++  "$schema": "https://json-schema.org/draft/2020-12/schema",
++  "title": "SafetyReport",
++  "description": "Deterministic guard output captured for an @go run.",
++  "type": "object",
++  "required": ["generated_at", "producer", "command", "exit_code", "stdout"],
++  "properties": {
++    "generated_at": { "type": "string", "format": "date-time" },
++    "producer": { "type": "string" },
++    "command": { "type": "string" },
++    "exit_code": { "type": "integer" },
++    "stdout": { "type": "string" },
++    "stderr": { "type": "string" }
++  },
++  "additionalProperties": false
++}
+diff --git a/scripts/Test-ReviewerEvidence.ps1 b/scripts/Test-ReviewerEvidence.ps1
+new file mode 100644
+index 0000000..5320e02
+--- /dev/null
++++ b/scripts/Test-ReviewerEvidence.ps1
+@@ -0,0 +1,52 @@
++# Test-ReviewerEvidence.ps1 - Validate @go reviewer evidence directories.
++# Exit 0: PASS or no run evidence. Exit 1: invalid evidence.
++
++param(
++    [string]$ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
++)
++
++$ErrorActionPreference = "Continue"
++$runsDir = Join-Path $ProjectRoot "runs"
++$guard = Join-Path $ProjectRoot "tools\ai_guard.py"
++
++Write-Host "=== Reviewer Evidence Validation ==="
++
++if (-not (Test-Path $runsDir)) {
++    Write-Host "No runs/ directory; skipping reviewer evidence validation."
++    exit 0
++}
++
++if (-not (Test-Path $guard)) {
++    Write-Host "[BLOCKED] tools\ai_guard.py not found."
++    exit 1
++}
++
++$runDirs = @(Get-ChildItem $runsDir -Directory -Recurse | Where-Object {
++    (Test-Path (Join-Path $_.FullName "review.yaml")) -or
++    (Test-Path (Join-Path $_.FullName "chain-evidence.json")) -or
++    (Test-Path (Join-Path $_.FullName "final-report.md"))
++})
++
++if ($runDirs.Count -eq 0) {
++    Write-Host "No reviewer evidence directories found; skipping."
++    exit 0
++}
++
++$errors = 0
++foreach ($dir in $runDirs) {
++    Write-Host "Validating: $($dir.FullName)"
++    $result = & python $guard evidence $dir.FullName 2>&1
++    $exitCode = $LASTEXITCODE
++    Write-Host $result
++    if ($exitCode -ne 0) {
++        $errors++
++    }
++}
++
++if ($errors -gt 0) {
++    Write-Host "[BLOCKED] Reviewer evidence validation failed for $errors run(s)."
++    exit 1
++}
++
++Write-Host "Reviewer evidence validation PASS."
++exit 0
+diff --git a/scripts/checks/Test-ProtectedPaths.ps1 b/scripts/checks/Test-ProtectedPaths.ps1
+index 4522f57..035de1f 100644
+--- a/scripts/checks/Test-ProtectedPaths.ps1
++++ b/scripts/checks/Test-ProtectedPaths.ps1
+@@ -39,9 +39,107 @@ foreach ($file in $ChangedFiles) {
+ }
+ 
+ if ($violations.Count -gt 0) {
++    function Test-PathCoveredByPattern {
++        param([string]$FilePath, [string]$Pattern)
++
++        $normalizedPath = $FilePath -replace '\\', '/'
++        $normalizedPattern = $Pattern -replace '\\', '/'
++        if ($normalizedPattern -eq $normalizedPath) { return $true }
++        if ($normalizedPattern.EndsWith('/**')) {
++            $prefix = $normalizedPattern.Substring(0, $normalizedPattern.Length - 3)
++            return $normalizedPath.StartsWith($prefix + '/')
++        }
++        try {
++            $wildcard = [System.Management.Automation.WildcardPattern]::new(
++                $normalizedPattern,
++                [System.Management.Automation.WildcardOptions]::IgnoreCase
++            )
++            return $wildcard.IsMatch($normalizedPath)
++        } catch {
++            return $false
++        }
++    }
++
++    function Test-TaskSpecCoversViolations {
++        param([string[]]$ViolationPaths)
++
++        $taskFiles = @()
++        if (Test-Path (Join-Path $ProjectRoot "tasks")) {
++            $taskFiles += @(Get-ChildItem (Join-Path $ProjectRoot "tasks") -Filter "t-*.json" -ErrorAction SilentlyContinue)
++        }
++        if (Test-Path (Join-Path $ProjectRoot ".ai\current-task.yaml")) {
++            $taskFiles += @(Get-Item (Join-Path $ProjectRoot ".ai\current-task.yaml"))
++        }
++
++        foreach ($taskFile in $taskFiles) {
++            $content = Get-Content $taskFile.FullName -Raw -ErrorAction SilentlyContinue
++            $patterns = @()
++            if ($taskFile.Extension -eq ".json") {
++                try {
++                    $json = $content | ConvertFrom-Json -ErrorAction Stop
++                    $patterns += @($json.allow_write)
++                    $patterns += @($json.write_set)
++                    if ($json.conflict_registry) {
++                        $patterns += @($json.conflict_registry.write_set)
++                    }
++                } catch {
++                    continue
++                }
++            } else {
++                $matches = [regex]::Matches($content, '(?m)^\s*-\s+["'']?([^"''\r\n]+)["'']?\s*$')
++                foreach ($match in $matches) {
++                    $patterns += $match.Groups[1].Value.Trim()
++                }
++            }
++
++            $patterns = @($patterns | Where-Object { $_ } | ForEach-Object { $_ -replace '\\', '/' })
++            if ($patterns.Count -eq 0) { continue }
++
++            $allCovered = $true
++            foreach ($violation in $ViolationPaths) {
++                $covered = $false
++                foreach ($pattern in $patterns) {
++                    if (Test-PathCoveredByPattern -FilePath $violation -Pattern $pattern) {
++                        $covered = $true
++                        break
++                    }
++                }
++                if (-not $covered) {
++                    $allCovered = $false
++                    break
++                }
++            }
++            if ($allCovered) { return $taskFile.Name }
++        }
++        return $null
++    }
++
++    function Test-ReviewerEvidenceExists {
++        $runsDir = Join-Path $ProjectRoot "runs"
++        $guard = Join-Path $ProjectRoot "tools\ai_guard.py"
++        if ((-not (Test-Path $runsDir)) -or (-not (Test-Path $guard))) { return $false }
++
++        $runDirs = @(Get-ChildItem $runsDir -Directory -Recurse -ErrorAction SilentlyContinue | Where-Object {
++            Test-Path (Join-Path $_.FullName "review.yaml")
++        })
++        foreach ($dir in $runDirs) {
++            $result = & python $guard evidence $dir.FullName 2>&1
++            if ($LASTEXITCODE -eq 0) { return $true }
++        }
++        return $false
++    }
++
++    $coveringTask = Test-TaskSpecCoversViolations -ViolationPaths $violations
++    $hasReviewerEvidence = Test-ReviewerEvidenceExists
++    if ($coveringTask -and $hasReviewerEvidence) {
++        return New-CheckResult -CheckName "ProtectedPaths" -Status "PASS" `
++            -Details @("Protected paths covered by TaskSpec: $coveringTask", "Independent reviewer evidence: PASS") `
++            -Suggestion "Governance protected-path changes admitted through SADP evidence."
++    }
++
+     return New-CheckResult -CheckName "ProtectedPaths" -Status "BLOCKED" `
+         -Details $violations `
+-        -Suggestion "Governance files modified. Ensure TaskSpec + ExecutionReport exist per SADP."
++        -Suggestion "Governance files modified. Require TaskSpec coverage plus independent reviewer evidence."
+ } else {
+     return New-CheckResult -CheckName "ProtectedPaths" -Status "PASS"
+ }
+diff --git a/scripts/sadp-audit.ps1 b/scripts/sadp-audit.ps1
+index 300bb28..83e184c 100644
+--- a/scripts/sadp-audit.ps1
++++ b/scripts/sadp-audit.ps1
+@@ -18,6 +18,48 @@ $ErrorActionPreference = "Stop"
+ Push-Location $ProjectRoot
+ 
+ try {
++    function Get-TaskSpecFiles {
++        $files = @()
++        if (Test-Path "tasks") {
++            $files += @(Get-ChildItem "tasks" -Filter "task-*.md" -ErrorAction SilentlyContinue)
++            $files += @(Get-ChildItem "tasks" -Filter "t-*.json" -ErrorAction SilentlyContinue)
++        }
++        if (Test-Path ".ai\tasks") {
++            $files += @(Get-ChildItem ".ai\tasks" -Include "*.yaml","*.yml","*.json" -Recurse -ErrorAction SilentlyContinue)
++        }
++        if (Test-Path ".ai\current-task.yaml") {
++            $files += @(Get-Item ".ai\current-task.yaml")
++        }
++        return @($files | Sort-Object FullName -Unique)
++    }
++
++    function Test-Gate0Evidence {
++        param([System.IO.FileInfo]$TaskFile)
++
++        $content = Get-Content $TaskFile.FullName -Raw -ErrorAction SilentlyContinue
++        if (-not $content) { return $false }
++
++        if ($TaskFile.Extension -eq ".json") {
++            try {
++                $json = $content | ConvertFrom-Json -ErrorAction Stop
++                if (-not $json.gate_0) { return $false }
++                if (-not $json.gate_0.inventory_evidence) { return $false }
++                if (-not $json.gate_0.inventory_evidence.queried_sources) { return $false }
++                if (-not $json.gate_0.inventory_evidence.matched_capabilities) { return $false }
++                return $true
++            } catch {
++                return $false
++            }
++        }
++
++        return (
++            ($content -match "gate_0:") -and
++            ($content -match "inventory_evidence:") -and
++            ($content -match "queried_sources:") -and
++            ($content -match "matched_capabilities:")
++        )
++    }
++
+     # Collect git state
+     $changedFiles = @(git -c core.safecrlf=false diff --cached --name-only 2>$null | Where-Object { $_ })
+     $changedCount = $changedFiles.Count
+@@ -58,10 +100,7 @@ try {
+ 
+     # Check for TaskSpecs
+     $taskDir = "tasks"
+-    $taskSpecs = @()
+-    if (Test-Path $taskDir) {
+-        $taskSpecs = @(Get-ChildItem $taskDir -Filter "task-*.md" -ErrorAction SilentlyContinue)
+-    }
++    $taskSpecs = @(Get-TaskSpecFiles)
+ 
+     # Check for Audit Records
+     $auditDir = "tasks"  # Audit records stored alongside TaskSpecs for now
+@@ -82,8 +121,53 @@ function Test-TaskSpecCoverage {
+     
+     $uncovered = @()
+     $coveredBy = @{}
++
++    function Get-TaskSpecPathPatterns {
++        param([string]$Content)
++
++        $patterns = @()
++        $quotedMatches = [regex]::Matches($Content, '"([^"]+)"')
++        foreach ($match in $quotedMatches) {
++            $value = $match.Groups[1].Value
++            if ($value -match '[\\/]' -or $value -match '\*') {
++                $patterns += ($value -replace '\\', '/')
++            }
++        }
++
++        $yamlMatches = [regex]::Matches($Content, '(?m)^\s*-\s+["'']?([^"''\r\n]+)["'']?\s*$')
++        foreach ($match in $yamlMatches) {
++            $value = $match.Groups[1].Value.Trim()
++            if ($value -match '[\\/]' -or $value -match '\*') {
++                $patterns += ($value -replace '\\', '/')
++            }
++        }
++
++        return @($patterns | Sort-Object -Unique)
++    }
++
++    function Test-PathCoveredByPattern {
++        param([string]$FilePath, [string]$Pattern)
++
++        $normalizedPath = $FilePath -replace '\\', '/'
++        $normalizedPattern = $Pattern -replace '\\', '/'
++        if ($normalizedPattern -eq $normalizedPath) { return $true }
++        if ($normalizedPattern.EndsWith('/**')) {
++            $prefix = $normalizedPattern.Substring(0, $normalizedPattern.Length - 3)
++            return $normalizedPath.StartsWith($prefix + '/')
++        }
++
++        try {
++            $wildcard = [System.Management.Automation.WildcardPattern]::new(
++                $normalizedPattern,
++                [System.Management.Automation.WildcardOptions]::IgnoreCase
++            )
++            return $wildcard.IsMatch($normalizedPath)
++        } catch {
++            return $false
++        }
++    }
+     
+-    $taskFiles = @(Get-ChildItem $TaskDir -Filter "task-*.md" -ErrorAction SilentlyContinue)
++    $taskFiles = @(Get-TaskSpecFiles)
+     if ($taskFiles.Count -eq 0) { return @{ Uncovered = $ChangedFiles; CoveredBy = @{} } }
+     
+     foreach ($f in $ChangedFiles) {
+@@ -92,9 +176,24 @@ function Test-TaskSpecCoverage {
+             $content = Get-Content $tf.FullName -Raw -ErrorAction SilentlyContinue
+             $fileName = Split-Path $f -Leaf
+             $filePath = $f -replace '\\', '/'
++            $patterns = @(Get-TaskSpecPathPatterns -Content $content)
++            $globCovered = $false
++            foreach ($pattern in $patterns) {
++                if (Test-PathCoveredByPattern -FilePath $filePath -Pattern $pattern) {
++                    $globCovered = $true
++                    break
++                }
++            }
+             
+-            # Check if file appears in write_set or Allowed Files
+-            if (($content -match "write_set:") -and ($content -match [regex]::Escape($fileName) -or $content -match [regex]::Escape($filePath))) {
++            # Check if file appears in write_set, allow_write, or Allowed Files.
++            if (
++                (($content -match "write_set") -or ($content -match "allow_write") -or ($content -match "Allowed Files")) -and
++                (
++                    ($content -match [regex]::Escape($fileName)) -or
++                    ($content -match [regex]::Escape($filePath)) -or
++                    $globCovered
++                )
++            ) {
+                 $found = $true
+                 if (-not $coveredBy.ContainsKey($f)) { $coveredBy[$f] = @() }
+                 $coveredBy[$f] += $tf.Name
+@@ -140,6 +239,26 @@ if ($taskSpecs.Count -gt 0) {
+ 
+ # Decision logic — $block and $warn initialized above (before V2 check)
+ 
++    # RULE 0: Staged TaskSpecs must include gate_0.inventory_evidence
++    $stagedTaskFiles = @(
++        $changedFiles | Where-Object {
++            ($_ -match "^tasks[\\/]task-.*\.md$") -or
++            ($_ -match "^tasks[\\/]t-.*\.json$") -or
++            ($_ -match "^\.ai[\\/]tasks[\\/].*\.(ya?ml|json)$") -or
++            ($_ -eq ".ai/current-task.yaml")
++        }
++    )
++
++    foreach ($taskPath in $stagedTaskFiles) {
++        if (-not (Test-Path $taskPath)) { continue }
++        $taskFile = Get-Item $taskPath
++        if (-not (Test-Gate0Evidence -TaskFile $taskFile)) {
++            Write-Host "[SADP-AUDIT] FAIL: TaskSpec missing valid gate_0.inventory_evidence: $taskPath"
++            Write-Host "[SADP-AUDIT]   Required: gate_0.inventory_evidence.queried_sources + matched_capabilities."
++            $block = $true
++        }
++    }
++
+     # RULE 1: 3+ files → SADP required → TaskSpec must exist
+     if ($changedCount -ge 3 -and $taskSpecs.Count -eq 0) {
+         Write-Host "[SADP-AUDIT] FAIL: $changedCount files changed but no TaskSpec found."
+@@ -262,6 +381,26 @@ $addedContent = ($addedLines | Where-Object { $_ -notmatch '@\{ Name =' }) -join
+             $block = $true
+             Write-Host "[SADP-AUDIT] ai_guard.py found security issues."
+         }
++
++        $taskGuardFile = $null
++        if (Test-Path ".ai\current-task.yaml") {
++            $taskGuardFile = ".ai\current-task.yaml"
++        } else {
++            $taskGuardFile = @(
++                $stagedTaskFiles | Where-Object { $_ -match "\.(ya?ml|json)$" } | Select-Object -First 1
++            )
++        }
++
++        if ($taskGuardFile) {
++            Write-Host "[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: $taskGuardFile"
++            $taskGuardResult = python $aiGuardPath task $taskGuardFile 2>&1
++            $taskGuardExit = $LASTEXITCODE
++            Write-Host $taskGuardResult
++            if ($taskGuardExit -ne 0) {
++                $block = $true
++                Write-Host "[SADP-AUDIT] ai_guard.py found TaskSpec scope issues."
++            }
++        }
+     } else {
+         Write-Host "[SADP-AUDIT] WARN: ai_guard.py not found at $aiGuardPath"
+     }
+diff --git a/tasks/structural-governance-audit-20260531.md b/tasks/structural-governance-audit-20260531.md
+new file mode 100644
+index 0000000..1f3bb96
+--- /dev/null
++++ b/tasks/structural-governance-audit-20260531.md
+@@ -0,0 +1,512 @@
++# Structural Governance Audit — 2026-05-31
++
++> Auditor: Claude Code (structural audit mode)
++> Object: RD2100 Agent Runtime v2 (D:\agent-acceptance)
++> Baseline commit: f6e29bc (`feat: require independent reviewer node in SADP workflow`)
++> Method: Read-only. No code modified. Cross-referenced all schemas, scripts, hooks, CI, rules, docs, and templates.
++
++---
++
++## Step 1: Governance Concept Inventory
++
++| Concept | Files Found | Declared Role | Enforced By | Risk |
++|---------|-------------|---------------|-------------|------|
++| `@go` | SKILL.md, AGENTS.md, SADP, CLAUDE.md | Explicit formal-workflow trigger. User types `@go` to start SADP | No runtime — dispatches described as `opencode run` but no automation script | MEDIUM: manual-only trigger |
++| SADP | sub-agent-dispatch-protocol.md, AGENTS.md, SKILL.md, sadp-audit.ps1, core.md | Full state machine: Gate 0 → TaskSpec → Executor → Tester → Reviewer → Finalizer | sadp-audit.ps1 (partial), pre-commit (partial) | HIGH: key steps unenforced |
++| TaskSpec | task-spec.schema.json, SADP §1, integration-contracts.md Contract 1, rules/core.md, sadp-audit.ps1 | Work unit contract with gate_0 and conflict_registry | Schema exists; no runtime validation; sadp-audit only checks file-name match in write_set | HIGH: self-attestation gating |
++| ExecutionReport | execution-report.schema.json, SADP §2, docs/EXECUTION_REPORT_TEMPLATE.md, integration-contracts.md Contract 5 | Final structured report → human reviewer | Schema exists; no runtime validation; template diverges from schema | CRITICAL |
++| GateResult | gate-result.schema.json, integration-contracts.md Contract 4, authority-matrix.md, verification-gates.md | Single verification gate check; signer_role≠executor | JSON schema `not: {const: "executor"}`; no runtime validator | MEDIUM |
++| EvidenceIndex | evidence-index.schema.json, integration-contracts.md Contract 3 | Index of evidence artifacts | Schema exists; freshness field missing from schema (only in docs) | MEDIUM |
++| executor/fixer | SADP §0.R.1, SKILL.md, authority-matrix.md | Produces code changes, diff.patch, execution log. Must NOT produce review artifacts | Enforced by ai_guard.py evidence mode (reviewer_forbidden_roles). But evidence mode never called. | CRITICAL |
++| reviewer | SADP §0.R.1, SKILL.md, rules/review.md, authority-matrix.md, docs/agent-runtime/reviewer-playbook.md | Independent from executor; produces review.md, review.yaml, P0/P1 findings | ai_guard.py evidence mode validates reviewer_role. But never invoked. | CRITICAL |
++| finalizer | SADP §0.R.3, SKILL.md | Runs ai_guard.py evidence, summarizes; must NOT substitute for reviewer | Declared only. No script/hook enforces. | CRITICAL |
++| Plan Auditor | SADP §3.3a, audit-record.schema.md, AGENTS.md | Independent compliance check; must not self-audit | Declared. No script/hook enforces independence. Session-ledger/sadp-audit are partial. | HIGH |
++| review.md / review.yaml | SKILL.md, SADP §0.R.2, ai_guard.py evidence mode, .ai/policy.yaml | Machine-readable reviewer verdict; required for pass | review.yaml validated by ai_guard.py evidence mode (never called). review.md has no schema. | CRITICAL |
++| diff.patch | SKILL.md, SADP §0.R.2, .ai/policy.yaml | Real code delta | Declared in evidence contract. No producer/generator script. | MEDIUM |
++| test-output.md | SKILL.md, SADP §0.R.2, .ai/policy.yaml | Command output and exit codes | Declared. No producer script. No verification. | MEDIUM |
++| safety-report.json | SKILL.md, SADP §0.R.2, .ai/policy.yaml | Security/path/scope check output | No schema. No producer. No validator. | HIGH |
++| chain-evidence.json | SKILL.md, SADP §0.R.2, .ai/policy.yaml | Role/session/model chain | No schema. No producer. No validator. | HIGH |
++| final-report.md | SKILL.md, SADP §0.R.2, .ai/policy.yaml | Finalizer deterministic summary | No schema. No producer beyond declaration. | MEDIUM |
++| ai_guard | tools/ai_guard.py, .ai/policy.yaml, pre-commit, pre-push, CI, sadp-audit | Unified rule engine for secret/scope/evidence checks | Yes — wired into pre-commit, pre-push, CI. But evidence mode unreachable. | MEDIUM |
++| sadp-audit | scripts/sadp-audit.ps1, pre-commit | TaskSpec coverage + secret scan on staged diff | Yes — wired into pre-commit gate. | LOW |
++| pre-commit | hooks/pre-commit.governance.ps1, .git/hooks/pre-commit (via core.hooksPath) | Manifest regen → sadp-audit. Blocks commit on failure. | Active via core.hooksPath. Calls sadp-audit. | LOW |
++| pre-push | hooks/pre-push.governance.ps1, .github/workflows/ai-guard.yml | ai_guard full + drift + governance. Blocks push on failure. | Active. Mirrors CI. | LOW |
++| CI | .github/workflows/ai-guard.yml | ai_guard full + drift + governance on PR/push to main | Active. Does NOT run evidence mode. Does NOT validate schemas. Does NOT check reviewer artifacts. | MEDIUM |
++| branch protection | .github/workflows/ai-guard.yml (implicit) | CI must pass for PR merge | Passive — CI gate only. No required-reviewers rule visible in workflow. | LOW |
++| accepted | execution-report.schema.json: status enum, SADP §0.R.3 | Final state requiring reviewer_artifacts | Schema enforces via `allOf/if/accepted/then/required: reviewer_artifacts`. No runtime validation. | HIGH |
++| reviewed | execution-report.schema.json: status enum | Post-submission, pre-accepted | Separate from `reviewed_inputs` in review.yaml. Ambiguous. | MEDIUM |
++| passed | review.yaml verdict enum, GateResult result enum, RunSpec exit_code 0, varios docs | Different meanings across artifacts | GateResult.result has `pass`; review.yaml verdict has `pass`; ExecutionReport status uses `accepted` not `passed` | HIGH |
++| blocked | review.yaml verdict, GateResult result, RunSpec status, sadp-audit exit 1, various | Blocked means different things in different contexts | GateResult.result: `blocked`; review.yaml verdict: `blocked`; RunSpec.status: `blocked`; sadp-audit: BLOCKED. Generally consistent. | LOW |
++| escalate | review.yaml verdict, GateResult (implicit via escalation rules) | Human intervention required | Consistent in review.yaml and SADP. Not in GateResult schema. | LOW |
++| P0/P1 findings | SADP §0.R, SKILL.md, ai_guard.py, .ai/policy.yaml, verification-gates.md, rules/core.md, rules/security.md, rules/review.md | Blocking finding severities | ai_guard.py evidence: unresolved P0/P1 + verdict=pass → BLOCKED. But evidence mode unreachable. rules define P0s but no gate validates them all. | CRITICAL |
++
++---
++
++## Step 2: Declared vs Enforced vs CI vs Recovery vs Skill Workflows
++
++### Declared Workflow (from SADP + SKILL.md + AGENTS.md)
++
++```
++human_gate
++  → executor/fixer (code changes, diff.patch, execution log)
++  → tester (test-output.md)
++  → guards (sadp-audit + ai_guard, safety-report.json + chain-evidence.json)
++  → reviewer (separate session, review.md + review.yaml)
++  → finalizer (ai_guard.py evidence, final-report.md)
++  → verdict: pass | blocked | fail | escalate
++```
++
++### Enforced Workflow (pre-commit → sadp-audit → ai_guard)
++
++```
++git commit
++  → pre-commit.governance.ps1
++    → Update-GovernanceManifest.ps1 (manifest auto-regen)
++    → sadp-audit.ps1
++      → TaskSpec coverage check (if 3+ files or governance touched)
++      → Secret pattern scan on staged diff
++      → ai_guard.py staged (deny_paths + secret patterns)
++      → .env.example template warning
++```
++
++### CI Workflow (.github/workflows/ai-guard.yml)
++
++```
++PR / push to main
++  → ai_guard.py full (deny_paths + scopes + secret scan on git diff vs origin/main)
++  → Test-GovernanceDrift.ps1 (rule IDs, phase boundaries, manifest coverage, capability counts)
++  → Test-Governance.ps1 -Mode blocking (protected paths, key scan, batch references)
++```
++
++### Pre-Push Workflow (hooks/pre-push.governance.ps1)
++
++```
++git push
++  → ai_guard.py full
++  → Test-GovernanceDrift.ps1
++  → Test-Governance.ps1 -Mode blocking
++```
++(Identical to CI, which is good.)
++
++### Skill Workflow (@go / SKILL.md)
++
++```
++User says @go
++  → Gate 0: check AGENTS.md, rules, mode, allow_write
++  → Executor/fixer: opencode run; collect diff.patch
++  → Tester: run commands; write test-output.md
++  → Guards: sadp-audit.ps1 + ai_guard.py task; write safety-report.json
++  → Reviewer: separate session; write review.md + review.yaml
++  → Finalizer: ai_guard.py evidence <run-evidence-dir>
++  → Verdict: passed only if guard + reviewer + evidence all pass
++```
++**Status**: Entirely declarative. Zero automation scripts implement this flow. `opencode run` commands are in the SKILL.md as examples but no orchestrator script exists.
++
++### Recovery Workflow (RECOVERY_PIPELINE_RUNBOOK.md)
++
++```
++OS/system kill
++  → sync_goal_runs() (ai-workflow-hub)
++  → goal review-recovered --dry-run
++  → goal review-recovered --apply (requires explicit ACK)
++```
++**Status**: References dev-frame/ai-workflow-hub; not tested in agent-acceptance context. `diff.patch`, `trace.json`, `state.json` paths mirror evidence contract loosely but differently.
++
++### Workflow Differences
++
++| Difference | Source A | Source B | Severity | Recommendation |
++|------------|----------|----------|----------|----------------|
++| human_gate step declared but unimplemented | SADP §0.R state machine, SKILL.md | No script/hook/CI implements human_gate entry point | P0 | Either implement human gate or remove from declared flow |
++| reviewer evidence production declared but unreachable | SADP §0.R.2, SKILL.md | ai_guard.py `evidence` mode exists but zero callers | P0 | Wire evidence check into pre-commit or add CI job |
++| finalizer step declared but unreachable | SADP §0.R.3, SKILL.md | No script/hook/CI runs `ai_guard.py evidence <dir>` | P0 | Same fix as above |
++| diff.patch/test-output/safety-report/chain-evidence required | .ai/policy.yaml required_evidence_files | No producer scripts exist; no run directories contain them | P0 | Create producer scripts or declare these as aspirational |
++| CI runs ai_guard.py full but full mode doesn't check evidence | .github/workflows/ai-guard.yml | ai_guard.py evidence mode (separate, never called) | P0 | CI should run evidence mode for runs/ directories |
++| sadp-audit calls ai_guard.py staged but SKILL says it should write safety-report.json | sadp-audit.ps1 line 258 | SKILL.md evidence table | P1 | sadp-audit output could be captured as safety-report.json |
++| Recovery runbook references dev-frame paths not agent-acceptance paths | RECOVERY_PIPELINE_RUNBOOK.md | SADP evidence contract paths | P2 | Align or note as external system |
++| @go skill describes full orchestration but no orchestrator script | SKILL.md "Automated Dispatch" section | No .ps1/.py orchestrator exists | P1 | Accept as human-driven manual workflow or build orchestrator |
++| Cumulated trigger window in SADP §0.0a is advisory-only | SADP §0.0a | sadp-audit.ps1 checks 3+ files threshold (actual enforcement) | P1 | Mismatch: SADP says advisory, sadp-audit enforces |
++
++---
++
++## Step 3: Role Boundary Consistency
++
++### Analysis
++
++Sources checked:
++- SADP §0.R.1 Role Boundaries table
++- SKILL.md evidence contract
++- authority-matrix.md
++- gate-result.schema.json (signer_role constraint)
++- execution-report.schema.json (reviewer_artifacts.reviewer_role constraint)
++- ai_guard.py (reviewer_forbidden_roles check)
++- .ai/policy.yaml (reviewer_forbidden_roles: [executor, fixer, coder])
++
++| Role | Allowed Outputs | Forbidden Outputs | Conflicting Sources | Verdict |
++|------|-----------------|-------------------|---------------------|---------|
++| executor/fixer | code changes, execution log, diff.patch | review.md, review.yaml, final pass verdict | SADP+R: consistent. But `fixer` not in GateResult signer_role constraint (only "executor" forbidden). ai_guard checks "fixer" too. | MINOR GAP: GateResult schema allows "fixer" signer |
++| reviewer | review.md, review.yaml, P0/P1 findings | implementation changes | SADP+R: consistent. But no automation prevents reviewer from editing code (only documented). | DOC_ONLY: no code enforcement |
++| finalizer | final-report.md, deterministic artifact summary | reviewer judgment, code-quality approval | SADP+R: consistent. No automation gating. | DOC_ONLY: no enforcement script |
++| tester | test-output.md, command exit-code evidence | code-quality approval | SADP+R: consistent. `tester` role not referenced in any schema/enum. Only in docs. | DOC_ONLY: not modeled in schemas |
++| Plan Auditor | audit record, compliance findings, decision (pass/block/escalate) | must not self-audit; must not re-judge implementation quality | SADP §3.3a vs authority-matrix.md: authority-matrix doesn't list "Plan Auditor" as a separate role. SADP says Plan Auditor ≠ Plan Agent. | AMBIGUOUS: Plan Auditor role boundary not in authority-matrix |
++| human reviewer | final override, P0/P1 sign-off | N/A (highest authority) | SADP §0, authority-matrix.md: `1. Human reviewer (overrides all)`. SKILL.md doesn't mention human reviewer. AGENTS.md mentions "Human Reviewer (oversight tier)". | MINOR GAP: human reviewer absent from SKILL.md |
++| AI reviewer vs human reviewer | AI: review.md + review.yaml; Human: override | AI must not be executor; Human must not be bypassed | SADP mentions both. review.yaml has reviewer_id but no `is_human` field. ai_guard.py evidence doesn't distinguish. | P1: no way to tell if reviewer_id is human or AI |
++
++### Specific conflicts found:
++
++1. **GateResult schema forbids `executor` but not `fixer`** (gate-result.schema.json:44): `"not": { "const": "executor" }`. But ai_guard.py and .ai/policy.yaml also forbid `fixer` and `coder`. The JSON schema is looser than the Python validator.
++
++2. **Plan Auditor =/= reviewer**: SADP §3.3a Plan Auditor checks compliance (TaskSpec existence, gate_0 validity, file coverage). SKILL.md "reviewer" checks code quality (reads diff, runs tests, finds issues). These are different roles but AGENTS.md groups both under "review." The authority-matrix.md does not list Plan Auditor as a separate producer.
++
++3. **fixer role undefined in schemas**: SADP §0.R.1 treats executor/fixer as one role. But .ai/policy.yaml lists "fixer" separately in reviewer_forbidden_roles. The schemas (execution-report, gate-result) don't mention "fixer" at all. Is fixer a distinct role or a synonym?
++
++---
++
++## Step 4: Declared vs Enforced Gap Analysis
++
++| Rule | Declared In | Enforced By | Test Exists | Gap |
++|------|-------------|-------------|-------------|-----|
++| No secrets | core-002, sec-001, sec-005, AGENTS.md P0#2 | ai_guard.py (secret scan), sadp-audit (R5), pre-commit, CI, pre-push | Canary 3 (secret injection) | COVERED |
++| No fake green | core-004, review-001, AGENTS.md P0#4 | None automated. Exit code contract in RunSpec schema, but no runtime check verifies exit_code matches reported status | None | DOC_ONLY |
++| No destructive git | core-001, git-001, git-002, AGENTS.md P0#1 | .ai/policy.yaml dangerous_commands list (declared, not validated). ai_guard.py does not check git commands. | None | DOC_ONLY |
++| No write outside TaskSpec | core-005, SADP §0.2, AGENTS.md P0#5 | ai_guard.py task mode checks allow_write vs git diff. But task mode never invoked in hooks/CI. Only `staged` (allow_write=["**"]) and `full` (allow_write=["**"]) used in practice. | None | IMPLICIT_ENFORCEMENT (code exists, never called correctly) |
++| No pass without independent reviewer | SADP §0.R, SKILL.md P0#6, AGENTS.md P0#7 | ai_guard.py evidence mode validates reviewer_role not in forbidden roles. But evidence mode NEVER called. pre-commit/CI/pre-push don't check. | None | CODE_EXISTS_UNREACHABLE |
++| No pass with unresolved P0/P1 | SADP §0.R.3, SKILL.md P0#7, ai_guard.py | ai_guard.py evidence mode checks. Never called. | None | CODE_EXISTS_UNREACHABLE |
++| P0/P1 finding unresolved must block | SADP §0.R.3, SKILL.md P0#7 | ai_guard.py evidence mode: unresolved blocking severities + pass verdict → BLOCKED. Never called. | None | CODE_EXISTS_UNREACHABLE |
++| Reviewer must read diff/test/safety/chain | SADP §0.R.2 reviewed_inputs, SKILL.md Reviewer Rules | ai_guard.py evidence mode checks reviewed_inputs completeness. Never called. | None | CODE_EXISTS_UNREACHABLE |
++| Finalizer cannot override reviewer | SADP §0.R.3, SKILL.md Finalizer Rule | Declarative only. No machine check. | None | DOC_ONLY |
++| No capability without inventory | core-007 | Test-GovernanceDrift checks capability count. Not per-capability verification. | None | PARTIAL (count check only) |
++| Gate 0 required for construction tasks | core-008, SADP §0.1 | task-spec.schema.json requires gate_0 for construction tasks. But no runtime validation. sadp-audit only checks TaskSpec existence, not content. | None | SCHEMA_ONLY |
++| ExecutionReport must cover all changed files | sadp-audit V2, SADP §3.3a | sadp-audit V2 checks file coverage in TaskSpec write_set. | Canary (protected path modification blocked by Test-Governance) | PARTIAL (sadp-audit checks write_set; Test-Governance checks protected paths) |
++| No skip hooks | git-003 | Declared. Hook bypass is possible via `--no-verify`. pre-commit.governance.ps1 references core-001 for override authority. | None | LOCAL_ONLY (git --no-verify bypasses) |
++| Phase 0-5 commit freeze | git-006 | pre-edit.governance.ps1 exits 0 (advisory). Test-Governance doesn't specifically check for new commits. | None | DOC_ONLY (exited advisory mode) |
++| Memory writes blocked | AGENTS.md Phase 0-5 constraints | pre-edit.governance.ps1 exits 0 (was exit 1, downgraded to advisory). | None | DOC_ONLY (exited advisory mode) |
++| Protected files require exclusive lock | SADP §0.2 | Declared only. No runtime lock mechanism exists. | None | DOC_ONLY |
++| Plan Agent cannot self-audit | SADP §3.3a | session-ledger.schema.md anti-bypass rule #2: Plan Agent cannot set audit_status to passed. But no automation checks who set the status. | None | DOC_ONLY |
++
++**Summary**: Of 17 strong rules checked:
++- 1 fully covered (secrets)
++- 1 partially covered (3+ files threshold)
++- 4 have code that exists but is never invoked (CODE_EXISTS_UNREACHABLE)
++- 2 are SCHEMA_ONLY (schema constraint, no runtime validator)
++- 1 is IMPLICIT_ENFORCEMENT (task mode exists, never used correctly)
++- 1 is LOCAL_ONLY (hook bypass possible with --no-verify)
++- 8 are DOC_ONLY (declared, zero enforcement)
++
++---
++
++## Step 5: Schema and Report Template Consistency
++
++| Schema | Contract | Runtime Producer | Runtime Validator | Gap |
++|--------|----------|------------------|-------------------|-----|
++| task-spec.schema.json | SADP §1, integration-contracts.md §1 | Manual authoring (human/agent writes Markdown with YAML blocks) | None | Schema defines JSON structure but TaskSpecs are written as Markdown. No conversion/validation pipeline exists. security_report section in schema is not referenced in SADP TaskSpec template. |
++| execution-report.schema.json | SADP §2, integration-contracts.md §5, EXECUTION_REPORT_TEMPLATE.md | Manual (human/agent writes Markdown) | None | MAJOR: Schema status enum is `draft|submitted|reviewed|accepted|rejected`. SADP Markdown template uses `PASS|FAIL|BLOCKED`. EXECUTION_REPORT_TEMPLATE.md uses `pass|blocked|needs review`. Three incompatible status systems. |
++| gate-result.schema.json | integration-contracts.md §4, verification-gates.md | Manual (agent writes during gate check) | None | signer_role forbids `executor` only. ai_guard evidence forbids `executor|fixer|coder`. Schema is looser than runtime check. |
++| evidence-index.schema.json | integration-contracts.md §3 | Manual | None | Contract 3 defines `freshness`, `currency_basis`, `approved_run_id` fields. These are NOT in the JSON schema. Schema only has `collected|verified|disputed` status. Docs say `status=verified` requires `freshness=current` but schema has no freshness field. |
++| run-spec.schema.json | integration-contracts.md §2 | Manual (Script runner produces JSON) | None | Exit code enum is 0,1,2; matches declared contract. status enum `pending|running|completed|blocked|failed`. Run-Batch.ps1 may produce this; unclear if format matches. |
++| review.yaml (no schema) | SADP §0.R.2, SKILL.md, ai_guard.py evidence, .ai/policy.yaml | Manual (reviewer session) | ai_guard.py evidence mode (never called) | CRITICAL: review.yaml is the most critical machine-readable artifact (determines pass/block). It has NO JSON schema. The structure is defined in 3 places (SKILL.md, SADP, ai_guard.py) but inconsistently: SKILL.md uses `reviewer_role`/`reviewer_id` top-level; ai_guard.py checks both `reviewer_role` top-level AND `reviewer.role` nested. |
++| review.md (no schema) | SADP §0.R.2, SKILL.md, .ai/policy.yaml | Manual (reviewer session) | None | Free-form Markdown. Low risk but desirable to have a checklist schema. |
++| safety-report.json (no schema) | SKILL.md, .ai/policy.yaml | Declared but no producer | None | HIGH: Required in evidence contract but no schema defines its structure. ai_guard.py could produce it but doesn't. |
++| chain-evidence.json (no schema) | SKILL.md, .ai/policy.yaml | Declared but no producer | None | HIGH: Required in evidence contract but no schema. No producer. |
++| final-report.md (no schema) | SKILL.md, .ai/policy.yaml | Declared but no producer | None | MEDIUM: Free-form summary. Low structural risk. |
++
++### Specific execution-report status inconsistency:
++
++| Source | Status Values | Context |
++|--------|--------------|---------|
++| execution-report.schema.json | draft, submitted, reviewed, accepted, rejected | JSON schema enum |
++| SADP §2 template | PASS, FAIL, BLOCKED | Markdown template example |
++| EXECUTION_REPORT_TEMPLATE.md | pass, blocked, needs review | "Executive Decision" field |
++| integration-contracts.md §5 | draft, submitted, reviewed, accepted, rejected | Matches schema |
++| AGENTS.md SADP flow | Pass/Block/Escalate | Flow description |
++| SKILL.md | pass | blocked | fail | escalate | Reviewer verdict, not report status |
++
++The schema's `draft|submitted|reviewed|accepted|rejected` describes a **document lifecycle** (writing → submitted for review → reviewed → accepted/rejected). The templates use `PASS|FAIL|BLOCKED` which describes a **task outcome**. These are incompatible semantic models. An ExecutionReport can be "accepted" (document lifecycle) while the task result is "BLOCKED" (task outcome), or vice versa.
++
++---
++
++## Step 6: CI / Hook / Guard Coverage Matrix
++
++| Gate | Trigger | Checks | Missing Checks | Severity |
++|------|---------|--------|----------------|----------|
++| pre-edit governance hook | Every Write/Edit tool call | Memory dirs, governance files, sealed files, secret patterns, dirty baseline, scope | Exits 0 even on BLOCKED (advisory mode). No actual blocking. | P2 (intentionally advisory per comments) |
++| pre-commit governance | git commit | Manifest auto-regen → sadp-audit (TaskSpec coverage, secret scan, ai_guard staged) | Does NOT: check for reviewer artifacts, validate ExecutionReport status, check task mode scope, run evidence validation, check P0/P1 resolution | P0 |
++| pre-push governance | git push | ai_guard full, Test-GovernanceDrift, Test-Governance blocking | Same gaps as pre-commit. Does NOT run evidence mode. Does NOT validate reviewer independence. | P0 |
++| CI ai-guard | PR/push to main | ai_guard full, Test-GovernanceDrift, Test-Governance blocking | Same gaps. Does NOT run evidence mode. Does NOT check reviewer artifacts for merged PRs. | P0 |
++| ai_guard.py evidence mode | NEVER TRIGGERED | reviewer_role validation, reviewer_id ≠ executor_id check, reviewed_inputs completeness, verdict validation, unresolved P0/P1 check | This is the most critical missing enforcement. All reviewer-independence rules live here and none are called. | P0 |
++| ai_guard.py task mode | NEVER TRIGGERED (called as `staged` which uses allow_write=["**"]) | TaskSpec scope enforcement (allow_write vs changed files) | Scope enforcement code exists but is never used with actual TaskSpec allow_write. | P1 |
++| sadp-audit V2 coverage check | pre-commit (when TaskSpecs exist) | Cross-references changed files against TaskSpec write_set | Only checks file name mention, not structured write_set field. Loose regex match. | P2 |
++| Canary suite | Manual (scripts/tests/Invoke-GovernanceCanarySuite.ps1) | Smoke batch, protected path violation, secret injection | Does NOT test: reviewer independence, P0/P1 unresolved pass, evidence package completeness, task mode scope, self-review, missing review.yaml | P1 |
++
++---
++
++## Step 7: Negative Test Matrix
++
++Tests were performed by reading source code and logic-tracing; no destructive actions were executed against the real repo.
++
++| # | Case | Command (hypothetical) | Expected Result | Actual (by code analysis) | Verdict |
++|---|------|------------------------|-----------------|---------------------------|---------|
++| 1 | Missing review.yaml | `python tools/ai_guard.py evidence runs/test-run/` | BLOCKED (EVIDENCE: missing required file: review.yaml) | ai_guard evidence mode checks existence → would block. But evidence mode is never called. | GAP: guard exists, unreachable |
++| 2 | review.yaml reviewer_role=executor | `python tools/ai_guard.py evidence runs/test-run/` | BLOCKED (REVIEW: reviewer_role must not be executor) | ai_guard checks reviewer_forbidden_roles → would block. Unreachable. | GAP: guard exists, unreachable |
++| 3 | reviewer_id == executor_id | `python tools/ai_guard.py evidence runs/test-run/` | BLOCKED (REVIEW: reviewer_id must differ) | ai_guard line 137-138 checks this → would block. Unreachable. | GAP: guard exists, unreachable |
++| 4 | verdict=pass + unresolved P0 finding | `python tools/ai_guard.py evidence runs/test-run/` | BLOCKED (pass verdict invalid with unresolved P0/P1) | ai_guard lines 158-162 check this → would block. Unreachable. | GAP: guard exists, unreachable |
++| 5 | reviewed_inputs missing diff.patch | `python tools/ai_guard.py evidence runs/test-run/` | BLOCKED (must list reviewed_inputs: diff.patch) | ai_guard lines 164-180 check completeness → would block. Unreachable. | GAP: guard exists, unreachable |
++| 6 | accepted ExecutionReport missing reviewer_artifacts | Schema validation | INVALID (allOf/if/accepted/then/required: reviewer_artifacts) | Schema has the constraint. No runtime validator executes it. | SCHEMA_ONLY |
++| 7 | Changed file outside TaskSpec allow_write | `python tools/ai_guard.py task .ai/tasks/task-xxx.yaml` | BLOCKED (SCOPE: path outside allow_write) | ai_guard task mode lines 218-233. But task mode is never called with the actual task file. | CODE_EXISTS_UNUSED |
++| 8 | Staged diff contains secret-like string | `python tools/ai_guard.py staged` | BLOCKED (SECRET: file:line: pattern match) | Wired into sadp-audit → pre-commit. ACTIVE. | PASS |
++| 9 | Restricted path changed without human confirmation | `python tools/ai_guard.py full` | WARNING (RESTRICTED: requires human review) | ai_guard full mode logs warning but exits 0 if only restricted (no secrets/deny). CI runs full mode. | WEAK: warning doesn't block |
++| 10 | final-report.md exists but review.md missing | `python tools/ai_guard.py evidence runs/test-run/` | BLOCKED (EVIDENCE: missing required file: review.md) | ai_guard checks all required_evidence_files → would block. Unreachable. | GAP: guard exists, unreachable |
++
++---
++
++## Step 8: Structural Deficiency Findings
++
++# Structural Governance Audit
++
++## Verdict
++**BLOCK** — Multiple P0 gaps. The reviewer independence chain has code (ai_guard.py evidence mode) but zero callers. `accepted` ExecutionReport status carries schema constraint for reviewer_artifacts but no runtime validator. Diff/test/safety/chain evidence files are required by policy but never produced. The governance pyramid is inverted: documentation dominates, enforcement is sparse.
++
++## Executive Summary
++The project has a sophisticated, well-documented governance framework. Schemas, rules, hooks, CI, and policy all exist and are internally consistent within their domains. However, **the critical enforcement path — independent reviewer evidence validation — is entirely unreachable**. `ai_guard.py evidence` mode implements all the hard gates (reviewer≠executor, P0/P1 must be resolved, reviewed_inputs completeness), but it is called by nothing. The pre-commit/pre-push/CI pipeline checks secrets, structured drift, and TaskSpec existence, but never validates that an independent reviewer has approved the work. An executor could produce a `pass` verdict today with zero reviewer evidence and no automation would block it.
++
++## P0 Findings
++
++### P0-1: Evidence mode unreachable — all reviewer independence gates are dead code
++- **Evidence**: `ai_guard.py:184-200` (`run_evidence_mode`) validates reviewer_role, reviewer_id≠executor_id, verdict consistency, P0/P1 resolution, and reviewed_inputs completeness. Yet grep for `ai_guard.py evidence` across all hooks, CI workflows, and scripts returns zero callers. pre-commit calls `ai_guard.py staged`. CI/pre-push call `ai_guard.py full`. sadp-audit calls `ai_guard.py staged`. No path reaches evidence mode.
++- **Impact**: An executor can self-review, mark pass with unresolved P0 findings, skip required evidence, and no automation blocks.
++- **Fix**: Wire `ai_guard.py evidence <run-dir>` into pre-commit (as a final check after sadp-audit), into CI (as a PR check for any runs/ directory), or both.
++
++### P0-2: No producer for required evidence files
++- **Evidence**: `.ai/policy.yaml:36-42` requires `diff.patch, test-output.md, safety-report.json, chain-evidence.json, review.md, review.yaml, final-report.md`. Zero scripts produce these files. No run directory in `runs/` contains them. The evidence contract is declared but not operational.
++- **Impact**: Evidence cannot be produced, so evidence validation is moot even if wired.
++- **Fix**: At minimum, produce `diff.patch` via `git diff` in sadp-audit and capture ai_guard output as `safety-report.json`. Wire evidence production into the @go flow or the pre-commit hook.
++
++### P0-3: review.yaml has no JSON schema
++- **Evidence**: `review.yaml` is the most critical machine-readable gateway (determines pass/block). Its structure is defined in SKILL.md, SADP §0.R.2, and implicitly in `ai_guard.py:115-179`. But `schemas/agent-runtime/` contains no `review.schema.json`. `execution-report.schema.json:107-131` models `reviewer_artifacts` as an object within the report, but this is the *container*, not the *artifact schema*.
++- **Impact**: review.yaml cannot be structurally validated. Inconsistencies between the different structural definitions (top-level fields vs nested `reviewer.*` object in ai_guard) will cause silent validation failures.
++- **Fix**: Create `schemas/agent-runtime/review.schema.json` defining the canonical review.yaml structure. Align ai_guard.py to validate against it.
++
++### P0-4: ExecutionReport status enum incompatible with all templates
++- **Evidence**: Schema has `draft|submitted|reviewed|accepted|rejected`. SADP §2 template uses `PASS|FAIL|BLOCKED`. EXECUTION_REPORT_TEMPLATE.md uses `pass|blocked|needs review`. Three different status systems for the same artifact.
++- **Impact**: Any agent following the SADP template produces reports that fail schema validation. Any system consuming reports can't reliably determine task outcome vs document lifecycle state.
++- **Fix**: Align schema and templates. Recommended: schema uses `pass|fail|blocked|escalate` for task outcome, separate `review_status: draft|submitted|reviewed|accepted|rejected` for document lifecycle.
++
++### P0-5: gate_0 inventory_evidence required by schema but never runtime-validated
++- **Evidence**: `task-spec.schema.json:72-158` requires `gate_0.inventory_evidence` with `queried_sources` (minItems:1) and `matched_capabilities`. `sadp-audit.ps1` checks TaskSpec existence and V2 checks write_set coverage, but never parses gate_0 content. The schema constraint exists but no runtime validates it.
++- **Impact**: A TaskSpec with `gate_0: { triggered: true }` without inventory_evidence passes audit. The core-008 Reuse-before-Build rule is unenforceable.
++- **Fix**: sadp-audit should parse TaskSpec gate_0 and reject missing inventory_evidence.
++
++### P0-6: ai_guard.py task mode (write-scope enforcement) never called with actual TaskSpec
++- **Evidence**: `ai_guard.py:208-218` task mode reads TaskSpec `allow_write` and checks git diff against it. But pre-commit calls `staged` (allow_write=["**"]), and CI calls `full` (allow_write=["**"]). Neither passes a TaskSpec file. sadp-audit does its own V2 coverage check but doesn't invoke `ai_guard.py task`.
++- **Impact**: The "no write outside TaskSpec scope" rule (core-005, SADP §0.2) is unenforced.
++- **Fix**: sadp-audit should call `ai_guard.py task <task-file>` when a TaskSpec exists.
++
++## P1 Findings
++
++### P1-1: EvidenceIndex schema missing freshness fields
++- **Evidence**: `integration-contracts.md` Contract 3 defines `freshness`, `currency_basis`, `approved_run_id`. The JSON schema `evidence-index.schema.json` has none of these. The docs say `status=verified` requires `freshness=current`, but the schema can't enforce this.
++- **Fix**: Add freshness fields to evidence-index.schema.json.
++
++### P1-2: GateResult schema allows "fixer" as signer but policy forbids it
++- **Evidence**: `gate-result.schema.json:44` forbids only `executor`. `.ai/policy.yaml:44-47` and `ai_guard.py:125-128` also forbid `fixer` and `coder`. Schema is looser than policy.
++- **Fix**: Update gate-result.schema.json signer_role to forbid executor|fixer|coder.
++
++### P1-3: Pre-commit does not run Test-Governance.ps1
++- **Evidence**: `pre-commit.governance.ps1` runs manifest regen → sadp-audit → exit. `Test-Governance.ps1` (proxy for Test-ProtectedPaths, Test-KeyScan, Test-BatchReferences) is NOT called by the pre-commit hook. pre-push and CI run it, but pre-commit doesn't.
++- **Impact**: Protected path modifications, key leaks in non-secret patterns, and batch reference drift pass through pre-commit. They're caught at push/CI but not at commit time.
++- **Fix**: Add Test-Governance (advisory mode) to pre-commit. Keep blocking mode for pre-push/CI.
++
++### P1-4: "human_gate" entry point in state machine has no implementation
++- **Evidence**: SADP §0.R and SKILL.md both show `human_gate → executor/fixer → tester → reviewer → finalizer`. But `human_gate` is never defined, scripted, or triggered. It's a diagram node with no backing.
++- **Fix**: Either define human_gate as manual confirmation step with instructions, or remove it from the state machine.
++
++### P1-5: Plan Auditor role boundary ambiguous
++- **Evidence**: `authority-matrix.md` lists agent-acceptance as producer of all contracts but doesn't separate "Plan Auditor" as a distinct role. SADP §3.3a says Plan Auditor must be independent of Plan Agent. But who is Plan Auditor in practice? The matrix doesn't say. The `audit-record.schema.md` describes an output schema but no producer role.
++- **Fix**: Add Plan Auditor to authority-matrix.md as a distinct row. Clarify: is it a human, a separate AI session, or a script?
++
++### P1-6: Cumulated trigger window says advisory but sadp-audit enforces
++- **Evidence**: SADP §0.0a says cumulative trigger is "advisory" in @go-only mode. But sadp-audit.ps1 blocks when 3+ files changed and no TaskSpec exists (RULE 1, line 144). This is contradictory: either SADP should update to say 3+ files always triggers, or sadp-audit should not block on file count.
++- **Fix**: Align SADP §0.0a with sadp-audit enforcement. Remove "advisory" qualifier or remove the 3+ trigger from sadp-audit.
++
++### P1-7: No distinction between AI reviewer and human reviewer in review.yaml
++- **Evidence**: `review.yaml` has `reviewer_id` but no field indicating whether the reviewer is human or AI. SADP mentions both. `ai_guard.py` doesn't distinguish. A self-review by the same AI model with a different session_id would pass the reviewer_id ≠ executor_id check.
++- **Fix**: Add `reviewer_type: human | ai` to review.yaml. ai_guard evidence mode should check it.
++
++## P2/P3 Findings
++
++### P2-1: fixer role undefined in schemas
++- `fixer` appears in SADP §0.R.1 (as executor/fixer), `.ai/policy.yaml` (forbidden reviewer role), and SKILL.md. But no schema enum includes it. The authority matrix doesn't mention it. Is fixer a distinct role? If not, remove the distinction. If yes, define it.
++
++### P2-2: governance-manifest.md marked as LEGACY but still referenced
++- `docs/agent-runtime/governance-manifest.md` says "LEGACY DOCUMENT... Do not rely on hashes here." But `sealed-files-manifest.json` includes it (SHA: 75E7B816...). AGENTS.md references it in the document map. Either delete or update.
++
++### P2-3: sadp-audit V2 write_set check uses regex not YAML parsing
++- `sadp-audit.ps1:97-99` checks if file name appears anywhere in TaskSpec content via regex. This is fragile (false positives on mentions, false negatives on structured write_set lists). Should parse YAML properly.
++
++### P2-4: Canary suite tests only 3 scenarios
++- `Invoke-GovernanceCanarySuite.ps1` tests smoke batch, protected path, and secret injection. Missing: reviewer independence, evidence completeness, self-review, task scope, P0/P1 resolution. Needs expansion.
++
++### P2-5: pre-edit.governance.ps1 exits 0 on all violations
++- All BLOCKED conditions (memory write, governance file, sealed file, secret pattern) exit 0 with advisory message. The comment says "blocking delegated to Test-Governance.ps1" but Test-Governance is not called by pre-edit. The hook fires but never blocks.
++
++### P3-1: AGENTS.md hard stops count mismatch
++- AGENTS.md lists 7 hard stops (#1-#7). core.md Knowledge Metabolism Rule says "P0 rules are capped at 7" and counts 6 internal P0s. The AGENTS.md list and core.md count are off by one.
++
++### P3-2: Duplicate evidence file lists
++- Evidence package is listed in SKILL.md §Evidence Contract, SADP §0.R.2, `.ai/policy.yaml:36-42`, and `ai_guard.py:164-169`. Four copies of the same list with minor variations.
++
++---
++
++## Drift Map
++
++### Doc Says But No Execution
++| Doc Claim | Source | Execution Gap |
++|-----------|--------|---------------|
++| "finalizer runs `python tools/ai_guard.py evidence <run-evidence-dir>`" | SADP §0.R.3, SKILL.md §Finalizer Rule | No caller exists |
++| "reviewer must run in separate session" | SADP §0.R.1 | No enforcement; same model with different session_id passes |
++| "Gate 0: Resource Sufficiency Check" | SADP §0 | sadp-audit checks TaskSpec existence, not gate_0 content |
++| "No capability without inventory registration" | core-007 | Test-GovernanceDrift checks capability count, not per-capability registration status |
++| "Plan Agent cannot audit its own compliance" | SADP §3.3a | No mechanism verifies auditor ≠ plan agent |
++| "Memory writes blocked in Phase 0-5" | AGENTS.md | pre-edit exits 0 on memory path violations |
++
++### Execution Says But No Doc
++| Execution Reality | Source | Doc Gap |
++|-------------------|--------|---------|
++| sadp-audit RULE 1: 3+ files → block | sadp-audit.ps1:144-150 | SADP §0.0a says cumulative trigger is "advisory" in @go-only mode |
++| pre-edit.governance exits 0 on all blocks | pre-edit.governance.ps1 | AGENTS.md Phase 0-5 says memory writes blocked — the hook says advisory |
++| CI runs Test-GovernanceDrift which checks rule ID bidirectional consistency | Test-GovernanceDrift.ps1:25-53 | No doc describes this check in the governance flow |
++| Manifest auto-regen before sadp-audit in pre-commit | pre-commit.governance.ps1:12-40 | Not documented in SADP or SKILL.md workflow |
++
++### Schema Has But Not Validated
++| Schema Constraint | Schema File | Runtime Validator Gap |
++|-------------------|-------------|----------------------|
++| ExecutionReport status enum: draft\|submitted\|reviewed\|accepted\|rejected | execution-report.schema.json:30 | No validator; templates use different values |
++| ExecutionReport accepted → requires reviewer_artifacts | execution-report.schema.json:133-143 | No validator |
++| reviewer_artifacts.reviewer_role not in [executor, fixer, coder] | execution-report.schema.json:121 | No validator |
++| TaskSpec gate_0.inventory_evidence.queried_sources minItems:1 | task-spec.schema.json:97-103 | No validator |
++| GateResult signer_role not: "executor" | gate-result.schema.json:43-44 | No validator |
++| EvidenceIndex status enum (collected\|verified\|disputed) | evidence-index.schema.json:39 | No validator |
++| TaskSpec security_report required fields | task-spec.schema.json:197-241 | No validator; not in SADP template |
++
++---
++
++## Recommended Fix Plan
++
++Priority order. Each step includes specific files, tests, and verification.
++
++### Fix 1: Wire evidence mode into CI (addresses P0-1, P0-2 partial)
++- **Files to modify**: `.github/workflows/ai-guard.yml` — add a step:
++  ```yaml
++  - name: Reviewer Evidence Validation
++    run: |
++      for d in runs/*/; do
++        python tools/ai_guard.py evidence "$d" || exit 1
++      done
++    continue-on-error: false
++  ```
++- **Test**: Create a fixture run directory with valid evidence, invalid evidence (missing review.yaml, self-review), and verify CI blocks on invalid, passes on valid.
++- **Verification**: Push a test PR with a run dir containing a review.yaml where reviewer_role=executor. CI must fail.
++- **Risk**: Low. evidence mode reads only, no writes. If runs/ has no evidence dirs, loop is empty (no-op).
++
++### Fix 2: Create review.yaml JSON schema (addresses P0-3)
++- **Files to create**: `schemas/agent-runtime/review.schema.json`
++- **Schema structure**: Based on SADP §0.R.2, align with ai_guard.py expectations. Required: reviewer_role, reviewer_id, executor_id, verdict, reviewed_inputs. verdict enum: pass|blocked|fail|escalate. reviewer_role not in [executor, fixer, coder].
++- **Test**: Validate a sample review.yaml against the schema with a JSON schema validator.
++- **Verification**: ai_guard.py evidence mode should load and validate review.yaml against the schema.
++- **Risk**: Low. additive.
++
++### Fix 3: Align ExecutionReport status values (addresses P0-4)
++- **Files to modify**: 
++  - `schemas/agent-runtime/execution-report.schema.json` — change status enum to include `pass|fail|blocked|escalate`; add separate `review_status` field for the document lifecycle
++  - `docs/EXECUTION_REPORT_TEMPLATE.md` — align Executive Decision values
++  - SADP §2 — align PASS|FAIL|BLOCKED with schema
++- **Test**: Sample ExecutionReport JSON validates against updated schema.
++- **Verification**: None of the existing reports would break (they use Markdown, not JSON).
++- **Risk**: LOW. Schemas are not runtime-validated today, so consumers aren't broken.
++
++### Fix 4: Call task mode from sadp-audit when TaskSpec exists (addresses P0-6)
++- **Files to modify**: `scripts/sadp-audit.ps1` — after detecting TaskSpecs exist, call `python tools/ai_guard.py task <task-file>` for the most relevant TaskSpec.
++- **Test**: Create a TaskSpec with allow_write=[], make a change, run pre-commit — should block.
++- **Verification**: Git commit of a file outside TaskSpec scope should fail.
++- **Risk**: LOW. Only activates when TaskSpec exists, which is rare (gated on 3+ files or governance files).
++
++### Fix 5: Validate gate_0 content in sadp-audit (addresses P0-5)
++- **Files to modify**: `scripts/sadp-audit.ps1` — add a YAML parse of TaskSpec content to check gate_0.inventory_evidence existence and completeness.
++- **Test**: TaskSpec with gate_0 but no inventory_evidence → sadp-audit blocks.
++- **Verification**: Pre-commit blocks on construction tasks without proper gate_0.
++- **Risk**: LOW. Only activates when TaskSpec exists.
++
++### Fix 6: Add freshness to EvidenceIndex schema (addresses P1-1)
++- **Files to modify**: `schemas/agent-runtime/evidence-index.schema.json` — add freshness enum, currency_basis, approved_run_id fields.
++- **Risk**: LOW. Additive.
++
++### Fix 7: Tighten GateResult signer_role (addresses P1-2)
++- **Files to modify**: `schemas/agent-runtime/gate-result.schema.json` — change `"not": { "const": "executor" }` to `"not": { "enum": ["executor", "fixer", "coder"] }`.
++- **Risk**: LOW.
++
++### Fix 8: Add Test-Governance advisory to pre-commit (addresses P1-3)
++- **Files to modify**: `hooks/pre-commit.governance.ps1` — add `Test-Governance.ps1 -Mode advisory` after sadp-audit.
++- **Risk**: LOW. Advisory mode always exits 0; violations logged but not blocking.
++
++### Fix 9: Expand canary suite (addresses P2-4)
++- **Files to modify**: `scripts/tests/Invoke-GovernanceCanarySuite.ps1` — add canaries for: self-review, evidence missing, P0 unresolved pass.
++- **Risk**: LOW. Tests run in temp dir.
++
++---
++
++## Reviewer Index
++
++### Files Read (complete)
++1. `AGENTS.md` — agent instructions, hard stops, document map, phase boundaries
++2. `templates/runtime-bootstrap/SKILL.md` — @go skill orchestrator definition
++3. `docs/agent-runtime/sub-agent-dispatch-protocol.md` — SADP v1.0 full spec
++4. `tools/ai_guard.py` — unified rule engine (286 lines)
++5. `scripts/sadp-audit.ps1` — external SADP compliance auditor (285 lines)
++6. `.github/workflows/ai-guard.yml` — CI workflow definition
++7. `.ai/policy.yaml` — canonical policy rules
++8. `hooks/pre-edit.governance.ps1` — governance pre-edit hook
++9. `hooks/pre-commit.governance.ps1` — pre-commit governance gate
++10. `hooks/pre-push.governance.ps1` — pre-push governance gate
++11. `hooks/sealed-files-manifest.json` — file manifest with SHA256 hashes
++12. `scripts/Test-Governance.ps1` — authoritative diff gate
++13. `scripts/Test-GovernanceDrift.ps1` — full-repo governance drift check
++14. `scripts/Test-GovernanceManifest.ps1` — manifest sync verification
++15. `scripts/checks/Test-ProtectedPaths.ps1` — protected path check
++16. `scripts/checks/Test-KeyScan.ps1` — secret scan via ai_guard
++17. `scripts/tests/Invoke-GovernanceCanarySuite.ps1` — canary test suite
++18. `rules/core.md` — 8 core runtime rules
++19. `rules/review.md` — 6 review rules
++20. `rules/security.md` — 8 security rules
++21. `rules/git.md` — 6 git safety rules
++22. `rules/README.md` — rule index
++23. `schemas/agent-runtime/task-spec.schema.json` — TaskSpec schema
++24. `schemas/agent-runtime/execution-report.schema.json` — ExecutionReport schema
++25. `schemas/agent-runtime/gate-result.schema.json` — GateResult schema
++26. `schemas/agent-runtime/evidence-index.schema.json` — EvidenceIndex schema
++27. `schemas/agent-runtime/run-spec.schema.json` — RunSpec schema
++28. `schemas/agent-runtime/README.md` — schema index
++29. `docs/agent-runtime/authority-matrix.md` — authority matrix
++30. `docs/agent-runtime/governance-manifest.md` — legacy governance manifest
++31. `docs/agent-runtime/verification-gates.md` — P0-P3 gate hierarchy
++32. `docs/agent-runtime/integration-contracts.md` — 8 core data contracts
++33. `docs/agent-runtime/audit-record.schema.md` — Plan Auditor output schema
++34. `docs/agent-runtime/session-ledger.schema.md` — session compliance evidence
++35. `docs/RECOVERY_PIPELINE_RUNBOOK.md` — recovery pipeline
++36. `docs/EXECUTION_REPORT_TEMPLATE.md` — execution report template
++
++### Commands Run
++- `ls` of all major directories (docs, schemas, tools, scripts, hooks, runs, reports, tasks, .ai, governance)
++- `git log --oneline -10` to verify recent commit compliance
++
++### Not Covered
++- `docs/agent-runtime/capability-inventory.md` — read the sealed manifest's hash reference but not the full 33KB content
++- `schemas/resource-integration/` — 10 resource integration schemas not audited (out of scope)
++- `agent-workqueue/` — work queue JSON not audited (separate system)
++- dev-frame and test-frame external systems — referenced but not part of this repo
++- Actual runtime execution of `ai_guard.py evidence` — not tested because evidence directory doesn't exist
++- Real pre-commit hook behavior — confirmed active via git log but not executed in this session
++
++### Audit Limitations
++- This is a structural/static audit. Dynamic behavior (hook execution, race conditions, multi-agent timing) was not tested.
++- The audit assumes documentation is accurate for declared intent. Where docs and code conflict, I flagged the conflict.
++- Canary suite execution was not performed (destructive git operations require explicit permission per audit scope).
++- Schema validation against actual data files was not performed (no runtime JSON validator was run).
+diff --git a/tasks/t-structural-governance-fix-20260531.json b/tasks/t-structural-governance-fix-20260531.json
+new file mode 100644
+index 0000000..f3a53ad
+--- /dev/null
++++ b/tasks/t-structural-governance-fix-20260531.json
+@@ -0,0 +1,59 @@
++{
++  "task_id": "t-structural-governance-fix-20260531",
++  "title": "Fix structural governance audit blockers",
++  "priority": "P0",
++  "status": "ready",
++  "description": "Resolve structural @go governance blockers: mandatory reviewer evidence validation, evidence artifact production, review schema, status vocabulary alignment, Gate 0 inventory validation, and TaskSpec scope enforcement.",
++  "allow_write": [
++    ".github/workflows/ai-guard.yml",
++    "docs/EXECUTION_REPORT_TEMPLATE.md",
++    "docs/agent-runtime/sub-agent-dispatch-protocol.md",
++    "hooks/pre-commit.governance.ps1",
++    "hooks/pre-push.governance.ps1",
++    "hooks/sealed-files-manifest.json",
++    "schemas/agent-runtime/README.md",
++    "schemas/agent-runtime/chain-evidence.schema.json",
++    "schemas/agent-runtime/evidence-index.schema.json",
++    "schemas/agent-runtime/execution-report.schema.json",
++    "schemas/agent-runtime/gate-result.schema.json",
++    "schemas/agent-runtime/review.schema.json",
++    "schemas/agent-runtime/safety-report.schema.json",
++    "scripts/Test-ReviewerEvidence.ps1",
++    "scripts/checks/Test-ProtectedPaths.ps1",
++    "runs/structural-governance-fix-20260531/**",
++    "scripts/sadp-audit.ps1",
++    "tasks/structural-governance-audit-20260531.md",
++    "tasks/t-structural-governance-fix-20260531.json",
++    "templates/runtime-bootstrap/SKILL.md",
++    "tools/ai_guard.py",
++    "tools/go_evidence.py"
++  ],
++  "gate_0": {
++    "triggered": true,
++    "inventory_evidence": {
++      "queried_sources": [
++        "AGENTS.md",
++        "docs/agent-runtime/sub-agent-dispatch-protocol.md",
++        "tools/ai_guard.py",
++        "scripts/sadp-audit.ps1",
++        "tasks/structural-governance-audit-20260531.md"
++      ],
++      "matched_capabilities": [
++        "agent-acceptance",
++        "ai_guard",
++        "sadp-audit",
++        "reviewer-evidence-validation"
++      ]
++    },
++    "sufficiency_decision": "requires_structural_fix"
++  },
++  "acceptance_criteria": [
++    "CI or hook path invokes reviewer evidence validation.",
++    "A deterministic helper can create and finalize required evidence artifacts.",
++    "review.yaml has a JSON schema and runtime validator.",
++    "ExecutionReport status vocabulary is consistent across schema and templates.",
++    "sadp-audit validates Gate 0 inventory evidence for staged TaskSpecs.",
++    "sadp-audit invokes ai_guard.py task with a real TaskSpec when available.",
++    "Positive and negative reviewer evidence probes pass."
++  ]
++}
+diff --git a/templates/runtime-bootstrap/SKILL.md b/templates/runtime-bootstrap/SKILL.md
+index 535bcab..73a196b 100644
+--- a/templates/runtime-bootstrap/SKILL.md
++++ b/templates/runtime-bootstrap/SKILL.md
+@@ -77,11 +77,11 @@ findings:
+ ## Workflow
+ 
+ 1. Gate 0: check `AGENTS.md`, rules, mode/profile, and TaskSpec `allow_write`.
+-2. Executor/fixer: dispatch with `opencode run`; collect `diff.patch`.
++2. Executor/fixer: dispatch with `opencode run`; initialize evidence with `python tools/go_evidence.py init <run-dir> --run-id <id> --task .ai/tasks/<id>.yaml --executor-id <session-id>`.
+ 3. Tester: run commands; write `test-output.md`.
+-4. Guards: run `sadp-audit.ps1` and `python tools/ai_guard.py task .ai/tasks/<id>.yaml`; write `safety-report.json`.
++4. Guards: run `python tools/go_evidence.py guard <run-dir> --task .ai/tasks/<id>.yaml`; this captures `safety-report.json`.
+ 5. Reviewer: dispatch a separate reviewer session; write `review.md` and `review.yaml`.
+-6. Finalizer: run `python tools/ai_guard.py evidence <run-evidence-dir>`.
++6. Finalizer: run `python tools/go_evidence.py finalize <run-dir>`.
+ 7. Verdict: `passed` only if guard, reviewer, and evidence validation all pass.
+ 
+ ## Automated Dispatch
+diff --git a/tools/ai_guard.py b/tools/ai_guard.py
+index 11fe604..614d2a3 100644
+--- a/tools/ai_guard.py
++++ b/tools/ai_guard.py
+@@ -132,8 +132,16 @@ def validate_evidence_dir(evidence_dir, policy):
+     elif reviewer_role in forbidden_roles:
+         errors.append(f"REVIEW: reviewer_role must not be {reviewer_role}")
+ 
++    reviewer_type = str(review.get("reviewer_type") or "").strip().lower()
++    if reviewer_type and reviewer_type not in {"ai", "human"}:
++        errors.append("REVIEW: reviewer_type must be ai or human")
++
+     reviewer_id = str(review.get("reviewer_id") or reviewer.get("id") or "").strip()
+     executor_id = str(review.get("executor_id") or review.get("coder_id") or "").strip()
++    if not reviewer_id:
++        errors.append("REVIEW: reviewer_id is required")
++    if not executor_id:
++        errors.append("REVIEW: executor_id is required")
+     if reviewer_id and executor_id and reviewer_id == executor_id:
+         errors.append("REVIEW: reviewer_id must differ from executor_id")
+ 
+@@ -215,8 +223,16 @@ def run_diff_mode(mode, args, policy, repo_root):
+         else:
+             task_path = repo_root / ".ai" / "current-task.yaml"
+             task = load_yaml(str(task_path)) if task_path.exists() else {}
++        if not isinstance(task, dict):
++            task = {}
+         changed = git_changed_files(repo_root=repo_root)
+-        allow_write = task.get("allow_write", [])
++        conflict_registry = task.get("conflict_registry", {})
++        allow_write = (
++            task.get("allow_write")
++            or task.get("write_set")
++            or conflict_registry.get("write_set")
++            or []
++        )
+     else:
+         base = "origin/main" if _has_remote(repo_root) else "HEAD~1"
+         changed = git_changed_files(base, repo_root=repo_root)
+diff --git a/tools/go_evidence.py b/tools/go_evidence.py
+new file mode 100644
+index 0000000..5326597
+--- /dev/null
++++ b/tools/go_evidence.py
+@@ -0,0 +1,169 @@
++"""Create and finalize @go run evidence packages."""
++
++import argparse
++import json
++import subprocess
++import sys
++from datetime import datetime, timezone
++from pathlib import Path
++
++try:
++    import yaml
++except ImportError:
++    yaml = None
++
++
++def utc_now():
++    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
++
++
++def run_command(command, cwd):
++    return subprocess.run(
++        command,
++        cwd=str(cwd),
++        text=True,
++        encoding="utf-8",
++        errors="replace",
++        capture_output=True,
++    )
++
++
++def write_text(path, content):
++    path.parent.mkdir(parents=True, exist_ok=True)
++    path.write_text(content, encoding="utf-8")
++
++
++def write_json(path, payload):
++    path.parent.mkdir(parents=True, exist_ok=True)
++    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
++
++
++def cmd_init(args, repo_root):
++    run_dir = Path(args.run_dir)
++    run_dir.mkdir(parents=True, exist_ok=True)
++
++    diff = run_command(
++        ["git", "diff", "--binary", "HEAD", "--", ".", ":(exclude)runs/**"],
++        repo_root,
++    )
++    write_text(run_dir / "diff.patch", diff.stdout or "\n")
++
++    if not (run_dir / "test-output.md").exists():
++        write_text(
++            run_dir / "test-output.md",
++            "# Test Output\n\nNo test output captured yet. Tester must replace this file.\n",
++        )
++
++    chain = {
++        "run_id": args.run_id,
++        "task_file": args.task,
++        "executor_id": args.executor_id,
++        "reviewer_id": None,
++        "created_at": utc_now(),
++        "producer": "tools/go_evidence.py init",
++    }
++    write_json(run_dir / "chain-evidence.json", chain)
++    print(f"Evidence initialized: {run_dir}")
++
++
++def cmd_guard(args, repo_root):
++    run_dir = Path(args.run_dir)
++    run_dir.mkdir(parents=True, exist_ok=True)
++
++    command = ["python", "tools/ai_guard.py", "task"]
++    if args.task:
++        command.append(args.task)
++
++    result = run_command(command, repo_root)
++    payload = {
++        "generated_at": utc_now(),
++        "producer": "tools/go_evidence.py guard",
++        "command": " ".join(command),
++        "exit_code": result.returncode,
++        "stdout": result.stdout,
++        "stderr": result.stderr,
++    }
++    write_json(run_dir / "safety-report.json", payload)
++    print(result.stdout, end="")
++    print(result.stderr, end="", file=sys.stderr)
++    return result.returncode
++
++
++def cmd_finalize(args, repo_root):
++    run_dir = Path(args.run_dir)
++    review_yaml = run_dir / "review.yaml"
++    chain_path = run_dir / "chain-evidence.json"
++    if yaml and review_yaml.is_file() and chain_path.is_file():
++        try:
++            review = yaml.safe_load(review_yaml.read_text(encoding="utf-8")) or {}
++            chain = json.loads(chain_path.read_text(encoding="utf-8"))
++            chain["reviewer_id"] = review.get("reviewer_id")
++            chain["reviewer_role"] = review.get("reviewer_role")
++            chain["reviewed_at"] = utc_now()
++            write_json(chain_path, chain)
++        except Exception:
++            pass
++
++    write_text(
++        run_dir / "final-report.md",
++        "# Final Report\n\nFinalization in progress; this file will be replaced by the deterministic finalizer.\n",
++    )
++    command = ["python", "tools/ai_guard.py", "evidence", str(run_dir)]
++    result = run_command(command, repo_root)
++
++    status = "passed" if result.returncode == 0 else "blocked"
++    report = [
++        "# Final Report",
++        "",
++        f"- Generated at: {utc_now()}",
++        f"- Status: {status}",
++        f"- Evidence directory: {run_dir}",
++        f"- Command: {' '.join(command)}",
++        "",
++        "## Output",
++        "",
++        "```text",
++        result.stdout.strip(),
++        result.stderr.strip(),
++        "```",
++        "",
++    ]
++    write_text(run_dir / "final-report.md", "\n".join(report))
++    print(result.stdout, end="")
++    print(result.stderr, end="", file=sys.stderr)
++    return result.returncode
++
++
++def main():
++    parser = argparse.ArgumentParser(description="Create @go evidence packages")
++    parser.add_argument("--repo-root", default=".", help="Repository root")
++    subparsers = parser.add_subparsers(dest="command", required=True)
++
++    init_parser = subparsers.add_parser("init")
++    init_parser.add_argument("run_dir")
++    init_parser.add_argument("--run-id", required=True)
++    init_parser.add_argument("--task", required=True)
++    init_parser.add_argument("--executor-id", required=True)
++
++    guard_parser = subparsers.add_parser("guard")
++    guard_parser.add_argument("run_dir")
++    guard_parser.add_argument("--task")
++
++    finalize_parser = subparsers.add_parser("finalize")
++    finalize_parser.add_argument("run_dir")
++
++    args = parser.parse_args()
++    repo_root = Path(args.repo_root).resolve()
++
++    if args.command == "init":
++        cmd_init(args, repo_root)
++        return 0
++    if args.command == "guard":
++        return cmd_guard(args, repo_root)
++    if args.command == "finalize":
++        return cmd_finalize(args, repo_root)
++    return 2
++
++
++if __name__ == "__main__":
++    sys.exit(main())

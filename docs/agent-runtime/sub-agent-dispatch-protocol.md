@@ -95,7 +95,7 @@ findings:
 The finalizer MUST run:
 
 ```powershell
-python tools/ai_guard.py evidence <run-evidence-dir>
+python tools/go_evidence.py finalize <run-evidence-dir>
 ```
 
 If reviewer artifacts are missing, reviewer role is `executor`/`fixer`/`coder`, reviewed inputs are incomplete, or any P0/P1 finding remains unresolved, the final status MUST be `blocked`.
@@ -372,7 +372,8 @@ Every task completion returns this format:
 ```markdown
 ## ExecutionReport: [task-id]
 
-- **Status**: PASS | FAIL | BLOCKED
+- **Status**: pass | fail | blocked | escalate
+- **Review Status**: draft | submitted | reviewed | accepted | rejected
 - **Summary**: [1-3 sentences: what was done, what was found]
 - **Changed Files**:
   - `path/to/file.ts` (+N lines, -M lines) 锟斤拷 [what changed]
@@ -399,7 +400,8 @@ Every task completion returns this format:
 ```markdown
 ## ExecutionReport: task-a1b2c3d4
 
-- **Status**: PASS
+- **Status**: pass
+- **Review Status**: accepted
 - **Summary**: Added rate-limiting middleware (100 req/min per IP). All tests pass, no regression.
 - **Changed Files**:
   - `src/middleware/rateLimiter.ts` (+45 lines) 锟斤拷 new middleware

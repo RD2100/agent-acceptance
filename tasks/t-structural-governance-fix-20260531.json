@@ -1,0 +1,59 @@
+{
+  "task_id": "t-structural-governance-fix-20260531",
+  "title": "Fix structural governance audit blockers",
+  "priority": "P0",
+  "status": "ready",
+  "description": "Resolve structural @go governance blockers: mandatory reviewer evidence validation, evidence artifact production, review schema, status vocabulary alignment, Gate 0 inventory validation, and TaskSpec scope enforcement.",
+  "allow_write": [
+    ".github/workflows/ai-guard.yml",
+    "docs/EXECUTION_REPORT_TEMPLATE.md",
+    "docs/agent-runtime/sub-agent-dispatch-protocol.md",
+    "hooks/pre-commit.governance.ps1",
+    "hooks/pre-push.governance.ps1",
+    "hooks/sealed-files-manifest.json",
+    "schemas/agent-runtime/README.md",
+    "schemas/agent-runtime/chain-evidence.schema.json",
+    "schemas/agent-runtime/evidence-index.schema.json",
+    "schemas/agent-runtime/execution-report.schema.json",
+    "schemas/agent-runtime/gate-result.schema.json",
+    "schemas/agent-runtime/review.schema.json",
+    "schemas/agent-runtime/safety-report.schema.json",
+    "scripts/Test-ReviewerEvidence.ps1",
+    "scripts/checks/Test-ProtectedPaths.ps1",
+    "runs/structural-governance-fix-20260531/**",
+    "scripts/sadp-audit.ps1",
+    "tasks/structural-governance-audit-20260531.md",
+    "tasks/t-structural-governance-fix-20260531.json",
+    "templates/runtime-bootstrap/SKILL.md",
+    "tools/ai_guard.py",
+    "tools/go_evidence.py"
+  ],
+  "gate_0": {
+    "triggered": true,
+    "inventory_evidence": {
+      "queried_sources": [
+        "AGENTS.md",
+        "docs/agent-runtime/sub-agent-dispatch-protocol.md",
+        "tools/ai_guard.py",
+        "scripts/sadp-audit.ps1",
+        "tasks/structural-governance-audit-20260531.md"
+      ],
+      "matched_capabilities": [
+        "agent-acceptance",
+        "ai_guard",
+        "sadp-audit",
+        "reviewer-evidence-validation"
+      ]
+    },
+    "sufficiency_decision": "requires_structural_fix"
+  },
+  "acceptance_criteria": [
+    "CI or hook path invokes reviewer evidence validation.",
+    "A deterministic helper can create and finalize required evidence artifacts.",
+    "review.yaml has a JSON schema and runtime validator.",
+    "ExecutionReport status vocabulary is consistent across schema and templates.",
+    "sadp-audit validates Gate 0 inventory evidence for staged TaskSpecs.",
+    "sadp-audit invokes ai_guard.py task with a real TaskSpec when available.",
+    "Positive and negative reviewer evidence probes pass."
+  ]
+}

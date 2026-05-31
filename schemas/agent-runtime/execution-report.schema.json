@@ -27,8 +27,13 @@
     },
     "status": {
       "type": "string",
+      "enum": ["pass", "fail", "blocked", "escalate"],
+      "description": "Execution outcome. This is separate from review_status lifecycle."
+    },
+    "review_status": {
+      "type": "string",
       "enum": ["draft", "submitted", "reviewed", "accepted", "rejected"],
-      "description": "Current status of the report."
+      "description": "Document lifecycle status for reviewer processing."
     },
     "summary": {
       "type": "string",
@@ -133,7 +138,7 @@
   "allOf": [
     {
       "if": {
-        "properties": { "status": { "const": "accepted" } },
+        "properties": { "status": { "const": "pass" } },
         "required": ["status"]
       },
       "then": {

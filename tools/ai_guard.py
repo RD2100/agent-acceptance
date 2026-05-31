@@ -132,8 +132,16 @@ def validate_evidence_dir(evidence_dir, policy):
     elif reviewer_role in forbidden_roles:
         errors.append(f"REVIEW: reviewer_role must not be {reviewer_role}")
 
+    reviewer_type = str(review.get("reviewer_type") or "").strip().lower()
+    if reviewer_type and reviewer_type not in {"ai", "human"}:
+        errors.append("REVIEW: reviewer_type must be ai or human")
+
     reviewer_id = str(review.get("reviewer_id") or reviewer.get("id") or "").strip()
     executor_id = str(review.get("executor_id") or review.get("coder_id") or "").strip()
+    if not reviewer_id:
+        errors.append("REVIEW: reviewer_id is required")
+    if not executor_id:
+        errors.append("REVIEW: executor_id is required")
     if reviewer_id and executor_id and reviewer_id == executor_id:
         errors.append("REVIEW: reviewer_id must differ from executor_id")
 
@@ -215,8 +223,16 @@ def run_diff_mode(mode, args, policy, repo_root):
         else:
             task_path = repo_root / ".ai" / "current-task.yaml"
             task = load_yaml(str(task_path)) if task_path.exists() else {}
+        if not isinstance(task, dict):
+            task = {}
         changed = git_changed_files(repo_root=repo_root)
-        allow_write = task.get("allow_write", [])
+        conflict_registry = task.get("conflict_registry", {})
+        allow_write = (
+            task.get("allow_write")
+            or task.get("write_set")
+            or conflict_registry.get("write_set")
+            or []
+        )
     else:
         base = "origin/main" if _has_remote(repo_root) else "HEAD~1"
         changed = git_changed_files(base, repo_root=repo_root)

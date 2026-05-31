@@ -9,14 +9,14 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-05-31T16:22:20.2747699+08:00",
+    "generated":  "2026-05-31T17:13:55.3403550+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
                              "path":  ".ai/policy.yaml"
                          },
                          {
-                             "sha256":  "52CB0F495E8F2EDAC896B84BEE35636C14B02B90AC0AED90CBCDA357E040B3D7",
+                             "sha256":  "0B0659EDA9CE03B0CAFB7F91A696B59F7CA772CFFA61C233504300893FBA4121",
                              "path":  ".github/workflows/ai-guard.yml"
                          },
                          {
@@ -352,7 +352,7 @@
                              "path":  "docs/agent-runtime/stride-threat-model.md"
                          },
                          {
-                             "sha256":  "4F2031CEE17E6378E87D2AEA85217F4B4289DBBC75C06085572207DB76A7A4FE",
+                             "sha256":  "D43900921E35FFE52ACB922C86C643E319C78BAB198B9BBFEB18B4E6EE111CB5",
                              "path":  "docs/agent-runtime/sub-agent-dispatch-protocol.md"
                          },
                          {
@@ -396,7 +396,7 @@
                              "path":  "governance/manifest-ignore.txt"
                          },
                          {
-                             "sha256":  "3A476C299222FF5C054890AB9D446A19ABDE0B3EDE244DB30CAEEB009A2E76B4",
+                             "sha256":  "5325226F138B8DCFF66A83A5D056F44262E52999DC5D2F9A7EA270A187B28663",
                              "path":  "hooks/pre-commit.governance.ps1"
                          },
                          {
@@ -404,7 +404,7 @@
                              "path":  "hooks/pre-edit.governance.ps1"
                          },
                          {
-                             "sha256":  "BEAC5795F3942F37C3AB4F6DCDA94912FBC92F1E15BADD6C22DF2821A61EF73C",
+                             "sha256":  "451B28439A6A248A42689CC5C1C6C02A55AD4BAD3877DB7C087D997A4CF6CAA5",
                              "path":  "hooks/pre-push.governance.ps1"
                          },
                          {
@@ -448,15 +448,19 @@
                              "path":  "rules/security.md"
                          },
                          {
-                             "sha256":  "B50CDDEFF4980D0075A07462191CCA876C188A6C62BD690939F2125FFD81F862",
+                             "sha256":  "C0006E1F9BD68847220C18C8D7852BC536C298AF1CE108CC443B5E79B7608890",
+                             "path":  "schemas/agent-runtime/chain-evidence.schema.json"
+                         },
+                         {
+                             "sha256":  "D01ACD0B77FBA729E5AD19F176FE20DF7B13F16E8E2368BC0672EAA771002D0B",
                              "path":  "schemas/agent-runtime/evidence-index.schema.json"
                          },
                          {
-                             "sha256":  "7516A25E828DBCC0250B3989366BFE82F59F113B52F7655BF9CC0BEE5CC0DF44",
+                             "sha256":  "D8C2BCBFCB737EC086BD520D5F88FB0F2D93EF7BC551FC8CB95E051607CEB661",
                              "path":  "schemas/agent-runtime/execution-report.schema.json"
                          },
                          {
-                             "sha256":  "EE51A05EEE18D7A12CD64E5D03552F76D5818BFAB2AC9A1EDE00E691C5D55F76",
+                             "sha256":  "94341143393F8ABE56930DE52A97E60F80ABFE6C33CBB79AB12A938897FA6251",
                              "path":  "schemas/agent-runtime/gate-result.schema.json"
                          },
                          {
@@ -464,8 +468,16 @@
                              "path":  "schemas/agent-runtime/memory-update-record.schema.json"
                          },
                          {
+                             "sha256":  "07C823E5C6D9865A74FDD45C2A97B377DD42BE8240B6CFDC1127138ABCD8BABD",
+                             "path":  "schemas/agent-runtime/review.schema.json"
+                         },
+                         {
                              "sha256":  "005C08EC71B619DE84C843E6FE81F54534354BFDACD057B2AE43C664D3F3E2F7",
                              "path":  "schemas/agent-runtime/run-spec.schema.json"
+                         },
+                         {
+                             "sha256":  "8B6D46C502905B74B2B07A59642EF8C6A4F8A613A9F417915B7B0248DEB8436B",
+                             "path":  "schemas/agent-runtime/safety-report.schema.json"
                          },
                          {
                              "sha256":  "7E513408E324240EE28253459DA993977FF9174C4C877D586C4184B8EE0D1464",
@@ -496,7 +508,7 @@
                              "path":  "scripts/checks/Test-KeyScan.ps1"
                          },
                          {
-                             "sha256":  "F28DB1346256E864A6733D9B270D2DAE61A387C8B0EFCFE536CFE4B3FCF8975E",
+                             "sha256":  "6CB8F2C17B328A90C4E7ACBAB057067ECFB0B8678FDF0E7DCF3645E103C0B547",
                              "path":  "scripts/checks/Test-ProtectedPaths.ps1"
                          },
                          {
@@ -528,7 +540,7 @@
                              "path":  "scripts/Run-WorkQueue.ps1"
                          },
                          {
-                             "sha256":  "EB4A32E9E73F1A24FD1DF617572A3886CCC572E093104DD2852D6B7E17785A82",
+                             "sha256":  "0935E88E0B5A7BFC9C66960C25D9D0AC91CEBE81E3027D96AEABF78EEDAA4AA3",
                              "path":  "scripts/sadp-audit.ps1"
                          },
                          {
@@ -542,6 +554,10 @@
                          {
                              "sha256":  "FD5FCCEF1D7821B157FDBEC10D0C4A1E7FBDD6E68E2EE4B0EBC8B9C13E1185ED",
                              "path":  "scripts/Test-GovernanceManifest.ps1"
+                         },
+                         {
+                             "sha256":  "E49FCA70188825F896C6F361FDB4E446593FB74F363CFF8CC978832E536CFAF3",
+                             "path":  "scripts/Test-ReviewerEvidence.ps1"
                          },
                          {
                              "sha256":  "69A60754DF0439C593B0A01B4EF1A250C6FDD74193D39747F60F5D01EAAA7592",

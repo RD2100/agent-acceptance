@@ -3,7 +3,7 @@
 > Batch D1, 2026-05-27
 > JSON Schema Draft 2020-12
 
-This directory contains JSON Schema definitions for the 9 core integration contracts.
+This directory contains JSON Schema definitions for the core integration contracts and @go evidence artifacts.
 
 ## Schemas
 
@@ -18,6 +18,9 @@ This directory contains JSON Schema definitions for the 9 core integration contr
 | 7 | `tool-risk-record.schema.json` | Risk assessment of a tool available to agents |
 | 8 | `memory-update-record.schema.json` | Proposed memory update subject to human approval |
 | 9 | `source-lock-record.schema.json` | External skill source lock record (Phase 6) |
+| 10 | `review.schema.json` | Independent reviewer verdict for an @go run |
+| 11 | `safety-report.schema.json` | Deterministic guard output captured for an @go run |
+| 12 | `chain-evidence.schema.json` | Role/session chain for an @go run |
 
 ## Constraints
 
@@ -26,5 +29,5 @@ This directory contains JSON Schema definitions for the 9 core integration contr
 - Phase 0-5 enum constraints are enforced:
   - SkillIntakeRecord disposition: `reference_only`, `candidate`, `defer`, `reject` only (no `install`, `absorb`, `approved`)
   - MemoryUpdateRecord status: `proposed` only for new records (no `approved` at agent level)
-  - GateResult signer_role: must not be `executor`
+  - GateResult signer_role: must not be `executor`, `fixer`, or `coder`
 - Forbidden patterns (MCP config modification, UI-TARS/computer-use, package managers, external script execution) are documented in descriptions and NOT listed as permitted values.

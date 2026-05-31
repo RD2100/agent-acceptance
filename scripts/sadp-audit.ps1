@@ -18,6 +18,48 @@ $ErrorActionPreference = "Stop"
 Push-Location $ProjectRoot
 
 try {
+    function Get-TaskSpecFiles {
+        $files = @()
+        if (Test-Path "tasks") {
+            $files += @(Get-ChildItem "tasks" -Filter "task-*.md" -ErrorAction SilentlyContinue)
+            $files += @(Get-ChildItem "tasks" -Filter "t-*.json" -ErrorAction SilentlyContinue)
+        }
+        if (Test-Path ".ai\tasks") {
+            $files += @(Get-ChildItem ".ai\tasks" -Include "*.yaml","*.yml","*.json" -Recurse -ErrorAction SilentlyContinue)
+        }
+        if (Test-Path ".ai\current-task.yaml") {
+            $files += @(Get-Item ".ai\current-task.yaml")
+        }
+        return @($files | Sort-Object FullName -Unique)
+    }
+
+    function Test-Gate0Evidence {
+        param([System.IO.FileInfo]$TaskFile)
+
+        $content = Get-Content $TaskFile.FullName -Raw -ErrorAction SilentlyContinue
+        if (-not $content) { return $false }
+
+        if ($TaskFile.Extension -eq ".json") {
+            try {
+                $json = $content | ConvertFrom-Json -ErrorAction Stop
+                if (-not $json.gate_0) { return $false }
+                if (-not $json.gate_0.inventory_evidence) { return $false }
+                if (-not $json.gate_0.inventory_evidence.queried_sources) { return $false }
+                if (-not $json.gate_0.inventory_evidence.matched_capabilities) { return $false }
+                return $true
+            } catch {
+                return $false
+            }
+        }
+
+        return (
+            ($content -match "gate_0:") -and
+            ($content -match "inventory_evidence:") -and
+            ($content -match "queried_sources:") -and
+            ($content -match "matched_capabilities:")
+        )
+    }
+
     # Collect git state
     $changedFiles = @(git -c core.safecrlf=false diff --cached --name-only 2>$null | Where-Object { $_ })
     $changedCount = $changedFiles.Count
@@ -58,10 +100,7 @@ try {
 
     # Check for TaskSpecs
     $taskDir = "tasks"
-    $taskSpecs = @()
-    if (Test-Path $taskDir) {
-        $taskSpecs = @(Get-ChildItem $taskDir -Filter "task-*.md" -ErrorAction SilentlyContinue)
-    }
+    $taskSpecs = @(Get-TaskSpecFiles)
 
     # Check for Audit Records
     $auditDir = "tasks"  # Audit records stored alongside TaskSpecs for now
@@ -82,8 +121,53 @@ function Test-TaskSpecCoverage {
     
     $uncovered = @()
     $coveredBy = @{}
+
+    function Get-TaskSpecPathPatterns {
+        param([string]$Content)
+
+        $patterns = @()
+        $quotedMatches = [regex]::Matches($Content, '"([^"]+)"')
+        foreach ($match in $quotedMatches) {
+            $value = $match.Groups[1].Value
+            if ($value -match '[\\/]' -or $value -match '\*') {
+                $patterns += ($value -replace '\\', '/')
+            }
+        }
+
+        $yamlMatches = [regex]::Matches($Content, '(?m)^\s*-\s+["'']?([^"''\r\n]+)["'']?\s*$')
+        foreach ($match in $yamlMatches) {
+            $value = $match.Groups[1].Value.Trim()
+            if ($value -match '[\\/]' -or $value -match '\*') {
+                $patterns += ($value -replace '\\', '/')
+            }
+        }
+
+        return @($patterns | Sort-Object -Unique)
+    }
+
+    function Test-PathCoveredByPattern {
+        param([string]$FilePath, [string]$Pattern)
+
+        $normalizedPath = $FilePath -replace '\\', '/'
+        $normalizedPattern = $Pattern -replace '\\', '/'
+        if ($normalizedPattern -eq $normalizedPath) { return $true }
+        if ($normalizedPattern.EndsWith('/**')) {
+            $prefix = $normalizedPattern.Substring(0, $normalizedPattern.Length - 3)
+            return $normalizedPath.StartsWith($prefix + '/')
+        }
+
+        try {
+            $wildcard = [System.Management.Automation.WildcardPattern]::new(
+                $normalizedPattern,
+                [System.Management.Automation.WildcardOptions]::IgnoreCase
+            )
+            return $wildcard.IsMatch($normalizedPath)
+        } catch {
+            return $false
+        }
+    }
     
-    $taskFiles = @(Get-ChildItem $TaskDir -Filter "task-*.md" -ErrorAction SilentlyContinue)
+    $taskFiles = @(Get-TaskSpecFiles)
     if ($taskFiles.Count -eq 0) { return @{ Uncovered = $ChangedFiles; CoveredBy = @{} } }
     
     foreach ($f in $ChangedFiles) {
@@ -92,9 +176,24 @@ function Test-TaskSpecCoverage {
             $content = Get-Content $tf.FullName -Raw -ErrorAction SilentlyContinue
             $fileName = Split-Path $f -Leaf
             $filePath = $f -replace '\\', '/'
+            $patterns = @(Get-TaskSpecPathPatterns -Content $content)
+            $globCovered = $false
+            foreach ($pattern in $patterns) {
+                if (Test-PathCoveredByPattern -FilePath $filePath -Pattern $pattern) {
+                    $globCovered = $true
+                    break
+                }
+            }
             
-            # Check if file appears in write_set or Allowed Files
-            if (($content -match "write_set:") -and ($content -match [regex]::Escape($fileName) -or $content -match [regex]::Escape($filePath))) {
+            # Check if file appears in write_set, allow_write, or Allowed Files.
+            if (
+                (($content -match "write_set") -or ($content -match "allow_write") -or ($content -match "Allowed Files")) -and
+                (
+                    ($content -match [regex]::Escape($fileName)) -or
+                    ($content -match [regex]::Escape($filePath)) -or
+                    $globCovered
+                )
+            ) {
                 $found = $true
                 if (-not $coveredBy.ContainsKey($f)) { $coveredBy[$f] = @() }
                 $coveredBy[$f] += $tf.Name
@@ -139,6 +238,26 @@ if ($taskSpecs.Count -gt 0) {
 }
 
 # Decision logic — $block and $warn initialized above (before V2 check)
+
+    # RULE 0: Staged TaskSpecs must include gate_0.inventory_evidence
+    $stagedTaskFiles = @(
+        $changedFiles | Where-Object {
+            ($_ -match "^tasks[\\/]task-.*\.md$") -or
+            ($_ -match "^tasks[\\/]t-.*\.json$") -or
+            ($_ -match "^\.ai[\\/]tasks[\\/].*\.(ya?ml|json)$") -or
+            ($_ -eq ".ai/current-task.yaml")
+        }
+    )
+
+    foreach ($taskPath in $stagedTaskFiles) {
+        if (-not (Test-Path $taskPath)) { continue }
+        $taskFile = Get-Item $taskPath
+        if (-not (Test-Gate0Evidence -TaskFile $taskFile)) {
+            Write-Host "[SADP-AUDIT] FAIL: TaskSpec missing valid gate_0.inventory_evidence: $taskPath"
+            Write-Host "[SADP-AUDIT]   Required: gate_0.inventory_evidence.queried_sources + matched_capabilities."
+            $block = $true
+        }
+    }
 
     # RULE 1: 3+ files → SADP required → TaskSpec must exist
     if ($changedCount -ge 3 -and $taskSpecs.Count -eq 0) {
@@ -261,6 +380,26 @@ $addedContent = ($addedLines | Where-Object { $_ -notmatch '@\{ Name =' }) -join
         if ($guardExit -ne 0) {
             $block = $true
             Write-Host "[SADP-AUDIT] ai_guard.py found security issues."
+        }
+
+        $taskGuardFile = $null
+        if (Test-Path ".ai\current-task.yaml") {
+            $taskGuardFile = ".ai\current-task.yaml"
+        } else {
+            $taskGuardFile = @(
+                $stagedTaskFiles | Where-Object { $_ -match "\.(ya?ml|json)$" } | Select-Object -First 1
+            )
+        }
+
+        if ($taskGuardFile) {
+            Write-Host "[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: $taskGuardFile"
+            $taskGuardResult = python $aiGuardPath task $taskGuardFile 2>&1
+            $taskGuardExit = $LASTEXITCODE
+            Write-Host $taskGuardResult
+            if ($taskGuardExit -ne 0) {
+                $block = $true
+                Write-Host "[SADP-AUDIT] ai_guard.py found TaskSpec scope issues."
+            }
         }
     } else {
         Write-Host "[SADP-AUDIT] WARN: ai_guard.py not found at $aiGuardPath"

@@ -41,8 +41,8 @@
     },
     "signer_role": {
       "type": "string",
-      "not": { "const": "executor" },
-      "description": "Role of the person or agent that performed this gate check. Must not be 'executor'."
+      "not": { "enum": ["executor", "fixer", "coder"] },
+      "description": "Role of the person or agent that performed this gate check. Must not be executor, fixer, or coder."
     },
     "details": {
       "type": "string",

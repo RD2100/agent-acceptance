@@ -1,0 +1,11 @@
+reviewer_role: reviewer
+reviewer_type: ai
+reviewer_id: opencode-deepseek-v4-pro-structural-review-r3
+executor_id: codex-session-structural-fix
+verdict: pass
+reviewed_inputs:
+  - diff.patch
+  - test-output.md
+  - safety-report.json
+  - chain-evidence.json
+findings: []

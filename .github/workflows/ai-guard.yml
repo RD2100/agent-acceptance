@@ -27,6 +27,9 @@ jobs:
       - name: Deny Paths + Scope + Secret Scan
         run: python tools/ai_guard.py full
 
+      - name: Reviewer Evidence Validation
+        run: powershell -ExecutionPolicy Bypass -File scripts/Test-ReviewerEvidence.ps1
+
       - name: Governance Drift Check
         run: powershell -ExecutionPolicy Bypass -File scripts/Test-GovernanceDrift.ps1
 
