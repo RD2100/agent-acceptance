@@ -34,6 +34,76 @@ SADP defines the default pattern for multi-agent development:
 
 ---
 
+## 0.R Mandatory Reviewer Node
+
+SADP separates execution from approval. The executor/fixer may implement code and report evidence, but it must not approve its own work or close P0/P1 findings. Every `@go` run that changes files MUST pass through this state machine:
+
+```text
+human_gate
+  -> executor/fixer
+  -> tester
+  -> reviewer
+  -> finalizer
+```
+
+### 0.R.1 Role Boundaries
+
+| Role | May Produce | Must Not Produce |
+|------|-------------|------------------|
+| executor/fixer | code changes, execution log, `diff.patch` | `review.md`, `review.yaml`, final pass verdict |
+| tester | `test-output.md`, command exit-code evidence | code-quality approval |
+| reviewer | `review.md`, `review.yaml`, P0/P1 findings | implementation changes |
+| finalizer | `final-report.md`, deterministic artifact summary | reviewer judgment, code-quality approval |
+
+The reviewer MUST run as a separate role/session/model identity from the executor/fixer. Executor reports are claims, not facts.
+
+### 0.R.2 Required Evidence Package
+
+Each `@go` run MUST produce a run evidence directory containing:
+
+```text
+diff.patch
+test-output.md
+safety-report.json
+chain-evidence.json
+review.md
+review.yaml
+final-report.md
+```
+
+`review.yaml` is machine-readable reviewer evidence. It MUST include:
+
+```yaml
+reviewer_role: reviewer
+reviewer_id: "<reviewer-session-or-agent-id>"
+executor_id: "<executor-session-or-agent-id>"
+verdict: pass | blocked | fail | escalate
+reviewed_inputs:
+  - diff.patch
+  - test-output.md
+  - safety-report.json
+  - chain-evidence.json
+findings:
+  - id: finding-001
+    severity: P0 | P1 | P2 | P3
+    status: open | resolved | false_positive
+    title: "short finding"
+```
+
+### 0.R.3 Finalizer Gate
+
+The finalizer MUST run:
+
+```powershell
+python tools/ai_guard.py evidence <run-evidence-dir>
+```
+
+If reviewer artifacts are missing, reviewer role is `executor`/`fixer`/`coder`, reviewed inputs are incomplete, or any P0/P1 finding remains unresolved, the final status MUST be `blocked`.
+
+The finalizer may summarize deterministic evidence, but it MUST NOT substitute for reviewer judgment.
+
+---
+
 
 
 ### 0. Gate 0: Resource Sufficiency Check (BEFORE any TaskSpec)

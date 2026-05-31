@@ -32,6 +32,24 @@ dangerous_commands:
   - "git clean -xdf"
   - "git branch -D"
 
+required_evidence_files:
+  - "diff.patch"
+  - "test-output.md"
+  - "safety-report.json"
+  - "chain-evidence.json"
+  - "review.md"
+  - "review.yaml"
+  - "final-report.md"
+
+reviewer_forbidden_roles:
+  - "executor"
+  - "fixer"
+  - "coder"
+
+blocking_finding_severities:
+  - "P0"
+  - "P1"
+
 secret_patterns:
   - "sk-[A-Za-z0-9]{32,}"
   - "AIza[0-9A-Za-z\\-_]{35}"

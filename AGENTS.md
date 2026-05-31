@@ -21,10 +21,11 @@ After non-trivial work completes: auto-write summary report → dispatch to `dee
 
 **`@go` triggers [SADP](docs/agent-runtime/sub-agent-dispatch-protocol.md)** (formal workflow):
 ```
-Gate 0 -> TaskSpec -> Execute -> ExecutionReport -> Plan Auditor -> Pass/Block/Escalate
+Gate 0 -> TaskSpec -> Executor/Fixer -> Tester -> Reviewer -> Finalizer -> Pass/Block/Escalate
 ```
 - Capability usage tracked per ExecutionReport, audited against `capability-inventory.md` (core-007).
 - Integration: dev-frame (`D:\dev-frame\ai-workflow-hub`), test-frame (`D:\test-frame`).
+- Independent reviewer evidence is mandatory for any `@go` run that changes files. Executor/fixer must not write `review.md` or `review.yaml`; finalizer must block if reviewer evidence is missing or invalid.
 
 
 ## Anti-Overengineering Gate
@@ -58,6 +59,7 @@ These rules block delivery. Do not violate:
 | 4 | No fake green (FAILED/BLOCKED != PASS) | `rules/review.md` review-001 |
 | 5 | No write to dirty baseline files (13M + 6U) | `rules/core.md` core-005 |
 | 6 | No capability without inventory registration | `rules/core.md` core-007 |
+| 7 | No `@go` pass without independent reviewer artifacts | `docs/agent-runtime/sub-agent-dispatch-protocol.md` 0.R |
 
 
 ## Agent Secret Safety Rules (P0 — Hard Stop)

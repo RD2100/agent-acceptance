@@ -9,10 +9,10 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-05-30T22:52:31.5121323+08:00",
+    "generated":  "2026-05-31T16:22:20.2747699+08:00",
     "sealed_files":  [
                          {
-                             "sha256":  "CCF551EA1E8C0E0BAF8823F368141F19DE131E5DFFC5B864DA14E0A9348CEE58",
+                             "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
                              "path":  ".ai/policy.yaml"
                          },
                          {
@@ -20,7 +20,7 @@
                              "path":  ".github/workflows/ai-guard.yml"
                          },
                          {
-                             "sha256":  "1DF81235D944D4EA554E6F2DC8453C0FEA36776E4AEF3E123CF54987CFB61777",
+                             "sha256":  "59E7999A575FEAE014DD52D151DB3886C67C5F7531E15CB092CD10B047A001BD",
                              "path":  "AGENTS.md"
                          },
                          {
@@ -352,7 +352,7 @@
                              "path":  "docs/agent-runtime/stride-threat-model.md"
                          },
                          {
-                             "sha256":  "0165F92B417A2CBE8BF0E6FF99192C64E878A38412ECA4CEA5400C852D4B05C9",
+                             "sha256":  "4F2031CEE17E6378E87D2AEA85217F4B4289DBBC75C06085572207DB76A7A4FE",
                              "path":  "docs/agent-runtime/sub-agent-dispatch-protocol.md"
                          },
                          {
@@ -452,7 +452,7 @@
                              "path":  "schemas/agent-runtime/evidence-index.schema.json"
                          },
                          {
-                             "sha256":  "1B8AA1614C719BC44E59834701764C413491C1BC9F97B883D4AADDAE51AB6E9C",
+                             "sha256":  "7516A25E828DBCC0250B3989366BFE82F59F113B52F7655BF9CC0BEE5CC0DF44",
                              "path":  "schemas/agent-runtime/execution-report.schema.json"
                          },
                          {

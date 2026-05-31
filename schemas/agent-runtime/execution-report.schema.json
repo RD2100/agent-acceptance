@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "ExecutionReport",
   "description": "Final structured report of a batch execution. Produced by a report generator, consumed by a human reviewer and planning agent. Must include trust_record for dispatched tasks and fallback_record when fallback was used.",
@@ -102,7 +102,44 @@
     "reviewer_decision": {
       "type": "string",
       "description": "Reviewer gate decision."
+    },
+    "reviewer_artifacts": {
+      "type": "object",
+      "description": "Independent reviewer artifacts required before status can be accepted.",
+      "required": ["review_md", "review_yaml", "reviewer_role"],
+      "properties": {
+        "review_md": {
+          "type": "string",
+          "description": "Path to reviewer-authored review.md"
+        },
+        "review_yaml": {
+          "type": "string",
+          "description": "Path to reviewer-authored review.yaml"
+        },
+        "reviewer_role": {
+          "type": "string",
+          "not": { "enum": ["executor", "fixer", "coder"] },
+          "description": "Role that produced the reviewer artifacts. Must be independent of executor/fixer."
+        },
+        "verdict": {
+          "type": "string",
+          "enum": ["pass", "blocked", "fail", "escalate"],
+          "description": "Machine-readable reviewer verdict."
+        }
+      },
+      "additionalProperties": false
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "accepted" } },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["reviewer_artifacts"]
+      }
+    }
+  ],
   "additionalProperties": false
 }

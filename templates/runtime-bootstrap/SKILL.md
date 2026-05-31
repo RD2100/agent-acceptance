@@ -1,64 +1,98 @@
 ---
 name: agent-acceptance
-description: Formal SADP development workflow with audit gates. Use when user says "@go", requests formal task execution with audit trail, wants TaskSpec+ExecutionReport+Audit chain, or needs evidence-based delivery with P0 safety gates. NOT for casual conversation or trivial edits.
+description: SADP governance orchestrator. Use when user says "@go", "@go read", "@go edit", "@go risky", or requests formal task execution with mandatory reviewer evidence. NOT for casual conversation.
 ---
 
-# agent-acceptance 鈥?SADP Workflow
+# agent-acceptance - SADP Governance Orchestrator
 
-Formal development protocol: Gate 0 鈫?TaskSpec 鈫?Execute 鈫?ExecutionReport 鈫?Audit 鈫?Pass/Block/Escalate.
+Role: orchestrator, not final judge. `@go` manages the workflow pipeline. The final pass requires deterministic guards, an independent reviewer artifact, and CI/human gates where applicable.
 
-## Trigger
+## Modes
 
-This workflow activates on:
-- `@go` command
-- User asks for "formal workflow", "SADP", "with audit", "task dispatch"
-- User wants evidence-based delivery with independent audit
+| Command | Profile | Write Scope | Network | Use Case |
+|---------|---------|-------------|---------|----------|
+| `@go read` | read-only | none | off | Code review, analysis, audit |
+| `@go edit` | ai-dev | project dir, deny secrets | off | Normal feature/bug work |
+| `@go risky` | ai-risky | project dir, deny secrets | on | CI changes, deps, deploy config |
+| `@go` | ai-dev | project dir, deny secrets | off | Standard formal task |
 
-## Pre-flight: Gate 0
+## Required State Machine
 
-Before any work, verify:
-1. Project has `AGENTS.md` referencing `rules/core.md`. If not, offer bootstrap.
-2. No uncommitted governance changes (`rules/`, `AGENTS.md`, `hooks/`).
-3. Task has a TaskSpec with: id, description, intent, write_set, success criteria.
-4. Staged diff scanned by `sadp-audit.ps1` 鈥?PASS.
+```
+human_gate
+  -> executor/fixer
+  -> tester
+  -> reviewer
+  -> finalizer
+```
 
-Gate 0 is **not optional**. Blocked means blocked.
+The reviewer node is mandatory. A run cannot be marked `passed` without `review.md` and `review.yaml` created by a reviewer role that is separate from the executor/fixer.
+
+## Evidence Contract
+
+Every `@go` run must create a run evidence directory containing:
+
+| File | Producer | Purpose |
+|------|----------|---------|
+| `diff.patch` | executor/fixer or harness | Real code delta |
+| `test-output.md` | tester | Command output and exit codes |
+| `safety-report.json` | deterministic guard | Secret/path/scope checks |
+| `chain-evidence.json` | orchestrator/harness | Role/session/model chain |
+| `review.md` | reviewer only | Human-readable review |
+| `review.yaml` | reviewer only | Machine-readable review verdict |
+| `final-report.md` | finalizer only | Deterministic summary |
+
+`executor` and `fixer` must not write `review.md` or `review.yaml`.
+`finalizer` must not substitute for reviewer judgment.
+
+## Reviewer Rules
+
+The reviewer must:
+
+- Run in a separate session/model identity from the executor/fixer.
+- Read `diff.patch`, `test-output.md`, `safety-report.json`, and `chain-evidence.json`.
+- Treat executor logs/reports as claims, not facts.
+- Produce both `review.md` and `review.yaml`.
+- Block if any P0/P1 finding is unresolved.
+
+Minimum `review.yaml`:
+
+```yaml
+reviewer_role: reviewer
+reviewer_id: "<session-or-agent-id>"
+executor_id: "<executor-session-or-agent-id>"
+verdict: pass | blocked | fail | escalate
+reviewed_inputs:
+  - diff.patch
+  - test-output.md
+  - safety-report.json
+  - chain-evidence.json
+findings:
+  - id: finding-001
+    severity: P0 | P1 | P2 | P3
+    status: open | resolved | false_positive
+    title: "short finding"
+```
 
 ## Workflow
 
-### 1. TaskSpec
-```yaml
-id: string
-description: string
-intent: string
-write_set: [file_paths]
-success: [criteria]
-risk: low | medium | high
+1. Gate 0: check `AGENTS.md`, rules, mode/profile, and TaskSpec `allow_write`.
+2. Executor/fixer: dispatch with `opencode run`; collect `diff.patch`.
+3. Tester: run commands; write `test-output.md`.
+4. Guards: run `sadp-audit.ps1` and `python tools/ai_guard.py task .ai/tasks/<id>.yaml`; write `safety-report.json`.
+5. Reviewer: dispatch a separate reviewer session; write `review.md` and `review.yaml`.
+6. Finalizer: run `python tools/ai_guard.py evidence <run-evidence-dir>`.
+7. Verdict: `passed` only if guard, reviewer, and evidence validation all pass.
+
+## Automated Dispatch
+
+```powershell
+opencode run -m "deepseek/deepseek-v4-pro" -c "Read .ai/tasks/<id>.yaml, execute, write executor evidence to <run-dir>"
+opencode run -m "deepseek/deepseek-v4-pro" -c "Review <run-dir>; write review.md and review.yaml; do not edit code"
+opencode run -s <session_id> -c "continue instruction"
 ```
 
-### 2. Execute
-Implement per TaskSpec. Collect evidence: diffs, command output, exit codes.
-
-### 3. ExecutionReport
-```yaml
-task_id: string
-status: passed | failed | blocked
-changes: [files]
-evidence: [artifacts]
-issues: [findings]
-```
-
-### 4. Audit (Plan Auditor)
-Independent review against:
-- P0 hard stops (no violations)
-- TaskSpec coverage (all files in write_set)
-- Evidence quality (not "looks correct")
-- No fake green (FAILED != PASS)
-- Secret safety (sadp-audit.ps1)
-
-Verdict: **PASS** | **BLOCKED** | **ESCALATE**
-
-## P0 Hard Stops (BLOCK delivery if violated)
+## P0 Hard Stops
 
 | # | Rule |
 |---|------|
@@ -66,82 +100,13 @@ Verdict: **PASS** | **BLOCKED** | **ESCALATE**
 | 2 | No secrets in code, logs, or reports |
 | 3 | No command injection or path traversal |
 | 4 | No fake green |
-| 5 | No write to files outside TaskSpec write_set |
-| 6 | No capability without inventory registration |
+| 5 | No write outside TaskSpec `allow_write` |
+| 6 | No pass without independent `review.yaml` |
+| 7 | No pass with unresolved P0/P1 findings |
 
-## Secret Safety (always active during workflow)
+## Finalizer Rule
 
-| # | Rule |
-|---|------|
-| 1 | Never write real API keys into repo files |
-| 2 | .env.example only placeholders: `__REPLACE_WITH_YOUR_OWN_KEY__` |
-| 3 | Treat "example", "sample", "template", "packaging", "docker", "README" as secret-sensitive |
-| 4 | Run `sadp-audit.ps1` before git add/commit |
-| 5 | Suspected secret 鈫?STOP immediately |
-| 6 | Committed secret 鈫?REVOKE/ROTATE before cleaning history |
-| 7 | Scanning is mandatory, not optional |
-
-
-## Dispatch (Automated)
-
-Do NOT output TaskSpec as plain text for manual copy. Use `opencode run`:
-
-```powershell
-# Dispatch to audit/execution agent
-opencode run -m "deepseek/deepseek-v4-pro" -c "任务描述 + 文件路径"
-
-# Resume existing session
-opencode run -s <session_id> -c "继续指令"
-```
-
-### Standard dispatch pattern
-
-1. Write TaskSpec JSON to `tasks/t-<id>.json`
-2. Dispatch: `opencode run -m "deepseek/deepseek-v4-pro" -c "阅读 tasks/t-<id>.json，执行任务，将 ExecutionReport 写入 tasks/t-<id>-result.md"`
-3. Poll result file or check session output
-4. Load ExecutionReport → Audit → PASS/BLOCK/ESCALATE
-
-### Model selection
-
-| Task | Model |
-|------|-------|
-| Execution (coding) | `deepseek/deepseek-v4-pro` |
-| Audit (review) | `deepseek/deepseek-v4-pro` |
-| Planning (TaskSpec) | current agent |
-
-### Verification
-
-After dispatch, the current agent must:
-- Confirm result file exists
-- Read ExecutionReport
-- Run independent spot checks (not just trust the report)
-- Issue final verdict
-## Verification Rule
-
-Every claim needs: command + exit code + output summary. "Looks correct" is invalid evidence.
-
-## Post-completion
-
-After non-trivial work, auto-write summary report 鈫?dispatch to audit agent 鈫?apply fixes 鈫?verify.
+The finalizer is deterministic. It may summarize and validate artifact presence, but it must not make code-quality judgments or override the reviewer. If reviewer evidence is missing or invalid, final status is `blocked`.
 
 Full protocol: `docs/agent-runtime/sub-agent-dispatch-protocol.md`
-Full rules: `rules/core.md`, `rules/security.md`
-
-## CI Preflight Activation (per-project, one-time)
-
-After `bootstrap.ps1` completes, activate governance hooks:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File register-hooks.ps1
-```
-
-This sets `git config core.hooksPath hooks` and activates:
-
-| Hook | Trigger | Checks |
-|------|---------|--------|
-| pre-commit | `git commit` | manifest auto-regen + ai_guard staged |
-| pre-push | `git push` | ai_guard full + drift check + governance gate |
-
-Agent does not need to remember these — git enforces them automatically on every commit and push.
-
-Customize `governance/expected-files.txt` for the project's governance file set.
+Policy rules: `.ai/policy.yaml` enforced by `tools/ai_guard.py`
