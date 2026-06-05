@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-05-31T17:13:55.3403550+08:00",
+    "generated":  "2026-06-06T07:17:56.9455876+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
@@ -44,7 +44,7 @@
                              "path":  "docs/agent-runtime/capability-fallback-policy.md"
                          },
                          {
-                             "sha256":  "1D3401ED71AB0CA559C2AD502F90D99A56A14259EA80C089E280676936E5816C",
+                             "sha256":  "1E258B1EE5794BB1AD119D17F8EC7840F5E1FC50B16CE6800BCF7706A5346F35",
                              "path":  "docs/agent-runtime/capability-inventory.md"
                          },
                          {
@@ -292,7 +292,7 @@
                              "path":  "docs/agent-runtime/reviewer-playbook.md"
                          },
                          {
-                             "sha256":  "3CBC22A3623639A882E342AC51724ABE20BFF86696B3C17EB703D6404389225A",
+                             "sha256":  "19221AF37D381EB20690FD01CBEFE4077A84C0B961B09D2D9B844F39BB752158",
                              "path":  "docs/agent-runtime/routing-matrix-summary.md"
                          },
                          {
@@ -448,7 +448,7 @@
                              "path":  "rules/security.md"
                          },
                          {
-                             "sha256":  "C0006E1F9BD68847220C18C8D7852BC536C298AF1CE108CC443B5E79B7608890",
+                             "sha256":  "5B2FB26BEFFC97C569B6BB92E3716F63318F283353C70B114A8339B1F06E88D5",
                              "path":  "schemas/agent-runtime/chain-evidence.schema.json"
                          },
                          {

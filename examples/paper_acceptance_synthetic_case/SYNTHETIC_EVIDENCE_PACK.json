@@ -1,0 +1,55 @@
+{
+  "synthetic_only": true,
+  "contains_real_user_paper": false,
+  "contains_private_data": false,
+  "paper_task_id": "PAPER-SYN-001",
+  "contract_id": "CSSCI_REVIEW_CONTRACT",
+  "contract_version": "1.0.0-draft",
+  "task_type": "cssci_review",
+  "authorization_scope": "synthetic review assessment only — no real paper, no external upload, no auto-submission",
+  "input_version_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "output_version_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "input_summary": "虚构论文：数字技术对课堂教学互动的影响——一项基于混合方法的实证研究。包含问卷（N=300）和课堂观察（12节课）的混合方法研究。",
+  "output_summary": "未修改，与输入相同。",
+  "review_report": "审稿式评估报告：9个维度全部完成评估。3项引用 unverified。主要问题：文献对话深度不足，课堂观察分析偏弱。建议补充编码方案和深化文献对照讨论。",
+  "dimension_scores": {
+    "problem_awareness": {"score": "良好", "comment": "问题切入点明确，有现实针对性"},
+    "theoretical_contribution": {"score": "中等", "comment": "调节变量框架有边际贡献，但理论创新有限"},
+    "literature_dialogue": {"score": "需要加强", "comment": "列举有余，对话不足"},
+    "conceptual_precision": {"score": "良好", "comment": "核心概念基本清晰，操作化可进一步精确"},
+    "structural_coherence": {"score": "良好", "comment": "结构清晰，衔接可优化"},
+    "argument_depth": {"score": "中等", "comment": "量化分析充分，质性支撑偏弱"},
+    "journal_fit": {"score": "良好", "comment": "与目标期刊方向匹配"},
+    "academic_expression": {"score": "良好", "comment": "规范，个别段落可凝练"},
+    "citation_reliability": {"score": "中等", "comment": "15 verified / 3 unverified / 0 suspect"}
+  },
+  "citation_check_result": {
+    "verified_items": [
+      {"citation_key": "ref-001", "verification_method": "已知文献，存在", "source_note": "Davis, 1989, MIS Quarterly"},
+      {"citation_key": "ref-002", "verification_method": "已知文献，存在", "source_note": "Mishra & Koehler, 2006, TCR"}
+    ],
+    "unverified_items": [
+      {"citation_key": "ref-017", "reason_unverified": "期刊/卷期/页码无法确认"},
+      {"citation_key": "ref-021", "reason_unverified": "作者全名与期刊署名不一致"},
+      {"citation_key": "ref-029", "reason_unverified": "报告来源已失效"}
+    ],
+    "suspect_items": [],
+    "verified_count": 15,
+    "unverified_count": 3,
+    "suspect_count": 0
+  },
+  "changed_claims_list": [],
+  "added_claims_list": [],
+  "deleted_claims_list": [],
+  "author_intent_preservation": "not_applicable",
+  "confidentiality_attestation": "no_breach",
+  "data_classification": "private",
+  "authorization_status": "explicit",
+  "external_service_access_log": [],
+  "risk_flags": [],
+  "decision": "needs_more_evidence",
+  "decision_rationale": "3 项引用 unverified，citation_check_result 建议在正式投稿前确认。审稿维度评估完成但文献对话需要作者补充。未触发 fail_closed 条件，建议补充证据后 re-review。",
+  "created_at": "2026-06-06T12:00:00Z",
+  "reviewer_identity": "agent",
+  "evidence_pack_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+}

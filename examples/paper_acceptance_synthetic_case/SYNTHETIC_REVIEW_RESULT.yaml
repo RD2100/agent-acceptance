@@ -1,0 +1,27 @@
+# Synthetic Review Result
+# synthetic_only: true
+# contains_real_user_paper: false
+# contains_private_data: false
+
+paper_review_run_id: PAPER-SYN-001-R1
+contract_id: CSSCI_REVIEW_CONTRACT
+contract_version: "1.0.0-draft"
+
+overall_judgment: needs_more_evidence
+
+evidence_check:
+  input_version_hash: present_and_valid
+  output_version_hash: present
+  review_report: present
+  dimension_scores: complete_9_of_9
+  citation_check_result: present_with_3_unverified
+  confidentiality_attestation: present_no_breach
+
+fail_closed_triggers: none
+blocked_reasons: none
+
+needs_more_evidence_reasons:
+  - "3 citations unverified — recommend verify before formal submission"
+  - "literature_dialogue assessment suggests deepening needed"
+
+recommended_next_action: "Ask author to verify 3 unverified citations and deepen literature dialogue section"
