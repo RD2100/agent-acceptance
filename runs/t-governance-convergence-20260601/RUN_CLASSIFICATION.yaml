@@ -1,0 +1,25 @@
+run_id: "t-governance-convergence-20260601"
+classification: "historical_incomplete_run"
+closure_status: "not_closed"
+accepted: false
+review_verified: false
+synthetic_or_real: "historical_project_evidence"
+reason: "This run was started but never received a formal closure review."
+existing_files:
+  - "chain-evidence.json"
+  - "diff.patch"
+  - "test-output.md"
+known_missing_closure_files:
+  - "safety-report.json"
+  - "review.md"
+  - "review.yaml"
+  - "final-report.md"
+governance_rule:
+  - "Must not be counted as completed run evidence."
+  - "Must not be used to support accepted closure."
+  - "May be retained as historical incomplete evidence."
+safety:
+  evidence_deleted: false
+  evidence_moved: false
+  evidence_renamed: false
+  evidence_fabricated: false

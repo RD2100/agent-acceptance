@@ -1,0 +1,19 @@
+run_id: "negative-incomplete-chain"
+classification: "negative_test_fixture"
+expected_valid: false
+expected_invalid: true
+accepted: false
+review_verified: false
+purpose: "Negative fixture used to verify that governance validation catches incomplete or inconsistent chain evidence."
+expected_failures:
+  - "chain-evidence.json missing executor_id"
+  - "run_id mismatch between directory name and chain-evidence.json"
+governance_rule:
+  - "Must not be validated as a completed run."
+  - "Must be allowed only as an explicitly declared negative fixture."
+  - "Must not be used as passing evidence."
+safety:
+  evidence_deleted: false
+  evidence_moved: false
+  evidence_renamed: false
+  evidence_fabricated: false

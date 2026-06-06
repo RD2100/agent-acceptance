@@ -1,5 +1,6 @@
 # Test-ReviewerEvidence.ps1 - Validate @go reviewer evidence directories.
 # Exit 0: PASS or no run evidence. Exit 1: invalid evidence.
+# Supports RUN_CLASSIFICATION.yaml: completed_run, historical_incomplete_run, negative_test_fixture.
 
 param(
     [string]$ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -21,6 +22,27 @@ if (-not (Test-Path $guard)) {
     exit 1
 }
 
+function Read-ClassificationFile {
+    param([string]$DirPath)
+    $classFile = Join-Path $DirPath "RUN_CLASSIFICATION.yaml"
+    if (-not (Test-Path $classFile)) {
+        return @{ classification = "completed_run" }
+    }
+    $content = Get-Content $classFile -Raw -Encoding UTF8
+    # Simple YAML key extraction (avoids yaml module dependency)
+    $map = @{}
+    foreach ($line in $content -split "`n") {
+        if ($line -match '^\s*(\w[\w_]*)\s*:\s*"?([^"#\n]*?)"?\s*$') {
+            $key = $Matches[1]
+            $val = $Matches[2].Trim()
+            if ($val -eq "false") { $val = $false }
+            elseif ($val -eq "true") { $val = $true }
+            $map[$key] = $val
+        }
+    }
+    return $map
+}
+
 $runDirs = @(Get-ChildItem $runsDir -Directory -Recurse | Where-Object {
     (Test-Path (Join-Path $_.FullName "review.yaml")) -or
     (Test-Path (Join-Path $_.FullName "chain-evidence.json")) -or
@@ -33,13 +55,56 @@ if ($runDirs.Count -eq 0) {
 }
 
 $errors = 0
+$skipped = 0
 foreach ($dir in $runDirs) {
-    Write-Host "Validating: $($dir.FullName)"
-    $result = & python $guard evidence $dir.FullName 2>&1
-    $exitCode = $LASTEXITCODE
-    Write-Host $result
-    if ($exitCode -ne 0) {
-        $errors++
+    $classification = Read-ClassificationFile $dir.FullName
+    $classType = if ($classification.classification) { $classification.classification } else { "completed_run" }
+
+    switch ($classType) {
+        "historical_incomplete_run" {
+            Write-Host "Validating: $($dir.FullName) (historical_incomplete_run)"
+            $accepted = $classification.accepted
+            $reviewVerified = $classification.review_verified
+            if ($accepted -ne $false) {
+                Write-Host "  ERROR: historical_incomplete_run must have accepted: false"
+                $errors++
+            }
+            if ($reviewVerified -ne $false) {
+                Write-Host "  ERROR: historical_incomplete_run must have review_verified: false"
+                $errors++
+            }
+            if ($errors -eq 0) {
+                Write-Host "  SKIPPED: historical incomplete run — retained as evidence only"
+                $skipped++
+            }
+        }
+        "negative_test_fixture" {
+            Write-Host "Validating: $($dir.FullName) (negative_test_fixture)"
+            $expectedInvalid = $classification.expected_invalid
+            $accepted = $classification.accepted
+            if ($expectedInvalid -ne $true) {
+                Write-Host "  ERROR: negative_test_fixture must have expected_invalid: true"
+                $errors++
+            }
+            if ($accepted -ne $false) {
+                Write-Host "  ERROR: negative_test_fixture must have accepted: false"
+                $errors++
+            }
+            if ($errors -eq 0) {
+                Write-Host "  SKIPPED: negative test fixture — intentionally invalid evidence"
+                $skipped++
+            }
+        }
+        default {
+            # completed_run or unrecognized — full validation
+            Write-Host "Validating: $($dir.FullName) (completed_run)"
+            $result = & python $guard evidence $dir.FullName 2>&1
+            $exitCode = $LASTEXITCODE
+            Write-Host $result
+            if ($exitCode -ne 0) {
+                $errors++
+            }
+        }
     }
 }
 
@@ -48,5 +113,9 @@ if ($errors -gt 0) {
     exit 1
 }
 
-Write-Host "Reviewer evidence validation PASS."
+if ($skipped -gt 0) {
+    Write-Host "Reviewer evidence validation PASS ($skipped skipped by classification)."
+} else {
+    Write-Host "Reviewer evidence validation PASS."
+}
 exit 0
