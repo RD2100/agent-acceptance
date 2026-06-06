@@ -1,0 +1,18 @@
+# Synthetic Paper Task Output
+task_id: "PAPER-SYNTH-A2-001"
+task_type: "cssci_review"
+output_summary: "合成论文评审：问题意识明确，理论贡献中等，文献对话需加强，引用可靠性需关注"
+findings:
+  - dimension: "problem_awareness"
+    score: "良好"
+  - dimension: "theoretical_contribution"
+    score: "中等"
+  - dimension: "literature_dialogue"
+    score: "需要加强"
+evidence_basis: "基于合成论文摘要和大纲的审稿式评估，不涉及真实论文内容"
+privacy_redaction_status: "full"
+manual_review_required: false
+limitations: ["synthetic_only", "no_real_database_check", "no_live_gpt_review"]
+contains_real_paper_full_text: false
+contains_unredacted_excerpt: false
+contains_user_identity: false
