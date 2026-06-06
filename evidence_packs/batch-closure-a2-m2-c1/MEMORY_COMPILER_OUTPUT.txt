@@ -1,0 +1,17 @@
+=== Memory Compiler ===
+
+Sources: ledger=found, reviews=7
+  Ledger lessons: 7
+  arch-gap-a1-closure: 2 lessons
+  batch-closure-a2-m2-c1: 1 lessons
+  memory-a1-closure: 0 lessons
+  memory-a1-post-fix: 3 lessons
+  paper-a1-contract-design-v1: 0 lessons
+  push-blocker-resolution-v1: 0 lessons
+  workflow-hardening-a1-closure: 2 lessons
+
+Total lessons: 15
+Daily log: D:\agent-acceptance\memory\daily\2026-06-06.md (2782 chars)
+Index: D:\agent-acceptance\memory\knowledge\index.md (1765 chars)
+
+Result: {'result': 'pass', 'sources_scanned': {'ledger': True, 'reviews_count': 7}, 'lessons_extracted': 15, 'daily_log': 'D:\\agent-acceptance\\memory\\daily\\2026-06-06.md', 'index': 'D:\\agent-acceptance\\memory\\knowledge\\index.md', 'no_raw_transcript': True, 'no_real_paper': True, 'no_external_api': True}

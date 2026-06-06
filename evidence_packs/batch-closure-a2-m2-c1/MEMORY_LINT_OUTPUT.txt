@@ -1,0 +1,10 @@
+MEMORY_LINT_RESULT:
+  result: needs_review
+  checks_run: 2
+  errors (0):
+    []
+  needs_review (2):
+    - [L-007] summary-only pack: repeated failure pattern (6x) without linked gate
+    - [L-007] ready_for_review as closed: repeated failure pattern (5x) without linked gate
+  warnings (0):
+    []
