@@ -13,25 +13,28 @@ tasks:
       gate: "4/4 PASS"
       bypass_check: "PASS"
     gpt_review:
-      submitted: false
-      verdict: null
-    status: ready_for_review_not_closed
-    note: "closure report said ready_for_review but was never submitted to GPT"
+      submitted: true
+      verdict: accepted
+      reviewed_retroactively: true
+    status: closed
+    note: "retroactively submitted and GPT accepted on 2026-06-06"
 
   - task_id: REF-PAPER-1
     plan: GPT 方案（reference paper pipeline 设计）
     repo: devframe-control-plane
-    commit: "cc3ea4d"
+    commit: "510b6a4"
     pushed: yes
     self_verify:
       pipeline_parse: "7 stages valid"
       tests: "57/57 PASS"
       doctor: "9/9 PASS"
+      bypass_check: "PASS"
     gpt_review:
-      submitted: false
-      verdict: null
-    status: ready_for_review_not_closed
-    note: "closure report said ready_for_gpt_review but was never submitted to GPT"
+      submitted: true
+      verdict: accepted
+      reviewed_retroactively: true
+    status: closed
+    note: "retroactively submitted with evidence pack and GPT accepted on 2026-06-06"
 
   - task_id: REF-PAPER-2A
     plan: GPT 方案（实现 load_input + paper_review + closure stage）
