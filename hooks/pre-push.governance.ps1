@@ -52,7 +52,8 @@ if (Test-Path $validator) {
         }
     }
 } else {
-    Write-Host "  [WARN] validate_workflow_closure.py not found — skipping."
+    Write-Host "  [BLOCKED] validate_workflow_closure.py not found — fail-closed (SD-01/02/03 guard)"
+    $packErrors++
 }
 if ($packErrors -gt 0) {
     Write-Host "[BLOCKED] Workflow closure validation failed for $packErrors pack(s)."
