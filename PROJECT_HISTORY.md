@@ -1,7 +1,7 @@
 # PROJECT_HISTORY.md — DevFrame Agent Acceptance + Control Plane
 > 项目生存文档。每阶段完成后追加，永不删除。Agent 和 GPT 共享此文件理解项目全貌。
-> 最后更新: 2026-06-06T09:58:12Z
-> 当前阶段: PAPER-C1 accepted → 准备 PAPER-C2（用户指定方向来固化工作流）
+> Last updated: 2026-06-07T06:37:59+08:00
+> Current stage: PAPER-C2 accepted and closed; next GPT-authorized work requires a fresh task gate.
 > 文档版本: v1
 
 ---
@@ -357,6 +357,36 @@ gpt_review_result_sha256: "289449be9bed4f22f09898009598ed9544be2820a59265539570c
 implementation_commit: "f47c8d2"
 pushed_to_github: true
 closure_scope: "protocol-only; no real paper execution enabled"
+```
+
+
+## PAPER-C2 Closure Binding (2026-06-07)
+
+Status: accepted and closed after web GPT review.
+
+This entry is an append-only closure binding for PAPER-C2. It binds the
+synthetic-only authorization/redaction gate implementation to the reviewed
+evidence pack and GPT acceptance result. The task does not authorize or enable
+real-paper full-text processing.
+
+Binding:
+
+```yaml
+task_id: PAPER-C2
+primary_repo: agent-acceptance
+overall_judgment: accepted
+reviewer_type: gpt
+review_run_id: paper-c2-authorization-redaction-gate-review-v1
+accepted_time: "2026-06-07T06:37:59.5011596+08:00"
+evidence_pack: evidence_packs/paper-c2-closure/closure-pack.zip
+evidence_pack_sha256: "608ee85798ef6999a0363d51bf3f8da4088e3a03c5d1f0cef1a5d65086e49c66"
+gpt_review_result: evidence_packs/paper-c2-closure/GPT_REVIEW_RESULT.txt
+gpt_review_result_sha256: "f5fa4effadcb6b8eb5149f3d367fef7fe0eee8cc13901222d1c92156b119baea"
+web_gpt_submission_result: evidence_packs/paper-c2-closure/WEB_GPT_SUBMISSION_RESULT.json
+web_gpt_submission_result_sha256: "7990b6923340997b9fc3ffbceaa5908a9fe4ef513f03163496d7e8a012572eae"
+implementation_commit: "e935181"
+pushed_to_github: true
+closure_scope: "synthetic-only authorization/redaction gate; no real-paper execution enabled"
 ```
 
 END_OF_PROJECT_HISTORY

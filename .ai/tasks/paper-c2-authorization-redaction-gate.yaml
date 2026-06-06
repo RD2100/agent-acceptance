@@ -1,6 +1,6 @@
 task_id: PAPER-C2
 title: Synthetic authorization and redaction gate for future real-paper pilots
-status: in_progress
+status: closed
 primary_repo: agent-acceptance
 gate_0:
   inventory_evidence:
@@ -21,6 +21,9 @@ write_set:
   - scripts/validate_paper_c2_gate.py
   - tests/test_paper_c2_authorization_redaction_gate.py
   - evidence_packs/paper-c2-closure/**
+  - _reports/paper-c2-closure-binding/**
+  - PROJECT_HISTORY.md
+  - docs/WORKFLOW_AUDIT_LEDGER.yaml
 safety_boundaries:
   - no_real_paper_full_text
   - no_user_private_text

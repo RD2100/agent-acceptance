@@ -169,6 +169,41 @@ tasks:
     status: closed
     note: "PAPER-C1 accepted by web GPT and closed with append-only minimal binding on 2026-06-06."
 
+  - task_id: PAPER-C2
+    plan: "Synthetic-only authorization/redaction gate for future real-paper pilot readiness"
+    repo: agent-acceptance
+    commit: "e935181"
+    pushed: yes
+    evidence_pack:
+      path: evidence_packs/paper-c2-closure/closure-pack.zip
+      sha256: "608ee85798ef6999a0363d51bf3f8da4088e3a03c5d1f0cef1a5d65086e49c66"
+      actual_deliverables_count: 11
+      manifest_hash_check: pass
+      zip_manifest_bidirectional_match: pass
+    self_verify:
+      targeted_tests: "7 passed"
+      full_tests: "170 passed, 81 warnings"
+      workflow_closure_validation: "pass"
+      positive_gate: "pass"
+      negative_gate: "fail-closed for missing/stale/ambiguous/overbroad authorization and missing redaction"
+      bypass_check: "PASS"
+    gpt_review:
+      submitted: true
+      reviewer: GPT
+      verdict: accepted
+      review_run_id: paper-c2-authorization-redaction-gate-review-v1
+      review_result_path: evidence_packs/paper-c2-closure/GPT_REVIEW_RESULT.txt
+      review_result_sha256: "f5fa4effadcb6b8eb5149f3d367fef7fe0eee8cc13901222d1c92156b119baea"
+      web_submission_result: evidence_packs/paper-c2-closure/WEB_GPT_SUBMISSION_RESULT.json
+      web_submission_result_sha256: "7990b6923340997b9fc3ffbceaa5908a9fe4ef513f03163496d7e8a012572eae"
+      send_clicked: true
+    closure_binding:
+      accepted_time: "2026-06-07T06:37:59.5011596+08:00"
+      mode: append_only_minimal_binding
+      safety_scope: "synthetic-only; no real-paper execution, external upload, live CDP, raw transcript, private text, or memory write with paper content"
+    status: closed
+    note: "PAPER-C2 accepted by web GPT and closed with evidence-pack/hash binding on 2026-06-07."
+
 systemic_defects_identified:
   - id: SD-01
     pattern: "summary-only evidence pack submitted to GPT multiple times"
