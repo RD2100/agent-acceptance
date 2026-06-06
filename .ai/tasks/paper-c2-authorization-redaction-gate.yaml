@@ -1,0 +1,32 @@
+task_id: PAPER-C2
+title: Synthetic authorization and redaction gate for future real-paper pilots
+status: in_progress
+primary_repo: agent-acceptance
+gate_0:
+  inventory_evidence:
+    queried_sources:
+      - PAPER-C1_GPT_REVIEW_RESULT
+      - paper_c1_real_paper_pilot_safety_contract
+      - existing_paper_task_schemas
+    matched_capabilities:
+      - authorization_gate_contract
+      - redaction_gate_contract
+      - fail_closed_validator
+write_set:
+  - .ai/tasks/paper-c2-authorization-redaction-gate.yaml
+  - contracts/paper_c2_authorization_redaction_gate_contract.yaml
+  - schemas/paper_c2_authorization_gate.schema.json
+  - schemas/paper_c2_redaction_gate.schema.json
+  - examples/paper_c2_authorization_redaction_gate/**
+  - scripts/validate_paper_c2_gate.py
+  - tests/test_paper_c2_authorization_redaction_gate.py
+  - evidence_packs/paper-c2-closure/**
+safety_boundaries:
+  - no_real_paper_full_text
+  - no_user_private_text
+  - no_external_upload
+  - no_live_cdp
+  - no_memory_write_with_paper_content
+verification:
+  - python -m pytest tests/test_paper_c2_authorization_redaction_gate.py -q
+  - python scripts/validate_paper_c2_gate.py examples/paper_c2_authorization_redaction_gate/positive_authorized_redacted.yaml

@@ -1,0 +1,3 @@
+﻿Command: rg -n "real_paper_execution_allowed: true|real_paper_full_text_allowed: true|external_upload_allowed: true|live_cdp_allowed: true|contains_real_paper_full_text: true|contains_external_upload: true" .ai/tasks/paper-c2-authorization-redaction-gate.yaml contracts/paper_c2_authorization_redaction_gate_contract.yaml schemas/paper_c2_authorization_gate.schema.json schemas/paper_c2_redaction_gate.schema.json examples/paper_c2_authorization_redaction_gate scripts/validate_paper_c2_gate.py tests/test_paper_c2_authorization_redaction_gate.py
+exit=1
+PASS: no bypass-enabling true flags found.

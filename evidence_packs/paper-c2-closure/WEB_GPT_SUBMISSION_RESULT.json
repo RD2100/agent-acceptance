@@ -1,0 +1,16 @@
+{
+  "task_id": "PAPER-C2",
+  "review_run_id": "paper-c2-authorization-redaction-gate-review-v1",
+  "zip_path": "D:\\agent-acceptance\\evidence_packs\\paper-c2-closure\\closure-pack.zip",
+  "file_uploaded": true,
+  "prompt_filled": true,
+  "send_clicked": true,
+  "clicked_selector": "button[data-testid=\"send-button\"]",
+  "reply_complete": true,
+  "overall_judgment_seen": true,
+  "accepted_seen": true,
+  "reply_saved": true,
+  "assistant_messages_seen": 60,
+  "captured_at": "2026-06-06T23:43:42+0800",
+  "errors": []
+}

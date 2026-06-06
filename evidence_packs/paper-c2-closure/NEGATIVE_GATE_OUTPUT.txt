@@ -1,0 +1,46 @@
+﻿=== ambiguous_authorization_blocked.yaml
+{
+  "fixture_id": "paper-c2-negative-ambiguous-authorization",
+  "result": "fail",
+  "blocking_issues": [
+    "ambiguous_authorization"
+  ]
+}
+exit=1
+=== missing_authorization_blocked.yaml
+{
+  "fixture_id": "paper-c2-negative-missing-authorization",
+  "result": "fail",
+  "blocking_issues": [
+    "missing_authorization"
+  ]
+}
+exit=1
+=== missing_redaction_blocked.yaml
+{
+  "fixture_id": "paper-c2-negative-missing-redaction",
+  "result": "fail",
+  "blocking_issues": [
+    "missing_redaction_report",
+    "redaction_not_applied"
+  ]
+}
+exit=1
+=== overbroad_authorization_blocked.yaml
+{
+  "fixture_id": "paper-c2-negative-overbroad-authorization",
+  "result": "fail",
+  "blocking_issues": [
+    "overbroad_authorization"
+  ]
+}
+exit=1
+=== stale_authorization_blocked.yaml
+{
+  "fixture_id": "paper-c2-negative-stale-authorization",
+  "result": "fail",
+  "blocking_issues": [
+    "stale_authorization"
+  ]
+}
+exit=1

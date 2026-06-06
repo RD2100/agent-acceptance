@@ -1,0 +1,27 @@
+﻿| path | bytes | sha256 |
+|---|---:|---|
+| .ai/tasks/paper-c2-authorization-redaction-gate.yaml | 1231 | 5baddcc84e4c4710b9a5135b8b778b3bde04f92af533499ec41ff035c6b85546 |
+| BYPASS_CHECK_OUTPUT.txt | 603 | 46a998c3cc260089978fbed4583248246bd2a61a367061891304f89cb984d5db |
+| CHANGED_FILES_agent-acceptance.txt | 1638 | 36b85c39afdc09a797993e247110d2fdea9a141d04d486eb6bbf3f9d678464c0 |
+| CLOSURE_REPORT.md | 1447 | 57510d42aa6dd152ea3b2a79e16285d6544f96e8515d18afa943a8b1caafbf95 |
+| contracts/paper_c2_authorization_redaction_gate_contract.yaml | 2456 | f50b3ae4a071a6d36fe11abe04aa94af401df5d29ec35d77d016dd6714be5648 |
+| DIFF_PAPER_C2.patch | 52268 | 005bfb0d432fc73a7d13fdede83e582eb0529b5a90a88e4c060b570e565bd94f |
+| DIFF_SUMMARY_agent-acceptance.txt | 1706 | aae080a52662fe493eac86440cca4701bbfcd56670074b878d5734d7b1d8e039 |
+| examples/paper_c2_authorization_redaction_gate/ambiguous_authorization_blocked.yaml | 1130 | c44971a4648422d6bedfdf1abbe78c5ec919098604d81666dacf73a603cf3b50 |
+| examples/paper_c2_authorization_redaction_gate/missing_authorization_blocked.yaml | 726 | 616181a2af5380b544d9e897bf2905529d1fba8c60c8c3c736672996ca6d00a3 |
+| examples/paper_c2_authorization_redaction_gate/missing_redaction_blocked.yaml | 1077 | e1ab7ffb30aa8143a0a2fd9ad4537ea8cd0efda50840817904a53215b6de3bb9 |
+| examples/paper_c2_authorization_redaction_gate/overbroad_authorization_blocked.yaml | 1078 | 446604621d81fec307746a0a8ba05deaf4af3fc308ea62cbf082b9ab041eee86 |
+| examples/paper_c2_authorization_redaction_gate/positive_authorized_redacted.yaml | 1053 | 72e115ebc1aa19162fe61e4fe5f963b7feb263321eadba46a8e337c336b6c21a |
+| examples/paper_c2_authorization_redaction_gate/stale_authorization_blocked.yaml | 1068 | 8c9411276e6e85f1acf16dd2d7f5fb13dabe4c056536ae1ce6bc0bf55aa0f1be |
+| GPT_REVIEW_PROMPT.md | 1101 | bb9fb92c3ebc7dd222286115bf01c6f27929809b5970b951fbae0d0001b5b8a2 |
+| NEGATIVE_GATE_OUTPUT.txt | 999 | d12bdca45d27b7a460f8fea449168a5a65ac95c1d2474018eb6d7e9fe94b1ce2 |
+| POSITIVE_GATE_OUTPUT.txt | 222 | 7139174c1d9c78667a0c5c3f15c2849a6ab0dcb0526decb19a2df28d78823f0d |
+| REPO_STATUS_agent-acceptance.txt | 8328 | 5e1da5b3f99cba576c8b176b2a43189c47a2ab6ed5fd90024e260be6d71431f6 |
+| SAFETY_ATTESTATION.md | 425 | 71b9e9479c7970ad6f56e2080acabff820d54544fd1f976ca883f6660acbf141 |
+| schemas/paper_c2_authorization_gate.schema.json | 1045 | 7b07234e50ba7b94336196b06ca579bd6042d449a4b60ceb1024422318b7a981 |
+| schemas/paper_c2_redaction_gate.schema.json | 1223 | 70cd3cdddc0a562c915781f27078c33ab83f87d4c735565288e7a763380551a0 |
+| scripts/validate_paper_c2_gate.py | 5174 | 85ac24dbcfb78fceb48523cefbf59dcb1598bd9f96c0269b6e68213c30d2e08e |
+| TARGETED_TEST_OUTPUT.txt | 202 | f76beb2b12bef658b74ae03802c85b3e2c5867eb58554f4a38bf17d38bf24857 |
+| TEST_OUTPUT.txt | 83270 | a37fbac05d6c05475e1fe2f294b96309802991eb1a64bc511096947129a99474 |
+| tests/test_paper_c2_authorization_redaction_gate.py | 4068 | 168cb8d7503430b6e37896efddcbdaf3504ecb94a11101839211cb8028df20db |
+| PACK_MANIFEST.md | self | self_excluded |

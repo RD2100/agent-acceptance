@@ -1,0 +1,20 @@
+fixture_id: paper-c2-negative-missing-authorization
+synthetic_only: true
+evaluation_time_utc: "2026-06-06T12:00:00Z"
+expected_result: fail
+expected_blocking_issues: [missing_authorization]
+task:
+  task_id: paper-c2-synthetic-task
+  paper_data_classification: user_authorized_excerpt
+  content_placeholder: SYNTHETIC_REDACTED_METADATA_ONLY
+authorization: null
+redaction:
+  redaction_report_present: true
+  privacy_attestation_present: true
+  redaction_applied: true
+  redacted_material_classification: user_authorized_excerpt_metadata
+  contains_real_paper_full_text: false
+  contains_user_private_text: false
+  contains_raw_transcript: false
+  contains_memory_write_with_paper_content: false
+  contains_external_upload: false
