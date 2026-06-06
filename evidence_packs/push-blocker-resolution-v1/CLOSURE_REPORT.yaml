@@ -1,0 +1,25 @@
+REVIEW_RUN_ID: push-blocker-resolution-v1
+overall_judgment: pending_gpt_review
+repo: agent-acceptance
+plan: "GPT Plan C — evidence classification"
+commits: 6
+final_commit: "244236e"
+pushed: yes
+
+actions:
+  classification_files_added: 4
+  gate_script_modified: "scripts/Test-ReviewerEvidence.ps1"
+  evidence_deleted: 0
+  evidence_moved: 0
+  evidence_fabricated: 0
+
+gate_result:
+  completed_runs_validated: 6
+  historical_incomplete_skipped: 1
+  negative_fixture_skipped: 1
+  checks_passed: "4/4"
+
+safety:
+  guard_removal: false
+  evidence_cleanup: false
+  live_cdp: false

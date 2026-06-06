@@ -65,12 +65,17 @@ foreach ($dir in $runDirs) {
             Write-Host "Validating: $($dir.FullName) (historical_incomplete_run)"
             $accepted = $classification.accepted
             $reviewVerified = $classification.review_verified
+            $declarationFile = Join-Path $dir.FullName "INCOMPLETE_RUN_DECLARATION.md"
             if ($accepted -ne $false) {
                 Write-Host "  ERROR: historical_incomplete_run must have accepted: false"
                 $errors++
             }
             if ($reviewVerified -ne $false) {
                 Write-Host "  ERROR: historical_incomplete_run must have review_verified: false"
+                $errors++
+            }
+            if (-not (Test-Path $declarationFile)) {
+                Write-Host "  ERROR: historical_incomplete_run requires INCOMPLETE_RUN_DECLARATION.md"
                 $errors++
             }
             if ($errors -eq 0) {
@@ -82,12 +87,22 @@ foreach ($dir in $runDirs) {
             Write-Host "Validating: $($dir.FullName) (negative_test_fixture)"
             $expectedInvalid = $classification.expected_invalid
             $accepted = $classification.accepted
+            $reviewVerified = $classification.review_verified
+            $declarationFile = Join-Path $dir.FullName "NEGATIVE_FIXTURE_DECLARATION.md"
             if ($expectedInvalid -ne $true) {
                 Write-Host "  ERROR: negative_test_fixture must have expected_invalid: true"
                 $errors++
             }
             if ($accepted -ne $false) {
                 Write-Host "  ERROR: negative_test_fixture must have accepted: false"
+                $errors++
+            }
+            if ($reviewVerified -ne $false) {
+                Write-Host "  ERROR: negative_test_fixture must have review_verified: false"
+                $errors++
+            }
+            if (-not (Test-Path $declarationFile)) {
+                Write-Host "  ERROR: negative_test_fixture requires NEGATIVE_FIXTURE_DECLARATION.md"
                 $errors++
             }
             if ($errors -eq 0) {
