@@ -1,0 +1,11 @@
+fixture_id: paper-c1-negative-external-upload
+synthetic_only: true
+scenario: external_upload_attempted
+expected_result: blocked
+expected_blocking_issue: external_upload_attempted
+payload:
+  task_id: paper-c1-synthetic-negative
+  upload_target_placeholder: SYNTHETIC_EXTERNAL_DESTINATION_DISABLED
+  attempted_upload: true
+  contains_real_paper_content: false
+  contains_user_private_text: false

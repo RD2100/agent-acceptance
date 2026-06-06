@@ -1,0 +1,8 @@
+﻿WORKFLOW_CLOSURE_VALIDATION:
+  result: pass
+  manifest_valid: True
+  hashes_verified: True
+  summary_only_pack: False
+  actual_deliverables_count: 8
+  blocking_issues:
+    []

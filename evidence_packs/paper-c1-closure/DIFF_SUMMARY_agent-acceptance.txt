@@ -1,0 +1,1 @@
+﻿Docs + contract + synthetic negative fixtures + tests only; no existing dirty baseline files modified for PAPER-C1.

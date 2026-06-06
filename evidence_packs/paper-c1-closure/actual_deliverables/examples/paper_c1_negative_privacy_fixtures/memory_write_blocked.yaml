@@ -1,0 +1,11 @@
+fixture_id: paper-c1-negative-memory-write
+synthetic_only: true
+scenario: memory_write_contains_paper_content
+expected_result: blocked
+expected_blocking_issue: memory_write_contains_paper_content
+payload:
+  task_id: paper-c1-synthetic-negative
+  memory_write_policy: paper_content
+  memory_content_placeholder: SYNTHETIC_PLACEHOLDER_ONLY_DO_NOT_REPLACE_WITH_REAL_TEXT
+  contains_real_paper_content: false
+  contains_user_private_text: false

@@ -1,0 +1,12 @@
+fixture_id: paper-c1-negative-real-full-text
+synthetic_only: true
+scenario: real_paper_full_text_input
+expected_result: blocked
+expected_blocking_issue: real_paper_full_text_input
+payload:
+  task_id: paper-c1-synthetic-negative
+  paper_data_classification: real_paper_full_text
+  user_authorization: synthetic
+  content_placeholder: SYNTHETIC_PLACEHOLDER_ONLY_DO_NOT_REPLACE_WITH_REAL_TEXT
+  contains_real_paper_content: false
+  contains_user_private_text: false

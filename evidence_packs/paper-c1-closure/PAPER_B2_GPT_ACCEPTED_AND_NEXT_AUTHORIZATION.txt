@@ -1,0 +1,134 @@
+overall_judgment: accepted
+reviewer_type: gpt
+task_id: PAPER-B2
+review_run_id: paper-b2-synthetic-workflow-v2-review-r2
+primary_repo: devframe-control-plane
+evidence_pack_reviewed: true
+
+blocking_issues: []
+
+required_fixes: []
+
+r1_blocker_resolution:
+  PAPER-B2-BLOCKER-01:
+    status: fixed
+    rationale: |
+      R2 evidence pack includes the core implementation files that were missing in R1:
+      deliverables/control_plane/stage_executor.py and deliverables/pipelines/reference_paper_review.yaml.
+      The stage_executor.py implementation is now directly reviewable, including run_paper_task_validator()
+      and execute_pre_submission_check().
+
+  PAPER-B2-BLOCKER-02:
+    status: fixed
+    rationale: |
+      DIFF_PAPER_B2.patch now includes the key implementation changes for PROJECT_HISTORY.md,
+      control_plane/stage_executor.py, and pipelines/reference_paper_review.yaml.
+      CHANGED_FILES and DIFF_SUMMARY are present, and the actual tests/examples are also included as
+      deliverables in the evidence pack.
+
+  PAPER-B2-BLOCKER-03:
+    status: fixed
+    rationale: |
+      The evidence pack now contains the implementation files, tests, pipeline output, negative
+      fail-closed output, pack validation output, and safety attestation needed to internally verify
+      the implementation.
+
+review_findings:
+  follows_next_plan_constraints:
+    judgment: yes
+    rationale: |
+      WEB_GPT_NEXT_PLAN_REPLY.txt required a minimal synthetic-only validator-backed paper workflow v2
+      in devframe-control-plane, with positive and negative real pipeline paths and no dirty
+      agent-acceptance writes. R2 stays within devframe-control-plane and uses synthetic-only fixtures.
+
+  positive_real_stage_path:
+    judgment: yes
+    rationale: |
+      PIPELINE_EXECUTE_OUTPUT.txt shows the reference_paper_review pipeline running through the real
+      framework stage executor path with 7/7 stages completed. The targeted tests verify that
+      execute_pre_submission_check() creates PAPER_TASK_VALIDATION.directory.json and
+      PAPER_TASK_VALIDATION.zip.json, proving the paper validator was called.
+
+  negative_fail_closed_path:
+    judgment: yes
+    rationale: |
+      NEGATIVE_PIPELINE_FAIL_CLOSED_OUTPUT.txt shows the negative case where
+      paper_task/REDACTION_REPORT.yaml is removed from the evidence ZIP. The pre_submission_check
+      stage fails with paper_task_evidence_pack_paper_task_validator_failed, demonstrating fail-closed
+      behavior through the PAPER-A3 validator.
+
+  stops_before_submission_or_closure_success:
+    judgment: yes
+    rationale: |
+      The negative output records pre_submission_check as failed and
+      submission_result_exists_after_failure=false. The targeted test also asserts that
+      SUBMISSION_RESULT.json does not exist after validator failure.
+
+  synthetic_only_and_safe:
+    judgment: yes
+    rationale: |
+      SAFETY_ATTESTATION.md states synthetic_only=true, contains_real_user_paper=false,
+      contains_real_paper_full_text=false, contains_user_private_text=false,
+      contains_external_upload=false, live_cdp_used_for_implementation=false,
+      and historical_evidence_modified=false. The fixture checks also assert no raw_paper_text or
+      private_user_text markers.
+
+  tests_adequate:
+    judgment: yes
+    rationale: |
+      TARGETED_TEST_OUTPUT.txt shows 5 passed, covering the positive synthetic pipeline,
+      validator call evidence, missing protocol file fail-closed behavior, stop-before-submission,
+      and synthetic-only fixture safety. TEST_OUTPUT.txt shows the broader suite passing with
+      65 passed.
+
+  evidence_pack_integrity:
+    judgment: pass
+    rationale: |
+      PACK_MANIFEST.md lists 23 files, including actual deliverables, tests, diff, pipeline outputs,
+      negative output, pack validation, safety attestation, and review prompt. Hash verification
+      passes with no manifest/ZIP mismatches. PACK_VALIDATE_OUTPUT.txt also reports Pack validation: PASS,
+      workflow closure validation pass, hashes_verified=True, and summary_only_pack=False.
+
+non_blocking_notes:
+  - |
+    REPO_STATUS shows the PAPER-B2 examples/tests as untracked worktree files at review time.
+    This is not blocking for the evidence-pack review because the files themselves are included
+    in the evidence pack and the tests are reproducible from the deliverables. Before final project
+    closure/ledger update, ensure these files are properly staged/committed according to the repo
+    workflow.
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  task_id: PAPER-C1
+  task_name: "真实论文安全试运行协议"
+  primary_repo: agent-acceptance
+  secondary_repos:
+    - devframe-control-plane
+  task_goal: |
+    Define the safety protocol for any future real-paper pilot. This must remain design/protocol-only:
+    no real paper full text, no user private text, no memory write containing paper content, no external
+    upload, and no live CDP. The task should specify authorization, redaction, evidence-pack, and
+    fail-closed rules before any real-paper execution is allowed.
+  safety_boundaries:
+    - "不得处理真实论文全文"
+    - "不得处理用户私密文本"
+    - "不得将论文内容写入 memory"
+    - "不得将真实论文片段加入 synthetic fixture"
+    - "不得外部上传"
+    - "不得启用 live CDP"
+    - "不得删除、移动、重命名或覆盖历史 evidence"
+  expected_deliverables:
+    - "PAPER-C1 real-paper pilot safety protocol"
+    - "authorization and redaction policy"
+    - "real-paper input classification rules"
+    - "negative privacy fixtures using synthetic placeholders only"
+    - "closure evidence pack"
+
+rationale: |
+  PAPER-B2 R2 satisfies the review criteria. It follows the web-GPT next plan, includes the previously
+  missing core implementation files, demonstrates a positive synthetic workflow through the real
+  devframe-control-plane stage path, demonstrates a negative missing-REDACTION_REPORT case that fails
+  closed through the PAPER-A3 validator, stops before submission success on failure, remains
+  synthetic-only, and provides a non-summary-only, internally verifiable evidence pack.

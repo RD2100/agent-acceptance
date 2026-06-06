@@ -1,0 +1,7 @@
+﻿docs/paper-c1-real-paper-pilot-safety-protocol.md
+contracts/paper_c1_real_paper_pilot_safety_contract.yaml
+examples/paper_c1_negative_privacy_fixtures/README.md
+examples/paper_c1_negative_privacy_fixtures/real_full_text_blocked.yaml
+examples/paper_c1_negative_privacy_fixtures/external_upload_blocked.yaml
+examples/paper_c1_negative_privacy_fixtures/memory_write_blocked.yaml
+tests/test_paper_c1_real_paper_safety_protocol.py

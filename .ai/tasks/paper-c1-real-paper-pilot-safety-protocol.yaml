@@ -1,0 +1,35 @@
+task_id: PAPER-C1
+title: Real-paper pilot safety protocol
+status: gpt_accepted_ready_for_binding
+primary_repo: agent-acceptance
+gate_0:
+  inventory_evidence:
+    queried_sources:
+      - local_project_docs
+      - paper_a2_a3_contracts
+      - gpt_next_task_authorization
+    matched_capabilities:
+      - paper_protocol_contract
+      - synthetic_privacy_fixture_tests
+      - evidence_pack_review
+write_set:
+  - docs/paper-c1-real-paper-pilot-safety-protocol.md
+  - contracts/paper_c1_real_paper_pilot_safety_contract.yaml
+  - examples/paper_c1_negative_privacy_fixtures/**
+  - tests/test_paper_c1_real_paper_safety_protocol.py
+  - evidence_packs/paper-c1-closure/**
+  - .ai/tasks/paper-c1-real-paper-pilot-safety-protocol.yaml
+verification:
+  - python -m pytest tests/test_paper_c1_real_paper_safety_protocol.py -q
+  - python -m pytest tests -q
+  - python scripts/validate_workflow_closure.py evidence_packs/paper-c1-closure/closure-pack.zip
+safety_boundaries:
+  - no_real_paper_full_text
+  - no_user_private_text
+  - no_external_upload
+  - no_live_cdp_for_paper_content
+  - no_memory_write_with_paper_content
+closure_note: >
+  GPT accepted PAPER-C1. Formal closure binding still requires safe updates to
+  PROJECT_HISTORY.md and docs/WORKFLOW_AUDIT_LEDGER.yaml, which were dirty
+  baseline files before this task.

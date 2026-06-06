@@ -1,0 +1,14 @@
+{
+  "task_id": "PAPER-C1",
+  "review_run_id": "paper-c1-real-paper-pilot-safety-protocol-review-v1",
+  "zip_path": "D:\\agent-acceptance\\evidence_packs\\paper-c1-closure\\closure-pack.zip",
+  "zip_sha256": "0083fbed23fce1e56690add15364a27a6bdc6f6d5283ed882929c12f6b0df454",
+  "page_url_before": "https://chatgpt.com/c/6a23dd8c-4550-83a8-bdee-76ca5a982edb",
+  "file_uploaded": true,
+  "prompt_filled": true,
+  "send_clicked": true,
+  "reply_complete": true,
+  "overall_judgment_seen": true,
+  "captured_reply_sha256": "3e138b86af5d83dff40948692adb70bf74b2cd2a1539ffef275391161ba63ec4",
+  "error": null
+}
