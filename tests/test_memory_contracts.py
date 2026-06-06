@@ -45,7 +45,7 @@ def test_contracts_file_exists():
     assert path.exists(), f"Not found: {path}"
     text = path.read_text(encoding="utf-8")
     assert len(text) > 1000, "File too short"
-    return True, "PASS"
+    # assertions passed
 
 
 def test_all_four_contracts_defined():
@@ -56,7 +56,7 @@ def test_all_four_contracts_defined():
                 "MEMORY_PRIVACY_CONTRACT", "MEMORY_LINT_CONTRACT"]
     for r in required:
         assert r in cids, f"Missing contract: {r}"
-    return True, "PASS"
+    # assertions passed
 
 
 def test_source_contract_prohibited_sources():
@@ -68,7 +68,7 @@ def test_source_contract_prohibited_sources():
     section = raw[idx:next_contract if next_contract > 0 else len(raw)].lower()
     for phrase in ["raw full chat transcript", "real user paper text", "browser cookies"]:
         assert phrase in section, f"prohibited_sources missing: '{phrase}'"
-    return True, "PASS"
+    # assertions passed
 
 
 def test_entry_contract_requires_source():
@@ -79,7 +79,7 @@ def test_entry_contract_requires_source():
     section = raw[idx:next_contract if next_contract > 0 else len(raw)]
     assert "source_review_run_id" in section, "MEMORY_ENTRY_CONTRACT missing source_review_run_id"
     assert "memory_used_as_evidence" in section, "Missing memory_used_as_evidence blocked condition"
-    return True, "PASS"
+    # assertions passed
 
 
 def test_privacy_contract_blocks_private_text():
@@ -90,7 +90,7 @@ def test_privacy_contract_blocks_private_text():
     section = raw[idx:next_contract if next_contract > 0 else len(raw)]
     assert "private_text_in_memory" in section, "Missing private_text_in_memory"
     assert "raw_transcript_ingested" in section, "Missing raw_transcript_ingested"
-    return True, "PASS"
+    # assertions passed
 
 
 def test_lint_contract_checks_source_absence():
@@ -99,7 +99,7 @@ def test_lint_contract_checks_source_absence():
     idx = raw.find("- contract_id: MEMORY_LINT_CONTRACT")
     section = raw[idx:]
     assert "lesson_without_source_review" in section, "Missing lesson_without_source_review check"
-    return True, "PASS"
+    # assertions passed
 
 
 def test_templates_exist():
@@ -109,7 +109,7 @@ def test_templates_exist():
         assert p.exists(), f"Template not found: {p}"
         text = p.read_text(encoding="utf-8")
         assert len(text) > 200, f"Template {f} too short"
-    return True, "PASS"
+    # assertions passed
 
 
 def test_synthetic_no_real_data():
@@ -123,7 +123,7 @@ def test_synthetic_no_real_data():
                 f"{f.name} claims to contain real user data"
             assert "contains_private_paper_text: true" not in text, \
                 f"{f.name} claims to contain private paper text"
-    return True, "PASS"
+    # assertions passed
 
 
 def test_design_doc_exists():
@@ -133,7 +133,7 @@ def test_design_doc_exists():
     text = p.read_text(encoding="utf-8")
     assert len(text) > 1000, "Doc too short"
     assert "memory 不能替代 evidence" in text or "memory is advisory" in text.lower()
-    return True, "PASS"
+    # assertions passed
 
 
 def test_privacy_doc_exists():
@@ -142,7 +142,7 @@ def test_privacy_doc_exists():
     assert p.exists(), f"Not found: {p}"
     text = p.read_text(encoding="utf-8")
     assert "真实论文全文" in text or "禁止" in text
-    return True, "PASS"
+    # assertions passed
 
 
 def test_lint_rules_doc_exists():
@@ -151,12 +151,12 @@ def test_lint_rules_doc_exists():
     assert p.exists(), f"Not found: {p}"
     text = p.read_text(encoding="utf-8")
     assert "FAIL" in text and "lesson_without_source_review" in text
-    return True, "PASS"
+    # assertions passed
 
 
 def test_no_real_paper_text_in_test():
     """Test 12: This test file itself must not contain real paper content."""
-    return True, "PASS"
+    # assertions passed
 
 
 def run_all_tests():
@@ -180,14 +180,14 @@ def run_all_tests():
     print("=" * 60)
     for name, fn in tests:
         try:
-            ok, msg = fn()
+            fn()
         except Exception as e:
-            ok, msg = False, str(e)
-        print(f"  [{'PASS' if ok else 'FAIL'}] {name}")
-        if ok: passed += 1
-        else:
+            print(f"  [FAIL] {name}")
+            print(f"         {e}")
             failed += 1
-            print(f"         {msg}")
+            continue
+        print(f"  [PASS] {name}")
+        passed += 1
     print(f"\n  Results: {passed}/{passed+failed} passed")
     return failed == 0
 

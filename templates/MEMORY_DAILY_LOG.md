@@ -1,41 +1,52 @@
-# Daily Memory Log — {{YYYY-MM-DD}}
+# 每日记忆日志 — {{YYYY-MM-DD}}
 
-> memory_type: daily_log
-> privacy_classification: private_by_default
-> synthetic_only: true（如涉及真实论文则不可填写此字段）
+> 记忆类型: 每日日志
+> 隐私分类: 默认私有
+> 合成数据标记: {{是/否}}（如涉及真实论文则不可填"是"）
 
-## Source Reviews
+## 来源审查记录
 
-<!-- 每行一个 source review。禁止包含真实论文全文。 -->
+<!-- 每行一条 source review。禁止包含真实论文全文。 -->
 
-| review_run_id | task_id | repo | judgment | source_pack | privacy_ok |
-|--------------|---------|------|----------|-------------|------------|
-| {{REVIEW_RUN_ID}} | {{TASK_ID}} | {{REPO}} | {{JUDGMENT}} | {{PACK_PATH}} | yes / no |
+| 审查ID | 任务ID | 仓库 | 判决 | 证据包路径 | 隐私合规 |
+|--------|--------|------|------|-----------|---------|
+| {{REVIEW_RUN_ID}} | {{TASK_ID}} | {{REPO}} | {{JUDGMENT}} | {{PACK_PATH}} | 是/否 |
 
-## Lessons Observed
+## 观察到的教训
 
-<!-- 每条 lesson 必须引用 source。禁止引用真实论文内容。 -->
+<!-- 每条教训必须引用来源。禁止引用真实论文内容。 -->
 
-| lesson_id | lesson | source_review_run_id | should_compile |
-|-----------|--------|---------------------|----------------|
-| {{LESSON_ID}} | {{LESSON}} | {{REVIEW_RUN_ID}} | yes / no |
+| 教训ID | 教训内容 | 来源审查ID | 是否编译为知识 |
+|--------|---------|-----------|--------------|
+| {{LESSON_ID}} | {{LESSON}} | {{REVIEW_RUN_ID}} | 是/否 |
 
-## Failure Patterns
+## 重复失败模式
 
-<!-- 重复出现的失败模式。2 次以上应标记 repeated: yes。 -->
+<!-- 同一模式出现 2 次以上应标记 repeated: yes。 -->
 
-| pattern | repeated | related_tasks | required_gate_update |
-|---------|----------|---------------|---------------------|
-| {{PATTERN}} | yes / no | {{TASK_IDS}} | {{GATE_UPDATE}} |
+| 模式 | 是否重复 | 关联任务 | 是否需要 gate 更新 |
+|------|---------|---------|------------------|
+| {{PATTERN}} | 是/否 | {{TASK_IDS}} | {{GATE_UPDATE}} |
 
-## Follow-up Tasks
+## 经验总结（自由撰写）
 
-| task_id | reason | depends_on |
-|---------|--------|------------|
-| {{TASK_ID}} | {{REASON}} | {{DEPENDS}} |
+<!-- 本日工作流中的关键经验、注意事项、意外发现。可自由扩展。 -->
 
-## Redaction Notes
+{{当日经验总结}}
 
-- private_content_seen: yes / no
-- private_content_stored: no（必须为 no）
-- redaction_applied: {{描述脱敏处理}}
+## 下一步计划
+
+<!-- 基于今日发现的后续行动。计划可以非常长，不限制篇幅。 -->
+
+{{下一步计划}}
+
+## 脱敏说明
+
+- 是否接触私密内容: 是/否
+- 是否存储私密内容: 否（必须为否）
+- 脱敏处理: {{描述}}
+
+## 备注
+
+<!-- 其他任何需要记录的信息。 -->
+{{备注}}

@@ -1,59 +1,63 @@
-# Concept: {{TITLE}}
+# 概念条目：{{标题}}
 
-memory_id: {{MEMORY_ID}}
-memory_type: lesson | failure_pattern | design_decision | safety_rule | workflow_rule | gotcha
-status: active | superseded | deprecated
-source_review_run_ids:
+记忆ID: {{MEMORY_ID}}
+记忆类型: 教训 | 失败模式 | 设计决策 | 安全规则 | 工作流规则 | 踩坑记录
+状态: 活跃 | 已替代 | 已废弃
+来源审查ID:
   - {{REVIEW_RUN_ID_1}}
   - {{REVIEW_RUN_ID_2}}
-related_tasks:
+关联任务:
   - {{TASK_ID_1}}
   - {{TASK_ID_2}}
-privacy_classification: private_by_default | team_readable
+隐私分类: 默认私有 | 团队可读
 
-## Summary
+## 一句话概括
 
-<!-- 一句话概括。禁止包含真实论文内容。 -->
+<!-- 一句话总结。禁止包含真实论文内容。 -->
 
-{{ONE_SENTENCE_SUMMARY}}
+{{一句话}}
 
-## When It Appears
+## 出现场景
 
 <!-- 什么场景下会出现这个问题/模式。 -->
 
-{{CONDITIONS}}
+{{场景描述}}
 
-## Why It Matters
+## 为什么重要
 
 <!-- 为什么这是个重要教训。 -->
 
-{{IMPACT}}
+{{重要性}}
 
-## Required Response
+## 应当采取的行动
 
 <!-- 下次遇到时应该怎么做。 -->
 
-{{RESPONSE}}
+{{行动方案}}
 
-## Evidence References
+## 证据引用
 
-<!-- 指向 source review result，不是复制全文。 -->
+<!-- 指向原始审查记录，不是复制全文。 -->
 
-| REVIEW_RUN_ID | Task | Judgment |
-|--------------|------|----------|
+| 审查ID | 任务 | 判决 |
+|--------|------|------|
 | {{REVIEW_RUN_ID}} | {{TASK}} | {{JUDGMENT}} |
 
-## Related Concepts
+## 关联条目
 
-<!-- 链接到相关 memory entry。 -->
+<!-- 链接到相关记忆条目。 -->
 
-| memory_id | title | relationship |
-|-----------|-------|-------------|
+| 记忆ID | 标题 | 关系 |
+|--------|------|------|
 | {{MEMORY_ID}} | {{TITLE}} | {{RELATIONSHIP}} |
 
-## Lint Notes
+## 后续计划
 
-<!-- 已知的 lint 注意事项。 -->
+<!-- 基于本概念条目的后续行动。不限制篇幅，可以列出详细的执行计划。 -->
 
-- lint_status: {{LINT_STATUS}}
-- last_lint: {{LAST_LINT_DATE}}
+{{后续计划}}
+
+## Lint 状态
+
+- lint 结果: {{LINT_STATUS}}
+- 最后 lint 日期: {{LAST_LINT_DATE}}

@@ -1,47 +1,53 @@
-# Memory Index
+# 记忆索引
 
-> last_updated: {{DATE}}
-> total_entries: {{COUNT}}
-> privacy_classification: private_by_default
+> 最后更新: {{DATE}}
+> 条目总数: {{COUNT}}
+> 隐私分类: 默认私有
 
-## Concepts
+## 概念条目
 
-| memory_id | title | memory_type | status |
-|-----------|-------|-------------|--------|
+| 记忆ID | 标题 | 记忆类型 | 状态 |
+|--------|------|---------|------|
 | {{MEMORY_ID}} | {{TITLE}} | {{TYPE}} | {{STATUS}} |
 
-## Failure Patterns
+## 失败模式
 
-| memory_id | pattern | occurrence_count | linked_gate | status |
-|-----------|---------|-----------------|-------------|--------|
+| 记忆ID | 模式 | 出现次数 | 关联 gate | 状态 |
+|--------|------|---------|----------|------|
 | {{MEMORY_ID}} | {{PATTERN}} | {{COUNT}} | {{GATE}} | {{STATUS}} |
 
-## Workflow Rules
+## 工作流规则
 
-| memory_id | rule | source | status |
-|-----------|------|--------|--------|
+| 记忆ID | 规则 | 来源 | 状态 |
+|--------|------|------|------|
 | {{MEMORY_ID}} | {{RULE}} | {{SOURCE}} | {{STATUS}} |
 
-## Safety Rules
+## 安全规则
 
-| memory_id | rule | severity | status |
-|-----------|------|----------|--------|
+| 记忆ID | 规则 | 严重程度 | 状态 |
+|--------|------|---------|------|
 | {{MEMORY_ID}} | {{RULE}} | {{SEVERITY}} | {{STATUS}} |
 
-## Gotchas
+## 踩坑记录
 
-| memory_id | gotcha | related_tasks |
-|-----------|--------|---------------|
+| 记忆ID | 坑 | 关联任务 |
+|--------|-----|---------|
 | {{MEMORY_ID}} | {{GOTCHA}} | {{TASKS}} |
 
-## Follow-up Tasks
+## 待办任务
 
-| task_id | reason | depends_on |
-|---------|--------|------------|
+| 任务ID | 原因 | 前置依赖 |
+|--------|------|---------|
 | {{TASK_ID}} | {{REASON}} | {{DEPENDS}} |
 
-## Deprecated / Superseded
+## 下一步总体计划
 
-| memory_id | title | deprecation_reason | superseded_by |
-|-----------|-------|-------------------|---------------|
+<!-- 基于当前索引中所有未完成任务和未关闭失败模式的总体执行计划。不限制篇幅，可以非常长。 -->
+
+{{总体计划}}
+
+## 已废弃 / 已替代
+
+| 记忆ID | 标题 | 废弃原因 | 被替代为 |
+|--------|------|---------|---------|
 | {{MEMORY_ID}} | {{TITLE}} | {{REASON}} | {{NEW_ID}} |
