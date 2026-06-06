@@ -2,7 +2,7 @@
 
 > 项目生存文档。每阶段完成后追加，永不删除。Agent 和 GPT 共享此文件理解项目全貌。
 > 最后更新: 2026-06-06T09:58:12Z
-> 当前阶段: HANDOFF-A1 完成 → 等待 GPT-REVIEW-GATE-A1
+> 当前阶段: PAPER-C1 accepted → 准备 PAPER-C2（用户指定方向来固化工作流）
 > 文档版本: v1
 
 ---
@@ -49,6 +49,12 @@
 | PAPER-MEMORY-C1 | agent-acceptance | 论文记忆隐私规则 | accepted (batch R1) | closed | batch-closure-review-3tasks-v1 |
 | MEMORY-A3 | agent-acceptance | Memory Lint | deployed (needs_review→pass) | lint-only | — |
 | PAPER-A2 | agent-acceptance | 论文 IO 协议 + 脱敏证据包 + 隐私阻断 | accepted (R2) | closed | paper-a2-io-redaction-protocol-v1 |
+| REPO-ROUTING-A1 | agent-acceptance | Submission target schema + repo routing contract | accepted (v4) | closed | repo-routing-a1-v4-20260605 |
+| PROJECT-HISTORY-BP | 两个仓库 | PROJECT_HISTORY.md as lived blueprint | accepted (v6) | closed | project-history-blueprint-v6-20260605 |
+| PROJECT-HISTORY-GAPS | agent-acceptance | GPT review gate + auto-append + conversation registry | accepted (v4) | closed | project-history-gaps-closure-v4-20260605 |
+| PAPER-B1 | devframe-control-plane | 论文迭代 template 设计 | accepted | closed | — |
+| PAPER-B2 | devframe-control-plane | 论文 pipeline 实现 | accepted (R2) | closed | — |
+| PAPER-C1 | devframe-control-plane | 论文 synthetic pipeline 强制执行 | accepted | closed | — |
 | PAPER-A3 | agent-acceptance | 论文任务 validator 正式接入 | accepted (R2) | closed | paper-a3-r2-web-review |
 | REVIEW-TEMPLATE-V2 | agent-acceptance | END_OF_GPT_RESPONSE + next_task_authorization + required_fixes | **未提交GPT** | **open** | — |
 
@@ -192,7 +198,7 @@ GPT 诊断（见 `docs/GPT_STRUCTURAL_FIX.txt`）：
 | check_submission_bypass.py | agent-acceptance/scripts/ | 检测未授权 Playwright/CDP 绕过 |
 | validate_gpt_reply_completeness.py | agent-acceptance/scripts/ | 检测 GPT 回复完整性 (min size, end marker, required fields) |
 | check_handoff_needed.py | agent-acceptance/scripts/ | 检测是否需要对话交接 (阈值 60 msgs) |
-| validate_handoff.py | agent-acceptance/scripts/ | 验证 HANDOFF.md (size, 
+| validate_handoff.py | agent-acceptance/scripts/ | 验证 HANDOFF.md (size, structure, END_OF_HANDOFF marker) | 
 
 | capture_gpt_reply.py | agent-acceptance/scripts/ | 可靠 GPT 回复捕获 (等 END marker) |
 | memory_compiler.py | agent-acceptance/scripts/ | 从 GPT review 和 ledger 提取 lessons |
