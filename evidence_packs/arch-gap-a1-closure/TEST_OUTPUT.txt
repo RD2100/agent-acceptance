@@ -1,0 +1,491 @@
+........................................................................ [ 88%]
+.........                                                                [100%]
+============================== warnings summary ===============================
+tests/test_dispatch_result_schema.py::test_valid_fixture
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_dispatch_result_schema.py::test_valid_fixture returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_dispatch_result_schema.py::test_ready_to_dispatch_treated_as_dispatched
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_dispatch_result_schema.py::test_ready_to_dispatch_treated_as_dispatched returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_dispatch_result_schema.py::test_dispatched_must_have_next_task_spec_path
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_dispatch_result_schema.py::test_dispatched_must_have_next_task_spec_path returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_dispatch_result_schema.py::test_stopped_must_have_next_action
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_dispatch_result_schema.py::test_stopped_must_have_next_action returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_dispatch_result_schema.py::test_manual_confirm_must_have_next_action
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_dispatch_result_schema.py::test_manual_confirm_must_have_next_action returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_dispatch_result_schema.py::test_taskspec_generated_not_terminal
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_dispatch_result_schema.py::test_taskspec_generated_not_terminal returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_dispatcher_policy.py::test_accepted_allow_next_must_dispatch
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_dispatcher_policy.py::test_accepted_allow_next_must_dispatch returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_dispatcher_policy.py::test_human_required_must_stop
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_dispatcher_policy.py::test_human_required_must_stop returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_dispatcher_policy.py::test_unknown_must_fail_closed
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_dispatcher_policy.py::test_unknown_must_fail_closed returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_dispatcher_policy.py::test_dispatcher_must_produce_should_execute_next
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_dispatcher_policy.py::test_dispatcher_must_produce_should_execute_next returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_dispatcher_policy.py::test_empty_dispatch_result_rejected
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_dispatcher_policy.py::test_empty_dispatch_result_rejected returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_flow_outcome_schema.py::test_valid_fixture
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_flow_outcome_schema.py::test_valid_fixture returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_flow_outcome_schema.py::test_terminal_false_no_next_action
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_flow_outcome_schema.py::test_terminal_false_no_next_action returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_flow_outcome_schema.py::test_human_required_rules
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_flow_outcome_schema.py::test_human_required_rules returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_flow_outcome_schema.py::test_human_required_missing_next_action
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_flow_outcome_schema.py::test_human_required_missing_next_action returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_flow_outcome_schema.py::test_accepted_allow_next_no_next_stage
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_flow_outcome_schema.py::test_accepted_allow_next_no_next_stage returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_flow_outcome_schema.py::test_blocked_must_have_next_action
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_flow_outcome_schema.py::test_blocked_must_have_next_action returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_flow_outcome_schema.py::test_transport_success_not_business_accepted
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_flow_outcome_schema.py::test_transport_success_not_business_accepted returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_flow_outcome_schema.py::test_ready_to_dispatch_not_dispatched
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_flow_outcome_schema.py::test_ready_to_dispatch_not_dispatched returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_bypass_checker_script_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_bypass_checker_script_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_bypass_checker_runs
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_bypass_checker_runs returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_allowed_file_passes
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_allowed_file_passes returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_framework_usage_contract_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_framework_usage_contract_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_framework_usage_doc_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_framework_usage_doc_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_reference_pipeline_doc_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_reference_pipeline_doc_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_no_bypass_in_test_itself
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_no_bypass_in_test_itself returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_next_taskspec_consumption_policy.py::test_next_taskspec_path_required_when_terminal_false
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_next_taskspec_consumption_policy.py::test_next_taskspec_path_required_when_terminal_false returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_next_taskspec_consumption_policy.py::test_ready_to_dispatch_vs_dispatched_in_schema
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_next_taskspec_consumption_policy.py::test_ready_to_dispatch_vs_dispatched_in_schema returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_next_taskspec_consumption_policy.py::test_runner_state_valid_has_next_action
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_next_taskspec_consumption_policy.py::test_runner_state_valid_has_next_action returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_next_taskspec_consumption_policy.py::test_runner_state_invalid_missing_next_action
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_next_taskspec_consumption_policy.py::test_runner_state_invalid_missing_next_action returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_next_taskspec_consumption_policy.py::test_consumption_policy_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_next_taskspec_consumption_policy.py::test_consumption_policy_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_next_taskspec_consumption_policy.py::test_task_spec_generated_not_terminal
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_next_taskspec_consumption_policy.py::test_task_spec_generated_not_terminal returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_contracts_file_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_contracts_file_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_all_required_contracts_defined
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_all_required_contracts_defined returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_each_contract_has_required_fields
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_each_contract_has_required_fields returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_each_contract_has_required_evidence
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_each_contract_has_required_evidence returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_each_contract_has_fail_closed
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_each_contract_has_fail_closed returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_confidentiality_contract_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_confidentiality_contract_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_citation_verification_contract_blocking
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_citation_verification_contract_blocking returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_evidence_pack_contract_required_fields
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_evidence_pack_contract_required_fields returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_synthetic_example_no_real_paper
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_synthetic_example_no_real_paper returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_docs_paper_workflow_acceptance_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_docs_paper_workflow_acceptance_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_schema_exists_and_valid
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_schema_exists_and_valid returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_no_real_paper_in_deliverables
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_no_real_paper_in_deliverables returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_schema_task_type_conditional_requirements
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_schema_task_type_conditional_requirements returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_synthetic_evidence_pack_validates_against_schema
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_synthetic_evidence_pack_validates_against_schema returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_run_until_terminal_policy.py::test_valid_terminal_reasons
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_run_until_terminal_policy.py::test_valid_terminal_reasons returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_run_until_terminal_policy.py::test_terminal_false_no_final_report
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_run_until_terminal_policy.py::test_terminal_false_no_final_report returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_run_until_terminal_policy.py::test_accepted_allow_next_not_terminal_unless_done
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_run_until_terminal_policy.py::test_accepted_allow_next_not_terminal_unless_done returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_run_until_terminal_policy.py::test_high_risk_triggers_human_required
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_run_until_terminal_policy.py::test_high_risk_triggers_human_required returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_run_until_terminal_policy.py::test_taskspec_invalid_fail_closed
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_run_until_terminal_policy.py::test_taskspec_invalid_fail_closed returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_run_until_terminal_policy.py::test_schema_missing_fail_closed
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_run_until_terminal_policy.py::test_schema_missing_fail_closed returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_contract_schema.py::test_valid_contract
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_contract_schema.py::test_valid_contract returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_contract_schema.py::test_terminal_false_missing_input
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_contract_schema.py::test_terminal_false_missing_input returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_contract_schema.py::test_terminal_false_with_next_action
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_contract_schema.py::test_terminal_false_with_next_action returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_contract_schema.py::test_resume_mode_missing_outcome
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_contract_schema.py::test_resume_mode_missing_outcome returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_contract_schema.py::test_high_risk_action_contract
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_contract_schema.py::test_high_risk_action_contract returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_contract_schema.py::test_missing_safety_policy
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_contract_schema.py::test_missing_safety_policy returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_state_schema.py::test_valid_terminal_false
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_state_schema.py::test_valid_terminal_false returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_state_schema.py::test_terminal_false_no_next_action
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_state_schema.py::test_terminal_false_no_next_action returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_state_schema.py::test_human_required_with_resume
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_state_schema.py::test_human_required_with_resume returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_state_schema.py::test_human_required_without_resume
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_state_schema.py::test_human_required_without_resume returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_state_schema.py::test_accepted_cannot_be_terminal
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_state_schema.py::test_accepted_cannot_be_terminal returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_state_schema.py::test_recoverable_failure_state
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_state_schema.py::test_recoverable_failure_state returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_step_result_schema.py::test_valid_continue
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_step_result_schema.py::test_valid_continue returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_step_result_schema.py::test_valid_stop
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_step_result_schema.py::test_valid_stop returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_step_result_schema.py::test_valid_high_risk
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_step_result_schema.py::test_valid_high_risk returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_step_result_schema.py::test_continue_without_next_action
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_step_result_schema.py::test_continue_without_next_action returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_step_result_schema.py::test_partial_as_terminal_invalid
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_step_result_schema.py::test_partial_as_terminal_invalid returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_runner_step_result_schema.py::test_transport_success_business_blocked
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_runner_step_result_schema.py::test_transport_success_business_blocked returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_taskspec_schema.py::test_valid_fixture
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_taskspec_schema.py::test_valid_fixture returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_taskspec_schema.py::test_markdown_only_rejected
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_taskspec_schema.py::test_markdown_only_rejected returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_taskspec_schema.py::test_high_risk_must_require_human
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_taskspec_schema.py::test_high_risk_must_require_human returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_taskspec_schema.py::test_high_risk_without_human_review
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_taskspec_schema.py::test_high_risk_without_human_review returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_taskspec_schema.py::test_missing_terminal_conditions
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_taskspec_schema.py::test_missing_terminal_conditions returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_terminal_state_policy.py::test_valid_terminal_state_enum
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_terminal_state_policy.py::test_valid_terminal_state_enum returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_terminal_state_policy.py::test_non_terminal_states
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_terminal_state_policy.py::test_non_terminal_states returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_terminal_state_policy.py::test_ready_to_dispatch_vs_dispatched_distinction
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_terminal_state_policy.py::test_ready_to_dispatch_vs_dispatched_distinction returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_terminal_state_policy.py::test_six_terminal_states_only
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_terminal_state_policy.py::test_six_terminal_states_only returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_terminal_state_policy.py::test_task_spec_generated_is_not_terminal
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_terminal_state_policy.py::test_task_spec_generated_is_not_terminal returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_terminal_state_policy.py::test_stopped_and_failed_are_terminal
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_terminal_state_policy.py::test_stopped_and_failed_are_terminal returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+81 passed, 81 warnings in 0.43s

@@ -1,0 +1,123 @@
+# Workflow Audit Ledger
+# Tracks every task: plan → execute → self-verify → evidence_pack → GPT review → final status
+# Rule: closed == GPT accepted. ready_for_review != closed.
+
+tasks:
+  - task_id: ARCH-GAP-A1
+    plan: GPT 方案C（证据分类）+ 后续诊断
+    repo: agent-acceptance
+    commit: "70598e6"
+    pushed: yes
+    self_verify:
+      tests: "81/81 PASS"
+      gate: "4/4 PASS"
+      bypass_check: "PASS"
+    gpt_review:
+      submitted: false
+      verdict: null
+    status: ready_for_review_not_closed
+    note: "closure report said ready_for_review but was never submitted to GPT"
+
+  - task_id: REF-PAPER-1
+    plan: GPT 方案（reference paper pipeline 设计）
+    repo: devframe-control-plane
+    commit: "cc3ea4d"
+    pushed: yes
+    self_verify:
+      pipeline_parse: "7 stages valid"
+      tests: "57/57 PASS"
+      doctor: "9/9 PASS"
+    gpt_review:
+      submitted: false
+      verdict: null
+    status: ready_for_review_not_closed
+    note: "closure report said ready_for_gpt_review but was never submitted to GPT"
+
+  - task_id: REF-PAPER-2A
+    plan: GPT 方案（实现 load_input + paper_review + closure stage）
+    repo: devframe-control-plane
+    commit: "fe29d52"
+    pushed: yes
+    self_verify:
+      pipeline_execute: "5/5 stages completed"
+      tests: "57/57 PASS"
+      pack_validate: "PASS"
+      bypass_check: "PASS"
+    gpt_review:
+      submitted: false
+      verdict: null
+    status: ready_for_review_not_closed
+    note: "REF-PAPER-2A was superseded by REF-PAPER-2B, which includes all 7 stages"
+
+  - task_id: REF-PAPER-2B
+    plan: GPT 方案（pre_submission_check + submission_dry_run + GPT 审查）
+    repo: devframe-control-plane
+    commit: "05d4c8b"
+    pushed: yes
+    self_verify:
+      pipeline_execute: "7/7 stages completed"
+      tests: "57/57 PASS"
+      pack_validate: "PASS (16 files, bidirectional match)"
+      bypass_check: "PASS"
+    gpt_review:
+      submitted: true
+      rounds: 3
+      round_1: review_unverified (missing deliverables)
+      round_2: blocked (manifest hash, run_id, closure format, attestation timing)
+      round_3: accepted
+      verdict: accepted
+      reviewer: GPT
+    status: closed
+    note: "3-round iterative fix pattern — summary-only pack submitted twice before acceptance"
+
+  - task_id: PAPER-A1
+    plan: GPT co-design
+    repo: agent-acceptance
+    commit: "18bc9210"
+    pushed: yes
+    self_verify:
+      tests: "73/73 PASS"
+    gpt_review:
+      submitted: true
+      rounds: 3
+      round_1: review_unverified (summary-only pack)
+      round_2: blocked (schema bug)
+      round_3: accepted
+      verdict: accepted
+    status: closed
+
+  - task_id: push-blocker-resolution
+    plan: GPT 方案C（证据分类 + gate 修改）
+    repo: agent-acceptance
+    commit: "a7b7889d"
+    pushed: yes
+    self_verify:
+      gate: "4/4 PASS (2 skipped by classification)"
+      tests: "73/73 PASS"
+    gpt_review:
+      submitted: true
+      rounds: 3
+      round_1: review_unverified (missing artifacts)
+      round_2: blocked (manifest mismatch, gate validation)
+      round_3: accepted
+      verdict: accepted
+    status: closed
+
+systemic_defects_identified:
+  - id: SD-01
+    pattern: "summary-only evidence pack submitted to GPT multiple times"
+    observed_in: [PAPER-A1, push-blocker-resolution, REF-PAPER-2B]
+    root_cause: "pre-submission gate does not block summary-only packs BEFORE GPT review"
+    status: open
+
+  - id: SD-02
+    pattern: "closure declared ready_for_review without GPT review"
+    observed_in: [ARCH-GAP-A1, REF-PAPER-1, REF-PAPER-2A]
+    root_cause: "closure report template allows ready_for_review as terminal status without GPT evidence"
+    status: open
+
+  - id: SD-03
+    pattern: "self-referential failure: governance task bypasses governance"
+    observed_in: [ARCH-GAP-A1]
+    root_cause: "agent declares its own enforcement task complete without independent review"
+    status: open
