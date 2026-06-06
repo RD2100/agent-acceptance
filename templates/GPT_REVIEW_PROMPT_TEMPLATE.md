@@ -106,3 +106,40 @@ task_type_specific:
 - **Agent 陈述不是证据** — GPT 必须检查实际文件内容
 - `rationale`、`required_next_action`、`review_unverified_reason` **必须用中文**
 - **绝不**建议 guard removal、evidence cleanup 或默认开启 live CDP
+
+---
+
+## 提交方自检清单（提交 GPT 前必须逐项确认）
+
+提交 evidence pack 给 GPT 审查时，提交提示词**必须**包含以下内容。缺任一项 = 提交不完整。
+
+### 必须包含的信息
+
+| # | 检查项 | 说明 |
+|---|--------|------|
+| 1 | 当前任务状态 | 完成的工作、产出文件列表、自检结果（测试/gate/bypass） |
+| 2 | 已知 open 缺陷 | 从 WORKFLOW_AUDIT_LEDGER 中列出所有 status=open 的系统缺陷（如 SD-01/02/03），说明本任务是否已修复 |
+| 3 | 明确的审查请求 | GPT 需要判断什么？需要给出什么格式的结论？ |
+| 4 | 请求后续计划 | 如果 accepted，下一步应该做什么？如果 blocked，具体修复方案是什么？ |
+| 5 | 证据包完整性声明 | 确认 evidence pack 非 summary-only，manifest 双向一致 |
+
+### 严禁的提交模式
+
+| # | 禁止 | 正确做法 |
+|---|------|---------|
+| 1 | 只提交 closure report/safety attestation，无实际产物 | 必须包含实际修改/新增的文件 |
+| 2 | 不提 open 缺陷 | 必须明确列出当前 open 缺陷及其修复状态 |
+| 3 | 不请求后续计划 | 必须要求 GPT 给出下一步具体方案 |
+| 4 | 写 final_status: closed 但无 GPT accepted | closed 必须先有 GPT accepted |
+| 5 | 用英文写 task_type_specific 字段名 | task_type_specific 区域字段名用中文 |
+
+### 推荐提交提示词结构
+
+```
+1. 本任务做了什么（3-5 句）
+2. 证据包内容（文件数量、manifest 状态）
+3. 自检结果（测试/gate/bypass 结果）
+4. 当前 open 系统性缺陷及修复状态
+5. 明确请求：请审查 X/Y/Z，给出判决 + 下一步具体计划
+6. 约束：不接受建议 guard removal/evidence cleanup/live CDP
+```
