@@ -64,21 +64,29 @@ Write-Host ""
 # Step 2.6: GPT Review Gate
 Write-Host "[2.6/6] GPT Review Gate..."
 $gptGatePassed = $true
-$stagedClosurePacks = Get-ChildItem -Path "runs" -Recurse -Filter "POST_REVIEW_ROUTE.json" | Where-Object { (Get-Item $_.DirectoryName).LastWriteTime -gt (Get-Date).AddHours(-2) }
-if ($stagedClosurePacks.Count -eq 0) {
+# Find all pack directories (those with PACK_MANIFEST.md, modified recently)
+$packDirs = Get-ChildItem -Path "runs" -Recurse -Filter "PACK_MANIFEST.md" | Where-Object { (Get-Item $_.DirectoryName).LastWriteTime -gt (Get-Date).AddHours(-2) } | ForEach-Object { $_.DirectoryName }
+if ($packDirs.Count -eq 0) {
     Write-Host "  GPT Review Gate: SKIP (no closure packs staged)"
 } else {
-    foreach ($pack in $stagedClosurePacks) {
-        $route = Get-Content $pack.FullName -Raw | ConvertFrom-Json
-        # Check 1: No accepted GPT review
+    foreach ($dir in $packDirs) {
+        $routeFile = Join-Path $dir "POST_REVIEW_ROUTE.json"
+        # Check 1: No POST_REVIEW_ROUTE.json at all
+        if (-not (Test-Path $routeFile)) {
+            Write-Host "  BLOCKED: $(Split-Path $dir -Leaf) missing POST_REVIEW_ROUTE.json - no GPT review route"
+            $gptGatePassed = $false
+            continue
+        }
+        $route = Get-Content $routeFile -Raw | ConvertFrom-Json
+        # Check 2: submitted_for_gpt_review (not yet accepted)
         if ($route.overall_judgment -eq "submitted_for_gpt_review") {
-            Write-Host "  BLOCKED: $($pack.Directory.Name) has overall_judgment=submitted_for_gpt_review - not yet GPT accepted"
+            Write-Host "  BLOCKED: $(Split-Path $dir -Leaf) has overall_judgment=submitted_for_gpt_review - not yet GPT accepted"
             $gptGatePassed = $false
         }
-        # Check 2: No POST_REVIEW_ROUTE or no GPT_REVIEW_RESULT at all
-        $gptResult = Join-Path $pack.DirectoryName "GPT_REVIEW_RESULT.md"
+        # Check 3: Missing GPT_REVIEW_RESULT.md evidence
+        $gptResult = Join-Path $dir "GPT_REVIEW_RESULT.md"
         if (-not (Test-Path $gptResult)) {
-            Write-Host "  BLOCKED: $($pack.Directory.Name) missing GPT_REVIEW_RESULT.md - no GPT review evidence"
+            Write-Host "  BLOCKED: $(Split-Path $dir -Leaf) missing GPT_REVIEW_RESULT.md - no GPT review evidence"
             $gptGatePassed = $false
         }
     }
