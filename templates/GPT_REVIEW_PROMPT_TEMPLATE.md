@@ -4,7 +4,7 @@
 > 权威来源: agent-acceptance
 > 适用范围: 所有任务类型的 GPT 审查提示词
 > 使用方式: 复制此模板，替换占位符，添加 task_type_specific 字段
-> **语言要求: 除字段名和枚举值必须使用英文外，所有文本内容必须使用中文**
+> **语言要求: 除 schema 字段名和 schema/contract 规定的枚举值为英文外，所有文本内容必须使用中文**
 
 ---
 
@@ -73,7 +73,7 @@ evidence_inspected:
   - path: "{{文件路径}}"
     sha256: {{SHA256或空}}
     inspected: true | false
-    role: "{{角色}}"
+    role: "{{角色（说明性文本用中文，如为机器枚举则用英文）}}"
 blocking_reasons: []
 # 阻断原因列表，用中文填写每条原因
 missing_evidence: []
@@ -89,7 +89,8 @@ rationale: "{{解释说明（用中文填写）}}"
 task_type_specific:
   "{{任务类型}}":
     # 此键必须与 task_type 字段值一致
-    # 此处定义本任务特有的审查维度，维度说明用中文
+    # 字段名可用英文；若字段值非 schema/contract 枚举，则字段值用中文
+    # 此处定义本任务特有的审查维度
 ```
 
 ## 规则
