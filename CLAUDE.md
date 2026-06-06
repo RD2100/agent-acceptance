@@ -25,3 +25,13 @@
 ```bash
 cd D:\agent-acceptance && python -m pytest tests/ -q
 ```
+
+
+## Repo Routing (REPO-ROUTING-A1)
+
+每个任务必须声明 primary_repo 和路径边界：
+- schemas/SUBMISSION_TARGET.schema.json 定义格式
+- contracts/REPO_ROUTING_CONTRACT.md 定义规则
+- 缺 submission_target → pre-push gate 阻断
+- 路径越界 → pre-push gate 阻断
+- 跨仓任务必须在 evidence pack 中绑定每个仓库的 git_tree_sha
