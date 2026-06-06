@@ -52,9 +52,9 @@
 | REPO-ROUTING-A1 | agent-acceptance | Submission target schema + repo routing contract | accepted (v4) | closed | repo-routing-a1-v4-20260605 |
 | PROJECT-HISTORY-BP | 两个仓库 | PROJECT_HISTORY.md as lived blueprint | accepted (v6) | closed | project-history-blueprint-v6-20260605 |
 | PROJECT-HISTORY-GAPS | agent-acceptance | GPT review gate + auto-append + conversation registry | accepted (v4) | closed | project-history-gaps-closure-v4-20260605 |
-| PAPER-B1 | devframe-control-plane | 论文迭代 template 设计 | accepted | closed | — |
-| PAPER-B2 | devframe-control-plane | 论文 pipeline 实现 | accepted (R2) | closed | — |
-| PAPER-C1 | devframe-control-plane | 论文 synthetic pipeline 强制执行 | accepted | closed | — |
+| PAPER-B1 | devframe-control-plane | PAPER-A3 validator 接入 reference paper pipeline | accepted | closed | paper-b1-validator-pipeline-integration-v1 |
+| PAPER-B2 | devframe-control-plane | synthetic-only validator-backed paper workflow v2 | accepted (R2) | closed | paper-b2-synthetic-workflow-v2-review-r2 |
+| PAPER-C1 | agent-acceptance | 真实论文安全协议，protocol-only | accepted | closed | paper-c1-real-paper-pilot-safety-protocol-review-v1 |
 | PAPER-A3 | agent-acceptance | 论文任务 validator 正式接入 | accepted (R2) | closed | paper-a3-r2-web-review |
 | REVIEW-TEMPLATE-V2 | agent-acceptance | END_OF_GPT_RESPONSE + next_task_authorization + required_fixes | **未提交GPT** | **open** | — |
 
@@ -91,7 +91,7 @@ GPT 诊断（见 `docs/GPT_STRUCTURAL_FIX.txt`）：
 | SD-01: summary-only evidence pack | fixed | validator 检测 + pre-push gate 阻断 |
 | SD-02: ready_for_review 被当作 closed | fixed | WORKFLOW_STATE_CONTRACT + validator |
 | SD-03: self-referential failure | fixed | GOVERNANCE_TASK_REVIEW_CONTRACT + 追审 |
-| SD-04: GPT 审查被跳过 (新) | open | 需 GPT-REVIEW-GATE-A1 修复 |
+| SD-04: GPT 审查被跳过 | resolved | PROJECT-HISTORY-GAPS v4 accepted (GPT review gate hardened, 3 checks) |
 | SD-05: agent 在 GPT 回复未完成时执行 (新) | partially fixed | capture_gpt_reply.py + validate_gpt_reply_completeness.py 已部署 |
 | SD-06: accepted 后不给出 next_task_authorization (新) | partially fixed | 模板+schema 已更新，GPT 尚未确认遵从 |
 
@@ -135,9 +135,8 @@ GPT 诊断（见 `docs/GPT_STRUCTURAL_FIX.txt`）：
 5. bypass checker 在 pre-commit 阶段运行
 6. GPT_REPLY 少于 2000 bytes 或缺少 END_OF_GPT_RESPONSE → 不得执行
 7. 对话超过 60 条 assistant message → 强制 handoff
-8. HANDOFF.md 必须 >= 8000 bytes 且包含 
+8. HANDOFF.md 必须 >= 8000 bytes 且包含 END_OF_HANDOFF
 
----
 ## 历史主线补充：S3 / B2-B3 / Guarded Steady State 旧工作流
 
 > 追加时间: 2026-06-06T14:35:39Z
@@ -185,10 +184,9 @@ GPT 诊断（见 `docs/GPT_STRUCTURAL_FIX.txt`）：
 
 
 
-9. accepted 后必须包含 next_task_authorization
-10. blocked 后必须包含 required_fixes 和 resubmission_requirements
 
 ---
+
 
 ## 7. 所有已部署 Validator / Gate / Checker
 
@@ -247,17 +245,11 @@ GPT 诊断（见 `docs/GPT_STRUCTURAL_FIX.txt`）：
 
 按优先级排序：
 
-1. **GPT-REVIEW-GATE-A1** (critical): 将 GPT 审查升级为不可跳过的硬门禁
-   - 在 pre-push gate 中检查 GPT accepted
-   - 在 CI gate 中重复检查
-   - 将 GPT accepted 绑定到 evidence_pack_sha256 + git_tree_sha
-   - 详见 `docs/GPT_STRUCTURAL_FIX.txt`
+1. **PAPER-C2**: 真实论文流程授权 — 从 synthetic-only 扩展到 bounded real-paper implementation
+2. 将 PAPER-C1 accepted 写入 PROJECT_HISTORY / ledger
+3. 补充 REVIEW-TEMPLATE-V2 历史追溯（已不再阻塞主线）
 
-2. **REVIEW-TEMPLATE-V2 closure**: 将 commit `bc841e9d` 的修改构建 evidence pack 并提交 GPT 审查
-
-3. **MEMORY-A3 closure**: lint 已部署并改为 pass 状态，需提交 GPT 确认闭合
-
-4. **PAPER-B1**: 论文功能真实试运行设计 (不处理真实论文)
+已完成 (accepted): GPT-REVIEW-GATE-A1 (gate hardened, 3 checks), PAPER-A3 R2, PROJECT_HISTORY Blueprint v6, Gaps Closure v4, REPO-ROUTING-A1 v4, PAPER-B1, PAPER-B2 R2, PAPER-C1
 
 ---
 

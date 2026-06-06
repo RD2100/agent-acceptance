@@ -1,0 +1,79 @@
+ D HANDOFF_REPLY_V4.txt
+ M PROJECT_HISTORY.md
+ M archive/draft-hooks/pre-final.audit.ps1
+ M archive/draft-hooks/pre-task.audit.ps1
+ M archive/draft-hooks/pre-tool.audit.ps1
+ M docs/WORKFLOW_AUDIT_LEDGER.yaml
+ M docs/agent-runtime/capability-inventory.md
+ M docs/agent-runtime/routing-matrix-summary.md
+ M memory/daily/2026-06-06.md
+ M memory/knowledge/index.md
+ M runs/project-history-gaps-v1/POST_REVIEW_ROUTE.json
+ M runs/repo-routing-a1-v1/POST_REVIEW_ROUTE.json
+ M schemas/agent-runtime/chain-evidence.schema.json
+ M scripts/validate_workflow_closure.py
+ M tools/ai_guard.py
+ M tools/go_evidence.py
+?? .ai/tasks/m4-m0-readiness-snapshot.yaml
+?? .ai/tasks/m4-m1-s1-status-semantics-unification.yaml
+?? .ai/tasks/t-chain-evidence-hardening-20260601.yaml
+?? .ai/tasks/t-dirty-boundary-closure-20260601.yaml
+?? .ai/tasks/t-governance-convergence-20260601.yaml
+?? .ai/tasks/t-rerun-chain-evidence-guard-20260601.yaml
+?? .ai/tasks/t-review-chain-evidence-hardening-20260601.yaml
+?? .ai/tasks/t-review-dirty-boundary-closure-20260601.yaml
+?? .ai/tasks/t-review-governance-convergence-20260601.yaml
+?? .ai/tasks/t-review-rerun-chain-evidence-guard-20260601.yaml
+?? .ai/tasks/t-workqueue-integrity-20260601.yaml
+?? .tmpconfig/
+?? .tmpdata/
+?? GPT_HANDOFF_ARCHITECTURE_RESPONSE.md
+?? GPT_REVIEW_RESULT.md
+?? HISTORY_ANALYSIS.md
+?? _reports/
+?? audit/blackboard-cleanup-audit-20260531.md
+?? contracts/DISPATCH_RESULT.schema.json
+?? contracts/FLOW_OUTCOME.schema.json
+?? contracts/README.md
+?? contracts/RUNNER_CONTRACT.schema.json
+?? contracts/RUNNER_STATE.schema.json
+?? contracts/RUNNER_STEP_RESULT.schema.json
+?? contracts/TASKSPEC.schema.json
+?? docs/GPT_CAPTURE_FIX.txt
+?? docs/GPT_CHINESE_FINAL.txt
+?? docs/GPT_CHINESE_TEMPLATE_REVIEW.txt
+?? docs/GPT_CONTROL_PLANE_A1.txt
+?? docs/GPT_DEVIATION_ANALYSIS.txt
+?? docs/GPT_HANDOFF_PLAN.txt
+?? docs/GPT_META_ASKING.txt
+?? docs/GPT_NEXT_TASK_FIX.txt
+?? docs/GPT_PROPOSAL_REVIEW.txt
+?? docs/GPT_PUSH_BLOCKER_PLAN.txt
+?? docs/GPT_STRUCTURAL_FIX.txt
+?? docs/GPT_TEMPLATE_FINAL.txt
+?? docs/GPT_TEMPLATE_FINAL_REVIEW.txt
+?? docs/GPT_WORKFLOW_HARDENING_A1_PLAN.txt
+?? docs/GPT_WORKFLOW_HARDENING_A2_PLAN.txt
+?? docs/submit_proposal_to_gpt.py
+?? evidence_packs/paper-a3-closure/
+?? evidence_packs/paper-a3-r2-closure/
+?? evidence_packs/paper-c1-closure/GPT_C1_BINDING_CONFLICT_PROMPT.md
+?? evidence_packs/paper-c1-closure/GPT_C1_BINDING_CONFLICT_REPLY.txt
+?? evidence_packs/paper-c1-closure/GPT_C1_BINDING_CONFLICT_SUBMISSION.json
+?? policies/
+?? scripts/__pycache__/
+?? scripts/validate_paper_task.py
+?? tests/__pycache__/
+?? tests/fixtures/
+?? tests/test_dispatch_result_schema.py
+?? tests/test_dispatcher_policy.py
+?? tests/test_flow_outcome_schema.py
+?? tests/test_next_taskspec_consumption_policy.py
+?? tests/test_paper_task_validator.py
+?? tests/test_run_until_terminal_policy.py
+?? tests/test_runner_contract_schema.py
+?? tests/test_runner_state_schema.py
+?? tests/test_runner_step_result_schema.py
+?? tests/test_taskspec_schema.py
+?? tests/test_terminal_state_policy.py
+?? tools/__pycache__/
