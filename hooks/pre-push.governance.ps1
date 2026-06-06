@@ -65,18 +65,29 @@ Write-Host ""
 Write-Host "[2.6/6] GPT Review Gate..."
 $gptGatePassed = $true
 $stagedClosurePacks = Get-ChildItem -Path "runs" -Recurse -Filter "POST_REVIEW_ROUTE.json" | Where-Object { (Get-Item $_.DirectoryName).LastWriteTime -gt (Get-Date).AddHours(-2) }
-foreach ($pack in $stagedClosurePacks) {
-    $route = Get-Content $pack.FullName -Raw | ConvertFrom-Json
-    if ($route.overall_judgment -eq "submitted_for_gpt_review") {
-        Write-Host "  BLOCKED: $($pack.Directory.Name) has overall_judgment=submitted_for_gpt_review - not yet GPT accepted"
-        $gptGatePassed = $false
+if ($stagedClosurePacks.Count -eq 0) {
+    Write-Host "  GPT Review Gate: SKIP (no closure packs staged)"
+} else {
+    foreach ($pack in $stagedClosurePacks) {
+        $route = Get-Content $pack.FullName -Raw | ConvertFrom-Json
+        # Check 1: No accepted GPT review
+        if ($route.overall_judgment -eq "submitted_for_gpt_review") {
+            Write-Host "  BLOCKED: $($pack.Directory.Name) has overall_judgment=submitted_for_gpt_review - not yet GPT accepted"
+            $gptGatePassed = $false
+        }
+        # Check 2: No POST_REVIEW_ROUTE or no GPT_REVIEW_RESULT at all
+        $gptResult = Join-Path $pack.DirectoryName "GPT_REVIEW_RESULT.md"
+        if (-not (Test-Path $gptResult)) {
+            Write-Host "  BLOCKED: $($pack.Directory.Name) missing GPT_REVIEW_RESULT.md - no GPT review evidence"
+            $gptGatePassed = $false
+        }
     }
+    if (-not $gptGatePassed) {
+        Write-Host "  GPT Review Gate: BLOCKED - missing or unaccepted GPT review. Submit to GPT first."
+        exit 1
+    }
+    Write-Host "  GPT Review Gate: PASS"
 }
-if (-not $gptGatePassed) {
-    Write-Host "  GPT Review Gate: BLOCKED - some packs not yet GPT accepted. Submit to GPT first."
-    exit 1
-}
-Write-Host "  GPT Review Gate: PASS"
 Write-Host ""
 
 # 3. Governance Drift Check
