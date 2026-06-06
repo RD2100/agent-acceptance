@@ -100,8 +100,25 @@ def test_privacy_attestation_real_text_must_fail():
     except AssertionError:
         pass
 
+def test_memory_write_paper_content_blocked():
+    s = load_schema("paper_redacted_evidence_pack.schema.json")
+    allowed = s["properties"]["memory_write_policy"]["enum"]
+    assert "paper_content" not in allowed
+
+def test_raw_paper_text_in_pack_blocked():
+    data = {"task_id":"test","contains_real_paper_full_text":False,"contains_user_private_text":False,"contains_raw_transcript":False,"contains_memory_write":False,"contains_external_upload":False,"redaction_applied":True,"manual_review_required":False,"memory_write_policy":"none","raw_paper_text":"should be blocked"}
+    try:
+        validate_against_schema(data, load_schema("paper_redacted_evidence_pack.schema.json"))
+        assert False, "Should have raised on additional property"
+    except AssertionError:
+        pass
+
+def test_redaction_report_missing_detected():
+    p = ROOT / "examples" / "paper_a2_synthetic_case" / "REDACTION_REPORT.yaml"
+    assert p.exists()
+
 def test_synthetic_case_files_exist():
-    for f in ["PAPER_TASK_INPUT.yaml","PAPER_TASK_OUTPUT.yaml","PRIVACY_ATTESTATION.yaml"]:
+    for f in ["PAPER_TASK_INPUT.yaml","PAPER_TASK_OUTPUT.yaml","PRIVACY_ATTESTATION.yaml","REDACTION_REPORT.yaml"]:
         assert (ROOT / "examples" / "paper_a2_synthetic_case" / f).exists()
 
 def run():
@@ -114,6 +131,9 @@ def run():
         ("redacted pack must_be_false", test_redacted_evidence_pack_must_be_false),
         ("privacy attestation valid", test_privacy_attestation_all_fields),
         ("privacy attestation real text fails", test_privacy_attestation_real_text_must_fail),
+        ("memory write paper content blocked", test_memory_write_paper_content_blocked),
+        ("raw paper text additional prop blocked", test_raw_paper_text_in_pack_blocked),
+        ("redaction report exists", test_redaction_report_missing_detected),
         ("synthetic case files exist", test_synthetic_case_files_exist),
     ]
     p = f = 0

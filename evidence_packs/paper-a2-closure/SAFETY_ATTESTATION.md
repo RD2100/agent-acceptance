@@ -9,4 +9,3 @@
 | live_cdp | false |
 | evidence_deleted | false |
 | guard_removed | false |
-| gpt_review_forged | false |
