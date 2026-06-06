@@ -1,0 +1,7 @@
+Overall Judgment: accepted
+allow_next_stage: true
+Blocking Reasons: none
+Missing Evidence: none
+Scope Violation: false
+Fake-Green Risk: false
+Required Next Action: none

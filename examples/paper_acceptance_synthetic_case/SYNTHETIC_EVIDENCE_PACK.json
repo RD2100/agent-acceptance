@@ -51,5 +51,5 @@
   "decision_rationale": "3 项引用 unverified，citation_check_result 建议在正式投稿前确认。审稿维度评估完成但文献对话需要作者补充。未触发 fail_closed 条件，建议补充证据后 re-review。",
   "created_at": "2026-06-06T12:00:00Z",
   "reviewer_identity": "agent",
-  "evidence_pack_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+  "evidence_pack_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 }

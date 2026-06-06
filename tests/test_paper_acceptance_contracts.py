@@ -332,6 +332,55 @@ def test_schema_task_type_conditional_requirements():
     return True, "PASS"
 
 
+def test_synthetic_evidence_pack_validates_against_schema():
+    """Test 14: SYNTHETIC_EVIDENCE_PACK.json must validate against paper_evidence_pack.schema.json."""
+    import json
+
+    schema_path = ROOT / "schemas" / "paper_evidence_pack.schema.json"
+    instance_path = ROOT / "examples" / "paper_acceptance_synthetic_case" / "SYNTHETIC_EVIDENCE_PACK.json"
+
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    instance = json.loads(instance_path.read_text(encoding="utf-8"))
+
+    # Validate required fields
+    required = schema.get("required", [])
+    for r in required:
+        assert r in instance, f"SYNTHETIC_EVIDENCE_PACK.json missing required field: {r}"
+
+    # Validate allOf conditional rules
+    all_of = schema.get("allOf", [])
+    for rule in all_of:
+        if_cond = rule.get("if", {})
+        then_cond = rule.get("then", {})
+
+        # Check if the condition applies to the instance
+        if_props = if_cond.get("properties", {})
+        condition_applies = True
+        for p, c in if_props.items():
+            if "const" in c and instance.get(p) != c["const"]:
+                condition_applies = False
+            if "enum" in c and instance.get(p) not in c["enum"]:
+                condition_applies = False
+        if condition_applies:
+            then_req = then_cond.get("required", [])
+            for r in then_req:
+                assert r in instance, f"SYNTHETIC_EVIDENCE_PACK.json violates conditional: missing '{r}'"
+
+    # Validate hash format
+    import re
+    hash_pattern = r"^[a-fA-F0-9]{64}$"
+    assert re.match(hash_pattern, instance.get("input_version_hash", "")), \
+        "input_version_hash must be 64-char hex"
+    assert re.match(hash_pattern, instance.get("output_version_hash", "")), \
+        "output_version_hash must be 64-char hex"
+
+    # Validate enums
+    assert instance.get("decision") in schema["properties"]["decision"]["enum"], \
+        f"decision value not in allowed enum: {instance.get('decision')}"
+
+    return True, "PASS"
+
+
 # ===== RUNNER =====
 
 def run_all_tests():
@@ -349,6 +398,7 @@ def run_all_tests():
         ("paper evidence pack schema valid", test_schema_exists_and_valid),
         ("no real paper in deliverables", test_no_real_paper_in_deliverables),
         ("schema task-type conditionals", test_schema_task_type_conditional_requirements),
+        ("synthetic pack validates against schema", test_synthetic_evidence_pack_validates_against_schema),
     ]
     passed = 0
     failed = 0

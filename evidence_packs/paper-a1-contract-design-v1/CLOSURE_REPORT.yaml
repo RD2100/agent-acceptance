@@ -1,0 +1,58 @@
+REVIEW_RUN_ID: paper-a1-contract-design-v1
+overall_judgment: ready_for_review
+repo: agent-acceptance
+branch: master
+commit: "18bc9210"
+pushed: no
+
+scope:
+  design_only: yes
+  runtime_code_changed: no
+  external_api_added: no
+  real_paper_processed: no
+
+deliverables:
+  paper_workflow_acceptance_doc: "docs/paper-workflow-acceptance.md"
+  paper_acceptance_contracts: "contracts/paper_acceptance_contracts.yaml"
+  paper_evidence_pack_schema: "schemas/paper_evidence_pack.schema.json"
+  synthetic_example: "examples/paper_acceptance_synthetic_case/"
+  tests: "tests/test_paper_acceptance_contracts.py"
+
+contracts_defined:
+  PAPER_GENERAL_ACCEPTANCE_CONTRACT: yes
+  CSSCI_REVIEW_CONTRACT: yes
+  THESIS_MIDTERM_REVIEW_CONTRACT: yes
+  CITATION_VERIFICATION_CONTRACT: yes
+  ACADEMIC_REVISION_CONTRACT: yes
+  CONFIDENTIALITY_CONTRACT: yes
+  PAPER_EVIDENCE_PACK_CONTRACT: yes
+
+evidence_first:
+  agent_summary_not_enough_rule: yes
+  evidence_pack_required: yes
+  fail_closed_rules_defined: yes
+  accepted_blocked_needs_more_evidence_defined: yes
+
+safety:
+  guard_removal_attempted: no
+  evidence_cleanup_attempted: no
+  live_cdp_enabled: no
+  gpt_submission_enabled: no
+  real_user_paper_processed: no
+  private_text_used_as_example: no
+  external_upload_added: no
+
+validation:
+  pytest: pass
+  pytest_summary: "73/73 PASS (60 existing + 13 new paper acceptance tests)"
+  other_checks: []
+
+blocking_issues:
+  - "push blocked by pre-existing governance gate failures in runs/ (not caused by this task)"
+
+rationale: >
+  Isomorphically migrated code workflow acceptance structures to paper
+  acceptance normative layer. Defined 7 contracts covering general acceptance,
+  CSSCI review, thesis midterm, citation verification, academic revision,
+  confidentiality, and evidence pack structure. All 13 structural tests pass.
+  Design-only — no runtime, no API, no real paper.

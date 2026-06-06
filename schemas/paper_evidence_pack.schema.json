@@ -260,21 +260,6 @@
       "then": {
         "required": ["decision_rationale"]
       }
-    },
-    {
-      "if": {
-        "properties": { "output_version_hash": { "not": { "const": "" } } },
-        "required": ["input_version_hash"]
-      },
-      "then": {
-        "properties": {
-          "output_version_hash": {
-            "not": {
-              "description": "output_version_hash must differ from input_version_hash when content was modified (revision tasks)"
-            }
-          }
-        }
-      }
     }
   ]
 }

@@ -1,0 +1,23 @@
+{
+  "task_id": "PAPER-A1",
+  "stage": "contract-design",
+  "transport_status": "success",
+  "business_decision": "pending_gpt_review",
+  "dispatch_status": "ready_to_dispatch",
+  "overall_status": "pending_review",
+  "allow_next_stage": false,
+  "next_stage": "gpt-review-decision",
+  "next_task_spec_path": "evidence_packs/paper-a1-contract-design-v1/GPT_REVIEW_PROMPT.md",
+  "required_next_action": "Submit evidence pack to GPT at https://chatgpt.com/c/6a22dc07-18a4-83a3-a922-7c9ab770db3d for review, capture decision, update closure",
+  "terminal": false,
+  "errors": [],
+  "safety": {
+    "S3_executed": true,
+    "dev_frame_modified": false,
+    "files_deleted": false,
+    "evidence_overwritten": false,
+    "baseline_fabricated": false,
+    "guard_removal_attempted": false,
+    "evidence_cleanup_attempted": false
+  }
+}
