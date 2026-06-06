@@ -106,6 +106,69 @@ tasks:
       verdict: accepted
     status: closed
 
+  - task_id: PAPER-A3
+    plan: 论文任务 validator 正式接入
+    repo: agent-acceptance
+    commit: null
+    pushed: no
+    evidence_pack:
+      path: evidence_packs/paper-a3-r2-closure/closure-pack.zip
+      sha256: "3909fff595c9a53305d7c0e8847b53da1b707ddc4ad67c03fd1ad7b147b98be7"
+      files_count: 20
+      actual_deliverables_count: 10
+      manifest_hash_check: pass
+      zip_manifest_bidirectional_match: pass
+    self_verify:
+      paper_validator: "PASS (examples/paper_a2_synthetic_case)"
+      targeted_tests: "27/27 PASS"
+      full_tests: "152 passed, 81 warnings"
+      control_plane_tests: "57 passed"
+      bypass_check: "PASS"
+      gpt_reply_completeness: "PASS"
+    gpt_review:
+      submitted: true
+      reviewer: GPT
+      rounds: 2
+      round_1: blocked
+      round_2: accepted
+      verdict: accepted
+      review_result_path: evidence_packs/paper-a3-r2-closure/GPT_REPLY.txt
+      web_submission_trace: evidence_packs/paper-a3-r2-closure/WEB_GPT_SUBMISSION_TRACE.json
+    status: closed
+    note: "PAPER-A3 R2 accepted by web GPT; closed after ledger binding on 2026-06-06."
+
+  - task_id: PAPER-C1
+    plan: "Real-paper pilot safety protocol; protocol-only, no real-paper execution enabled"
+    repo: agent-acceptance
+    commit: "f47c8d2"
+    pushed: yes
+    evidence_pack:
+      path: evidence_packs/paper-c1-closure/closure-pack.zip
+      sha256: "0083fbed23fce1e56690add15364a27a6bdc6f6d5283ed882929c12f6b0df454"
+      actual_deliverables_count: 8
+      manifest_hash_check: pass
+      zip_manifest_bidirectional_match: pass
+    self_verify:
+      targeted_tests: "5 passed"
+      full_tests: "163 passed, 81 warnings"
+      workflow_closure_validation: "pass"
+      bypass_check: "PASS"
+    gpt_review:
+      submitted: true
+      reviewer: GPT
+      verdict: accepted
+      review_run_id: paper-c1-real-paper-pilot-safety-protocol-review-v1
+      review_result_path: evidence_packs/paper-c1-closure/GPT_REVIEW_RESULT.txt
+      review_result_sha256: "289449be9bed4f22f09898009598ed9544be2820a59265539570c7a1cdcf926f"
+      web_submission_result: evidence_packs/paper-c1-closure/WEB_GPT_SUBMISSION_RESULT.json
+    closure_binding:
+      accepted_time: "2026-06-06T22:59:14.9368451+08:00"
+      binding_conflict_review: _reports/paper-c1-closure-binding/PAPER_C1_BINDING_RECORD.yaml
+      baseline_evidence_dir: _reports/paper-c1-closure-binding
+      mode: append_only_minimal_binding
+    status: closed
+    note: "PAPER-C1 accepted by web GPT and closed with append-only minimal binding on 2026-06-06."
+
 systemic_defects_identified:
   - id: SD-01
     pattern: "summary-only evidence pack submitted to GPT multiple times"

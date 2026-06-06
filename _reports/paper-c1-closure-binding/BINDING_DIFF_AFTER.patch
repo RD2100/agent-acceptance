@@ -1,0 +1,13 @@
+﻿PAPER-C1 binding after-diff summary:
+
+- PROJECT_HISTORY.md:
+  - Removed orphan duplicated execution rules 9/10 from the file top.
+  - Restored section 6 as ASCII-safe Execution Rules with rules 8/9/10 continuous.
+  - Kept bootstrap prompt containing END_OF_HANDOFF.
+  - Moved historical lineage supplement after section 14 and before closure binding / END_OF_PROJECT_HISTORY.
+  - Added PAPER-C1 Closure Binding before final END_OF_PROJECT_HISTORY.
+
+- docs/WORKFLOW_AUDIT_LEDGER.yaml:
+  - Added PAPER-C1 closed ledger entry with GPT accepted review_run_id, evidence pack hash, review result hash, and binding record path.
+
+Full pre-existing dirty baseline diff is preserved separately in BASELINE_DIFF_BEFORE.patch.

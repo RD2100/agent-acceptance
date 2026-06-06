@@ -19,6 +19,9 @@ write_set:
   - tests/test_paper_c1_real_paper_safety_protocol.py
   - evidence_packs/paper-c1-closure/**
   - .ai/tasks/paper-c1-real-paper-pilot-safety-protocol.yaml
+  - PROJECT_HISTORY.md
+  - docs/WORKFLOW_AUDIT_LEDGER.yaml
+  - _reports/paper-c1-closure-binding/**
 verification:
   - python -m pytest tests/test_paper_c1_real_paper_safety_protocol.py -q
   - python -m pytest tests -q

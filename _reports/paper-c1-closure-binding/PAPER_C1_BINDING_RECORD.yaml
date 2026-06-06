@@ -1,0 +1,45 @@
+﻿task_id: PAPER-C1
+binding_status: closed
+binding_mode: project_history_structure_repair_then_minimal_binding
+accepted_time: "2026-06-06T22:59:14.9368451+08:00"
+primary_repo: agent-acceptance
+implementation_commit: "f47c8d2"
+pushed_to_github: true
+review:
+  reviewer_type: gpt
+  overall_judgment: accepted
+  review_run_id: paper-c1-real-paper-pilot-safety-protocol-review-v1
+  result_path: evidence_packs/paper-c1-closure/GPT_REVIEW_RESULT.txt
+  result_sha256: "289449be9bed4f22f09898009598ed9544be2820a59265539570c7a1cdcf926f"
+evidence_pack:
+  path: evidence_packs/paper-c1-closure/closure-pack.zip
+  sha256: "0083fbed23fce1e56690add15364a27a6bdc6f6d5283ed882929c12f6b0df454"
+binding_conflict_review:
+  reviewer_type: gpt
+  task_id: PAPER-C1-CLOSURE-BINDING-CONFLICT
+  overall_judgment: proceed_minimal_binding
+  blocking_issues: []
+  required_mode: append_only_if_possible_or_fix_project_history_first
+project_history_structure_repair:
+  performed: true
+  source: GPT_C1_BINDING_CONFLICT_REPLY
+  fixed:
+    - moved_historical_lineage_before_end_marker
+    - restored_execution_rules_8_9_10_continuity
+    - verified_bootstrap_prompt_contains_END_OF_HANDOFF
+    - ensured_END_OF_PROJECT_HISTORY_final_marker
+safeguards:
+  baseline_status_before: _reports/paper-c1-closure-binding/BASELINE_STATUS_BEFORE.txt
+  baseline_diff_before: _reports/paper-c1-closure-binding/BASELINE_DIFF_BEFORE.patch
+  baseline_hashes_before: _reports/paper-c1-closure-binding/BASELINE_HASHES_BEFORE.txt
+  binding_diff_after: _reports/paper-c1-closure-binding/BINDING_DIFF_AFTER.patch
+  dirty_baseline_not_attributed_to_paper_c1: true
+  historical_evidence_deleted_moved_renamed_or_overwritten: false
+verification:
+  project_history_validator: pass
+  yaml_parse: pass
+  targeted_tests: "5 passed"
+next_task_authorization:
+  authorized: yes
+  task_id: PAPER-C2
+  execute_immediately: yes

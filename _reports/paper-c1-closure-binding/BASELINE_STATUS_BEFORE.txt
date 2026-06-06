@@ -1,11 +1,13 @@
- D HANDOFF_REPLY_V4.txt
- M PROJECT_HISTORY.md
+﻿ D HANDOFF_REPLY_V4.txt
+M  PROJECT_HISTORY.md
+A  _reports/paper-c1-closure-binding/BASELINE_STATUS_BEFORE.txt
  M archive/draft-hooks/pre-final.audit.ps1
  M archive/draft-hooks/pre-task.audit.ps1
  M archive/draft-hooks/pre-tool.audit.ps1
  M docs/WORKFLOW_AUDIT_LEDGER.yaml
  M docs/agent-runtime/capability-inventory.md
  M docs/agent-runtime/routing-matrix-summary.md
+M  hooks/sealed-files-manifest.json
  M memory/daily/2026-06-06.md
  M memory/knowledge/index.md
  M runs/project-history-gaps-v1/POST_REVIEW_ROUTE.json
@@ -30,7 +32,11 @@
 ?? GPT_HANDOFF_ARCHITECTURE_RESPONSE.md
 ?? GPT_REVIEW_RESULT.md
 ?? HISTORY_ANALYSIS.md
-?? _reports/
+?? _reports/aa-flow-contract-context-pack/
+?? _reports/aa-flow-contract-integration/
+?? _reports/aa-runner-contract-context-pack/
+?? _reports/aa-runner-contract-integration/
+?? _reports/agent-acceptance-context-handoff/
 ?? audit/blackboard-cleanup-audit-20260531.md
 ?? contracts/DISPATCH_RESULT.schema.json
 ?? contracts/FLOW_OUTCOME.schema.json

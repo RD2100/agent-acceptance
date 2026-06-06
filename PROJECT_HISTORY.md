@@ -1,7 +1,4 @@
 # PROJECT_HISTORY.md — DevFrame Agent Acceptance + Control Plane
-9. accepted 后必须包含 next_task_authorization
-10. blocked 后必须包含 required_fixes 和 resubmission_requirements
-
 > 项目生存文档。每阶段完成后追加，永不删除。Agent 和 GPT 共享此文件理解项目全貌。
 > 最后更新: 2026-06-06T09:58:12Z
 > 当前阶段: PAPER-C1 accepted → 准备 PAPER-C2（用户指定方向来固化工作流）
@@ -128,54 +125,24 @@ GPT 诊断（见 `docs/GPT_STRUCTURAL_FIX.txt`）：
 
 
 
-> 追加时间: 2026-06-06T14:35:39Z
-> 来源: GPT 对 4972 行旧对话历史文档的蒸馏分析
-> 本节记录项目早期（dev-frame-opencode / agent-acceptance 分离之前）的关键阶段。
-> 这些阶段奠定了当前 G0-H6 pipeline、三层状态语义、Evidence-First 和 GPT Review Gate 的基础。
-
-### 早期关键阶段
-
-| 阶段 | 状态 | 核心价值 |
-|------|------|----------|
-| S2 human_required 解除 | accepted | 确立了 forbidden scope、human attestation、不可凭 agent claim 解除阻塞 |
-| Framework Freeze | completed | 固化 Oracle GPT Review 自动化框架，暴露 agent 只输出终端报告不自动打包的问题 |
-| Reliability Fix v1 | accepted | 建立三层状态语义、flow state、decision dispatcher、ACK、URL fail-closed |
-| Post-Decision Driver Fix | accepted | 修复 GPT accepted 后只写 ready_to_dispatch 但不继续调度 |
-| S3 Phase 1 | accepted | 发现 @go dispatch/fallback 路径不读取 FLOW_OUTCOME.json |
-| AA-1 Flow Contract | accepted | agent-acceptance 定义 FLOW_OUTCOME、TASKSPEC、DISPATCH_RESULT 合同 |
-| S3 Phase 2 Oracle Gate | accepted | dev-frame-opencode 接入 contracts，schema missing fail-closed |
-| AA-2 Runner Contract | accepted | 定义 RUNNER_CONTRACT、RUNNER_STATE、RUNNER_STEP_RESULT |
-
-### 继承的核心原则
-
-以下原则来自旧工作流，在当前 G0-H6 pipeline 中依然生效：
-
-1. 必须区分 transport_status、business_decision、dispatch_status
-2. transport success ≠ business accepted
-3. ready_to_dispatch ≠ dispatched
-4. Markdown report ≠ machine-readable authority
-5. 自动化判断依据是 FLOW_OUTCOME.json，不是自然语言 SUCCESS
-
-### 旧阻塞项登记（已解决，保留为经验）
-
-| 阻塞项 | 旧阶段 | 当前状态 |
-|--------|--------|----------|
-| forbidden scope 文件修改 | pre-S2 | 已解决 (human attestation) |
-| agent 只输出报告不自动提交 | Framework Freeze | 已解决 (CDP + Playwright) |
-| schema missing fail-open | S3 Phase 2 | 已解决 (fail-closed) |
-| null 值通过 schema | S3 Phase 3 v2 | 已解决 (改为 unknown) |
-| accepted + terminal=true 矛盾 | S3 Phase 3 v3 | 已解决 (v4) |
-| B2 多轮 blocked | B2 Chain Replay | 历史记录 |
-
-### 当前蓝本状态
-
-旧文档中的 S3 Phase 3 v4 待修复 状态已过时。当前项目已完成 G0-H6 + T1-T3 pipeline。旧阶段仅保留为历史 lineage。
-
-
 
 
 ---
 
+---
+
+## 6. Execution Rules
+
+1. agent summary is not evidence; final status must be backed by files, hashes, tests, and GPT review.
+2. ready_for_review is not closed.
+3. closed requires GPT accepted plus ledger entry.
+4. evidence pack must not be summary-only.
+5. manifest / ZIP / SHA256 must be bidirectionally consistent and fresh.
+6. GPT_REPLY shorter than 2000 bytes or missing END_OF_GPT_RESPONSE must not be executed.
+7. More than 60 assistant messages requires handoff.
+8. HANDOFF.md must be >= 8000 bytes and contain END_OF_HANDOFF.
+9. accepted must include next_task_authorization.
+10. blocked must include required_fixes and resubmission_requirements.
 
 ## 7. 所有已部署 Validator / Gate / Checker
 
@@ -314,10 +281,82 @@ GPT_REPLY.txt 曾只有 174 bytes 时 agent 就开始执行。capture_gpt_reply.
 
 ---
 
-## 14. 当前测试状态
+---
 
-```
-agent-acceptance: 137/137 PASS, 81 warnings
-devframe-control-plane: 57/57 PASS
+## 15. Historical Lineage Supplement: S3 / B2-B3 / Guarded Steady State
+
+> ????: 2026-06-06T14:35:39Z
+> 来源: GPT 对 4972 行旧对话历史文档的蒸馏分析
+> 本节记录项目早期（dev-frame-opencode / agent-acceptance 分离之前）的关键阶段。
+> 这些阶段奠定了当前 G0-H6 pipeline、三层状态语义、Evidence-First 和 GPT Review Gate 的基础。
+
+### 早期关键阶段
+
+| 阶段 | 状态 | 核心价值 |
+|------|------|----------|
+| S2 human_required 解除 | accepted | 确立了 forbidden scope、human attestation、不可凭 agent claim 解除阻塞 |
+| Framework Freeze | completed | 固化 Oracle GPT Review 自动化框架，暴露 agent 只输出终端报告不自动打包的问题 |
+| Reliability Fix v1 | accepted | 建立三层状态语义、flow state、decision dispatcher、ACK、URL fail-closed |
+| Post-Decision Driver Fix | accepted | 修复 GPT accepted 后只写 ready_to_dispatch 但不继续调度 |
+| S3 Phase 1 | accepted | 发现 @go dispatch/fallback 路径不读取 FLOW_OUTCOME.json |
+| AA-1 Flow Contract | accepted | agent-acceptance 定义 FLOW_OUTCOME、TASKSPEC、DISPATCH_RESULT 合同 |
+| S3 Phase 2 Oracle Gate | accepted | dev-frame-opencode 接入 contracts，schema missing fail-closed |
+| AA-2 Runner Contract | accepted | 定义 RUNNER_CONTRACT、RUNNER_STATE、RUNNER_STEP_RESULT |
+
+### 继承的核心原则
+
+以下原则来自旧工作流，在当前 G0-H6 pipeline 中依然生效：
+
+1. 必须区分 transport_status、business_decision、dispatch_status
+2. transport success ≠ business accepted
+3. ready_to_dispatch ≠ dispatched
+4. Markdown report ≠ machine-readable authority
+5. 自动化判断依据是 FLOW_OUTCOME.json，不是自然语言 SUCCESS
+
+### 旧阻塞项登记（已解决，保留为经验）
+
+| 阻塞项 | 旧阶段 | 当前状态 |
+|--------|--------|----------|
+| forbidden scope 文件修改 | pre-S2 | 已解决 (human attestation) |
+| agent 只输出报告不自动提交 | Framework Freeze | 已解决 (CDP + Playwright) |
+| schema missing fail-open | S3 Phase 2 | 已解决 (fail-closed) |
+| null 值通过 schema | S3 Phase 3 v2 | 已解决 (改为 unknown) |
+| accepted + terminal=true 矛盾 | S3 Phase 3 v3 | 已解决 (v4) |
+| B2 多轮 blocked | B2 Chain Replay | 历史记录 |
+
+### 当前蓝本状态
+
+旧文档中的 S3 Phase 3 v4 待修复 状态已过时。当前项目已完成 G0-H6 + T1-T3 pipeline。旧阶段仅保留为历史 lineage。
+
+
+
+
+
+## PAPER-C1 Closure Binding (2026-06-06)
+
+Status: accepted and closed after GPT review.
+
+This entry is an append-only closure binding for PAPER-C1. Pre-existing dirty
+baseline changes in `PROJECT_HISTORY.md` were recorded before this binding in
+`_reports/paper-c1-closure-binding/BASELINE_STATUS_BEFORE.txt`,
+`BASELINE_DIFF_BEFORE.patch`, and `BASELINE_HASHES_BEFORE.txt`.
+
+Binding:
+
+```yaml
+task_id: PAPER-C1
+primary_repo: agent-acceptance
+overall_judgment: accepted
+reviewer_type: gpt
+review_run_id: paper-c1-real-paper-pilot-safety-protocol-review-v1
+accepted_time: "2026-06-06T22:59:14.9368451+08:00"
+evidence_pack: evidence_packs/paper-c1-closure/closure-pack.zip
+evidence_pack_sha256: "0083fbed23fce1e56690add15364a27a6bdc6f6d5283ed882929c12f6b0df454"
+gpt_review_result: evidence_packs/paper-c1-closure/GPT_REVIEW_RESULT.txt
+gpt_review_result_sha256: "289449be9bed4f22f09898009598ed9544be2820a59265539570c7a1cdcf926f"
+implementation_commit: "f47c8d2"
+pushed_to_github: true
+closure_scope: "protocol-only; no real paper execution enabled"
 ```
 
+END_OF_PROJECT_HISTORY
