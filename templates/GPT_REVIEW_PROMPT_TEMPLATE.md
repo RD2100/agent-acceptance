@@ -84,6 +84,16 @@ safety_boundaries_respected: true | false
 required_next_action: "{{具体下一步（用中文填写）}}"
 allow_proceed: true | false
 review_unverified_reason: {{原因或空（用中文填写）}}
+# accepted 时必须填写 next_task_authorization；blocked 时必须填写 required_fixes
+next_task_authorization:
+  任务ID: "{{下一任务ID（accepted时必填）}}"
+  授权状态: "已授权 | 未授权"
+  立即执行: "是 | 否"
+  执行前需确认: "是 | 否"
+required_fixes: []
+# blocked 时填写修复项列表
+resubmission_requirements: []
+# blocked 时填写重新提交要求
 created_at: "{{ISO8601时间戳}}"
 rationale: "{{解释说明（用中文填写）}}"
 task_type_specific:
@@ -106,6 +116,9 @@ task_type_specific:
 - **Agent 陈述不是证据** — GPT 必须检查实际文件内容
 - `rationale`、`required_next_action`、`review_unverified_reason` **必须用中文**
 - **绝不**建议 guard removal、evidence cleanup 或默认开启 live CDP
+- **回复末尾必须包含** `END_OF_GPT_RESPONSE`（或交接文档用 `END_OF_HANDOFF`）。缺少此标记的回复 = agent 不得执行
+- `overall_judgment: accepted` → **必须**包含 `next_task_authorization`，其中 `task_id` 非空且 `execute_immediately: yes`。缺少此字段的 accepted 视为无效
+- `overall_judgment: blocked` → **必须**包含 `required_fixes` 列表和 `resubmission_requirements`。缺少这些字段的 blocked 视为无效
 
 ---
 

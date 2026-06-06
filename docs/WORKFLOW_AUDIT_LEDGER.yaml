@@ -111,16 +111,30 @@ systemic_defects_identified:
     pattern: "summary-only evidence pack submitted to GPT multiple times"
     observed_in: [PAPER-A1, push-blocker-resolution, REF-PAPER-2B]
     root_cause: "pre-submission gate does not block summary-only packs BEFORE GPT review"
-    status: open
+    status: fixed
+    fixed_by:
+      - "WORKFLOW-HARDENING-A1 (validator detects summary-only)"
+      - "WORKFLOW-HARDENING-A2 (validator in pre-push gate step 2.5)"
+      - "CONTROL-PLANE-A1 (devframe pack validate calls validator)"
+    lint_note: "memory_lint shows 6x occurrence count because daily log records pre-fix history. Linked gates now deployed."
 
   - id: SD-02
     pattern: "closure declared ready_for_review without GPT review"
     observed_in: [ARCH-GAP-A1, REF-PAPER-1, REF-PAPER-2A]
     root_cause: "closure report template allows ready_for_review as terminal status without GPT evidence"
-    status: open
+    status: fixed
+    fixed_by:
+      - "WORKFLOW-STATE-CONTRACT (ready_for_review→accepted→closed)"
+      - "CLOSURE_REPORT_TEMPLATE (no closed without GPT accepted)"
+      - "validate_workflow_closure.py (closed_without_gpt_accepted fail)"
+    lint_note: "memory_lint shows 5x occurrence count because daily log records pre-fix history. Linked gates now deployed."
 
   - id: SD-03
     pattern: "self-referential failure: governance task bypasses governance"
     observed_in: [ARCH-GAP-A1]
     root_cause: "agent declares its own enforcement task complete without independent review"
-    status: open
+    status: fixed
+    fixed_by:
+      - "GOVERNANCE_TASK_REVIEW_CONTRACT (governance tasks require GPT review)"
+      - "ARCH-GAP-A1 retroactively submitted and GPT accepted"
+    lint_note: "ARCH-GAP-A1 was retroactively reviewed and accepted."

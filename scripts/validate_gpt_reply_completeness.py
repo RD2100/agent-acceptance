@@ -63,6 +63,14 @@ def check_completeness(path: str, expected_type: str = "review") -> dict:
         for field in REQUIRED_REVIEW_FIELDS:
             if f"{field}:" not in content_lower and f'"{field}":' not in content_lower:
                 result["issues"].append(f"missing required field: {field}")
+        # Check conditional: accepted must have next_task_authorization
+        if "overall_judgment: accepted" in content_lower:
+            if "next_task_authorization" not in content_lower and "任务ID" not in content:
+                result["issues"].append("accepted but missing next_task_authorization")
+        # Check conditional: blocked must have required_fixes
+        if "overall_judgment: blocked" in content_lower:
+            if "required_fixes" not in content_lower:
+                result["issues"].append("blocked but missing required_fixes")
 
     # Check for truncation signals
     if content.rstrip().endswith("...") or re.search(r'\btruncat\b', content[-200:].lower()):

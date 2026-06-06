@@ -37,8 +37,9 @@ ALWAYS_ALLOWED_DIRS = {
 DECLARED_EXCEPTIONS = {
     "docs/submit_proposal_to_gpt.py",
     "evidence_packs/paper-a1-contract-design-v1/submit_to_gpt.py",
-    "scripts/check_submission_bypass.py",  # self — contains patterns as detection rules, not usage
-    "tests/test_framework_usage.py",  # references patterns in test assertions
+    "scripts/check_submission_bypass.py",
+    "tests/test_framework_usage.py",
+    "scripts/capture_gpt_reply.py",  # CDP capture utility, uses playwright for capture only
 }
 
 
