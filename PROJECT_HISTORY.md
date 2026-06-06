@@ -1,4 +1,6 @@
 # PROJECT_HISTORY.md — DevFrame Agent Acceptance + Control Plane
+9. accepted 后必须包含 next_task_authorization
+10. blocked 后必须包含 required_fixes 和 resubmission_requirements
 
 > 项目生存文档。每阶段完成后追加，永不删除。Agent 和 GPT 共享此文件理解项目全貌。
 > 最后更新: 2026-06-06T09:58:12Z
@@ -124,20 +126,7 @@ GPT 诊断（见 `docs/GPT_STRUCTURAL_FIX.txt`）：
 4. **manifest 必须与 ZIP 双向一致** — 所有 SHA256 可复核
 5. **WORKFLOW_CLOSURE_VALIDATION 必须 fresh** — 不能是 stale 旧数据
 
----
 
-## 6. 执行规则（完整清单）
-
-1. 每个任务闭环必须经过：plan → execute → self-verify → build evidence pack → submit GPT → GPT accepted → ledger closed
-2. 跳过 GPT 审查的任务不得声称 closed
-3. `devframe pack validate` 调用 workflow closure validator
-4. pre-push gate step 2.5 检查 closure packs
-5. bypass checker 在 pre-commit 阶段运行
-6. GPT_REPLY 少于 2000 bytes 或缺少 END_OF_GPT_RESPONSE → 不得执行
-7. 对话超过 60 条 assistant message → 强制 handoff
-8. HANDOFF.md 必须 >= 8000 bytes 且包含 END_OF_HANDOFF
-
-## 历史主线补充：S3 / B2-B3 / Guarded Steady State 旧工作流
 
 > 追加时间: 2026-06-06T14:35:39Z
 > 来源: GPT 对 4972 行旧对话历史文档的蒸馏分析
@@ -282,7 +271,7 @@ GPT_REPLY.txt 曾只有 174 bytes 时 agent 就开始执行。capture_gpt_reply.
 开启新对话时，使用以下提示词上传 HANDOFF.md：
 
 ```
-请阅读附件 HANDOFF.md（约 25KB，含 
+请阅读附件 HANDOFF.md（约 25KB，含 END_OF_HANDOFF 标记）。用以下中文 YAML 格式回复确认理解：
 
 用以下中文 YAML 格式回复确认理解：
 
@@ -332,6 +321,3 @@ agent-acceptance: 137/137 PASS, 81 warnings
 devframe-control-plane: 57/57 PASS
 ```
 
----
-
-END_OF_PROJECT_HISTORY
