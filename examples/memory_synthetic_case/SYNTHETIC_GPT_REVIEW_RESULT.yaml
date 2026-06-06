@@ -1,0 +1,35 @@
+# Synthetic GPT Review Result
+# synthetic_only: true
+# contains_real_user_data: false
+# contains_private_paper_text: false
+# purpose: 用于演示 memory entry 如何从 GPT_REVIEW_RESULT 中提取 lesson
+
+REVIEW_RUN_ID: "syn-review-001"
+template_version: "gpt-review-template-v1"
+task_type: "execution_closure"
+review_stage: "closure"
+overall_judgment: "blocked"
+reviewer_type: "gpt"
+contract_id: null
+contract_version: null
+evidence_pack: null
+evidence_inspected:
+  - path: "PACK_MANIFEST.md"
+    sha256: null
+    inspected: true
+    role: "pack_manifest"
+blocking_reasons:
+  - "证据包只包含 PACK_MANIFEST.md、CLOSURE_REPORT.yaml、SAFETY_ATTESTATION.md 三个文件，没有任何实际产出文件。这是典型的 summary-only evidence pack。"
+  - "manifest 声称 8 个文件但 ZIP 只有 3 个文件。"
+missing_evidence:
+  - "所有实际产物文件"
+scope_violation: false
+fake_green_risk: true
+safety_boundaries_respected: true
+required_next_action: "补交包含实际产物文件的 evidence pack，确保 manifest 与 ZIP 双向一致后重新提交。"
+allow_proceed: false
+review_unverified_reason: null
+created_at: "2026-06-06T12:00:00Z"
+rationale: "提交方声称完成了 paper review task，但 evidence pack 中没有 REVIEW_REPORT.md、DIMENSION_SCORES.yaml 等实际文件。根据 Evidence-First 原则，summary-only pack 必须被驳回。"
+task_type_specific:
+  execution_closure: {}

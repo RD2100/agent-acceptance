@@ -1,0 +1,40 @@
+# Synthetic Workflow Audit Ledger
+# synthetic_only: true
+# contains_real_user_data: false
+# contains_private_paper_text: false
+
+tasks:
+  - task_id: SYN-TASK-001
+    plan: "合成 paper review 任务"
+    repo: "devframe-control-plane"
+    commit: "syn-abc123"
+    pushed: yes
+    self_verify:
+      tests: "57/57 PASS"
+    gpt_review:
+      submitted: true
+      rounds: 2
+      round_1: "review_unverified (summary-only pack)"
+      round_2: "accepted"
+      verdict: accepted
+    status: closed
+
+  - task_id: SYN-TASK-002
+    plan: "合成 framework enforcement 任务"
+    repo: "agent-acceptance"
+    commit: "syn-def456"
+    pushed: yes
+    self_verify:
+      gate: "4/4 PASS"
+    gpt_review:
+      submitted: false
+      verdict: null
+    status: ready_for_review_not_closed
+    note: "closure report 标注 ready_for_review 但从未提交 GPT——与 ARCH-GAP-A1 相同的 SD-02 模式"
+
+systemic_defects_identified:
+  - id: SYN-SD-01
+    pattern: "summary-only evidence pack"
+    observed_in: ["SYN-TASK-001"]
+    root_cause: "pre-submission gate 未阻断 summary-only pack"
+    status: open

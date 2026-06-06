@@ -1,0 +1,20 @@
+# Synthetic Memory Lint Result
+# synthetic_only: true
+# contains_real_user_data: false
+# contains_private_paper_text: false
+
+MEMORY_LINT_RESULT:
+  result: pass
+  checks_run: 12
+  errors: []
+  warnings:
+    - rule: "L-010"
+      level: "WARNING"
+      task_id: "SYN-TASK-002"
+      description: "accepted task without memory summary（该任务 status=ready_for_review_not_closed，尚未 accepted）"
+  needs_review:
+    - rule: "L-007"
+      level: "NEEDS_REVIEW"
+      pattern: "summary-only evidence pack"
+      occurrence_count: 4
+      description: "该 failure pattern 出现 4 次但 linked gate (pre-submission gate) 尚未强化"
