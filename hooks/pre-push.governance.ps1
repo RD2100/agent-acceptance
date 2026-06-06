@@ -9,7 +9,7 @@ $errors = 0
 Write-Host "=== Pre-Push Governance Gate ==="
 
 # 1. AI Guard — secret scan + deny paths
-Write-Host "[1/5] ai_guard.py..."
+Write-Host "[1/6] ai_guard.py..."
 $result = & python (Join-Path $ProjectRoot "tools\ai_guard.py") full 2>&1
 $ec = $LASTEXITCODE
 Write-Host $result
@@ -20,7 +20,7 @@ if ($ec -ne 0) {
 Write-Host ""
 
 # 2. Reviewer Evidence Validation
-Write-Host "[2/5] Reviewer evidence..."
+Write-Host "[2/6] Reviewer evidence..."
 $result = & powershell -ExecutionPolicy Bypass -File (Join-Path $ProjectRoot "scripts\Test-ReviewerEvidence.ps1") 2>&1
 $ec = $LASTEXITCODE
 Write-Host $result
@@ -31,7 +31,7 @@ if ($ec -ne 0) {
 Write-Host ""
 
 # 2.5 Workflow Closure Validation (SD-01/02/03 enforcement)
-Write-Host "[2.5/5] Workflow closure validation..."
+Write-Host "[2.5/6] Workflow closure validation..."
 $validator = Join-Path $ProjectRoot "scripts\validate_workflow_closure.py"
 $packErrors = 0
 if (Test-Path $validator) {
@@ -61,8 +61,26 @@ if ($packErrors -gt 0) {
 }
 Write-Host ""
 
+# Step 2.6: GPT Review Gate
+Write-Host "[2.6/6] GPT Review Gate..."
+$gptGatePassed = $true
+$stagedClosurePacks = Get-ChildItem -Path "runs" -Recurse -Filter "POST_REVIEW_ROUTE.json" | Where-Object { (Get-Item $_.DirectoryName).LastWriteTime -gt (Get-Date).AddHours(-2) }
+foreach ($pack in $stagedClosurePacks) {
+    $route = Get-Content $pack.FullName -Raw | ConvertFrom-Json
+    if ($route.overall_judgment -eq "submitted_for_gpt_review") {
+        Write-Host "  BLOCKED: $($pack.Directory.Name) has overall_judgment=submitted_for_gpt_review - not yet GPT accepted"
+        $gptGatePassed = $false
+    }
+}
+if (-not $gptGatePassed) {
+    Write-Host "  GPT Review Gate: BLOCKED - some packs not yet GPT accepted. Submit to GPT first."
+    exit 1
+}
+Write-Host "  GPT Review Gate: PASS"
+Write-Host ""
+
 # 3. Governance Drift Check
-Write-Host "[3/5] Drift check..."
+Write-Host "[3/6] Drift check..."
 $result = & powershell -ExecutionPolicy Bypass -File (Join-Path $ProjectRoot "scripts\Test-GovernanceDrift.ps1") 2>&1
 $ec = $LASTEXITCODE
 if ($ec -ne 0) {
@@ -72,7 +90,7 @@ if ($ec -ne 0) {
 Write-Host ""
 
 # 4. Governance Gate (blocking)
-Write-Host "[4/5] Governance gate..."
+Write-Host "[4/6] Governance gate..."
 $result = & powershell -ExecutionPolicy Bypass -File (Join-Path $ProjectRoot "scripts\Test-Governance.ps1") -Mode blocking 2>&1
 $ec = $LASTEXITCODE
 if ($ec -ne 0) {

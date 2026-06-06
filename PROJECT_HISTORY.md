@@ -167,16 +167,26 @@ GPT 诊断（见 `docs/GPT_STRUCTURAL_FIX.txt`）：
 
 ---
 
-## 9. 当前任务链和下一步
+## 9. 对话注册表
 
-### 9.1 当前对话状态
+| 对话 ID | 用途 | 消息数 | 状态 |
+|----------|------|--------|------|
+| 6a22dc07 | 主对话 (已超载) | 82 | closed |
+| 6a23dd8c | 当前活跃 | ~25 | active |
+| 6a23d48d | Handoff 确认 | ~13 | handed-off |
+
+---
+
+## 10. 当前任务链和下一步
+
+### 10.1 当前对话状态
 
 - 主对话: `https://chatgpt.com/c/6a22dc07-18a4-83a3-a922-7c9ab770db3d` (82 msgs, 已超载, 不应再使用)
 - 新对话: `https://chatgpt.com/c/6a23dd8c-4550-83a8-bdee-76ca5a982edb` (13 msgs, 当前活跃)
 - Handoff 对话: `https://chatgpt.com/c/6a23d48d-1b98-83a9-93be-69cab7efddd4` (已确认理解)
 - 最新 Handoff 对话: `https://chatgpt.com/c/6a23dd8c-4550-83a8-bdee-76ca5a982edb` (中文bootstrap, 已确认)
 
-### 9.2 推荐下一步任务
+### 10.2 推荐下一步任务
 
 按优先级排序：
 
@@ -194,31 +204,31 @@ GPT 诊断（见 `docs/GPT_STRUCTURAL_FIX.txt`）：
 
 ---
 
-## 10. 关键教训
+## 11. 关键教训
 
-### 10.1 不要把 ready_for_review 当 closed
+### 11.1 不要把 ready_for_review 当 closed
 
 至少 3 个任务 (ARCH-GAP-A1, REF-PAPER-1, REF-PAPER-2A) 曾被标注为 ready_for_review 但未提交 GPT 审查就声称 done。closed 的唯一路径是 GPT accepted + ledger entry。
 
-### 10.2 不要提交 summary-only evidence pack
+### 11.2 不要提交 summary-only evidence pack
 
 至少 4 次 (PAPER-A1, Push Blocker, REF-PAPER-2B, CONTROL-PLANE-A1) 第一次提交的证据包只有 CLOSURE_REPORT + SAFETY_ATTESTATION + PACK_MANIFEST，没有实际产物文件。每次都导致 GPT 判 review_unverified。validator 现在会检测到这个模式。
 
-### 10.3 GPT 审查不可跳过
+### 11.3 GPT 审查不可跳过
 
 commit + push ≠ done。正确终点是 GPT accepted。pre-push gate 现在有 step 2.5 (closure validation)，但还没有 GPT accepted 检查——这是 GPT-REVIEW-GATE-A1 要修复的。
 
-### 10.4 Stale VALIDATION 危害
+### 11.4 Stale VALIDATION 危害
 
 CONTROL-PLANE-A1 经历了 4+ 轮 blocked，核心原因都是 WORKFLOW_CLOSURE_VALIDATION.yaml 和 PACK_VALIDATE_OUTPUT.txt 是 stale 旧数据。证据包构建顺序必须是：全部文件 → manifest → validator → fresh validation → 替换 stale → manifest 重建。
 
-### 10.5 不要等 GPT 回复未完成就执行
+### 11.5 不要等 GPT 回复未完成就执行
 
 GPT_REPLY.txt 曾只有 174 bytes 时 agent 就开始执行。capture_gpt_reply.py 现在等待 END_OF_GPT_RESPONSE 标记。validate_gpt_reply_completeness.py 检查最小字节数。
 
 ---
 
-## 11. 新对话 Bootstrap 提示词
+## 12. 新对话 Bootstrap 提示词
 
 开启新对话时，使用以下提示词上传 HANDOFF.md：
 
@@ -242,7 +252,7 @@ GPT_REPLY.txt 曾只有 174 bytes 时 agent 就开始执行。capture_gpt_reply.
 
 ---
 
-## 12. 证据包构建检查清单
+## 13. 证据包构建检查清单
 
 每次提交 GPT 前必须确认：
 
@@ -265,7 +275,7 @@ GPT_REPLY.txt 曾只有 174 bytes 时 agent 就开始执行。capture_gpt_reply.
 
 ---
 
-## 13. 当前测试状态
+## 14. 当前测试状态
 
 ```
 agent-acceptance: 137/137 PASS, 81 warnings
