@@ -1,0 +1,4 @@
+﻿D:\agent-acceptance\schemas\agent-runtime\chain-evidence.schema.json	5b2fb26beffc97c569b6bb92e3716f63318f283353c70b114a8339b1f06e88d5
+D:\agent-acceptance\tools\ai_guard.py	8ec2e25a58cf51093ef658ba9565a4531a37a0f3f34bae16446195ddb9f41610
+D:\agent-acceptance\tools\go_evidence.py	4ecf494a921cf20852649e0b67a24e51c6304786b9307de0f691f8bce3f7852d
+D:\agent-acceptance\tests\test_chain_evidence_hardening.py	ba12c814aa783094c2ae701725de1fb561985ff84b509b865e0a3b2d131671b6

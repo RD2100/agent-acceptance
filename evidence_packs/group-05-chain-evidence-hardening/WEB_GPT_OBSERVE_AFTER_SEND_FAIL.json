@@ -1,0 +1,219 @@
+{
+  "url": "https://chatgpt.com/c/6a23dd8c-4550-83a8-bdee-76ca5a982edb",
+  "file_input_count": 3,
+  "assistant_count": 16,
+  "user_count": 61,
+  "buttons_tail": [
+    {
+      "i": 408,
+      "text": "",
+      "aria": "更多操作",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 409,
+      "text": "",
+      "aria": "closure-pack.zip",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 410,
+      "text": "",
+      "aria": "复制消息",
+      "testid": "copy-turn-action-button",
+      "disabled": false
+    },
+    {
+      "i": 411,
+      "text": "",
+      "aria": "编辑消息",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 412,
+      "text": "已思考 1m 12s",
+      "aria": null,
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 413,
+      "text": "",
+      "aria": "复制",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 414,
+      "text": "",
+      "aria": "复制回复",
+      "testid": "copy-turn-action-button",
+      "disabled": false
+    },
+    {
+      "i": 415,
+      "text": "",
+      "aria": "喜欢",
+      "testid": "good-response-turn-action-button",
+      "disabled": false
+    },
+    {
+      "i": 416,
+      "text": "",
+      "aria": "不喜欢",
+      "testid": "bad-response-turn-action-button",
+      "disabled": false
+    },
+    {
+      "i": 417,
+      "text": "",
+      "aria": "分享",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 418,
+      "text": "",
+      "aria": "切换模型",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 419,
+      "text": "",
+      "aria": "更多操作",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 420,
+      "text": "",
+      "aria": "group-04-only-capability-cleanup-r2.zip",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 421,
+      "text": "",
+      "aria": "复制消息",
+      "testid": "copy-turn-action-button",
+      "disabled": false
+    },
+    {
+      "i": 422,
+      "text": "",
+      "aria": "编辑消息",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 423,
+      "text": "已思考 41s",
+      "aria": null,
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 424,
+      "text": "",
+      "aria": "复制",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 425,
+      "text": "",
+      "aria": "复制回复",
+      "testid": "copy-turn-action-button",
+      "disabled": false
+    },
+    {
+      "i": 426,
+      "text": "",
+      "aria": "喜欢",
+      "testid": "good-response-turn-action-button",
+      "disabled": false
+    },
+    {
+      "i": 427,
+      "text": "",
+      "aria": "不喜欢",
+      "testid": "bad-response-turn-action-button",
+      "disabled": false
+    },
+    {
+      "i": 428,
+      "text": "",
+      "aria": "分享",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 429,
+      "text": "",
+      "aria": "切换模型",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 430,
+      "text": "",
+      "aria": "更多操作",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 431,
+      "text": "",
+      "aria": null,
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 432,
+      "text": "",
+      "aria": "添加文件等",
+      "testid": "composer-plus-btn",
+      "disabled": false
+    },
+    {
+      "i": 433,
+      "text": "进阶",
+      "aria": null,
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 434,
+      "text": "",
+      "aria": "开始听写",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 435,
+      "text": "",
+      "aria": "发送提示",
+      "testid": "send-button",
+      "disabled": false
+    },
+    {
+      "i": 436,
+      "text": "",
+      "aria": "closure-pack.zip",
+      "testid": null,
+      "disabled": false
+    },
+    {
+      "i": 437,
+      "text": "",
+      "aria": "移除文件1：closure-pack.zip",
+      "testid": null,
+      "disabled": false
+    }
+  ],
+  "body_tail": "viewer_type: gpt\ntask_id: GROUP-04\nevidence_pack_reviewed: true\nblocking_issues: []\nrequired_fixes: []\nnext_task_authorization:\n  authorized: yes|no\n  execute_immediately: yes|no\n  ask_before_starting: yes|no\n\nEnd with END_OF_GPT_RESPONSE.\n\n已思考 41s\nYAML\noverall_judgment: accepted\nreviewer_type: gpt\ntask_id: GROUP-04\nevidence_pack_reviewed: true\n\nblocking_issues: []\n\nrequired_fixes: []\n\nreview_findings:\n  group_04_only_isolation:\n    status: pass\n    rationale: |\n      本次上传的是 GROUP-04-only 包，不是 GROUP-01/02/03/06。\n      GROUP_04_SELECTED_FILES.txt 只列出：\n      - docs/agent-runtime/capability-inventory.md\n      - docs/agent-runtime/routing-matrix-summary.md\n      - audit/blackboard-cleanup-audit-20260531.md\n\n      actual_deliverables 也只包含这三个对应文件。\n\n  blackboard_not_active:\n    status: pass\n    rationale: |\n      capability-inventory.md 中未发现 active Blackboard capability 条目。\n      routing-matrix-summary.md 中未发现 Blackboard 路由。\n      capability-inventory.md 仅保留 CAP-009 removed 说明，不再把 Blackboard 定位为当前 active capability。\n\n  historical_audit_preserved:\n    status: pass\n    rationale: |\n      actual_deliverables/docs/blackboard-cleanup-audit-20260531.md 被保留在 evidence pack 中。\n      文件 frontmatter 标注 archived: true，archive_reason 说明其为 historical audit report, no longer active。\n      这符合“保留历史 audit evidence，不删除”的要求。\n\n  no_active_guard_weakening:\n    status: pass\n    rationale: |\n      本包没有包含 archive/draft-hooks/*，也没有包含 tools/* 或 active guard 实现文件。\n      CLEANUP_SCOPE_NOTE.txt 说明本任务范围是 capability inventory / routing summary cleanup 与 historical audit preservation。\n      因此本包本身不构成 active guard weakening。\n\n  excluded_dirty_groups:\n    status: pass\n    rationale: |\n      GROUP_04_EXCLUDED_FILES.txt 明确排除 runs/*/POST_REVIEW_ROUTE.json、HANDOFF_REPLY_V4.txt deletion、\n      archive/draft-hooks/*、tools/*、memory/*、tmp/cache、chain-evidence schema、GROUP-01、GROUP-02、\n      GROUP-03、GROUP-06 等其他 dirty groups。\n      evidence pack 中未发现这些排除项作为 deliverables 纳入。\n\n  not_summary_only:\n    status: pass\n    rationale: |\n      evidence pack 包含 actual_deliverables 下的 capability inventory、routing summary、historical blackboard audit，\n      同时包含 selected/excluded files、BLACKBOARD_REFERENCE_OUTPUT、CLEANUP_SCOPE_NOTE、CLOSURE_REPORT、\n      baseline reports 和 PACK_MANIFEST。\n      因此不是 summary-only pack。\n\n  manifest_hash_integrity:\n    status: pass\n    rationale: |\n      PACK_MANIFEST.md 中所有非 self 条目均能在 ZIP 中找到，bytes 与 sha256 校验一致。\n      ZIP 中未发现 manifest 未列出的额外文件。\n\nnon_blocking_notes:\n  - |\n    BLACKBOARD_REFERENCE_OUTPUT.txt 显示编码有些混乱，但 actual deliverables 本身可读，并且直接复核后确认\n    capability inventory / routing summary 中没有 active Blackboard 引用。该编码问题不影响 accepted。\n  - |\n    capability-inventory.md 中仍有 “CAP-009 removed” 说明，这是历史移除标记，不是 active capability。\n    该保留是合理的。\n\naccepted_scope:\n  - \"GROUP-04 accepted as AGENT-RUNTIME-CAPABILITY-CLEANUP.\"\n  - \"该 accepted 仅覆盖 capability inventory cleanup、routing summary cleanup、historical blackboard audit preservation。\"\n  - \"不得将该结果解释为 archive hook changes accepted。\"\n  - \"不得将该结果扩展解释为 tools governance changes、memory outputs、paper validator residuals 或 whole dirty worktree accepted。\"\n\nrequired_next_action: |\n  将 GROUP-04 accepted 结果绑定到任务登记 / ledger / PROJECT_HISTORY 的相应条目中。\n  只允许提交 GROUP-04 selected files：\n  - docs/agent-runtime/capability-inventory.md\n  - docs/agent-runtime/routing-matrix-summary.md\n  - audit/blackboard-cleanup-audit-20260531.md\n\n  提交前再次核对 staged files 与 GROUP_04_SELECTED_FILES.txt 完全一致。\n\nnext_task_authorization:\n  authorized: yes\n  execute_immediately: no\n  ask_before_starting: yes\n  recommended_next_task: \"继续 dirty worktree split 的下一组，或由用户指定转向 CONTEXT-COMPRESSION-A1 / GPT-REVIEW-QUEUE-A1\"\n\nEND_OF_GPT_RESPONSE\n\n﻿Please review the attached GROUP-05 evidence pack.\n\n\n\n\nReview focus:\n\n- Verify the pack isolates chain-evidence hardening only.\n\n- Verify reviewer_role/reviewed_at/rerun_verified_at/rerun_summary behavior is covered by targeted tests.\n\n- Verify malformed chain-evidence cases fail closed.\n\n- Verify finalize writes rerun metadata.\n\n- Verify excluded dirty groups are not included.\n\n- Verify the pack is not summary-only and includes actual deliverables.\n\n\n\n\nReturn structured output:\n\noverall_judgment: accepted|blocked\n\nreviewer_type: gpt\n\ntask_id: GROUP-05\n\nevidence_pack_reviewed: true\n\nblocking_issues: []\n\nrequired_fixes: []\n\nnext_task_authorization:\n\n  authorized: yes|no\n\n  execute_immediately: yes|no\n\n  ask_before_starting: yes|no\n\n\n\n\nEnd with END_OF_GPT_RESPONSE.\n\n\n\n\n进阶\nclosure-pack.zip\n压缩归档\nChatGPT 也可能会犯错。请核查重要信息。"
+}

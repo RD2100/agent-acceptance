@@ -1,0 +1,4 @@
+﻿schemas/agent-runtime/chain-evidence.schema.json
+tools/ai_guard.py
+tools/go_evidence.py
+tests/test_chain_evidence_hardening.py

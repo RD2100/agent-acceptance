@@ -1,0 +1,45 @@
+task_id: GROUP-05
+task_name: CHAIN-EVIDENCE-HARDENING
+status: closed
+primary_repo: agent-acceptance
+submission_target: agent-acceptance
+task_nature: governance_hardening
+review_origin: DIRTY-WORKTREE-SPLIT-A1
+risk_level: high
+gate_0:
+  inventory_evidence:
+    queried_sources:
+      - DIRTY-WORKTREE-SPLIT-A1_GPT_REVIEW_RESULT
+      - chain_evidence_schema_diff
+      - ai_guard_runtime_diff
+      - go_evidence_runtime_diff
+      - existing_run_chain_evidence_samples
+    matched_capabilities:
+      - chain_evidence_schema
+      - ai_guard_evidence_validation
+      - go_evidence_finalize
+      - governance_fail_closed_tests
+write_set:
+  - .ai/tasks/group-05-chain-evidence-hardening.yaml
+  - schemas/agent-runtime/chain-evidence.schema.json
+  - tools/ai_guard.py
+  - tools/go_evidence.py
+  - tests/test_chain_evidence_hardening.py
+  - _reports/group-05-chain-evidence-hardening/**
+  - _reports/group-05-chain-evidence-hardening-binding/**
+  - PROJECT_HISTORY.md
+  - docs/WORKFLOW_AUDIT_LEDGER.yaml
+  - evidence_packs/group-05-chain-evidence-hardening/**
+forbidden_paths:
+  - runs/*/POST_REVIEW_ROUTE.json
+  - HANDOFF_REPLY_V4.txt
+  - archive/draft-hooks/**
+  - memory/**
+  - .tmpconfig/**
+  - .tmpdata/**
+  - '**/__pycache__/**'
+  - '*.pyc'
+  - docs/submit_proposal_to_gpt.py
+verification:
+  - python -m pytest tests/test_chain_evidence_hardening.py -q
+  - python -m pytest tests -q

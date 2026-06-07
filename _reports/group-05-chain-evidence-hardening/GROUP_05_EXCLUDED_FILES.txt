@@ -1,0 +1,14 @@
+﻿runs/*/POST_REVIEW_ROUTE.json
+HANDOFF_REPLY_V4.txt deletion
+archive/draft-hooks/*
+memory/*
+.tmpconfig/
+.tmpdata/
+__pycache__/
+*.pyc
+docs/submit_proposal_to_gpt.py
+GROUP-01 files
+GROUP-02 files
+GROUP-03 files
+GROUP-04 files
+GROUP-06 files

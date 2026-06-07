@@ -1,0 +1,109 @@
+YAML
+overall_judgment: accepted
+reviewer_type: gpt
+task_id: GROUP-05
+evidence_pack_reviewed: true
+
+blocking_issues: []
+
+required_fixes: []
+
+review_findings:
+  group_05_only_isolation:
+    status: pass
+    rationale: |
+      本次上传的是 GROUP-05-only chain-evidence hardening 包，不是 GROUP-03 memory output 包。
+      GROUP_05_SELECTED_FILES.txt 将权威 selected files 限定为：
+      - schemas/agent-runtime/chain-evidence.schema.json
+      - tools/ai_guard.py
+      - tools/go_evidence.py
+      - tests/test_chain_evidence_hardening.py
+
+      actual_deliverables 与 mirror files 只围绕 chain-evidence schema、ai_guard、go_evidence 和 targeted tests。
+      未发现 GROUP-01/02/03/04/06 的 deliverables 被纳入本组。
+
+  reviewer_and_rerun_metadata_coverage:
+    status: pass
+    rationale: |
+      tests/test_chain_evidence_hardening.py 覆盖 reviewer_role、reviewed_at、rerun_verified_at、rerun_summary。
+      测试包括 schema 声明 reviewer/rerun 字段、invalid reviewed_at、missing reviewer_role、
+      reviewer_id mismatch、rerun without summary、rerun before reviewed_at，以及 finalize 写入 rerun metadata。
+
+  malformed_chain_evidence_fail_closed:
+    status: pass
+    rationale: |
+      targeted tests 覆盖 unexpected chain field、invalid reviewed_at、missing reviewer_role、
+      reviewer_id mismatch、rerun_verified_at/rerun_summary 不一致、rerun 时间早于 reviewed_at 等负向场景。
+      这些测试通过 validate_evidence_dir 返回 errors 来证明 malformed chain-evidence fail closed。
+
+  finalize_writes_rerun_metadata:
+    status: pass
+    rationale: |
+      test_finalize_writes_rerun_metadata 构造 evidence dir，调用 cmd_finalize，并断言：
+      - exit_code == 0
+      - chain-evidence.json 写入 rerun_verified_at
+      - chain-evidence.json 写入 rerun_summary
+      - rerun_summary 包含 final=pass
+
+  targeted_tests:
+    status: pass
+    rationale: |
+      TARGETED_TEST_OUTPUT.txt 显示 10 passed。
+      未发现 GROUP-05 test files 的 PytestReturnNotNoneWarning。
+
+  full_tests:
+    status: pass
+    rationale: |
+      TEST_OUTPUT.txt 显示 181 passed, 21 warnings。
+      warnings 来自 legacy tests，例如 tests/test_framework_usage.py 与 tests/test_paper_acceptance_contracts.py，
+      不属于 GROUP-05 selected files。
+
+  excluded_dirty_groups:
+    status: pass
+    rationale: |
+      GROUP_05_EXCLUDED_FILES.txt 明确排除 runs/*/POST_REVIEW_ROUTE.json、HANDOFF_REPLY_V4.txt deletion、
+      archive/draft-hooks/*、memory/*、tmp/cache、docs/submit_proposal_to_gpt.py、GROUP-01/02/03/04/06 files。
+      evidence pack 中未发现这些 excluded dirty groups 作为 GROUP-05 deliverables 纳入。
+
+  not_summary_only:
+    status: pass
+    rationale: |
+      evidence pack 包含 actual deliverables、schema/tool/test mirror files、DIFF_GROUP_05.patch、
+      selected/excluded files、targeted/full test outputs、closure report、baseline reports 和 manifest。
+      因此不是 summary-only pack。
+
+  manifest_hash_integrity:
+    status: pass
+    rationale: |
+      PACK_MANIFEST.md 中 26 个条目均存在于 ZIP 中。
+      除 PACK_MANIFEST.md self_excluded 外，所有文件 bytes 与 sha256 均可复核一致。
+      ZIP 中未发现 manifest 未列出的额外文件。
+
+non_blocking_notes:
+  - |
+    包内 GPT_REVIEW_RESULT.txt 是上一轮误传 GROUP-03 包导致的 blocked 结果。
+    本轮 R2 包通过 GROUP_05_ONLY_R2_DELTA_NOTE.md 与 actual deliverables 纠正了该问题，
+    因此旧 GPT_REVIEW_RESULT.txt 仅作为历史痕迹，不影响本次 accepted。
+  - |
+    tests/GROUP_05_MIRROR_NOTE.md 说明 scripts/ai_guard.py、scripts/go_evidence.py 等 mirror files
+    是为了让 generic workflow closure validation 识别 standard schema/script/test paths。
+    权威 selected files 仍以 GROUP_05_SELECTED_FILES.txt 为准。
+
+accepted_scope:
+  - "GROUP-05 accepted as CHAIN-EVIDENCE-HARDENING."
+  - "该 accepted 仅覆盖 GROUP-05 selected files：chain-evidence schema、tools/ai_guard.py、tools/go_evidence.py、tests/test_chain_evidence_hardening.py。"
+  - "不得将该结果解释为 whole dirty worktree accepted。"
+  - "不得顺手提交 GROUP-01/02/03/04/06、archive hooks、memory outputs、historical runs 修改、HANDOFF_REPLY_V4.txt deletion、tmp/cache/root scratch files。"
+
+required_next_action: |
+  将 GROUP-05 accepted 结果绑定到任务登记 / ledger / PROJECT_HISTORY 的相应条目中。
+  只允许提交 GROUP-05 selected files。
+  提交前再次核对 staged files 与 GROUP_05_SELECTED_FILES.txt 完全一致。
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: no
+  ask_before_starting: yes
+  recommended_next_task: "继续 dirty worktree split 的下一组，或由用户指定转向 CONTEXT-COMPRESSION-A1 / GPT-REVIEW-QUEUE-A1"
+
+END_OF_GPT_RESPONSE_
