@@ -46,3 +46,16 @@ cat memory/index.md
 | review_queue.py | lifecycle management |
 | Tests | 247 PASS |
 | Dirty baseline | 7 files, protected |
+| Cross-repo (control-plane) | 62 PASS, operational |
+
+## Cross-Repo Integration
+
+```bash
+# agent-acceptance
+cd D:\agent-acceptance && python -m pytest tests/ -q --tb=line
+# → 247 passed
+
+# devframe-control-plane  
+cd D:\devframe-control-plane && python -m pytest tests/ -q --tb=line
+# → 62 passed (3 pre-existing failures not caused by this work)
+```
