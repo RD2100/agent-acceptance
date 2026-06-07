@@ -100,6 +100,7 @@ write_set:
   - "DASHBOARD.html"
   - "scripts/check_submission_bypass.py"
   - ".ai/bypass_approved"
+  - "CHECKPOINT_MANIFEST.json"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"

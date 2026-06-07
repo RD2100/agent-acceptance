@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-06-07T15:42:46.277272+00:00",
+  "bundles": {
+    "agent-acceptance": {
+      "sha256": "cbdfa099dc02eb3af648ad83caa28cf1c570ac9cf73a9cc4792600f0f8f9beff",
+      "size_bytes": 27512240
+    },
+    "devframe-control-plane": {
+      "sha256": "e11f93196676296009814b992873a87e4c27c34f430ae207ba8e828fd664e6ed",
+      "size_bytes": 152485
+    }
+  }
+}
