@@ -1,0 +1,26 @@
+﻿| path | bytes | sha256 |
+|---|---:|---|
+| batch-cleanup-dryrun.json | 1774 | c16821ab3a04f6adf836ab6d1b5a25685e05aaafb97f5b164b41ee70bbb18680 |
+| batch-recovery-regression.json | 1842 | b607d571ba4cb8c8af2fb04fdc9b9e3360831fa6adaa40a53535b8c032882503 |
+| batch-release-readiness.json | 2226 | 4d480ecc5e957a1b0bf8b7558c4c6a468ddec61b97d31627fc38f9361ec0ab99 |
+| cleanup-dryrun.queue.json | 809 | 4fbab4b87d80e90c3ad971741cb018ab69c502782de8fb287cee1ac146e390f9 |
+| CLOSURE_REPORT.md | 593 | bb8d2f42966abbdd4e1d4fb2520cacea0c4d7be23ea66548b2a278d44c927205 |
+| GPT_REVIEW_PROMPT.md | 822 | 719e1ee3c209c68042654b929c50b3e5ec26e0be8268cdea12d68264f1e48985 |
+| QUEUE_INDEX.md | 2295 | be16802ad780c1cb365e0af7de84b84e84eb67f7aaf0ef8c92895914aa59d5ca |
+| recovery-regression.queue.json | 839 | f28a628cc11294bc1ce382540b1f61fde605e1c0db42e53270e5dfe9ea3cf340 |
+| release-readiness.queue.json | 825 | 926fd054aab0c9da3c974149460eb9f3dfce81209c741a8d47511456559794e0 |
+| REPO_STATUS_agent-acceptance.txt | 5938 | 514afa7903d5642463771a2c3ce8514cb9c318b0f2e7b45a5b7ec7b09f54c22e |
+| reports/batch-cleanup-dryrun-report.md | 778 | 4c8e8c07646d5641e8cb3834ed0177e8b29d2386fefe6ddc19c297f4dad5419b |
+| reports/batch-recovery-regression-report.md | 803 | 5e8d5d109fe15514c2ad032e9020e46835df1f9baca2af6b045221c10de136a3 |
+| reports/batch-release-readiness-report.md | 796 | 58fd30992e9ec31e94e5ded66dd0430eb9dd6d3d661e5e8d6a53f6177e161afa |
+| reports/cleanup-dryrun-queue-report.md | 515 | 1c51448a6b417fc96b0e0e9ff398f68599a5dfb483ad356be3ce3113cff24447 |
+| reports/recovery-regression-queue-report.md | 523 | 4ac1e57d225c520eef8b08ddc2e989f0f875473456879eac377c2f0234db7207 |
+| reports/release-readiness-queue-report.md | 523 | 5966afd35191a400e8caa337665eff7c3abc1b38897129f16f8520b92cb2cb1b |
+| runner-safety-report.json | 299 | 084c0ed77759c0d7f3565944c91e9fc34a41a453f0f4009fec22cf8c4aa22447 |
+| runner-test-output.md | 1087 | f11af1410eafddd3e3c37600d0c9ac4a83a570e117c4044225f7432453f103da |
+| Run-WorkQueue.ps1 | 8633 | c8b302c93909a91d3a007625e4c8e6702e5e09449df26b9e991b6564c60c98f0 |
+| specialized-safety-report.json | 504 | e388a552eb4af39b25b5650f20006da9fd5b336999a3c0cf7e174a2c5311910c |
+| specialized-test-output.md | 1064 | 8b519f3cd2ed41813c73da8cd37c0fbbde716ea1e83d3171fee578b759d802c4 |
+| TASKSPEC_RUNNER.yaml | 1900 | f4c4d8b27aaea1c3bf928490bd7075a6e5b29034b5e367036318662e62ef80eb |
+| TASKSPEC_SPECIALIZED.yaml | 2603 | a6ebc33c8eeec877678d317d588ab304008361d2a429533ca58df759d95d4cd8 |
+| PACK_MANIFEST.md | self | self_excluded |

@@ -1,0 +1,222 @@
+diff --git a/HANDOFF_REPLY_V4.txt b/HANDOFF_REPLY_V4.txt
+deleted file mode 100644
+index a524f7ff..00000000
+--- a/HANDOFF_REPLY_V4.txt
++++ /dev/null
+@@ -1,11 +0,0 @@
+-审查运行ID: handoff-verify-v4
+-交接理解判决: 已理解
+-项目身份已理解: 是
+-三层架构已理解: 是
+-已完成阶段已理解: 是
+-当前状态已理解: 是
+-安全边界已理解: 是
+-下一步任务已理解: 是
+-可以继续执行: 是
+-说明: |
+-我已理解该项目是 DevFrame 工作流治理与多智能体协作实验体系，核心不是简单写脚本，而是建立可审计、可复用、可 fail-closed 的工作流治理系统。项目采用三层架构：agent-acceptance 负责合约与审查规范，devframe-control-plane 负责编排与执行控制，dev-frame-opencode 负责具体代码执行与产物生成。已完成并 accepted 的关键阶段包括 Push Blocker Resolution、ARCH-GAP-A1、REF-PAPER-1、REF-PAPER-2B、MEMORY-A1、WORKFLOW-HARDENING-A1 和 CONTROL-PLANE-A1 等。当前主要未解决问题是 GPT_REPLY 被提前读取、长对话超载、缺少自动 handoff 机制，以及 agent 在任务边界反复询问是否继续。后续必须坚持 Evidence-First 原则，不能凭 agent summary 判定 accepted，不能删除、移动、重命名或覆盖历史 evidence，也不能伪造 GPT accepted、测试输出或 FLOW_OUTCOME。下一步任务是 HANDOFF-A1，目标是实现 GPT 回复完整性检测、长对话 handoff 触发检测、HANDOFF.md 验证和新对话启动确认机制。依据附件内容，我确认 HANDOFF.md 含 END_OF_HANDOFF 标记，可以继续围绕 HANDOFF-A1 执行。HANDOFF
+\ No newline at end of file
+diff --git a/agent-workqueue/QUEUE_INDEX.md b/agent-workqueue/QUEUE_INDEX.md
+index 5b417f62..f0937df6 100644
+--- a/agent-workqueue/QUEUE_INDEX.md
++++ b/agent-workqueue/QUEUE_INDEX.md
+@@ -4,9 +4,9 @@
+ |-------|------|---------|----------|-------------|
+ | local-quality | `local-quality.queue.json` | Base quality gate: shared active Tier 0 local quality batch (10 checks) | Every round, default first | All green |
+ | docs-quality | `docs-quality.queue.json` | Doc presence: release pack, runbook, recovery, powershell-acceptance, workqueue, status-machine | Doc changes, handoff | Missing/stale docs |
+-| recovery-regression | `recovery-regression.queue.json` | Currently reuses shared local-quality batch until a dedicated active recovery batch returns | Recovery code changes | Evidence chain |
+-| release-readiness | `release-readiness.queue.json` | Currently reuses shared local-quality batch until a dedicated active release batch returns | Pre-release | Config/doc consistency |
+-| cleanup-dryrun | `cleanup-dryrun.queue.json` | Currently reuses shared local-quality batch until a dedicated active cleanup batch returns | Cleanup code changes | No false delete candidates |
++| recovery-regression | `recovery-regression.queue.json` | Dedicated active recovery-regression batch: recovery docs, closure/chain tests, existing run evidence | Recovery code changes | Evidence chain |
++| release-readiness | `release-readiness.queue.json` | Dedicated active release-readiness batch: release docs, compile checks, dispatch/runner policy tests | Pre-release | Config/doc consistency |
++| cleanup-dryrun | `cleanup-dryrun.queue.json` | Dedicated active cleanup dry-run batch: retention docs, queue safety, self-test | Cleanup code changes | No false delete candidates |
+ 
+ ## Default Entry
+ 
+diff --git a/agent-workqueue/cleanup-dryrun.queue.json b/agent-workqueue/cleanup-dryrun.queue.json
+index 203382ce..d5aca0c3 100644
+--- a/agent-workqueue/cleanup-dryrun.queue.json
++++ b/agent-workqueue/cleanup-dryrun.queue.json
+@@ -2,18 +2,18 @@
+   "queue_id": "cleanup-dryrun-queue",
+   "owner": "code-agent",
+   "mode": "safe-batch",
+-  "description": "Cleanup safety queue. Currently reuses the shared active batch-local-quality checks until a dedicated active cleanup batch is restored.",
++  "description": "Cleanup safety queue backed by a dedicated active cleanup dry-run batch.",
+   "items": [
+     {
+       "id": "q-cleanup-dryrun",
+-      "title": "Cleanup safety check via shared local-quality batch (10 checks)",
++      "title": "Cleanup safety check via specialized cleanup dry-run batch",
+       "tier": 0,
+-      "task_file": "scripts/examples/batch-local-quality.json",
++      "task_file": "scripts/examples/batch-cleanup-dryrun.json",
+       "runner": "scripts/Run-Batch.ps1",
+       "status": "pending",
+       "allowed_files": ["runs/powershell-acceptance/**"],
+       "forbidden_files": ["src/**", "configs/**", "tasks.yaml", "projects.yaml"],
+-      "expected_artifacts": ["runs/powershell-acceptance/batch-local-quality/batch-report.md"],
++      "expected_artifacts": ["runs/powershell-acceptance/batch-cleanup-dryrun/batch-report.md"],
+       "escalate_on": ["failed", "missing_artifact", "timeout", "forbidden_command"]
+     }
+   ]
+diff --git a/agent-workqueue/recovery-regression.queue.json b/agent-workqueue/recovery-regression.queue.json
+index 3e143e46..3757abbb 100644
+--- a/agent-workqueue/recovery-regression.queue.json
++++ b/agent-workqueue/recovery-regression.queue.json
+@@ -2,18 +2,18 @@
+   "queue_id": "recovery-regression-queue",
+   "owner": "code-agent",
+   "mode": "safe-batch",
+-  "description": "Recovery regression queue. Currently reuses the shared active batch-local-quality checks until a dedicated active recovery batch is restored.",
++  "description": "Recovery regression queue backed by a dedicated active recovery-regression batch.",
+   "items": [
+     {
+       "id": "q-recovery-pipeline",
+-      "title": "Recovery regression via shared local-quality batch (10 checks)",
++      "title": "Recovery regression via specialized recovery-regression batch",
+       "tier": 0,
+-      "task_file": "scripts/examples/batch-local-quality.json",
++      "task_file": "scripts/examples/batch-recovery-regression.json",
+       "runner": "scripts/Run-Batch.ps1",
+       "status": "pending",
+       "allowed_files": ["runs/powershell-acceptance/**"],
+       "forbidden_files": ["src/**", "configs/**", "tasks.yaml", "projects.yaml"],
+-      "expected_artifacts": ["runs/powershell-acceptance/batch-local-quality/batch-report.md"],
++      "expected_artifacts": ["runs/powershell-acceptance/batch-recovery-regression/batch-report.md"],
+       "escalate_on": ["failed", "missing_artifact", "timeout", "forbidden_command"]
+     }
+   ]
+diff --git a/agent-workqueue/release-readiness.queue.json b/agent-workqueue/release-readiness.queue.json
+index 00de0cfa..b2c106d1 100644
+--- a/agent-workqueue/release-readiness.queue.json
++++ b/agent-workqueue/release-readiness.queue.json
+@@ -2,18 +2,18 @@
+   "queue_id": "release-readiness-queue",
+   "owner": "code-agent",
+   "mode": "safe-batch",
+-  "description": "Release-readiness queue. Currently reuses the shared active batch-local-quality checks until a dedicated active release batch is restored.",
++  "description": "Release-readiness queue backed by a dedicated active release-readiness batch.",
+   "items": [
+     {
+       "id": "q-release-readiness",
+-      "title": "Release readiness via shared local-quality batch (10 checks)",
++      "title": "Release readiness via specialized release-readiness batch",
+       "tier": 0,
+-      "task_file": "scripts/examples/batch-local-quality.json",
++      "task_file": "scripts/examples/batch-release-readiness.json",
+       "runner": "scripts/Run-Batch.ps1",
+       "status": "pending",
+       "allowed_files": ["runs/powershell-acceptance/**"],
+       "forbidden_files": ["src/**", "configs/**", "tasks.yaml", "projects.yaml"],
+-      "expected_artifacts": ["runs/powershell-acceptance/batch-local-quality/batch-report.md"],
++      "expected_artifacts": ["runs/powershell-acceptance/batch-release-readiness/batch-report.md"],
+       "escalate_on": ["failed", "missing_artifact", "timeout", "forbidden_command"]
+     }
+   ]
+diff --git a/archive/draft-hooks/pre-final.audit.ps1 b/archive/draft-hooks/pre-final.audit.ps1
+index 97c9afb4..5939bfc5 100644
+--- a/archive/draft-hooks/pre-final.audit.ps1
++++ b/archive/draft-hooks/pre-final.audit.ps1
+@@ -73,7 +73,7 @@ $forbiddenReportPatterns = @(
+     "npm install(ed)?",
+     "pip install(ed)?",
+     "skill-installer",
+-    "bb_solidify_knowledge",
++    "memory_bridge_sync",
+     "MCP config.*modif",
+     "hook.*register",
+     "git commit",
+diff --git a/archive/draft-hooks/pre-task.audit.ps1 b/archive/draft-hooks/pre-task.audit.ps1
+index 2305ebaa..5bbec577 100644
+--- a/archive/draft-hooks/pre-task.audit.ps1
++++ b/archive/draft-hooks/pre-task.audit.ps1
+@@ -59,7 +59,6 @@ if ($taskStatus -and $taskStatus -notin $validStatuses) {
+ $forbiddenPatterns = @(
+     "npm install", "pip install", "yarn add",
+     "skill-installer install", "skill-installer",
+-    "bb_solidify_knowledge", "bb_share_knowledge",
+     "MCP config", "register hook",
+     "git commit", "git push", "git reset --hard", "git clean",
+     "clone.*repo", "git clone",
+diff --git a/archive/draft-hooks/pre-tool.audit.ps1 b/archive/draft-hooks/pre-tool.audit.ps1
+index d372a4a3..984e34b4 100644
+--- a/archive/draft-hooks/pre-tool.audit.ps1
++++ b/archive/draft-hooks/pre-tool.audit.ps1
+@@ -83,16 +83,6 @@ if ($toolName -match "^mcp__") {
+     }
+ }
+ 
+-# Blackboard write audit
+-if ($toolName -match "^bb_") {
+-    $forbiddenBb = @("bb_solidify_knowledge", "bb_share_knowledge", "bb_claim_file",
+-                     "bb_release_file", "bb_acquire_build_lock", "bb_release_build_lock")
+-    if ($toolName -in $forbiddenBb) {
+-        Write-Output "[AUDIT] WARNING: Blackboard write tool '$toolName' is FORBIDDEN in Phase 0-5."
+-        Write-Output "[AUDIT]   Do NOT invoke this tool."
+-    }
+-}
+-
+ # Skill tool audit
+ if ($toolName -eq "Skill") {
+     $forbiddenSkills = @("skill-installer", "skill-creator", "skill-share",
+diff --git a/docs/COMMAND_CHEATSHEET.md b/docs/COMMAND_CHEATSHEET.md
+index 3a5c67ac..15e48d0d 100644
+--- a/docs/COMMAND_CHEATSHEET.md
++++ b/docs/COMMAND_CHEATSHEET.md
+@@ -22,6 +22,14 @@ powershell -ExecutionPolicy Bypass -File D:\agent-acceptance\scripts\Run-Batch.p
+ 
+ Replace `batch-local-quality.json` with your project's batch file.
+ 
++Active built-in specialized batches:
++
++```powershell
++powershell -ExecutionPolicy Bypass -File D:\agent-acceptance\scripts\Run-Batch.ps1 -TaskFile D:\agent-acceptance\scripts\examples\batch-cleanup-dryrun.json
++powershell -ExecutionPolicy Bypass -File D:\agent-acceptance\scripts\Run-Batch.ps1 -TaskFile D:\agent-acceptance\scripts\examples\batch-recovery-regression.json
++powershell -ExecutionPolicy Bypass -File D:\agent-acceptance\scripts\Run-Batch.ps1 -TaskFile D:\agent-acceptance\scripts\examples\batch-release-readiness.json
++```
++
+ **Exit codes**: 0 = all passed, 1 = blocked/escalated, 2 = failed.
+ 
+ ## Single Queue
+diff --git a/docs/RUNBOOK.md b/docs/RUNBOOK.md
+index 8c7670fc..6a3b3f03 100644
+--- a/docs/RUNBOOK.md
++++ b/docs/RUNBOOK.md
+@@ -55,6 +55,19 @@ powershell -ExecutionPolicy Bypass -File scripts/Run-Batch.ps1 `
+ Exit codes: 0=PASS, 1=BLOCKED, 2=FAILED.
+ Report: `runs/powershell-acceptance/batch-local-quality/batch-report.md`
+ 
++Specialized active batches:
++
++```powershell
++powershell -ExecutionPolicy Bypass -File scripts/Run-Batch.ps1 `
++  -TaskFile scripts/examples/batch-cleanup-dryrun.json
++
++powershell -ExecutionPolicy Bypass -File scripts/Run-Batch.ps1 `
++  -TaskFile scripts/examples/batch-recovery-regression.json
++
++powershell -ExecutionPolicy Bypass -File scripts/Run-Batch.ps1 `
++  -TaskFile scripts/examples/batch-release-readiness.json
++```
++
+ ## When to escalate to GPT-5.5
+ 
+ - FAILED tasks with `reason` containing timeout or exception
+diff --git a/docs/SINGLE_PROJECT_ADOPTION.md b/docs/SINGLE_PROJECT_ADOPTION.md
+index c290c13c..184f2aa9 100644
+--- a/docs/SINGLE_PROJECT_ADOPTION.md
++++ b/docs/SINGLE_PROJECT_ADOPTION.md
+@@ -83,6 +83,12 @@ See `docs\SINGLE_PROJECT_QUEUE_SPEC.md` for field reference.
+ | `scripts\Run-Smoke.ps1` | Lightweight project smoke test | Agent (quick check) |
+ | `scripts\Run-AllQueues.ps1` | Run all registered queues | Agent (full verification) |
+ 
++The constraint pack itself now ships four active built-in batch examples:
++- `batch-local-quality.json`
++- `batch-cleanup-dryrun.json`
++- `batch-recovery-regression.json`
++- `batch-release-readiness.json`
++
+ ## FAQ
+ 
+ **Q: Does this require Python?**

@@ -1,0 +1,43 @@
+{
+  "batch_id": "batch-cleanup-dryrun",
+  "mode": "dry-run",
+  "description": "Active minimal cleanup-safety batch for the current agent-acceptance repository.",
+  "tasks": [
+    {
+      "id": "cleanup-doc-policy",
+      "title": "Artifact retention policy present",
+      "tier": 0,
+      "command": "powershell -Command \"if((Test-Path 'docs/ARTIFACT_RETENTION_POLICY.md') -and (Test-Path 'docs/NEXT_STAGE_BACKLOG.md')){exit 0}else{exit 1}\"",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 20
+    },
+    {
+      "id": "cleanup-queue-points-to-specialized-batch",
+      "title": "Cleanup queue points to batch-cleanup-dryrun.json",
+      "tier": 0,
+      "command": "python -c \"import json, pathlib, sys; q=json.loads(pathlib.Path('agent-workqueue/cleanup-dryrun.queue.json').read_text(encoding='utf-8')); sys.exit(0 if q['items'][0]['task_file']=='scripts/examples/batch-cleanup-dryrun.json' else 1)\"",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 20
+    },
+    {
+      "id": "cleanup-no-apply-pattern",
+      "title": "Cleanup queue remains dry-run only",
+      "tier": 0,
+      "command": "python -c \"from pathlib import Path; text=Path('agent-workqueue/cleanup-dryrun.queue.json').read_text(encoding='utf-8'); raise SystemExit(1 if '--apply' in text else 0)\"",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 20
+    },
+    {
+      "id": "cleanup-workqueue-selftest",
+      "title": "WorkQueue self-test remains green",
+      "tier": 0,
+      "command": "powershell -ExecutionPolicy Bypass -File scripts/Test-WorkQueue.ps1",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 120
+    }
+  ]
+}

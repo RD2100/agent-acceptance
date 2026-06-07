@@ -1,0 +1,43 @@
+{
+  "batch_id": "batch-recovery-regression",
+  "mode": "dry-run",
+  "description": "Active minimal recovery/regression batch for the current agent-acceptance repository.",
+  "tasks": [
+    {
+      "id": "recovery-docs-present",
+      "title": "Recovery docs present",
+      "tier": 0,
+      "command": "python -c \"from pathlib import Path; files=['docs/RECOVERY_PIPELINE_RUNBOOK.md','docs/NEXT_AGENT_HANDOFF.md']; raise SystemExit(0 if all(Path(f).exists() for f in files) else 1)\"",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 20
+    },
+    {
+      "id": "recovery-workflow-closure-tests",
+      "title": "Recovery-related workflow closure tests",
+      "tier": 0,
+      "command": "python -c \"import time; time.sleep(0.2)\"; python -m pytest tests/test_workflow_closure_validation.py tests/test_chain_evidence_hardening.py -q",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "recovery-existing-run-evidence",
+      "title": "Existing recovery-style run evidence remains valid",
+      "tier": 0,
+      "command": "python tools/ai_guard.py evidence runs/t-dirty-boundary-closure-20260601",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "recovery-queue-points-to-specialized-batch",
+      "title": "Recovery queue points to batch-recovery-regression.json",
+      "tier": 0,
+      "command": "python -c \"import json, pathlib, sys; q=json.loads(pathlib.Path('agent-workqueue/recovery-regression.queue.json').read_text(encoding='utf-8')); sys.exit(0 if q['items'][0]['task_file']=='scripts/examples/batch-recovery-regression.json' else 1)\"",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 20
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+YAML
+overall_judgment: accepted
+reviewer_type: gpt
+task_id: t-workqueue-specialized-batches-20260607
+evidence_pack_reviewed: true
+
+blocking_issues: []
+
+required_fixes: []
+
+review_findings:
+  specialized_batch_jsons_exist:
+    status: pass
+    rationale: |
+      evidence pack 包含三个 specialized batch JSON：
+      - batch-cleanup-dryrun.json
+      - batch-recovery-regression.json
+      - batch-release-readiness.json
+
+  queues_point_to_specialized_batches:
+    status: pass
+    rationale: |
+      cleanup-dryrun.queue.json 指向 scripts/examples/batch-cleanup-dryrun.json。
+      recovery-regression.queue.json 指向 scripts/examples/batch-recovery-regression.json。
+      release-readiness.queue.json 指向 scripts/examples/batch-release-readiness.json。
+      三个队列不再指向 shared batch-local-quality.json。
+
+  direct_batch_runs_pass:
+    status: pass
+    rationale: |
+      reports/batch-cleanup-dryrun-report.md 显示 PASS=4 BLOCKED=0 FAILED=0。
+      reports/batch-recovery-regression-report.md 显示 PASS=4 BLOCKED=0 FAILED=0。
+      reports/batch-release-readiness-report.md 显示 PASS=4 BLOCKED=0 FAILED=0。
+      三个 specialized batch 直接运行均通过。
+
+  queue_execution_status:
+    status: pass_with_known_remaining_blocker
+    rationale: |
+      cleanup-dryrun queue 通过：
+      reports/cleanup-dryrun-queue-report.md 显示 PASS=1 BLOCKED=0 FAILED=0。
+
+      recovery-regression queue 仍失败：
+      reports/recovery-regression-queue-report.md 显示 FAILED，Reason 为 exit code 2。
+
+      release-readiness queue 仍失败：
+      reports/release-readiness-queue-report.md 显示 FAILED，Reason 为 exit code 2。
+
+      这与 test-output.md 和 safety-report.json 的结论一致。
+
+  internal_consistency:
+    status: pass
+    rationale: |
+      CLOSURE_REPORT.md、test-output.md、safety-report.json 与 batch/queue reports 一致：
+      specialized batch files 已存在并可直接通过；
+      cleanup queue 通过；
+      recovery/release queue 仍在 queue runner 层面失败。
+      本包没有再出现“实际 PASS 但叙述 blocked”的矛盾。
+
+  excluded_dirty_groups:
+    status: pass
+    rationale: |
+      ZIP 中未包含 archive hooks、tools governance、memory outputs、paper validator residuals、historical runs 修改、
+      HANDOFF_REPLY_V4.txt deletion、tmp/cache/root scratch files 作为 deliverables。
+      REPO_STATUS_agent-acceptance.txt 仅作为 dirty baseline 证据出现，不代表这些 dirty files 被纳入本任务。
+
+  not_summary_only:
+    status: pass
+    rationale: |
+      evidence pack 包含实际 batch JSON、queue JSON、QUEUE_INDEX.md、batch reports、queue reports、
+      TASKSPEC.yaml、CLOSURE_REPORT.md、test-output.md、safety-report.json 和 PACK_MANIFEST.md。
+      因此不是 summary-only pack。
+
+  manifest_hash_integrity:
+    status: pass
+    rationale: |
+      PACK_MANIFEST.md 中所有非 self 条目均存在于 ZIP 中，bytes 与 sha256 校验一致。
+      ZIP 中未发现 manifest 未列出的额外文件。
+
+accepted_scope:
+  - "WorkQueue specialized-batches slice accepted."
+  - "cleanup/recovery/release specialized batch JSONs 已存在。"
+  - "cleanup/recovery/release queues 已改为指向 specialized active batch files，而不是 shared local-quality batch。"
+  - "direct batch runs 均通过。"
+  - "cleanup queue 通过。"
+  - "recovery/release queue 仍失败，剩余问题不在 batch JSON 引用完整性，而在 queue-level exit/result propagation。"
+
+next_task_recommendation:
+  recommended_task_id: "t-workqueue-runner-exit-propagation-20260607"
+  recommendation: |
+    下一任务应扩展范围到 scripts/Run-WorkQueue.ps1，并允许在诊断证明必要时纳入 scripts/Run-Batch.ps1。
+    当前证据显示 direct batch PASS，但 recovery/release 通过 queue 执行时仍 exit code 2。
+    因此继续编辑 batch JSON 或 queue JSON 不再是正确方向；应诊断 queue runner 如何读取 batch exit/result/report，
+    以及为什么 direct PASS 被 queue 层传播为 FAILED。
+  suggested_scope:
+    primary:
+      - "scripts/Run-WorkQueue.ps1"
+    conditional:
+      - "scripts/Run-Batch.ps1"
+    tests_required:
+      - "direct Run-Batch cleanup/recovery/release all pass"
+      - "Run-WorkQueue cleanup/recovery/release all pass"
+      - "negative case: failing batch must still propagate FAILED"
+      - "missing artifact / timeout / forbidden command cases still fail closed"
+    safety_boundary:
+      - "不得修改历史 runs evidence"
+      - "不得删除、移动、重命名历史 evidence"
+      - "不得把 runner failure 包装成 queue success"
+      - "不得弱化 failed/blocker/escalation 规则"
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: "t-workqueue-runner-exit-propagation-20260607"
+
+END_OF_GPT_RESPONSE_

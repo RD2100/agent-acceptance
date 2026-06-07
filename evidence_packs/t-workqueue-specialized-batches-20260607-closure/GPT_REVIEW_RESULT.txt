@@ -1,0 +1,108 @@
+YAML
+overall_judgment: accepted
+reviewer_type: gpt
+task_id: t-workqueue-specialized-batches-20260607
+evidence_pack_reviewed: true
+
+blocking_issues: []
+
+required_fixes: []
+
+review_findings:
+  specialized_batch_jsons_exist:
+    status: pass
+    rationale: |
+      evidence pack 包含三个 specialized batch JSON：
+      - batch-cleanup-dryrun.json
+      - batch-recovery-regression.json
+      - batch-release-readiness.json
+
+  queues_point_to_specialized_batches:
+    status: pass
+    rationale: |
+      cleanup-dryrun.queue.json 指向 scripts/examples/batch-cleanup-dryrun.json。
+      recovery-regression.queue.json 指向 scripts/examples/batch-recovery-regression.json。
+      release-readiness.queue.json 指向 scripts/examples/batch-release-readiness.json。
+      三个 queue 已不再指向 shared local-quality batch。
+
+  direct_specialized_batch_runs_pass:
+    status: pass
+    rationale: |
+      reports/batch-cleanup-dryrun-report.md 显示 PASS=4 BLOCKED=0 FAILED=0。
+      reports/batch-recovery-regression-report.md 显示 PASS=4 BLOCKED=0 FAILED=0。
+      reports/batch-release-readiness-report.md 显示 PASS=4 BLOCKED=0 FAILED=0。
+      三个 direct specialized batch run 均通过。
+
+  queue_executions_pass_after_runner_fix:
+    status: pass
+    rationale: |
+      runner-test-output.md 显示 cleanup、recovery、release 三个 queue 在 runner fix 后均 PASS。
+      reports/cleanup-dryrun-queue-report.md 显示 PASS=1 BLOCKED=0 FAILED=0。
+      reports/recovery-regression-queue-report.md 显示 PASS=1 BLOCKED=0 FAILED=0。
+      reports/release-readiness-queue-report.md 显示 PASS=1 BLOCKED=0 FAILED=0。
+      runner-safety-report.json 的 exit_code 为 0，并说明 cleanup/recovery/release queue executions all pass after queue runner propagation fix。
+
+  runner_exit_propagation_fix:
+    status: pass
+    rationale: |
+      evidence pack 包含 Run-WorkQueue.ps1，未包含 Run-Batch.ps1。
+      当前证据显示只需要修复 queue-level exit/result propagation，且修复后 queue verdicts 与 direct batch outcomes 一致。
+      因此本轮没有不必要扩大到 Run-Batch.ps1。
+
+  workqueue_follow_on_path_closed:
+    status: pass
+    rationale: |
+      CLOSURE_REPORT.md 说明该 closure pack 分两步关闭 WorkQueue follow-on path：
+      1. cleanup/recovery/release specialized active batches restored；
+      2. queue runner exit propagation fixed so queue-level outcomes match direct batch outcomes。
+      最终状态与 reports 中的 PASS artifacts 一致。
+
+  no_unrelated_governance_cleanup:
+    status: pass
+    rationale: |
+      ZIP 中未包含 archive hooks、tools governance cleanup、memory outputs、paper validator residuals、historical runs rewrites、
+      HANDOFF_REPLY_V4.txt deletion、tmp/cache/root scratch files 作为 deliverables。
+      REPO_STATUS_agent-acceptance.txt 仍显示 dirty baseline 中存在其他脏改动，但它只是状态证据，不代表这些文件被纳入本任务。
+
+  not_summary_only:
+    status: pass
+    rationale: |
+      evidence pack 包含实际 batch JSON、queue JSON、QUEUE_INDEX.md、Run-WorkQueue.ps1、batch reports、queue reports、
+      runner-test-output、runner-safety-report、TASKSPEC_SPECIALIZED、TASKSPEC_RUNNER、CLOSURE_REPORT 和 PACK_MANIFEST。
+      因此不是 summary-only pack。
+
+  manifest_hash_integrity:
+    status: pass
+    rationale: |
+      PACK_MANIFEST.md 中 24 个条目均存在于 ZIP 中。
+      除 PACK_MANIFEST.md self_excluded 外，其余文件 bytes 与 sha256 均可复核一致。
+      ZIP 中未发现 manifest 未列出的额外文件。
+
+non_blocking_notes:
+  - |
+    specialized-test-output.md 与 specialized-safety-report.json 保留了 runner 修复前的诊断状态：
+    recovery/release queue 当时仍 FAILED。runner-test-output.md、runner-safety-report.json 和最终 queue reports
+    则记录 runner fix 后的 PASS 状态。CLOSURE_REPORT.md 已说明本包分两步关闭路径，因此该前后状态差异不构成阻塞。
+    后续为了减少歧义，建议把这类旧诊断文件命名为 before-runner-fix 或 historical-diagnostic。
+
+accepted_scope:
+  - "WorkQueue closure accepted."
+  - "specialized batch JSONs for cleanup/recovery/release exist."
+  - "corresponding queues point to specialized active batch files."
+  - "direct specialized batch runs pass."
+  - "cleanup/recovery/release queue executions pass after Run-WorkQueue exit propagation fix."
+  - "本 accepted 仅覆盖 WorkQueue specialized batches + Run-WorkQueue queue-level exit/result propagation 修复。"
+  - "不得将本 accepted 扩展解释为 unrelated governance cleanup、whole dirty worktree accepted、archive hook changes accepted 或 historical evidence rewrite accepted。"
+
+required_next_action: |
+  将 t-workqueue-specialized-batches-20260607 accepted 结果绑定到任务登记 / ledger / PROJECT_HISTORY。
+  只允许提交本 closure pack 对应的 WorkQueue selected files 与 Run-WorkQueue.ps1 修复。
+  提交前再次核对 staged files，不得顺手提交 dirty baseline 中的 archive hooks、runs/*、HANDOFF_REPLY_V4.txt deletion、memory outputs、paper validator residuals、tmp/cache/root scratch files。
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: no
+  ask_before_starting: yes
+  recommended_task_id: "CONTEXT-COMPRESSION-A1"
+
+END_OF_GPT_RESPONSE_

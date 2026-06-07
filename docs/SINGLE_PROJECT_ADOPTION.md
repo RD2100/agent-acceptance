@@ -83,6 +83,12 @@ See `docs\SINGLE_PROJECT_QUEUE_SPEC.md` for field reference.
 | `scripts\Run-Smoke.ps1` | Lightweight project smoke test | Agent (quick check) |
 | `scripts\Run-AllQueues.ps1` | Run all registered queues | Agent (full verification) |
 
+The constraint pack itself now ships four active built-in batch examples:
+- `batch-local-quality.json`
+- `batch-cleanup-dryrun.json`
+- `batch-recovery-regression.json`
+- `batch-release-readiness.json`
+
 ## FAQ
 
 **Q: Does this require Python?**

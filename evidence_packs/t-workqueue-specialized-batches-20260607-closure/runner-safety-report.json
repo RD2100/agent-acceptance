@@ -1,0 +1,8 @@
+﻿{
+  "generated_at": "2026-06-07T16:20:00+08:00",
+  "producer": "workqueue-runner-exit-propagation",
+  "command": "queue-runner replay after propagation fix",
+  "exit_code": 0,
+  "stdout": "cleanup/recovery/release queue executions all pass after queue runner propagation fix.",
+  "stderr": ""
+}

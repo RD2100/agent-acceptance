@@ -55,6 +55,19 @@ powershell -ExecutionPolicy Bypass -File scripts/Run-Batch.ps1 `
 Exit codes: 0=PASS, 1=BLOCKED, 2=FAILED.
 Report: `runs/powershell-acceptance/batch-local-quality/batch-report.md`
 
+Specialized active batches:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/Run-Batch.ps1 `
+  -TaskFile scripts/examples/batch-cleanup-dryrun.json
+
+powershell -ExecutionPolicy Bypass -File scripts/Run-Batch.ps1 `
+  -TaskFile scripts/examples/batch-recovery-regression.json
+
+powershell -ExecutionPolicy Bypass -File scripts/Run-Batch.ps1 `
+  -TaskFile scripts/examples/batch-release-readiness.json
+```
+
 ## When to escalate to GPT-5.5
 
 - FAILED tasks with `reason` containing timeout or exception

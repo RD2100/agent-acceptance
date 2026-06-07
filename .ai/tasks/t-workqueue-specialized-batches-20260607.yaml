@@ -1,0 +1,70 @@
+task_id: t-workqueue-specialized-batches-20260607
+title: Restore specialized WorkQueue batches
+priority: P1
+status: closed
+mode: "@go edit"
+description: >
+  Follow-on WorkQueue task after the integrity slice. Replace long-term reuse of
+  the shared active `batch-local-quality.json` with queue-specific active batch
+  files where queue semantics require it.
+
+goal:
+  user_visible_success: >
+    `cleanup-dryrun.queue.json`, `recovery-regression.queue.json`, and
+    `release-readiness.queue.json` no longer rely on a generic shared batch when
+    their semantics require dedicated active checks.
+  in_scope:
+    - Audit current reuse of `scripts/examples/batch-local-quality.json`
+    - Decide which queues need dedicated active batch files
+    - Create specialized batch files only where current semantics justify them
+    - Align queue descriptions and docs with the active batch layout
+    - Produce dedicated executor evidence under `runs/t-workqueue-specialized-batches-20260607/`
+  out_of_scope:
+    - Broad governance cleanup
+    - WorkQueue runner engine redesign
+    - Commit/push/merge
+
+allow_write:
+  - agent-workqueue/cleanup-dryrun.queue.json
+  - agent-workqueue/recovery-regression.queue.json
+  - agent-workqueue/release-readiness.queue.json
+  - agent-workqueue/QUEUE_INDEX.md
+  - docs/COMMAND_CHEATSHEET.md
+  - docs/RUNBOOK.md
+  - docs/SINGLE_PROJECT_ADOPTION.md
+  - scripts/examples/batch-cleanup-dryrun.json
+  - scripts/examples/batch-recovery-regression.json
+  - scripts/examples/batch-release-readiness.json
+  - scripts/Run-WorkQueue.ps1
+  - agent-workqueue/QUEUE_INDEX.md
+  - PROJECT_HISTORY.md
+  - docs/WORKFLOW_AUDIT_LEDGER.yaml
+  - _reports/t-workqueue-specialized-batches-20260607-binding/**
+  - runs/t-workqueue-specialized-batches-20260607/**
+
+gate_0:
+  triggered: true
+  inventory_evidence:
+    queried_sources:
+      - evidence_packs/t-workqueue-integrity-20260607-review/GPT_REVIEW_RESULT.txt
+      - agent-workqueue/cleanup-dryrun.queue.json
+      - agent-workqueue/recovery-regression.queue.json
+      - agent-workqueue/release-readiness.queue.json
+      - scripts/examples/batch-local-quality.json
+      - agent-workqueue/QUEUE_INDEX.md
+      - docs/COMMAND_CHEATSHEET.md
+      - docs/RUNBOOK.md
+    matched_capabilities:
+      - workqueue
+      - batch_runner
+      - queue_integrity
+    compared_against_request:
+      - "specialized active batches after integrity baseline is restored"
+  sufficiency_decision: new_delta_required
+  decision: build_delta
+
+acceptance_criteria:
+  - Shared `batch-local-quality.json` remains valid for `local-quality.queue.json`
+  - Queues that need specialized semantics no longer point to the shared batch
+  - Docs and queue descriptions match the active batch layout
+  - WorkQueue self-test and relevant queue/batch runs pass

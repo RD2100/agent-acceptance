@@ -22,6 +22,14 @@ powershell -ExecutionPolicy Bypass -File D:\agent-acceptance\scripts\Run-Batch.p
 
 Replace `batch-local-quality.json` with your project's batch file.
 
+Active built-in specialized batches:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File D:\agent-acceptance\scripts\Run-Batch.ps1 -TaskFile D:\agent-acceptance\scripts\examples\batch-cleanup-dryrun.json
+powershell -ExecutionPolicy Bypass -File D:\agent-acceptance\scripts\Run-Batch.ps1 -TaskFile D:\agent-acceptance\scripts\examples\batch-recovery-regression.json
+powershell -ExecutionPolicy Bypass -File D:\agent-acceptance\scripts\Run-Batch.ps1 -TaskFile D:\agent-acceptance\scripts\examples\batch-release-readiness.json
+```
+
 **Exit codes**: 0 = all passed, 1 = blocked/escalated, 2 = failed.
 
 ## Single Queue

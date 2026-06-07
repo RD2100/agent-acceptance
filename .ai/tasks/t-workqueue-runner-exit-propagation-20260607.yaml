@@ -1,0 +1,48 @@
+task_id: t-workqueue-runner-exit-propagation-20260607
+title: Fix WorkQueue runner exit propagation
+priority: P0
+status: closed
+mode: "@go edit"
+description: >
+  Direct batch execution passes for recovery/release specialized batches, but
+  queue execution still reports FAILED. Fix queue-level exit/result propagation
+  so queue verdicts match underlying batch verdicts.
+
+goal:
+  user_visible_success: >
+    cleanup, recovery, and release queues report the same outcome as their
+    direct batch executions.
+  in_scope:
+    - Diagnose and fix queue-level exit/result propagation in scripts/Run-WorkQueue.ps1
+    - Touch scripts/Run-Batch.ps1 only if strictly required by evidence
+    - Produce dedicated executor evidence under runs/t-workqueue-runner-exit-propagation-20260607/
+  out_of_scope:
+    - Broad governance cleanup
+    - Queue JSON redesign
+    - Commit/push/merge
+
+allow_write:
+  - scripts/Run-WorkQueue.ps1
+  - scripts/Run-Batch.ps1
+  - .ai/tasks/t-workqueue-runner-exit-propagation-20260607.yaml
+  - runs/t-workqueue-runner-exit-propagation-20260607/**
+
+gate_0:
+  triggered: true
+  inventory_evidence:
+    queried_sources:
+      - evidence_packs/t-workqueue-specialized-batches-20260607-review/GPT_REVIEW_RESULT_R3.txt
+      - runs/powershell-acceptance/batch-recovery-regression/batch-result.json
+      - runs/powershell-acceptance/batch-release-readiness/batch-result.json
+      - runs/powershell-acceptance/workqueue/recovery-regression-queue/queue-result.json
+      - runs/powershell-acceptance/workqueue/release-readiness-queue/queue-result.json
+      - scripts/Run-WorkQueue.ps1
+      - scripts/Run-Batch.ps1
+    matched_capabilities:
+      - workqueue
+      - batch_runner
+      - process_exit_propagation
+    compared_against_request:
+      - "direct batch PASS but queue FAIL must be reconciled at runner level"
+  sufficiency_decision: new_delta_required
+  decision: build_delta

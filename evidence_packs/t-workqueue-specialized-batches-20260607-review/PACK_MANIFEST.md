@@ -1,0 +1,22 @@
+﻿| path | bytes | sha256 |
+|---|---:|---|
+| batch-cleanup-dryrun.json | 1774 | c16821ab3a04f6adf836ab6d1b5a25685e05aaafb97f5b164b41ee70bbb18680 |
+| batch-recovery-regression.json | 1842 | b607d571ba4cb8c8af2fb04fdc9b9e3360831fa6adaa40a53535b8c032882503 |
+| batch-release-readiness.json | 2226 | 4d480ecc5e957a1b0bf8b7558c4c6a468ddec61b97d31627fc38f9361ec0ab99 |
+| cleanup-dryrun.queue.json | 809 | 4fbab4b87d80e90c3ad971741cb018ab69c502782de8fb287cee1ac146e390f9 |
+| CLOSURE_REPORT.md | 944 | de25e4e99074b1ca199403444357fefe0d7afeda8a0a0e5e4130b264c5ce8817 |
+| GPT_REVIEW_PROMPT.md | 932 | 3b970ecdcce5a57a81f4bab67a230e86a93ada850c32aa3ec17c7659941dffdd |
+| QUEUE_INDEX.md | 2295 | be16802ad780c1cb365e0af7de84b84e84eb67f7aaf0ef8c92895914aa59d5ca |
+| recovery-regression.queue.json | 839 | f28a628cc11294bc1ce382540b1f61fde605e1c0db42e53270e5dfe9ea3cf340 |
+| release-readiness.queue.json | 825 | 926fd054aab0c9da3c974149460eb9f3dfce81209c741a8d47511456559794e0 |
+| REPO_STATUS_agent-acceptance.txt | 5612 | d55d953cf1a11472cacd5bdb407958590bda09087ce6517e4d5dbe4959ef9040 |
+| reports/batch-cleanup-dryrun-report.md | 780 | 892dfebdc57b9fef9251863da58ce12fb1323eaead043e4af2a6edb6799206c1 |
+| reports/batch-recovery-regression-report.md | 805 | a748722a86963985b8c21fbe1aac102bc6f3aa91346e37399166c5e811c529c4 |
+| reports/batch-release-readiness-report.md | 794 | 5b09e7abb918da6eb1a4d767ef03c3cc9a985b3d7d787d8a8e9929abd2290bd1 |
+| reports/cleanup-dryrun-queue-report.md | 517 | f965de1cd24d76fd6af38b2f46d07b29efa809c71471589c7a20f5aed6174f90 |
+| reports/recovery-regression-queue-report.md | 521 | 621bb15f88afecd3192a417c1660401ee49694ce26525ad6c0829272c14b035d |
+| reports/release-readiness-queue-report.md | 519 | 178c484ca93da0e868612a10eb5e3088f25c3e4c3140a46e39674a74db83565e |
+| safety-report.json | 504 | e388a552eb4af39b25b5650f20006da9fd5b336999a3c0cf7e174a2c5311910c |
+| TASKSPEC.yaml | 2603 | a6ebc33c8eeec877678d317d588ab304008361d2a429533ca58df759d95d4cd8 |
+| test-output.md | 1064 | 8b519f3cd2ed41813c73da8cd37c0fbbde716ea1e83d3171fee578b759d802c4 |
+| PACK_MANIFEST.md | self | self_excluded |

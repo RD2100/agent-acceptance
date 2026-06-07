@@ -1,0 +1,43 @@
+{
+  "batch_id": "batch-release-readiness",
+  "mode": "dry-run",
+  "description": "Active minimal release-readiness batch for the current agent-acceptance repository.",
+  "tasks": [
+    {
+      "id": "release-docs-present",
+      "title": "Release docs present",
+      "tier": 0,
+      "command": "python -c \"from pathlib import Path; files=['docs/RELEASE_VERIFICATION_CHECKLIST.md','docs/OPERATOR_RUNBOOK_INDEX.md','docs/NEXT_AGENT_HANDOFF.md']; raise SystemExit(0 if all(Path(f).exists() for f in files) else 1)\"",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 20
+    },
+    {
+      "id": "release-compile-core-scripts",
+      "title": "Compile core governance scripts",
+      "tier": 0,
+      "command": "python -m py_compile tools/ai_guard.py tools/go_evidence.py scripts/validate_workflow_closure.py scripts/validate_paper_task.py scripts/memory_compiler.py scripts/memory_lint.py",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "release-dispatch-runner-policy",
+      "title": "Dispatch and runner policy set",
+      "tier": 0,
+      "command": "python -c \"import time; time.sleep(0.2)\"; python -m pytest tests/test_dispatch_result_schema.py tests/test_flow_outcome_schema.py tests/test_taskspec_schema.py tests/test_runner_contract_schema.py tests/test_runner_state_schema.py tests/test_runner_step_result_schema.py tests/test_dispatcher_policy.py tests/test_next_taskspec_consumption_policy.py tests/test_run_until_terminal_policy.py tests/test_terminal_state_policy.py -q",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 180
+    },
+    {
+      "id": "release-queue-points-to-specialized-batch",
+      "title": "Release queue points to batch-release-readiness.json",
+      "tier": 0,
+      "command": "python -c \"import json, pathlib, sys; q=json.loads(pathlib.Path('agent-workqueue/release-readiness.queue.json').read_text(encoding='utf-8')); sys.exit(0 if q['items'][0]['task_file']=='scripts/examples/batch-release-readiness.json' else 1)\"",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 20
+    }
+  ]
+}
