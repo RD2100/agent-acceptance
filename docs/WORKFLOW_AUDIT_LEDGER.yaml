@@ -435,6 +435,38 @@ tasks:
     status: accepted
     note: "WorkQueue integrity slice accepted; future specialized batches remain follow-up work."
 
+  - task_id: t-workqueue-specialized-batches-20260607
+    plan: "Restore specialized WorkQueue batches"
+    repo: agent-acceptance
+    commit: "50f6b25"
+    pushed: yes
+    evidence_pack:
+      path: evidence_packs/t-workqueue-specialized-batches-20260607-closure/closure-pack.zip
+      sha256: "a2ad67b86b53fe6fb18f4841d65f65291addefa8a358c1e4f2c7ec58524a8d26"
+      manifest_hash_check: pass
+      zip_manifest_bidirectional_match: pass
+    self_verify:
+      specialized_batches_exist: "true"
+      direct_specialized_batches_pass: "cleanup/recovery/release all PASS"
+      queue_executions_pass: "cleanup/recovery/release all PASS"
+      runner_exit_propagation_fix: "pass"
+    gpt_review:
+      submitted: true
+      reviewer: GPT
+      verdict: accepted
+      review_result_path: evidence_packs/t-workqueue-specialized-batches-20260607-closure/GPT_REVIEW_RESULT.txt
+      review_result_sha256: "d5c44aa2dd7991613e5fdff7132496b30cde1c9ffcadf207e090909bbcd5adbe"
+      web_submission_result: evidence_packs/t-workqueue-specialized-batches-20260607-closure/WEB_GPT_SUBMISSION_RESULT.json
+      web_submission_result_sha256: "490da89f8e59965e8589e880f6012cc9debdf6384191921a382e9ea273c1cbb"
+      send_clicked: true
+    closure_binding:
+      accepted_time: "2026-06-07T16:18:00+08:00"
+      mode: append_only_minimal_binding
+      binding_record: _reports/t-workqueue-specialized-batches-20260607-binding/WORKQUEUE_SPECIALIZED_BATCHES_BINDING_RECORD.yaml
+      scope_limit: "accepted scope covers specialized batches plus queue runner propagation fix only"
+    status: accepted
+    note: "WorkQueue specialized batches and queue-level propagation fix accepted as a combined closure slice."
+
 systemic_defects_identified:
   - id: SD-01
     pattern: "summary-only evidence pack submitted to GPT multiple times"

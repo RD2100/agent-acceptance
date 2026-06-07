@@ -592,4 +592,33 @@ implementation_commit: "361a2c9"
 pushed_to_github: true
 ```
 
+## WorkQueue Specialized Closure Binding (2026-06-07)
+
+Status: accepted by web GPT as the combined WorkQueue specialized-batches and queue-propagation closure slice.
+
+This entry binds only the specialized WorkQueue follow-on path. It must not be
+interpreted as acceptance of unrelated governance cleanup or the whole dirty
+worktree.
+
+Binding:
+
+```yaml
+task_id: t-workqueue-specialized-batches-20260607
+primary_repo: agent-acceptance
+overall_judgment: accepted
+reviewer_type: gpt
+accepted_time: "2026-06-07T16:18:00+08:00"
+evidence_pack: evidence_packs/t-workqueue-specialized-batches-20260607-closure/closure-pack.zip
+evidence_pack_sha256: "a2ad67b86b53fe6fb18f4841d65f65291addefa8a358c1e4f2c7ec58524a8d26"
+gpt_review_result: evidence_packs/t-workqueue-specialized-batches-20260607-closure/GPT_REVIEW_RESULT.txt
+gpt_review_result_sha256: "d5c44aa2dd7991613e5fdff7132496b30cde1c9ffcadf207e090909bbcd5adbe"
+web_gpt_submission_result: evidence_packs/t-workqueue-specialized-batches-20260607-closure/WEB_GPT_SUBMISSION_RESULT.json
+web_gpt_submission_result_sha256: "490da89f8e59965e8589e880f6012cc9debdf6384191921a382e9ea273c1cbb"
+binding_record: _reports/t-workqueue-specialized-batches-20260607-binding/WORKQUEUE_SPECIALIZED_BATCHES_BINDING_RECORD.yaml
+scope_limit: "specialized WorkQueue batches plus queue-level exit propagation only"
+whole_dirty_worktree_accepted: false
+implementation_commit: "50f6b25"
+pushed_to_github: true
+```
+
 END_OF_PROJECT_HISTORY

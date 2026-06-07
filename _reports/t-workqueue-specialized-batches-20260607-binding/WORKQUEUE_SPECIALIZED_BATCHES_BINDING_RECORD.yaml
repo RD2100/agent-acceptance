@@ -1,0 +1,32 @@
+task_id: t-workqueue-specialized-batches-20260607
+binding_id: t-workqueue-specialized-batches-20260607-binding-20260607
+binding_time: "2026-06-07T16:18:00+08:00"
+primary_repo: agent-acceptance
+mode: append_only_minimal_binding
+implementation_scope: "WORKQUEUE-SPECIALIZED-BATCHES + WORKQUEUE-RUNNER-EXIT-PROPAGATION"
+implementation_commit: "50f6b25"
+review_origin: GPT accepted workqueue specialized closure review
+overall_judgment: accepted
+reviewer_type: gpt
+review_result:
+  path: evidence_packs/t-workqueue-specialized-batches-20260607-closure/GPT_REVIEW_RESULT.txt
+  sha256: "d5c44aa2dd7991613e5fdff7132496b30cde1c9ffcadf207e090909bbcd5adbe"
+web_submission:
+  path: evidence_packs/t-workqueue-specialized-batches-20260607-closure/WEB_GPT_SUBMISSION_RESULT.json
+  sha256: "490da89f8e59965e8589e880f6012cc9debdf6384191921a382e9ea273c1cbb"
+  file_uploaded: true
+  prompt_filled: true
+  send_clicked: true
+  reply_complete: true
+  overall_judgment_seen: true
+evidence_pack:
+  path: evidence_packs/t-workqueue-specialized-batches-20260607-closure/closure-pack.zip
+  sha256: "a2ad67b86b53fe6fb18f4841d65f65291addefa8a358c1e4f2c7ec58524a8d26"
+accepted_scope:
+  - specialized_batches_exist
+  - queues_point_to_specialized_batches
+  - direct_specialized_batches_pass
+  - queue_executions_pass_after_runner_fix
+  - no_unrelated_governance_cleanup
+status: accepted
+pushed_to_github: true
