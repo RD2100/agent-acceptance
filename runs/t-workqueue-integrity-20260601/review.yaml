@@ -1,0 +1,20 @@
+﻿reviewer_role: reviewer
+reviewer_id: gpt-web-reviewer-workqueue-20260607
+executor_id: executor-t-workqueue-integrity-20260601
+reviewed_inputs:
+  - diff.patch
+  - test-output.md
+  - safety-report.json
+  - chain-evidence.json
+verdict: pass
+verdict_reason: >
+  WorkQueue integrity slice is accepted after evidence consistency refresh.
+  Missing batch-local-quality.json defect is fixed, Test-WorkQueue passes,
+  the shared local-quality batch passes, and local-quality queue execution passes.
+checks:
+  batch_local_quality_exists: pass
+  queue_references_resolve: pass
+  test_workqueue_passes: pass
+  batch_local_quality_passes: pass
+  local_quality_queue_passes: pass
+accepted: true

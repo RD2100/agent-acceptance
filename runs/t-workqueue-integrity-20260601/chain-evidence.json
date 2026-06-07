@@ -2,7 +2,11 @@
   "run_id": "t-workqueue-integrity-20260601",
   "task_file": ".ai/tasks/t-workqueue-integrity-20260601.yaml",
   "executor_id": "executor-t-workqueue-integrity-20260601",
-  "reviewer_id": null,
+  "reviewer_id": "gpt-web-reviewer-workqueue-20260607",
   "created_at": "2026-06-07T06:51:52+00:00",
-  "producer": "tools/go_evidence.py init"
+  "producer": "tools/go_evidence.py init",
+  "reviewer_role": "reviewer",
+  "reviewed_at": "2026-06-07T07:44:48+00:00",
+  "rerun_verified_at": "2026-06-07T07:44:49+00:00",
+  "rerun_summary": "guard=pass; evidence=pass; reviewer=accepted; final=pass"
 }
