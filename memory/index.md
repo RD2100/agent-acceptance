@@ -26,6 +26,9 @@
 | PAPER-C2 | unknown | noise |
 | t-workqueue-integrity-20260601 | unknown | blocker |
 | t-workqueue-specialized-batches-20260607 | unknown | fix |
+| CONTEXT-COMPRESSION-A1 | closed | decision, committed |
+| AI-GUARD-STAGED-SCOPE-A1 | closed | decision, committed |
+| GPT-REVIEW-QUEUE-A1 | accepted_with_limitation | decision, pending_binding |
 
 ## Knowledge Files
 
@@ -35,3 +38,9 @@
 - memory/knowledge/paper_privacy.md
 - memory/knowledge/workqueue.md
 - memory/knowledge/context_compression.md
+
+## Current Focus
+
+CONTEXT-COMPRESSION-A1 + AI-GUARD-STAGED-SCOPE-A1 + GPT-REVIEW-QUEUE-A1 committed.
+247 tests PASS. ai_guard staged-only operational. 7 dirty baseline protected.
+Next: wait GPT authorization for next task.

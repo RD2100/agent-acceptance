@@ -26,15 +26,13 @@ DevFrame 是一个三层工作流治理体系，用 evidence-first + GPT 审查 
 2. devframe-control-plane（编排控制层）— pipeline runner、state machine、submission adapter、CDP bridge、CLI
 3. dev-frame-opencode（执行层）— 具体代码修改和测试运行
 
-当前 agent-acceptance 测试 170 PASS，devframe-control-plane 测试 65 PASS，全线绿色。
+当前 agent-acceptance 测试 232 PASS（170 baseline + 62 new），devframe-control-plane 测试 65 PASS，全线绿色。
 
 ---
 
 ## 3. 当前阶段
 
-当前阶段：治理基础设施完善期。已通过 GROUP-01 到 GROUP-06 完成合约、政策、测试、memory compiler、能力清单、chain evidence、workflow closure validator 的 backfill 和 GPT binding。PAPER-C2 已闭合（protocol-only 授权/脱敏 gate，不启用真实论文执行）。
-
-最近完成 REPO-CODE-VERIFICATION-R3：确认 GitHub 远程仓库 clean（仅含 GPT-accepted GROUP files）。本地 worktree 仍 dirty（含 HANDOFF_REPLY_V4 deletion、archive hooks 修改、runs POST_REVIEW_ROUTE 修改、.tmpconfig、.tmpdata、__pycache__），但严格禁止 whole-dirty-tree commit。下一步进入 CONTEXT-COMPRESSION-A1 阶段。
+当前阶段：治理基础设施完善，上下文压缩层已部署。CONTEXT-COMPRESSION-A1 + AI-GUARD-STAGED-SCOPE-A1 + GPT-REVIEW-QUEUE-A1 已 committed。247 tests PASS。ai_guard staged-only 模式生效。7 个 dirty baseline 文件受保护（未提交）。
 
 ---
 
@@ -49,27 +47,28 @@ DevFrame 是一个三层工作流治理体系，用 evidence-first + GPT 审查 
 - GROUP-06: VALIDATE-WORKFLOW-CLOSURE-CONTROL-PLANE-PATTERN — workflow closure validator
 - WorkQueue: specialized batches + Run-WorkQueue propagation
 - REPO-CODE-VERIFICATION-R3: remote origin/master clean for accepted scope
+- CONTEXT-COMPRESSION-A1: privacy-safe context compression layer (accepted R6, committed)
+- AI-GUARD-STAGED-SCOPE-A1: ai_guard staged-only fix (accepted R4, committed)
+- GPT-REVIEW-QUEUE-A1: review queue with lifecycle (accepted_with_limitation, committed)
 
 ---
 
 ## 5. 当前开放风险
 
 当前开放风险：
-1. 本地 dirty worktree 未被清理（不得 whole-dirty-tree commit）
-2. REVIEW-TEMPLATE-V2 已 push 但未 GPT 审查（需补审）
-3. 上下文膨胀：PROJECT_HISTORY.md 和 HANDOFF 版本持续增长，新 agent 冷启动成本上升
-4. GPT 审查曾被系统跳过：agent 将 commit+push 当作终点（已通过 pre-push gate step 2.6 加固）
-5. CDP 通信依赖 Chrome --remote-debugging-port=9222 运行
+1. 7 个 dirty baseline 文件受保护（未提交，known_dirty_worktree_excluded）
+2. 本地 dirty worktree 未被清理（不得 whole-dirty-tree commit）
+3. REVIEW-TEMPLATE-V2 已 push 但未 GPT 审查（需补审）
+4. CDP 通信依赖 Chrome --remote-debugging-port=9222 运行
 
 ---
 
 ## 6. 下一步推荐任务
 
-推荐下一步：CONTEXT-COMPRESSION-A1（当前任务）
-- 建立 BOOT_CONTEXT.md 作为新 agent 冷启动入口
-- 建立 memory/index.md 作为可检索记忆索引
-- 实现 privacy guard（阻断论文正文、raw transcript、secret）
-- 后续可考虑：PAPER-PRIVACY-GUARD-HARDENING、GPT-REVIEW-QUEUE-A1
+推荐下一步：等待 GPT 授权下一个任务（如 PROJECT-HISTORY-BOOT-MEMORY-SYNC-A1 已完成）
+- ai_guard 已修复，staged-only 模式生效
+- review_queue.py 可用于后续 GPT review 提交管理
+- 不得 whole-dirty-tree commit，不得触碰 dirty baseline
 
 ---
 

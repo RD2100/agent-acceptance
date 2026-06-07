@@ -1,7 +1,7 @@
 # PROJECT_HISTORY.md — DevFrame Agent Acceptance + Control Plane
 > 项目生存文档。每阶段完成后追加，永不删除。Agent 和 GPT 共享此文件理解项目全貌。
-> Last updated: 2026-06-07T06:37:59+08:00
-> Current stage: PAPER-C2 accepted and closed; next GPT-authorized work requires a fresh task gate.
+> Last updated: 2026-06-07T17:40:00+08:00
+> Current stage: CONTEXT-COMPRESSION-A1 accepted (R6); pending binding/commit blocked by pre-commit gate ai_guard.py scope scan.
 > 文档版本: v1
 
 ---
@@ -636,14 +636,79 @@ task_name: "Long Conversation Context Compression Layer"
 primary_repo: agent-acceptance
 overall_judgment: accepted
 reviewer_type: gpt
+review_rounds: 6
+accepted_time: "2026-06-07T17:35:00+08:00"
 evidence_pack: evidence_packs/context-compression-a1/closure-pack-r6.zip
 evidence_pack_sha256: "0dc2c3359f12dd7f4e31d78e00291961383ac5ca1c47fc3e847ba12778ce375e"
 gpt_review_result: evidence_packs/context-compression-a1/GPT_REVIEW_RESULT_R6.txt
 gpt_review_result_sha256: "99e0ac7942c6dd13f1cd1c939e5e3babc0925999a20291ca5392810151b5e2f3"
 scope_limit: "only CONTEXT-COMPRESSION-A1 selected files"
 whole_dirty_worktree_accepted: false
-implementation_commit: "TBD"
+implementation_commit: "NOT YET COMMITTED (pre-commit gate blocked)"
 pushed_to_github: false
+commit_blocker: >
+  Pre-commit gate ai_guard.py scans entire working tree (git diff HEAD),
+  not just staged files (git diff --cached). 7 dirty-worktree files
+  (HANDOFF_REPLY_V4.txt, archive/draft-hooks/*.ps1 x3, runs/*/POST_REVIEW_ROUTE.json x2,
+  hooks/sealed-files-manifest.json) are modified in working tree but NOT staged.
+  All 107 staged files are clean and covered by TaskSpec write_set.
+  GPT adjudication requested but not yet received.
+resolution_candidates:
+  - "stash dirty files → commit → unstash"
+  - "fix ai_guard.py to scan staged-only (separate task AI-GUARD-STAGED-SCOPE-A1)"
+  - "GPT authorization for --no-verify"
+```
+
+## AI-GUARD-STAGED-SCOPE-A1 Acceptance Binding (2026-06-07)
+
+Status: accepted by web GPT (R4). Fixes ai_guard task mode to scan staged files only.
+
+```yaml
+task_id: AI-GUARD-STAGED-SCOPE-A1
+task_name: "Fix ai_guard pre-commit scope to staged-files-only"
+overall_judgment: accepted
+reviewer_type: gpt
+review_rounds: 4
+evidence_pack: evidence_packs/ai-guard-staged-scope-a1/closure-pack-r4.zip
+evidence_pack_sha256: "79e0e821c49f3a8a10b707d7987e77e96d26fe4696d718acd069139e60c2b962"
+gpt_review_result: evidence_packs/ai-guard-staged-scope-a1/GPT_REVIEW_RESULT_R4.txt
+scope_limit: "only AI-GUARD-STAGED-SCOPE-A1 selected files"
+whole_dirty_worktree_accepted: false
+implementation_commit: "b517d26a"
+pushed_to_github: false
+```
+
+## GPT-REVIEW-QUEUE-A1 Acceptance Binding (2026-06-07)
+
+Status: accepted_with_limitation (scope creep R3, core functionality complete).
+
+```yaml
+task_id: GPT-REVIEW-QUEUE-A1
+task_name: "GPT Review Queue with Lifecycle Management"
+overall_judgment: accepted_with_limitation
+reviewer_type: gpt
+review_rounds: 3
+evidence_pack: evidence_packs/gpt-review-queue-a1/closure-pack-r3.zip
+scope_limit: "only GPT-REVIEW-QUEUE-A1 selected files"
+whole_dirty_worktree_accepted: false
+implementation_commit: "b517d26a"
+pushed_to_github: false
+```
+
+## Session Summary (2026-06-07)
+
+```yaml
+session_tasks_completed:
+  - CONTEXT-COMPRESSION-A1 (R6 accepted)
+  - AI-GUARD-STAGED-SCOPE-A1 (R4 accepted)
+  - POST-COMMIT-VERIFICATION-A1 (verified)
+  - GPT-REVIEW-QUEUE-A1 (accepted_with_limitation)
+
+session_stats:
+  commits: 2 (df530cfc, b517d26a)
+  tests: 247 PASS
+  ai_guard: PASS (staged-only mode)
+  dirty_baseline: "7 files protected, not committed"
 ```
 
 END_OF_PROJECT_HISTORY
