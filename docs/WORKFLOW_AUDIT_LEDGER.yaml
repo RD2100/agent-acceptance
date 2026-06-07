@@ -239,6 +239,39 @@ tasks:
     status: accepted
     note: "GROUP-01 accepted as isolated backfill; this does not accept the whole dirty worktree."
 
+  - task_id: GROUP-02
+    plan: "PAPER-A3-VALIDATOR-RESIDUAL"
+    repo: agent-acceptance
+    commit: "6304a63"
+    pushed: yes
+    evidence_pack:
+      path: evidence_packs/group-02-paper-a3-validator-residual/closure-pack.zip
+      sha256: "c8f1824f88de2ed9460b98d29a32481f4f9d920b6da62eaa4322ed7fb7006e99"
+      actual_deliverables_count: 2
+      manifest_hash_check: pass
+      zip_manifest_bidirectional_match: pass
+    self_verify:
+      targeted_tests: "15 passed"
+      validator_output: "pass"
+      workflow_closure_validation: "pass"
+      backfill_comparison: "hash match to PAPER-A3 R2 accepted deliverables"
+    gpt_review:
+      submitted: true
+      reviewer: GPT
+      verdict: accepted
+      review_result_path: evidence_packs/group-02-paper-a3-validator-residual/GPT_REVIEW_RESULT.txt
+      review_result_sha256: "3de168c85747d18f1ef9d463d378e6b6467f25a34e7e2dcecb5342f7d792c7fd"
+      web_submission_result: evidence_packs/group-02-paper-a3-validator-residual/WEB_GPT_SUBMISSION_RESULT.json
+      web_submission_result_sha256: "7a9d248f9fdfbbab8028ff1f283ba0be8e727e296f452e1dd9f90f6c5175c56d"
+      send_clicked: true
+    closure_binding:
+      accepted_time: "2026-06-07T08:45:54.8518156+08:00"
+      mode: append_only_minimal_binding
+      binding_record: _reports/group-02-paper-a3-validator-residual-binding/GROUP_02_BINDING_RECORD.yaml
+      scope_limit: "accepted scope covers only GROUP-02 selected files"
+    status: accepted
+    note: "GROUP-02 accepted as PAPER-A3 residual backfill; this does not accept the whole dirty worktree."
+
 systemic_defects_identified:
   - id: SD-01
     pattern: "summary-only evidence pack submitted to GPT multiple times"

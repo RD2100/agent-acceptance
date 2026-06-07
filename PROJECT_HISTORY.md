@@ -418,4 +418,33 @@ implementation_commit: "fc2b217"
 pushed_to_github: true
 ```
 
+## GROUP-02 Acceptance Binding (2026-06-07)
+
+Status: accepted by web GPT as PAPER-A3 residual/backfill.
+
+This entry binds GROUP-02 only. It must not be interpreted as acceptance of the
+whole dirty worktree or of excluded dirty groups.
+
+Binding:
+
+```yaml
+task_id: GROUP-02
+task_name: PAPER-A3-VALIDATOR-RESIDUAL
+primary_repo: agent-acceptance
+overall_judgment: accepted
+reviewer_type: gpt
+accepted_time: "2026-06-07T08:45:54.8518156+08:00"
+evidence_pack: evidence_packs/group-02-paper-a3-validator-residual/closure-pack.zip
+evidence_pack_sha256: "c8f1824f88de2ed9460b98d29a32481f4f9d920b6da62eaa4322ed7fb7006e99"
+gpt_review_result: evidence_packs/group-02-paper-a3-validator-residual/GPT_REVIEW_RESULT.txt
+gpt_review_result_sha256: "3de168c85747d18f1ef9d463d378e6b6467f25a34e7e2dcecb5342f7d792c7fd"
+web_gpt_submission_result: evidence_packs/group-02-paper-a3-validator-residual/WEB_GPT_SUBMISSION_RESULT.json
+web_gpt_submission_result_sha256: "7a9d248f9fdfbbab8028ff1f283ba0be8e727e296f452e1dd9f90f6c5175c56d"
+binding_record: _reports/group-02-paper-a3-validator-residual-binding/GROUP_02_BINDING_RECORD.yaml
+scope_limit: "only GROUP-02 selected files"
+whole_dirty_worktree_accepted: false
+implementation_commit: "6304a63"
+pushed_to_github: true
+```
+
 END_OF_PROJECT_HISTORY

@@ -1,0 +1,31 @@
+task_id: GROUP-02
+binding_id: group-02-paper-a3-validator-residual-binding-20260607
+binding_time: "2026-06-07T08:45:54.8518156+08:00"
+primary_repo: agent-acceptance
+mode: append_only_minimal_binding
+implementation_scope: "PAPER-A3-VALIDATOR-RESIDUAL"
+implementation_commit: "6304a63"
+review_origin: DIRTY-WORKTREE-SPLIT-A1 accepted
+overall_judgment: accepted
+reviewer_type: gpt
+review_result:
+  path: evidence_packs/group-02-paper-a3-validator-residual/GPT_REVIEW_RESULT.txt
+  sha256: "3de168c85747d18f1ef9d463d378e6b6467f25a34e7e2dcecb5342f7d792c7fd"
+web_submission:
+  path: evidence_packs/group-02-paper-a3-validator-residual/WEB_GPT_SUBMISSION_RESULT.json
+  sha256: "7a9d248f9fdfbbab8028ff1f283ba0be8e727e296f452e1dd9f90f6c5175c56d"
+  file_uploaded: true
+  prompt_filled: true
+  send_clicked: true
+  reply_complete: true
+  overall_judgment_seen: true
+evidence_pack:
+  path: evidence_packs/group-02-paper-a3-validator-residual/closure-pack.zip
+  sha256: "c8f1824f88de2ed9460b98d29a32481f4f9d920b6da62eaa4322ed7fb7006e99"
+  workflow_closure_validation: pass
+accepted_scope:
+  - only_group_02_selected_files
+  - residual_backfill_not_new_functionality
+  - no_whole_dirty_tree_commit
+status: accepted
+pushed_to_github: true
