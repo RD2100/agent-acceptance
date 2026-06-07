@@ -86,6 +86,7 @@ write_set:
   - "demo/*"
   - "scripts/smoke_suite.py"
   - "scripts/run_demo.py"
+  - "scripts/pre_push_verify.py"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
