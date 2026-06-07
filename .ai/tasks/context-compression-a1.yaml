@@ -84,6 +84,7 @@ write_set:
   - "docs/BOOT_CONTEXT_COLD_START.md"
   - "docs/AGENT_ROLE_BOUNDARIES.md"
   - "demo/*"
+  - "scripts/smoke_suite.py"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
