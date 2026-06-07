@@ -1,0 +1,32 @@
+﻿task_id: GROUP-01
+binding_id: group-01-contract-backfill-binding-20260607
+binding_time: "2026-06-07T08:14:48.8956773+08:00"
+primary_repo: agent-acceptance
+mode: append_only_minimal_binding
+implementation_scope: "AA-FLOW-RUNNER-CONTRACT-BACKFILL"
+implementation_commit: "fc2b217"
+review_origin: DIRTY-WORKTREE-SPLIT-A1 accepted
+overall_judgment: accepted
+reviewer_type: gpt
+review_result:
+  path: evidence_packs/group-01-contract-backfill/GPT_REVIEW_RESULT.txt
+  sha256: "d4840cfd1c3f3ed423e548378e75967bf25b2e18f390a7e7590804a7933f5a8c"
+web_submission:
+  path: evidence_packs/group-01-contract-backfill/WEB_GPT_SUBMISSION_RESULT.json
+  sha256: "3fb22bb777e0bd73b598433d5d8b3f84b088921d76e198546ff843415c743d5a"
+  file_uploaded: true
+  prompt_filled: true
+  send_clicked: true
+  reply_complete: true
+  overall_judgment_seen: true
+evidence_pack:
+  path: evidence_packs/group-01-contract-backfill/closure-pack.zip
+  sha256: "390654644cd913c461f6dc970684d461021d61b06e5ac9cd773343b6c8630465"
+  workflow_closure_validation: pass
+accepted_scope:
+  - only_group_01_selected_files
+  - no_whole_dirty_tree_commit
+  - no_historical_evidence_mutation
+  - backfill_not_new_feature
+status: accepted
+pushed_to_github: true

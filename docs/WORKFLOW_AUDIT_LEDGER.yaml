@@ -204,6 +204,41 @@ tasks:
     status: closed
     note: "PAPER-C2 accepted by web GPT and closed with evidence-pack/hash binding on 2026-06-07."
 
+  - task_id: GROUP-01
+    plan: "AA-FLOW-RUNNER-CONTRACT-BACKFILL"
+    repo: agent-acceptance
+    commit: "fc2b217"
+    pushed: yes
+    evidence_pack:
+      path: evidence_packs/group-01-contract-backfill/closure-pack.zip
+      sha256: "390654644cd913c461f6dc970684d461021d61b06e5ac9cd773343b6c8630465"
+      actual_deliverables_count: 33
+      manifest_hash_check: pass
+      zip_manifest_bidirectional_match: pass
+    self_verify:
+      targeted_tests: "60 passed"
+      full_tests: "170 passed, 21 warnings"
+      workflow_closure_validation: "pass"
+      bypass_check: "PASS (selected-files-only scoped)"
+      historical_evidence_mutation: "false"
+      whole_dirty_tree_commit: "false"
+    gpt_review:
+      submitted: true
+      reviewer: GPT
+      verdict: accepted
+      review_result_path: evidence_packs/group-01-contract-backfill/GPT_REVIEW_RESULT.txt
+      review_result_sha256: "d4840cfd1c3f3ed423e548378e75967bf25b2e18f390a7e7590804a7933f5a8c"
+      web_submission_result: evidence_packs/group-01-contract-backfill/WEB_GPT_SUBMISSION_RESULT.json
+      web_submission_result_sha256: "3fb22bb777e0bd73b598433d5d8b3f84b088921d76e198546ff843415c743d5a"
+      send_clicked: true
+    closure_binding:
+      accepted_time: "2026-06-07T08:14:48.8956773+08:00"
+      mode: append_only_minimal_binding
+      binding_record: _reports/group-01-contract-backfill-binding/GROUP_01_BINDING_RECORD.yaml
+      scope_limit: "accepted scope covers only GROUP-01 selected files"
+    status: accepted
+    note: "GROUP-01 accepted as isolated backfill; this does not accept the whole dirty worktree."
+
 systemic_defects_identified:
   - id: SD-01
     pattern: "summary-only evidence pack submitted to GPT multiple times"

@@ -389,4 +389,33 @@ pushed_to_github: true
 closure_scope: "synthetic-only authorization/redaction gate; no real-paper execution enabled"
 ```
 
+## GROUP-01 Acceptance Binding (2026-06-07)
+
+Status: accepted by web GPT as an isolated backfill group.
+
+This entry binds GROUP-01 only. It must not be interpreted as acceptance of the
+whole dirty worktree or of excluded dirty groups.
+
+Binding:
+
+```yaml
+task_id: GROUP-01
+task_name: AA-FLOW-RUNNER-CONTRACT-BACKFILL
+primary_repo: agent-acceptance
+overall_judgment: accepted
+reviewer_type: gpt
+accepted_time: "2026-06-07T08:14:48.8956773+08:00"
+evidence_pack: evidence_packs/group-01-contract-backfill/closure-pack.zip
+evidence_pack_sha256: "390654644cd913c461f6dc970684d461021d61b06e5ac9cd773343b6c8630465"
+gpt_review_result: evidence_packs/group-01-contract-backfill/GPT_REVIEW_RESULT.txt
+gpt_review_result_sha256: "d4840cfd1c3f3ed423e548378e75967bf25b2e18f390a7e7590804a7933f5a8c"
+web_gpt_submission_result: evidence_packs/group-01-contract-backfill/WEB_GPT_SUBMISSION_RESULT.json
+web_gpt_submission_result_sha256: "3fb22bb777e0bd73b598433d5d8b3f84b088921d76e198546ff843415c743d5a"
+binding_record: _reports/group-01-contract-backfill-binding/GROUP_01_BINDING_RECORD.yaml
+scope_limit: "only GROUP-01 selected files"
+whole_dirty_worktree_accepted: false
+implementation_commit: "fc2b217"
+pushed_to_github: true
+```
+
 END_OF_PROJECT_HISTORY
