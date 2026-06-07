@@ -1,0 +1,18 @@
+{
+  "task_id": "TEST-002",
+  "stage": "S3",
+  "transport_status": "success",
+  "business_decision": "accepted",
+  "dispatch_status": "ready_to_dispatch",
+  "overall_status": "accepted",
+  "allow_next_stage": true,
+  "terminal": false,
+  "errors": [],
+  "safety": {
+    "S3_executed": false,
+    "dev_frame_modified": false,
+    "files_deleted": false,
+    "evidence_overwritten": false,
+    "baseline_fabricated": false
+  }
+}

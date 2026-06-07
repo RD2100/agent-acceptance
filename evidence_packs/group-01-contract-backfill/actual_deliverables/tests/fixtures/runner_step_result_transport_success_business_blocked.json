@@ -1,0 +1,19 @@
+{
+  "step_id": "step-transport-blocked-001",
+  "step_type": "submit_gpt_review",
+  "status": "step_success_continue",
+  "transport_status": "success",
+  "business_decision": "blocked",
+  "dispatch_status": "taskspec_generated",
+  "produced_files": ["_reports/evidence_pack.zip"],
+  "next_action": "Continue to next stage",
+  "terminal": false,
+  "errors": [],
+  "safety": {
+    "high_risk_action_attempted": false,
+    "human_confirmed": false,
+    "forbidden_action_blocked": false,
+    "schema_validated": true
+  },
+  "reason": "Transport success but business blocked"
+}

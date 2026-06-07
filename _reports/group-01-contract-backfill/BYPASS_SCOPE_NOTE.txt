@@ -1,0 +1,5 @@
+﻿Global bypass checker currently scans the whole repo and can be affected by excluded dirty review artifacts.
+For GROUP-01 review, bypass evidence is scoped to GROUP-01 selected python files only.
+Result: PASS. No bypass patterns detected in the selected GROUP-01 python files.
+Excluded noisy path noted by prior GPT review: evidence_packs/dirty-worktree-review-20260607/untracked_selected/docs/submit_proposal_to_gpt.py
+This excluded path is not staged for GROUP-01 and is listed in GROUP_01_EXCLUDED_FILES.txt.

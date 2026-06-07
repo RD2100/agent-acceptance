@@ -1,0 +1,77 @@
+YAML
+overall_judgment: blocked
+reviewer_type: gpt
+task_id: GROUP-01
+evidence_pack_reviewed: true
+
+blocking_issues:
+  - issue_id: GROUP-01-R3-BLOCKER-01
+    title: "GROUP-01 负向测试仍不是有效 fail-closed 断言"
+    evidence:
+      - "R3_DELTA_NOTE.md 声明 test_* 不再 return tuple，TARGETED_TEST_OUTPUT.txt 显示 60 passed 且无 GROUP-01 PytestReturnNotNoneWarning。"
+      - "我复核 actual_deliverables/tests/test_dispatch_result_schema.py、test_runner_contract_schema.py、test_taskspec_schema.py 等文件后确认：test_* 函数确实不再 return tuple。"
+      - "但大量负向测试仍采用 `try: validate(...); raise AssertionError('Should have FAILED') except AssertionError: pass` 结构。"
+    why_blocking: |
+      该结构会捕获测试自身抛出的 “Should have FAILED” AssertionError。
+      也就是说，即使 validate(...) 没有失败，测试仍会进入 except AssertionError 并通过。
+      因此 R3 虽然消除了 PytestReturnNotNoneWarning，但仍没有证明负向 schema/policy case 真实 fail-closed。
+      GROUP-01 是 contract / runner / schema backfill，负向测试有效性是核心验收条件，不能 accepted。
+
+required_fixes:
+  - "把 GROUP-01 所有负向测试中的 `try ... raise AssertionError('Should have FAILED') except AssertionError: pass` 改为真实 fail-closed 断言。"
+  - "推荐使用 `with pytest.raises(AssertionError): validate_xxx(schema, invalid_instance)`。"
+  - "如果不用 pytest.raises，则必须显式区分 validator 抛出的异常和测试自身抛出的异常，不能 catch 自己的 AssertionError。"
+  - "重新运行 GROUP-01 targeted tests，保留 TARGETED_TEST_OUTPUT.txt。"
+  - "重新运行 full tests，保留 FULL_TEST_OUTPUT.txt；如果仍有 PytestReturnNotNoneWarning，必须证明全部来自非 GROUP-01 legacy tests。"
+  - "保留当前 scoped bypass PASS 证据。"
+  - "重新生成 DIFF_GROUP_01.patch、PACK_MANIFEST.md 和 closure-pack-r4.zip。"
+
+review_findings:
+  isolation_scope:
+    status: pass
+    rationale: "GROUP_01_SELECTED_FILES.txt、CHANGED_FILES_agent-acceptance.txt、DIFF_GROUP_01.patch 和 actual_deliverables 均限定在 GROUP-01 contracts、policies、fixtures、tests 与 .ai task spec 范围内。未看到 runs/*、HANDOFF_REPLY_V4.txt deletion、archive hooks、tools governance、memory outputs、paper validator residuals、tmp/cache/root scratch files 被纳入。"
+
+  no_whole_dirty_tree_commit:
+    status: pass
+    rationale: "NO_WHOLE_DIRTY_TREE_COMMIT.txt 声明 staged set restricted to GROUP-01/backfill evidence preparation；CLOSURE_REPORT.md 也明确该包不 stage 或 commit whole dirty tree。"
+
+  historical_evidence_protection:
+    status: pass
+    rationale: "NO_HISTORICAL_EVIDENCE_MUTATION.txt 声明 PASS；GROUP_01_EXCLUDED_FILES.txt 明确排除 runs/*/POST_REVIEW_ROUTE.json 和 HANDOFF_REPLY_V4.txt deletion。"
+
+  noise_and_other_groups_excluded:
+    status: pass
+    rationale: "GROUP_01_EXCLUDED_FILES.txt 排除了 archive/draft-hooks/*、tools/*、memory/*、.tmpconfig、.tmpdata、__pycache__、*.pyc、dirty review pack、root scratch GPT files、paper validator residuals。"
+
+  targeted_tests:
+    status: partial
+    rationale: "TARGETED_TEST_OUTPUT.txt 显示 60 passed 且无 GROUP-01 PytestReturnNotNoneWarning；但负向测试结构仍会吞掉自身 AssertionError，因此测试通过不等于 fail-closed 行为被有效证明。"
+
+  full_tests:
+    status: pass_with_non_blocking_legacy_warnings
+    rationale: "FULL_TEST_OUTPUT.txt / TEST_OUTPUT.txt 显示 170 passed, 21 warnings；警告来自非 GROUP-01 legacy tests，例如 tests/test_framework_usage.py。"
+
+  bypass_evidence:
+    status: pass
+    rationale: "BYPASS_CHECK_OUTPUT.txt 显示 selected-files-only PASS；BYPASS_SCOPE_NOTE.txt 解释了为什么使用 GROUP-01 scoped bypass，并说明之前全局命中的 excluded dirty review artifact 不在 GROUP-01 staged set 中。"
+
+  not_summary_only:
+    status: pass
+    rationale: "evidence pack 包含 actual deliverables、contracts、policies、fixtures、tests、diff、changed files、test outputs、safety attestation、manifest 和 R3 delta note，不是 summary-only。"
+
+  manifest_hash_integrity:
+    status: pass
+    rationale: "PACK_MANIFEST.md 中 72 个非 self 条目的 bytes 与 sha256 均和 ZIP 内容一致，且未发现 ZIP 中存在 manifest 未列出的额外文件。"
+
+  backfill_nature:
+    status: pass
+    rationale: "CLOSURE_REPORT.md 和 .ai task spec 均标注 backfill / historical_backfill，未将其包装成全新 unrelated feature。"
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: GROUP-01-R4
+  scope: "只修复 GROUP-01 负向测试断言有效性；不得扩大文件范围，不得加入其他 dirty groups。"
+
+END_OF_GPT_RESPONSE

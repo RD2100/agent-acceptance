@@ -1,0 +1,21 @@
+{
+  "task_id": "TEST-001",
+  "stage": "S3",
+  "transport_status": "success",
+  "business_decision": "accepted",
+  "dispatch_status": "ready_to_dispatch",
+  "overall_status": "accepted",
+  "allow_next_stage": true,
+  "next_stage": "S4",
+  "next_task_spec_path": "_reports/test/s4_task_spec.json",
+  "required_next_action": "Execute S4 TaskSpec",
+  "terminal": false,
+  "errors": [],
+  "safety": {
+    "S3_executed": false,
+    "dev_frame_modified": false,
+    "files_deleted": false,
+    "evidence_overwritten": false,
+    "baseline_fabricated": false
+  }
+}

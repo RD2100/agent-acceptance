@@ -1,0 +1,3 @@
+{
+  "note": "This represents a TaskSpec that is only available as Markdown — the required machine-readable fields are all missing or empty. This fixture is used to test that Markdown-only TaskSpecs are rejected."
+}

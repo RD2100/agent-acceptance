@@ -1,0 +1,94 @@
+task_id: GROUP-01
+task_name: AA-FLOW-RUNNER-CONTRACT-BACKFILL
+status: closed
+primary_repo: agent-acceptance
+submission_target: agent-acceptance
+task_nature: historical_backfill
+review_origin: DIRTY-WORKTREE-SPLIT-A1
+risk_level: medium
+gate_0:
+  inventory_evidence:
+    queried_sources:
+      - DIRTY-WORKTREE-SPLIT-A1_GPT_REVIEW_RESULT
+      - GROUP-01_SELECTED_FILES
+      - existing_flow_runner_contract_artifacts
+    matched_capabilities:
+      - flow_outcome_contract
+      - dispatch_result_contract
+      - runner_contracts
+      - taskspec_schema
+      - policy_backfill
+      - contract_schema_tests
+scope_note: >
+  Backfill flow/runner/taskspec contracts, policies, fixtures, and tests as an
+  isolated GROUP-01 unit. This is not a whole-dirty-tree commit and must not be
+  represented as a new unrelated feature.
+write_set:
+  - .ai/tasks/group-01-contract-backfill.yaml
+  - contracts/DISPATCH_RESULT.schema.json
+  - contracts/FLOW_OUTCOME.schema.json
+  - contracts/RUNNER_CONTRACT.schema.json
+  - contracts/RUNNER_STATE.schema.json
+  - contracts/RUNNER_STEP_RESULT.schema.json
+  - contracts/TASKSPEC.schema.json
+  - contracts/README.md
+  - policies/*.md
+  - tests/test_dispatch_result_schema.py
+  - tests/test_flow_outcome_schema.py
+  - tests/test_taskspec_schema.py
+  - tests/test_runner_contract_schema.py
+  - tests/test_runner_state_schema.py
+  - tests/test_runner_step_result_schema.py
+  - tests/test_dispatcher_policy.py
+  - tests/test_next_taskspec_consumption_policy.py
+  - tests/test_run_until_terminal_policy.py
+  - tests/test_terminal_state_policy.py
+  - tests/fixtures/*.json
+  - _reports/group-01-contract-backfill/**
+  - _reports/group-01-contract-backfill-binding/**
+  - PROJECT_HISTORY.md
+  - docs/WORKFLOW_AUDIT_LEDGER.yaml
+  - evidence_packs/group-01-contract-backfill/**
+allowed_evidence:
+  - actual_deliverables
+  - baseline_snapshot
+  - changed_files
+  - diff_patch
+  - targeted_test_output
+  - full_test_output
+  - safety_attestation
+  - manifest_hash
+forbidden_paths:
+  - runs/*/POST_REVIEW_ROUTE.json
+  - HANDOFF_REPLY_V4.txt
+  - archive/draft-hooks/**
+  - tools/ai_guard.py
+  - tools/go_evidence.py
+  - schemas/agent-runtime/chain-evidence.schema.json
+  - memory/**
+  - .tmpconfig/**
+  - .tmpdata/**
+  - '**/__pycache__/**'
+  - '*.pyc'
+  - scripts/validate_paper_task.py
+  - tests/test_paper_task_validator.py
+  - docs/submit_proposal_to_gpt.py
+safety_boundaries:
+  - no_whole_dirty_tree_commit
+  - no_historical_evidence_mutation
+  - no_handoff_reply_deletion_commit
+  - no_runs_post_review_route_commit
+  - no_archive_hook_commit
+  - no_tools_governance_commit
+verification:
+  - python -m pytest tests/test_dispatch_result_schema.py -q
+  - python -m pytest tests/test_flow_outcome_schema.py -q
+  - python -m pytest tests/test_taskspec_schema.py -q
+  - python -m pytest tests/test_runner_contract_schema.py -q
+  - python -m pytest tests/test_runner_state_schema.py -q
+  - python -m pytest tests/test_runner_step_result_schema.py -q
+  - python -m pytest tests/test_dispatcher_policy.py -q
+  - python -m pytest tests/test_next_taskspec_consumption_policy.py -q
+  - python -m pytest tests/test_run_until_terminal_policy.py -q
+  - python -m pytest tests/test_terminal_state_policy.py -q
+  - python -m pytest tests -q

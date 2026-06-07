@@ -1,0 +1,18 @@
+{
+  "step_id": "step-high-risk-001",
+  "step_type": "safety_check",
+  "status": "step_human_required",
+  "transport_status": null,
+  "business_decision": "human_required",
+  "dispatch_status": "stopped",
+  "produced_files": [],
+  "terminal": true,
+  "errors": ["High-risk action detected: delete_files"],
+  "safety": {
+    "high_risk_action_attempted": true,
+    "human_confirmed": false,
+    "forbidden_action_blocked": false,
+    "schema_validated": true
+  },
+  "reason": "High-risk action 'delete_files' requires human confirmation"
+}

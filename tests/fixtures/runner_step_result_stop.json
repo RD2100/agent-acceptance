@@ -1,0 +1,19 @@
+{
+  "step_id": "step-hr-001",
+  "step_type": "safety_check",
+  "status": "step_human_required",
+  "transport_status": null,
+  "business_decision": "human_required",
+  "dispatch_status": "stopped",
+  "produced_files": [],
+  "next_action": "Human must confirm before continuing",
+  "terminal": true,
+  "errors": [],
+  "safety": {
+    "high_risk_action_attempted": false,
+    "human_confirmed": false,
+    "forbidden_action_blocked": false,
+    "schema_validated": true
+  },
+  "reason": "Human attestation required for baseline verification"
+}

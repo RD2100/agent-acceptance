@@ -1,0 +1,1 @@
+﻿PASS: staged set is restricted to GROUP-01/backfill evidence preparation; whole dirty tree is not staged.

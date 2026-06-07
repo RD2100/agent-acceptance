@@ -1,0 +1,16 @@
+﻿whole_dirty_tree_committed: false
+historical_evidence_deleted: false
+historical_evidence_moved: false
+historical_evidence_renamed: false
+historical_evidence_overwritten: false
+runs_post_review_route_committed: false
+handoff_reply_deletion_committed: false
+archive_hooks_committed: false
+tools_governance_committed: false
+paper_private_text_included: false
+real_paper_full_text_included: false
+raw_transcript_included: false
+external_upload_performed: false
+live_cdp_used: false
+backfill_task: true
+status: ready_for_review

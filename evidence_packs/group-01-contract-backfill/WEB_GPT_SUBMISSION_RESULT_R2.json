@@ -1,0 +1,18 @@
+{
+  "task_id": "GROUP-01-R2",
+  "target_url": "https://chatgpt.com/c/6a23dd8c-4550-83a8-bdee-76ca5a982edb",
+  "zip_path": "D:\\agent-acceptance\\evidence_packs\\group-01-contract-backfill\\closure-pack.zip",
+  "file_uploaded": true,
+  "prompt_filled": true,
+  "send_clicked": true,
+  "reply_complete": false,
+  "overall_judgment_seen": false,
+  "reply_saved": true,
+  "errors": [],
+  "started_at": "2026-06-07T07:42:04+0800",
+  "actual_url_before_submit": "https://chatgpt.com/c/6a23dd8c-4550-83a8-bdee-76ca5a982edb",
+  "assistant_messages_before": 8,
+  "clicked_selector": "button[data-testid=\"send-button\"]",
+  "end_marker_seen": false,
+  "finished_at": "2026-06-07T07:52:16+0800"
+}

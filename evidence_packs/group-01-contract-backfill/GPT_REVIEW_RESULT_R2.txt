@@ -1,0 +1,89 @@
+YAML
+overall_judgment: blocked
+reviewer_type: gpt
+task_id: GROUP-01
+evidence_pack_reviewed: true
+
+blocking_issues:
+  - issue_id: GROUP-01-R2-BLOCKER-01
+    title: "GROUP-01 测试仍然使用 return tuple，不是有效断言"
+    evidence:
+      - "TARGETED_TEST_OUTPUT.txt 显示 60 passed, 60 warnings。"
+      - "FULL_TEST_OUTPUT.txt / TEST_OUTPUT.txt 显示 170 passed, 81 warnings。"
+      - "warnings 仍然是 PytestReturnNotNoneWarning。"
+      - "警告明确指向 GROUP-01 test files，例如 tests/test_dispatch_result_schema.py。"
+      - "actual_deliverables/tests/test_*.py 中多个 test_* 函数仍然 return True/False tuple。"
+    why_blocking: |
+      R1 的核心阻塞项之一就是 GROUP-01 测试没有真实断言。
+      R2 要求“targeted GROUP-01 tests now use real assertions and no longer produce PytestReturnNotNoneWarning in GROUP-01 test files”。
+      当前证据显示该问题没有修复。pytest 仍然把返回 tuple 的测试当作 passed，但这些测试不能证明 schema/policy fail-closed 行为真实有效。
+
+  - issue_id: GROUP-01-R2-BLOCKER-02
+    title: "bypass evidence 仍然是 BLOCKED，不是 GROUP-01 scoped PASS"
+    evidence:
+      - "BYPASS_CHECK_OUTPUT.txt 显示 BLOCKED: 2 bypass pattern(s) detected。"
+      - "命中路径仍是 evidence_packs/dirty-worktree-review-20260607/untracked_selected/docs/submit_proposal_to_gpt.py。"
+      - "命中模式仍是 sync_playwright 和 connect_over_cdp。"
+      - "evidence pack 中没有 BYPASS_SCOPE_NOTE.txt 或等价 scoped PASS 说明文件。"
+    why_blocking: |
+      R2 要求提供 “bypass evidence is PASS for GROUP-01 selected files and scoped appropriately”。
+      当前只有全局 BLOCKED 输出，没有 GROUP-01 selected-files-only PASS 证据，也没有说明该 BLOCKED 项不会影响 GROUP-01 提交。
+      因此无法 accepted。
+
+required_fixes:
+  - "把 GROUP-01 所有新增/回填 test_* 函数改为真实 assert / pytest.raises，不得 return True/False tuple。"
+  - "重新运行 GROUP-01 targeted tests，要求 GROUP-01 测试文件不再产生 PytestReturnNotNoneWarning。"
+  - "重新运行 full tests，保留新的 FULL_TEST_OUTPUT.txt；若还有 warning，必须证明 warning 不来自 GROUP-01 文件。"
+  - "提供 BYPASS_CHECK_OUTPUT.txt 为 PASS；或者提供明确的 GROUP-01-selected-files-only bypass PASS 输出。"
+  - "如果全局 bypass 仍因 excluded dirty review pack 阻断，必须附 BYPASS_SCOPE_NOTE.txt，说明全局阻断路径未进入 GROUP-01 selected files、不会被 stage/commit，并提供 scoped checker PASS。"
+  - "重新生成 DIFF_GROUP_01.patch、CHANGED_FILES_agent-acceptance.txt、PACK_MANIFEST.md 和 closure-pack.zip。"
+  - "保持当前隔离边界：不得加入 runs/*/POST_REVIEW_ROUTE.json、HANDOFF_REPLY_V4.txt deletion、archive hooks、tools governance、memory outputs、paper validator residuals、tmp/cache/root scratch files。"
+
+review_findings:
+  isolation_scope:
+    status: pass
+    rationale: |
+      CHANGED_FILES_agent-acceptance.txt、GROUP_01_SELECTED_FILES.txt 和 DIFF_GROUP_01.patch 仍然只覆盖 GROUP-01 合同、policy、fixtures、tests 和 task spec。
+      未看到 runs/*、HANDOFF_REPLY_V4.txt deletion、archive hooks、tools governance、memory outputs、paper validator residuals 被纳入 GROUP-01 diff。
+
+  historical_evidence_protection:
+    status: pass
+    rationale: |
+      NO_HISTORICAL_EVIDENCE_MUTATION.txt 声明 PASS。
+      GROUP_01_EXCLUDED_FILES.txt 明确排除了 runs/*/POST_REVIEW_ROUTE.json 和 HANDOFF_REPLY_V4.txt deletion。
+
+  noise_exclusion:
+    status: pass
+    rationale: |
+      GROUP_01_EXCLUDED_FILES.txt 明确排除了 .tmpconfig、.tmpdata、__pycache__、*.pyc、dirty review pack、root scratch GPT files、archive hooks、tools、memory、paper validator residuals。
+
+  not_summary_only:
+    status: pass
+    rationale: |
+      evidence pack 包含 actual_deliverables 下的 contracts、policies、fixtures、tests，以及 diff、changed files、test outputs、manifest 和 safety attestation。
+      该包不是 summary-only。
+
+  backfill_nature:
+    status: pass
+    rationale: |
+      CLOSURE_REPORT.md 明确标注 backfill: true，并说明这是 historical/backfill capability capture，不是全新 unrelated feature。
+
+  tests:
+    status: fail
+    rationale: |
+      虽然 targeted 和 full tests 均显示 passed，但 GROUP-01 测试仍产生 PytestReturnNotNoneWarning，且实际测试文件仍有大量 test_* 函数 return tuple。
+      因此测试证据不满足 R2 要求。
+
+  bypass:
+    status: fail
+    rationale: |
+      BYPASS_CHECK_OUTPUT.txt 仍为 BLOCKED，且没有 scoped PASS 证据或 BYPASS_SCOPE_NOTE.txt。
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: GROUP-01-R3
+  scope: "只修复 GROUP-01 测试断言有效性和 scoped bypass PASS 证据，不扩大文件范围。"
+
+END_OF_GPT_RESPONSE

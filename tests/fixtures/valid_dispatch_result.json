@@ -1,0 +1,10 @@
+{
+  "dispatch_status": "dispatched",
+  "next_stage": "S4",
+  "next_task_spec_path": "_reports/test/s4_task_spec.json",
+  "required_next_action": "Execute S4 TaskSpec",
+  "resume_command": "python tools/runner.py --task-id s4",
+  "terminal": false,
+  "should_execute_next": true,
+  "reason": "S3 accepted, S4 TaskSpec generated and dispatched"
+}

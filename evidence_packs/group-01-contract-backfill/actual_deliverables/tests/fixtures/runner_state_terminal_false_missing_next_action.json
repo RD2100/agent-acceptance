@@ -1,0 +1,10 @@
+{
+  "runner_id": "runner-test-002",
+  "task_id": "TEST-RS-002",
+  "current_step": 5,
+  "current_round": 2,
+  "terminal": false,
+  "last_decision": "accepted",
+  "heartbeat": "2026-06-02T07:00:00Z",
+  "reason": "Missing next_action and next_task_spec_path"
+}

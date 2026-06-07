@@ -1,0 +1,26 @@
+{
+  "runner_id": "runner-high-risk-001",
+  "task_id": "TEST-RC-HR-001",
+  "mode": "run_until_terminal",
+  "input_taskspec_path": "tests/fixtures/taskspec_high_risk_delete.json",
+  "current_stage": "S4",
+  "terminal": false,
+  "next_action": "Execute high-risk TaskSpec",
+  "allowed_actions": ["read_files", "run_tests", "write_reports"],
+  "forbidden_actions": ["delete_files", "move_files", "rename_files", "clean_worktree", "overwrite_evidence", "fabricate_baseline"],
+  "max_steps": 100,
+  "max_rounds": 10,
+  "resume_policy": {
+    "resume_enabled": true,
+    "state_path": "_reports/runner_state.json",
+    "heartbeat_seconds": 60,
+    "max_retries": 3
+  },
+  "safety_policy": {
+    "high_risk_triggers_human_required": true,
+    "fail_closed": true,
+    "max_consecutive_failures": 3,
+    "require_schema_validation": true
+  },
+  "required_outputs": ["FLOW_OUTCOME.json", "RUNNER_STATE.json"]
+}

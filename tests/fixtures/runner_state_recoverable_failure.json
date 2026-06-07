@@ -1,0 +1,20 @@
+{
+  "runner_id": "runner-recover-001",
+  "task_id": "TEST-RS-RECOVER",
+  "current_step": 4,
+  "current_round": 1,
+  "terminal": false,
+  "last_decision": "accepted",
+  "next_action": "Retry GPT submission after CDP restart",
+  "next_task_spec_path": "tasks/s3.json",
+  "last_outcome_path": "_reports/FLOW_OUTCOME.json",
+  "heartbeat": "2026-06-02T06:55:00Z",
+  "resume_command": "python tools/oracle_flow_runner.py --resume --runner-id runner-recover-001",
+  "errors": ["CDP connection lost at step 4"],
+  "retries": {
+    "current_step_retries": 1,
+    "current_round_retries": 0,
+    "total_retries": 1
+  },
+  "reason": "CDP failure at step 4, retry 1/3"
+}

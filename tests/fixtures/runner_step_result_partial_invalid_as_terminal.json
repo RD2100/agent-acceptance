@@ -1,0 +1,18 @@
+{
+  "step_id": "step-partial-invalid-001",
+  "step_type": "execute_taskspec",
+  "status": "step_partial",
+  "transport_status": "success",
+  "business_decision": "accepted",
+  "dispatch_status": "dispatched",
+  "produced_files": ["_reports/partial_output.md"],
+  "terminal": true,
+  "errors": ["Required output file missing: _reports/full_output.json"],
+  "safety": {
+    "high_risk_action_attempted": false,
+    "human_confirmed": false,
+    "forbidden_action_blocked": false,
+    "schema_validated": true
+  },
+  "reason": "Partial output; treating as terminal"
+}

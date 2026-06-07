@@ -1,0 +1,4 @@
+﻿D:\agent-acceptance\README.md	237bdb3342c0d213f81edcb466ef40d5c8f4ac5217eff45ced5bd273166df815
+D:\agent-acceptance\PROJECT_HISTORY.md	5ea019b3f117dedcea75268536f5bff6b51efaf812f17e6d8eec8a4645f47a61
+D:\agent-acceptance\CLAUDE.md	8cc6f5554874e0ea8746959d84e355b3ef4532c3fb0b809544a5e01812723e6e
+D:\agent-acceptance\_reports\dirty-worktree-split-a1\STAGING_PLAN.md	47540a821df81b83d310e3ac461aac2c4437bf105fcd912b7b1d037985ecb454

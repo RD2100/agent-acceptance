@@ -1,0 +1,97 @@
+YAML
+overall_judgment: accepted
+reviewer_type: gpt
+task_id: GROUP-01
+evidence_pack_reviewed: true
+
+blocking_issues: []
+
+required_fixes: []
+
+review_findings:
+  isolation_scope:
+    status: pass
+    rationale: |
+      GROUP_01_SELECTED_FILES.txt、CHANGED_FILES_agent-acceptance.txt、DIFF_GROUP_01.patch 和 actual_deliverables
+      均限定在 GROUP-01 范围内：contracts、policies、tests、fixtures 与 .ai task spec。
+      未发现 runs/*、HANDOFF_REPLY_V4.txt deletion、archive hooks、tools governance、memory outputs、
+      paper validator residuals、tmp/cache/root scratch files 被纳入 GROUP-01 deliverables 或 diff。
+
+  no_whole_dirty_tree_commit:
+    status: pass
+    rationale: |
+      NO_WHOLE_DIRTY_TREE_COMMIT.txt 明确声明 staged set restricted to GROUP-01/backfill evidence preparation。
+      CLOSURE_REPORT.md 也明确说明本包不 stage 或 commit whole dirty tree。
+
+  historical_evidence_protection:
+    status: pass
+    rationale: |
+      NO_HISTORICAL_EVIDENCE_MUTATION.txt 声明 PASS。
+      GROUP_01_EXCLUDED_FILES.txt 明确排除 runs/*/POST_REVIEW_ROUTE.json 和 HANDOFF_REPLY_V4.txt deletion。
+      evidence pack 未包含历史 evidence 改写。
+
+  excluded_noise_and_other_groups:
+    status: pass
+    rationale: |
+      GROUP_01_EXCLUDED_FILES.txt 明确排除 archive/draft-hooks/*、tools/*、memory/*、.tmpconfig、.tmpdata、
+      __pycache__、*.pyc、dirty review pack、root scratch GPT files、scripts/validate_paper_task.py、
+      tests/test_paper_task_validator.py 和 docs/submit_proposal_to_gpt.py。
+
+  tests:
+    status: pass
+    rationale: |
+      TARGETED_TEST_OUTPUT.txt 显示 60 passed，且没有 GROUP-01 test files 的 PytestReturnNotNoneWarning。
+      我复核 actual_deliverables/tests/test_*.py 后，未发现 GROUP-01 test_* 函数继续 return tuple。
+      R3 中的负向测试问题已修复，主要负向 schema/policy case 已使用 pytest.raises(AssertionError) 或真实 assert。
+      FULL_TEST_OUTPUT.txt / TEST_OUTPUT.txt 显示 170 passed, 21 warnings；剩余 warnings 来自非 GROUP-01 legacy tests，例如 tests/test_framework_usage.py。
+
+  bypass_evidence:
+    status: pass
+    rationale: |
+      BYPASS_CHECK_OUTPUT.txt 显示 GROUP-01 selected python files scoped PASS。
+      BYPASS_SCOPE_NOTE.txt 解释了 scoped bypass 的原因，并说明此前全局命中的 excluded dirty review artifact 不在 GROUP-01 staged set 中。
+
+  not_summary_only:
+    status: pass
+    rationale: |
+      evidence pack 包含 actual_deliverables、contracts、policies、fixtures、tests、DIFF_GROUP_01.patch、
+      CHANGED_FILES、测试输出、bypass 输出、safety attestation、baseline reports、R4_DELTA_NOTE 和 manifest。
+      该包不是 summary-only。
+
+  manifest_hash_integrity:
+    status: pass
+    rationale: |
+      PACK_MANIFEST.md 中 76 个条目与 ZIP 内容一致；非 self 文件的 bytes 与 sha256 均可复核通过，
+      ZIP 中未发现 manifest 未列出的额外文件。
+
+  backfill_nature:
+    status: pass
+    rationale: |
+      CLOSURE_REPORT.md 明确标注 backfill: true，并说明这是 historical/backfill capability capture，
+      不是全新 unrelated feature。该表述符合 GROUP-01 的任务性质。
+
+non_blocking_notes:
+  - |
+    actual_deliverables/tests/test_runner_step_result_schema.py 中 test_transport_success_business_blocked
+    仍有 try/except AssertionError 后继续断言的写法。它不属于此前“负向测试吞掉自身 Should have FAILED”
+    的阻塞模式，也没有导致 PytestReturnNotNoneWarning，因此不阻塞本轮 accepted。
+    后续测试治理任务可将这类宽泛 except 改成更直接的 validate pass + assert。
+
+accepted_scope:
+  - "GROUP-01 accepted as AA-FLOW-RUNNER-CONTRACT-BACKFILL."
+  - "该 accepted 仅覆盖 GROUP-01 selected files。"
+  - "不得将该结果解释为 whole dirty worktree accepted。"
+  - "不得提交 excluded dirty worktree 项，包括 historical evidence、archive hooks、tools governance、memory outputs、paper validator residuals、tmp/cache/root scratch files。"
+
+required_next_action: |
+  将 GROUP-01 accepted 结果绑定到对应 ledger / PROJECT_HISTORY 或任务登记中。
+  只允许提交 GROUP-01 selected files；不要顺手提交其他 dirty worktree 文件。
+  提交前再次核对 staged files 与 GROUP_01_SELECTED_FILES.txt 一致。
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: no
+  ask_before_starting: yes
+  recommended_next_task: "继续 dirty worktree split 的下一组，或由用户指定转向 CONTEXT-COMPRESSION-A1 / GPT-REVIEW-QUEUE-A1"
+
+END_OF_GPT_RESPONSE_
