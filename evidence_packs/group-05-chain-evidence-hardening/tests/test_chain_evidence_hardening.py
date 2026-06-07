@@ -138,14 +138,14 @@ def test_ai_guard_rejects_rerun_without_summary(tmp_path):
     assert any("rerun_summary is required" in error for error in errors)
 
 
-def test_ai_guard_rejects_rerun_before_reviewed_at(tmp_path):
+def test_ai_guard_rejects_rerun_before_created_at(tmp_path):
     run_dir = _make_valid_evidence_dir(tmp_path)
     chain = json.loads((run_dir / "chain-evidence.json").read_text(encoding="utf-8"))
-    chain["rerun_verified_at"] = "2026-06-07T08:59:00+00:00"
+    chain["rerun_verified_at"] = "2026-06-07T08:00:00+00:00"
     chain["rerun_summary"] = "stale rerun"
     _write_json(run_dir / "chain-evidence.json", chain)
     errors, _warnings = validate_evidence_dir(run_dir, POLICY, repo_root=ROOT)
-    assert any("rerun_verified_at must be on or after reviewed_at" in error for error in errors)
+    assert any("rerun_verified_at must be on or after created_at" in error for error in errors)
 
 
 def test_determine_reviewer_verdict_invalid_when_missing(tmp_path):

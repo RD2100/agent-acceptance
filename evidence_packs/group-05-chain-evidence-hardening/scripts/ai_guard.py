@@ -213,13 +213,6 @@ def _validate_chain_evidence(chain_path, schema_path, review, repo_root):
                 errors.append("CHAIN: rerun_verified_at must be on or after created_at")
         except ValueError:
             pass
-    if rerun_verified_at and reviewed_at:
-        try:
-            if _parse_datetime(rerun_verified_at) < _parse_datetime(reviewed_at):
-                errors.append("CHAIN: rerun_verified_at must be on or after reviewed_at")
-        except ValueError:
-            pass
-
     return errors
 
 

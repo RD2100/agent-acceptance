@@ -16,14 +16,8 @@ Scope:
 - tests/test_chain_evidence_hardening.py
 
 Change intent:
-- validate new reviewer/rerun metadata fields consistently
+- validate reviewer and rerun metadata consistently
 - fail closed on malformed chain-evidence reviewer/rerun states
 - write rerun metadata during finalize
-- prove the behavior with targeted negative tests
-
-Exclusions:
-- no archive hooks
-- no memory outputs
-- no historical runs rewrites
-- no HANDOFF deletion
-- no tmp/cache/root scratch files
+- treat rerun_verified_at as ordered after created_at, not necessarily after reviewed_at
+- prove the behavior with targeted negative tests and an existing run evidence probe
