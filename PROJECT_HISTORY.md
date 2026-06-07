@@ -711,4 +711,20 @@ session_stats:
   dirty_baseline: "7 files protected, not committed"
 ```
 
+## AI-WORKFLOW-HUB-RESTORE Acceptance Binding (2026-06-08)
+
+Status: accepted by web GPT (batch review R2). Restored missing modules after dev-frame-opencode restructuring.
+
+```yaml
+task_id: AI-WORKFLOW-HUB-RESTORE
+task_name: "Restore render_full_governance_md and issue_ledger"
+primary_repo: dev-frame-opencode (ai-workflow-hub)
+overall_judgment: accepted
+reviewer_type: gpt
+evidence_pack: evidence_packs/batch-review-20260608/batch-review-r2.zip
+impact: "23 failures → 147 PASS, monorepo smoke FAIL → PASS"
+implementation_commit: "52487a2f"
+pushed_to_github: false
+```
+
 END_OF_PROJECT_HISTORY
