@@ -1,0 +1,3 @@
+﻿docs/agent-runtime/capability-inventory.md
+docs/agent-runtime/routing-matrix-summary.md
+audit/blackboard-cleanup-audit-20260531.md

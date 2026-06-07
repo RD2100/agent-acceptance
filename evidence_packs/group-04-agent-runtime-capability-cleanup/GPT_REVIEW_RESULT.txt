@@ -1,0 +1,95 @@
+YAML
+overall_judgment: accepted
+reviewer_type: gpt
+task_id: GROUP-04
+evidence_pack_reviewed: true
+
+blocking_issues: []
+
+required_fixes: []
+
+review_findings:
+  group_04_only_isolation:
+    status: pass
+    rationale: |
+      本次上传的是 GROUP-04-only 包，不是 GROUP-01/02/03/06。
+      GROUP_04_SELECTED_FILES.txt 只列出：
+      - docs/agent-runtime/capability-inventory.md
+      - docs/agent-runtime/routing-matrix-summary.md
+      - audit/blackboard-cleanup-audit-20260531.md
+
+      actual_deliverables 也只包含这三个对应文件。
+
+  blackboard_not_active:
+    status: pass
+    rationale: |
+      capability-inventory.md 中未发现 active Blackboard capability 条目。
+      routing-matrix-summary.md 中未发现 Blackboard 路由。
+      capability-inventory.md 仅保留 CAP-009 removed 说明，不再把 Blackboard 定位为当前 active capability。
+
+  historical_audit_preserved:
+    status: pass
+    rationale: |
+      actual_deliverables/docs/blackboard-cleanup-audit-20260531.md 被保留在 evidence pack 中。
+      文件 frontmatter 标注 archived: true，archive_reason 说明其为 historical audit report, no longer active。
+      这符合“保留历史 audit evidence，不删除”的要求。
+
+  no_active_guard_weakening:
+    status: pass
+    rationale: |
+      本包没有包含 archive/draft-hooks/*，也没有包含 tools/* 或 active guard 实现文件。
+      CLEANUP_SCOPE_NOTE.txt 说明本任务范围是 capability inventory / routing summary cleanup 与 historical audit preservation。
+      因此本包本身不构成 active guard weakening。
+
+  excluded_dirty_groups:
+    status: pass
+    rationale: |
+      GROUP_04_EXCLUDED_FILES.txt 明确排除 runs/*/POST_REVIEW_ROUTE.json、HANDOFF_REPLY_V4.txt deletion、
+      archive/draft-hooks/*、tools/*、memory/*、tmp/cache、chain-evidence schema、GROUP-01、GROUP-02、
+      GROUP-03、GROUP-06 等其他 dirty groups。
+      evidence pack 中未发现这些排除项作为 deliverables 纳入。
+
+  not_summary_only:
+    status: pass
+    rationale: |
+      evidence pack 包含 actual_deliverables 下的 capability inventory、routing summary、historical blackboard audit，
+      同时包含 selected/excluded files、BLACKBOARD_REFERENCE_OUTPUT、CLEANUP_SCOPE_NOTE、CLOSURE_REPORT、
+      baseline reports 和 PACK_MANIFEST。
+      因此不是 summary-only pack。
+
+  manifest_hash_integrity:
+    status: pass
+    rationale: |
+      PACK_MANIFEST.md 中所有非 self 条目均能在 ZIP 中找到，bytes 与 sha256 校验一致。
+      ZIP 中未发现 manifest 未列出的额外文件。
+
+non_blocking_notes:
+  - |
+    BLACKBOARD_REFERENCE_OUTPUT.txt 显示编码有些混乱，但 actual deliverables 本身可读，并且直接复核后确认
+    capability inventory / routing summary 中没有 active Blackboard 引用。该编码问题不影响 accepted。
+  - |
+    capability-inventory.md 中仍有 “CAP-009 removed” 说明，这是历史移除标记，不是 active capability。
+    该保留是合理的。
+
+accepted_scope:
+  - "GROUP-04 accepted as AGENT-RUNTIME-CAPABILITY-CLEANUP."
+  - "该 accepted 仅覆盖 capability inventory cleanup、routing summary cleanup、historical blackboard audit preservation。"
+  - "不得将该结果解释为 archive hook changes accepted。"
+  - "不得将该结果扩展解释为 tools governance changes、memory outputs、paper validator residuals 或 whole dirty worktree accepted。"
+
+required_next_action: |
+  将 GROUP-04 accepted 结果绑定到任务登记 / ledger / PROJECT_HISTORY 的相应条目中。
+  只允许提交 GROUP-04 selected files：
+  - docs/agent-runtime/capability-inventory.md
+  - docs/agent-runtime/routing-matrix-summary.md
+  - audit/blackboard-cleanup-audit-20260531.md
+
+  提交前再次核对 staged files 与 GROUP_04_SELECTED_FILES.txt 完全一致。
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: no
+  ask_before_starting: yes
+  recommended_next_task: "继续 dirty worktree split 的下一组，或由用户指定转向 CONTEXT-COMPRESSION-A1 / GPT-REVIEW-QUEUE-A1"
+
+END_OF_GPT_RESPONSE

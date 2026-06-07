@@ -1,0 +1,4 @@
+﻿Checks:
+- capability-inventory no longer contains an active Blackboard capability section.
+- routing-matrix-summary no longer routes through Blackboard as an active external resource.
+- audit/blackboard-cleanup-audit-20260531.md remains present as a historical archived audit record.

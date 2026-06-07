@@ -1,0 +1,43 @@
+task_id: GROUP-04
+task_name: AGENT-RUNTIME-CAPABILITY-CLEANUP
+status: closed
+primary_repo: agent-acceptance
+submission_target: agent-acceptance
+task_nature: governance_cleanup
+review_origin: DIRTY-WORKTREE-SPLIT-A1
+risk_level: high
+gate_0:
+  inventory_evidence:
+    queried_sources:
+      - DIRTY-WORKTREE-SPLIT-A1_GPT_REVIEW_RESULT
+      - capability_inventory_diff
+      - routing_matrix_diff
+      - archived_blackboard_audit
+    matched_capabilities:
+      - capability_inventory_cleanup
+      - routing_summary_cleanup
+      - historical_audit_preservation
+write_set:
+  - .ai/tasks/group-04-agent-runtime-capability-cleanup.yaml
+  - docs/agent-runtime/capability-inventory.md
+  - docs/agent-runtime/routing-matrix-summary.md
+  - audit/blackboard-cleanup-audit-20260531.md
+  - _reports/group-04-agent-runtime-capability-cleanup/**
+  - _reports/group-04-agent-runtime-capability-cleanup-binding/**
+  - PROJECT_HISTORY.md
+  - docs/WORKFLOW_AUDIT_LEDGER.yaml
+  - evidence_packs/group-04-agent-runtime-capability-cleanup/**
+forbidden_paths:
+  - runs/*/POST_REVIEW_ROUTE.json
+  - HANDOFF_REPLY_V4.txt
+  - archive/draft-hooks/**
+  - tools/**
+  - memory/**
+  - .tmpconfig/**
+  - .tmpdata/**
+  - '**/__pycache__/**'
+  - '*.pyc'
+  - schemas/agent-runtime/chain-evidence.schema.json
+verification:
+  - rg -n -i "blackboard" docs/agent-runtime/capability-inventory.md docs/agent-runtime/routing-matrix-summary.md
+  - audit report presence and archived status check

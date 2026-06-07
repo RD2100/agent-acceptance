@@ -1,0 +1,12 @@
+{
+  "task_id": "GROUP-04-R2-RETRY",
+  "send_clicked": true,
+  "reply_complete": true,
+  "overall_judgment_seen": true,
+  "reply_saved": true,
+  "errors": [],
+  "started_at": "2026-06-07T12:04:27+0800",
+  "clicked_selector": "button[data-testid=\"send-button\"]",
+  "end_marker_seen": true,
+  "finished_at": "2026-06-07T12:05:29+0800"
+}
