@@ -1,0 +1,2 @@
+﻿scripts/validate_paper_task.py
+tests/test_paper_task_validator.py

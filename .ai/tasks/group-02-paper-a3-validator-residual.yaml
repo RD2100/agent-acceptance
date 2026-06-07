@@ -1,0 +1,42 @@
+task_id: GROUP-02
+task_name: PAPER-A3-VALIDATOR-RESIDUAL
+status: closed
+primary_repo: agent-acceptance
+submission_target: agent-acceptance
+task_nature: historical_backfill
+review_origin: DIRTY-WORKTREE-SPLIT-A1
+risk_level: medium
+gate_0:
+  inventory_evidence:
+    queried_sources:
+      - DIRTY-WORKTREE-SPLIT-A1_GPT_REVIEW_RESULT
+      - PAPER-A3-R2_ACCEPTED_EVIDENCE_PACK
+      - local_residual_validator_files
+    matched_capabilities:
+      - paper_task_validator
+      - paper_validator_test
+      - accepted_deliverable_backfill
+write_set:
+  - .ai/tasks/group-02-paper-a3-validator-residual.yaml
+  - scripts/validate_paper_task.py
+  - tests/test_paper_task_validator.py
+  - _reports/group-02-paper-a3-validator-residual/**
+  - _reports/group-02-paper-a3-validator-residual-binding/**
+  - PROJECT_HISTORY.md
+  - docs/WORKFLOW_AUDIT_LEDGER.yaml
+  - evidence_packs/group-02-paper-a3-validator-residual/**
+forbidden_paths:
+  - runs/*/POST_REVIEW_ROUTE.json
+  - HANDOFF_REPLY_V4.txt
+  - archive/draft-hooks/**
+  - tools/ai_guard.py
+  - tools/go_evidence.py
+  - schemas/agent-runtime/chain-evidence.schema.json
+  - memory/**
+  - .tmpconfig/**
+  - .tmpdata/**
+  - '**/__pycache__/**'
+  - '*.pyc'
+verification:
+  - python -m pytest tests/test_paper_task_validator.py -q
+  - python scripts/validate_paper_task.py examples/paper_a2_synthetic_case/PAPER_TASK_INPUT.yaml

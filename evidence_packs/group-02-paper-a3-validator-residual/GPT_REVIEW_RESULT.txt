@@ -1,0 +1,104 @@
+YAML
+overall_judgment: accepted
+reviewer_type: gpt
+task_id: GROUP-02
+evidence_pack_reviewed: true
+
+blocking_issues: []
+
+required_fixes: []
+
+review_findings:
+  group_02_only_isolation:
+    status: pass
+    rationale: |
+      本次上传的 group-02-only-residual-r3.zip 是 GROUP-02-only 包，不是 GROUP-01。
+      actual_deliverables 只包含两个文件：
+      - actual_deliverables/scripts/validate_paper_task.py
+      - actual_deliverables/tests/test_paper_task_validator.py
+
+      未发现 GROUP-01 contracts、policies、fixtures 批量文件进入 actual_deliverables。
+
+  paper_a3_r2_backfill_match:
+    status: pass
+    rationale: |
+      BACKFILL_COMPARISON.md 明确列出两个本地 residual 文件与 accepted PAPER-A3 R2 deliverables 的 SHA256 对照。
+      我复核了本包中两个 actual deliverables 的 sha256：
+      - validate_paper_task.py: 65625d652fdc2e53d6b9db51e5860cb7253c35214d2e4551c1d0caf908689249
+      - test_paper_task_validator.py: 8949e05796ff454de53539987b786c7e623bd74d7f1510fdd3a7f85a6c817487
+
+      这与 BACKFILL_COMPARISON.md 中记录的 accepted PAPER-A3 R2 hash 一致。
+
+  residual_backfill_framing:
+    status: pass
+    rationale: |
+      CLOSURE_REPORT.md 标注 backfill: true，并说明该包是 PAPER-A3 validator residual files accepted-deliverable backfill。
+      GROUP_02_ONLY_R3_DELTA_NOTE.md 也明确说明这不是新的 validator functionality。
+      因此没有把本任务包装成新功能开发。
+
+  targeted_test_and_validator_output:
+    status: pass
+    rationale: |
+      TARGETED_TEST_OUTPUT.txt 显示 15 passed。
+      VALIDATOR_OUTPUT.txt 显示 synthetic validator result: pass，source 为 examples/paper_a2_synthetic_case，并验证了 PAPER_TASK_INPUT.yaml、PAPER_TASK_OUTPUT.yaml、PRIVACY_ATTESTATION.yaml、REDACTION_REPORT.yaml。
+      tests/test_paper_task_validator.py 中包含正向 synthetic pass 与多个 fail-closed 负向测试。
+
+  excluded_dirty_groups:
+    status: pass
+    rationale: |
+      GROUP_02_EXCLUDED_FILES.txt 明确排除了：
+      - runs/*/POST_REVIEW_ROUTE.json
+      - HANDOFF_REPLY_V4.txt deletion
+      - archive/draft-hooks/*
+      - tools/*
+      - memory/*
+      - .tmpconfig/
+      - .tmpdata/
+      - __pycache__/
+      - *.pyc
+      - root scratch GPT files
+      - GROUP-01 contracts/policies/fixtures
+      - dirty review pack content
+
+      evidence pack 中未发现这些 excluded dirty groups 作为 deliverables 进入本组。
+
+  not_summary_only:
+    status: pass
+    rationale: |
+      本包包含 actual deliverables、BACKFILL_COMPARISON.md、GROUP_02_SELECTED_FILES.txt、GROUP_02_EXCLUDED_FILES.txt、TARGETED_TEST_OUTPUT.txt、VALIDATOR_OUTPUT.txt、CLOSURE_REPORT.md、PACK_MANIFEST.md 和 baseline reports。
+      因此不是 summary-only pack。
+
+  manifest_hash_integrity:
+    status: pass
+    rationale: |
+      PACK_MANIFEST.md 中所有非 self 条目均能在 ZIP 中找到，且 bytes 与 sha256 校验一致。
+      ZIP 中未发现 manifest 未列出的额外文件。
+
+non_blocking_notes:
+  - |
+    包内包含 GPT_REVIEW_RESULT.txt、GPT_REVIEW_RESULT_R2.txt 等历史提交结果文件，其中旧结果记录了此前误传 GROUP-01 包导致 blocked。
+    这些文件作为历史审查痕迹存在，不影响本次 GROUP-02-only R3 包的 accepted 判定。
+  - |
+    validate_paper_task.py 和 test_paper_task_validator.py 中出现 real_paper_full_text、raw_paper_text、external_upload、memory_write 等字符串，属于 validator 字段名、阻断项或测试用例，不是实际真实论文内容或隐私文本。
+
+accepted_scope:
+  - "GROUP-02 accepted as PAPER-A3-VALIDATOR-RESIDUAL backfill."
+  - "本 accepted 仅覆盖两个 GROUP-02 residual 文件：scripts/validate_paper_task.py 与 tests/test_paper_task_validator.py。"
+  - "不得将本 accepted 扩展解释为 whole dirty worktree accepted。"
+  - "不得顺手提交 GROUP-01、archive hooks、tools governance、memory outputs、historical runs 修改、HANDOFF_REPLY_V4.txt deletion、tmp/cache/root scratch files。"
+
+required_next_action: |
+  将 GROUP-02 accepted 结果绑定到任务登记 / ledger / PROJECT_HISTORY 的相应条目中。
+  只允许提交 GROUP-02 selected files：
+  - scripts/validate_paper_task.py
+  - tests/test_paper_task_validator.py
+
+  提交前再次核对 staged files 与 GROUP_02_SELECTED_FILES.txt 完全一致。
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: no
+  ask_before_starting: yes
+  recommended_next_task: "继续 dirty worktree split 的下一组，或由用户指定转向 CONTEXT-COMPRESSION-A1 / GPT-REVIEW-QUEUE-A1"
+
+END_OF_GPT_RESPONSE_

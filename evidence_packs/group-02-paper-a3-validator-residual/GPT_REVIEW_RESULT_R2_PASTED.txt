@@ -1,0 +1,17 @@
+﻿overall_judgment: blocked
+reviewer_type: gpt
+task_id: GROUP-02
+core_reason: upload_pack_mismatch
+note: The uploaded ZIP was interpreted as a GROUP-01 evidence pack, not a GROUP-02 residual/backfill pack.
+required_correct_pack_files:
+  - scripts/validate_paper_task.py
+  - tests/test_paper_task_validator.py
+  - BACKFILL_COMPARISON.md
+  - GROUP_02_SELECTED_FILES.txt
+  - GROUP_02_EXCLUDED_FILES.txt
+  - TARGETED_TEST_OUTPUT.txt
+  - VALIDATOR_OUTPUT.txt
+  - CLOSURE_REPORT.md
+  - PACK_MANIFEST.md
+required_pack_statement: PAPER-A3 residual/backfill, not new validator functionality.
+source: user_pasted_gpt_conclusion_2026-06-07

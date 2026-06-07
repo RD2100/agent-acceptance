@@ -1,0 +1,16 @@
+{
+  "task_id": "GROUP-02-R2",
+  "target_url": "https://chatgpt.com/c/6a23dd8c-4550-83a8-bdee-76ca5a982edb",
+  "zip_path": "D:\\agent-acceptance\\evidence_packs\\group-02-paper-a3-validator-residual\\group-02-residual-r2.zip",
+  "file_uploaded": true,
+  "prompt_filled": true,
+  "send_clicked": true,
+  "reply_complete": false,
+  "overall_judgment_seen": false,
+  "reply_saved": true,
+  "errors": [],
+  "started_at": "2026-06-07T08:31:39+0800",
+  "clicked_selector": "button[data-testid=\"send-button\"]",
+  "end_marker_seen": false,
+  "finished_at": "2026-06-07T08:41:52+0800"
+}

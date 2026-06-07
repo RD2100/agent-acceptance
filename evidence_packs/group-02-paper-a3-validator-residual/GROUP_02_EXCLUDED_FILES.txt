@@ -1,0 +1,16 @@
+﻿runs/*/POST_REVIEW_ROUTE.json
+HANDOFF_REPLY_V4.txt deletion
+archive/draft-hooks/*
+tools/*
+memory/*
+.tmpconfig/
+.tmpdata/
+__pycache__/
+*.pyc
+root scratch GPT files
+.ai/tasks/group-01-contract-backfill.yaml
+contracts/*
+policies/*
+tests/fixtures/*
+evidence_packs/dirty-worktree-review-20260607/
+evidence_packs/group-01-contract-backfill/

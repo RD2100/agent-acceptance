@@ -1,0 +1,2 @@
+﻿D:\agent-acceptance\scripts\validate_paper_task.py	65625d652fdc2e53d6b9db51e5860cb7253c35214d2e4551c1d0caf908689249
+D:\agent-acceptance\tests\test_paper_task_validator.py	8949e05796ff454de53539987b786c7e623bd74d7f1510fdd3a7f85a6c817487
