@@ -81,6 +81,8 @@ write_set:
   - ".ai/tasks/gpt-review-queue-a1.yaml"
   - "_reports/gpt-review-queue-a1/*"
   - "evidence_packs/gpt-review-queue-a1/*"
+  - "docs/BOOT_CONTEXT_COLD_START.md"
+  - "docs/AGENT_ROLE_BOUNDARIES.md"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"

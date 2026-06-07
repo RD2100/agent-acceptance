@@ -98,4 +98,5 @@ DevFrame 是一个三层工作流治理体系，用 evidence-first + GPT 审查 
 
 ---
 
-> Boot context 到此结束。需要更多上下文？读取 memory/index.md 或 PROJECT_HISTORY.md。
+> Boot context 到此结束。需要更多上下文？读取 memory/index.md（记忆索引）或 PROJECT_HISTORY.md（完整项目历史）。
+> 新 agent 冷启动读取顺序：BOOT_CONTEXT.md → memory/index.md → 按需深入 memory/tasks/ 或 PROJECT_HISTORY.md。不再使用 HANDOFF.md 交接。
