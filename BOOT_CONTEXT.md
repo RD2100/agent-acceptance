@@ -1,6 +1,6 @@
 # BOOT_CONTEXT.md — DevFrame 冷启动入口
 
-> 生成时间: 2026-06-07T09:07:26.758571+00:00
+> 生成时间: 2026-06-08 (auto-updated)
 > 版本: v1.0
 > 用途: 新 agent 首次读取此文件即可了解项目全貌，无需加载完整 PROJECT_HISTORY。
 
