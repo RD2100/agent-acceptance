@@ -305,6 +305,39 @@ tasks:
     status: accepted
     note: "GROUP-03 accepted as frozen generated memory output review; this does not accept new memory compiler functionality."
 
+  - task_id: GROUP-06
+    plan: "VALIDATE-WORKFLOW-CLOSURE-CONTROL-PLANE-PATTERN"
+    repo: agent-acceptance
+    commit: "10b9e8c"
+    pushed: yes
+    evidence_pack:
+      path: evidence_packs/group-06-workflow-closure-control-plane-pattern/closure-pack.zip
+      sha256: "75351ab5c5c45b3e2ac489bdbafd4c6a3b31a1727bfdf55ae487cff02b6e760e"
+      actual_deliverables_count: 3
+      manifest_hash_check: pass
+      zip_manifest_bidirectional_match: pass
+    self_verify:
+      targeted_tests: "14 passed"
+      full_tests: "171 passed, 21 warnings"
+      workflow_closure_validation: "pass"
+      control_plane_pattern: "pass"
+    gpt_review:
+      submitted: true
+      reviewer: GPT
+      verdict: accepted
+      review_result_path: evidence_packs/group-06-workflow-closure-control-plane-pattern/GPT_REVIEW_RESULT.txt
+      review_result_sha256: "771df59136d78a944f7bb2e0bfcef7f147be4f3b6dbf1b7b6653ba9b02ca7c89"
+      web_submission_result: evidence_packs/group-06-workflow-closure-control-plane-pattern/WEB_GPT_SUBMISSION_RESULT.json
+      web_submission_result_sha256: "37d9b31db6766d991a2615cb994d0d499169b93191a0e698ab1878c691a2ea9d"
+      send_clicked: true
+    closure_binding:
+      accepted_time: "2026-06-07T09:30:30+08:00"
+      mode: append_only_minimal_binding
+      binding_record: _reports/group-06-workflow-closure-control-plane-pattern-binding/GROUP_06_BINDING_RECORD.yaml
+      scope_limit: "accepted scope covers only GROUP-06 selected files"
+    status: accepted
+    note: "GROUP-06 accepted as workflow closure validator hardening for control_plane actual deliverables."
+
 systemic_defects_identified:
   - id: SD-01
     pattern: "summary-only evidence pack submitted to GPT multiple times"

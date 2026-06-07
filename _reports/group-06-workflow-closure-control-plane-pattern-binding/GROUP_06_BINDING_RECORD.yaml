@@ -1,0 +1,31 @@
+﻿task_id: GROUP-06
+binding_id: group-06-workflow-closure-control-plane-pattern-binding-20260607
+binding_time: "2026-06-07T09:30:30+08:00"
+primary_repo: agent-acceptance
+mode: append_only_minimal_binding
+implementation_scope: "VALIDATE-WORKFLOW-CLOSURE-CONTROL-PLANE-PATTERN"
+implementation_commit: "10b9e8c"
+review_origin: DIRTY-WORKTREE-SPLIT-A1 accepted
+overall_judgment: accepted
+reviewer_type: gpt
+review_result:
+  path: evidence_packs/group-06-workflow-closure-control-plane-pattern/GPT_REVIEW_RESULT.txt
+  sha256: "771df59136d78a944f7bb2e0bfcef7f147be4f3b6dbf1b7b6653ba9b02ca7c89"
+web_submission:
+  path: evidence_packs/group-06-workflow-closure-control-plane-pattern/WEB_GPT_SUBMISSION_RESULT.json
+  sha256: "37d9b31db6766d991a2615cb994d0d499169b93191a0e698ab1878c691a2ea9d"
+  file_uploaded: true
+  prompt_filled: true
+  send_clicked: true
+  reply_complete: true
+  overall_judgment_seen: true
+evidence_pack:
+  path: evidence_packs/group-06-workflow-closure-control-plane-pattern/closure-pack.zip
+  sha256: "75351ab5c5c45b3e2ac489bdbafd4c6a3b31a1727bfdf55ae487cff02b6e760e"
+  workflow_closure_validation: pass
+accepted_scope:
+  - only_group_06_selected_files
+  - control_plane_deliverable_pattern_hardening
+  - no_whole_dirty_tree_commit
+status: accepted
+pushed_to_github: true

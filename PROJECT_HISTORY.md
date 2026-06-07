@@ -476,4 +476,33 @@ implementation_commit: "e98676f"
 pushed_to_github: true
 ```
 
+## GROUP-06 Acceptance Binding (2026-06-07)
+
+Status: accepted by web GPT as workflow closure validator hardening.
+
+This entry binds GROUP-06 only. It must not be interpreted as acceptance of the
+whole dirty worktree or of excluded dirty groups.
+
+Binding:
+
+```yaml
+task_id: GROUP-06
+task_name: VALIDATE-WORKFLOW-CLOSURE-CONTROL-PLANE-PATTERN
+primary_repo: agent-acceptance
+overall_judgment: accepted
+reviewer_type: gpt
+accepted_time: "2026-06-07T09:30:30+08:00"
+evidence_pack: evidence_packs/group-06-workflow-closure-control-plane-pattern/closure-pack.zip
+evidence_pack_sha256: "75351ab5c5c45b3e2ac489bdbafd4c6a3b31a1727bfdf55ae487cff02b6e760e"
+gpt_review_result: evidence_packs/group-06-workflow-closure-control-plane-pattern/GPT_REVIEW_RESULT.txt
+gpt_review_result_sha256: "771df59136d78a944f7bb2e0bfcef7f147be4f3b6dbf1b7b6653ba9b02ca7c89"
+web_gpt_submission_result: evidence_packs/group-06-workflow-closure-control-plane-pattern/WEB_GPT_SUBMISSION_RESULT.json
+web_gpt_submission_result_sha256: "37d9b31db6766d991a2615cb994d0d499169b93191a0e698ab1878c691a2ea9d"
+binding_record: _reports/group-06-workflow-closure-control-plane-pattern-binding/GROUP_06_BINDING_RECORD.yaml
+scope_limit: "only GROUP-06 selected files"
+whole_dirty_worktree_accepted: false
+implementation_commit: "10b9e8c"
+pushed_to_github: true
+```
+
 END_OF_PROJECT_HISTORY
