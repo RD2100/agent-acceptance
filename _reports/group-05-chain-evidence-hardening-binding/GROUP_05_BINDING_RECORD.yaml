@@ -1,19 +1,19 @@
 task_id: GROUP-05
 binding_id: group-05-chain-evidence-hardening-binding-20260607
-binding_time: "2026-06-07T12:57:50+08:00"
+binding_time: "2026-06-07T14:31:50+08:00"
 primary_repo: agent-acceptance
 mode: append_only_minimal_binding
 implementation_scope: "CHAIN-EVIDENCE-HARDENING"
-implementation_commit: "b8338824"
+implementation_commit: "abcee11"
 review_origin: DIRTY-WORKTREE-SPLIT-A1 accepted
 overall_judgment: accepted
 reviewer_type: gpt
 review_result:
   path: evidence_packs/group-05-chain-evidence-hardening/GPT_REVIEW_RESULT.txt
-  sha256: "74f6fa173420f8ec9fb4b164fe79330e3b14a30f510046c3f586dbfbd79b1f61"
+  sha256: "ee905c6e7a22044248765fbc02301ccba42f41b94ce6db844f8a1f39ffa1cf7d"
 web_submission:
   path: evidence_packs/group-05-chain-evidence-hardening/WEB_GPT_SUBMISSION_RESULT.json
-  sha256: "1bcc9afece2b617779ddfc264aa9a81e391f5fd0aadaeabdeb4585129fc2308a"
+  sha256: "a6da306149cb82fe7473150a011e94e802ab896deec4e70daafa066f65d9d95c"
   file_uploaded: true
   prompt_filled: true
   send_clicked: true
@@ -21,7 +21,7 @@ web_submission:
   overall_judgment_seen: true
 evidence_pack:
   path: evidence_packs/group-05-chain-evidence-hardening/closure-pack.zip
-  sha256: "d4b6b17b51abb0d44309d840f7b9c24110fd425a99f0749d8859af2e6eed1add"
+  sha256: "c21e633ef347d31f71cfb42eeff66ecb70df2889fe41464144a85b668413b473"
   workflow_closure_validation: pass
 accepted_scope:
   - only_group_05_selected_files
@@ -29,3 +29,4 @@ accepted_scope:
   - no_whole_dirty_tree_commit
 status: accepted
 pushed_to_github: true
+supersedes: "prior local-only GROUP-05 accepted pack before rerun-timestamp semantic correction"

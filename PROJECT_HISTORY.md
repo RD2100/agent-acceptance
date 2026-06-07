@@ -551,16 +551,17 @@ overall_judgment: accepted
 reviewer_type: gpt
 accepted_time: "2026-06-07T12:57:50+08:00"
 evidence_pack: evidence_packs/group-05-chain-evidence-hardening/closure-pack.zip
-evidence_pack_sha256: "d4b6b17b51abb0d44309d840f7b9c24110fd425a99f0749d8859af2e6eed1add"
+evidence_pack_sha256: "c21e633ef347d31f71cfb42eeff66ecb70df2889fe41464144a85b668413b473"
 gpt_review_result: evidence_packs/group-05-chain-evidence-hardening/GPT_REVIEW_RESULT.txt
-gpt_review_result_sha256: "74f6fa173420f8ec9fb4b164fe79330e3b14a30f510046c3f586dbfbd79b1f61"
+gpt_review_result_sha256: "ee905c6e7a22044248765fbc02301ccba42f41b94ce6db844f8a1f39ffa1cf7d"
 web_gpt_submission_result: evidence_packs/group-05-chain-evidence-hardening/WEB_GPT_SUBMISSION_RESULT.json
-web_gpt_submission_result_sha256: "1bcc9afece2b617779ddfc264aa9a81e391f5fd0aadaeabdeb4585129fc2308a"
+web_gpt_submission_result_sha256: "a6da306149cb82fe7473150a011e94e802ab896deec4e70daafa066f65d9d95c"
 binding_record: _reports/group-05-chain-evidence-hardening-binding/GROUP_05_BINDING_RECORD.yaml
 scope_limit: "only GROUP-05 selected files"
 whole_dirty_worktree_accepted: false
-implementation_commit: "b8338824"
+implementation_commit: "abcee11"
 pushed_to_github: true
+supersedes: "prior local-only GROUP-05 accepted pack before rerun-timestamp semantic correction"
 ```
 
 END_OF_PROJECT_HISTORY
