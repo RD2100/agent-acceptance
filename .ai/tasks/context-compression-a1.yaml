@@ -114,6 +114,7 @@ write_set:
   - "tests/test_review_queue.py"
   - "tests/test_paper_auth_gate.py"
   - "tests/test_paper_go_nogo.py"
+  - "tests/test_smoke_suite.py"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
