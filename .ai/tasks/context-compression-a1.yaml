@@ -108,6 +108,7 @@ write_set:
   - "_reports/post-commit-verification-a1/*"
   - "evidence_packs/repo-code-verification-20260607/*"
   - "scripts/cross_repo_verify.py"
+  - "tests/test_integration_chain.py"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
