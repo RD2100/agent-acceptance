@@ -534,4 +534,33 @@ implementation_commit: "1b78ce5"
 pushed_to_github: true
 ```
 
+## GROUP-05 Acceptance Binding (2026-06-07)
+
+Status: accepted by web GPT as chain-evidence schema/runtime hardening.
+
+This entry binds GROUP-05 only. It must not be interpreted as acceptance of the
+whole dirty worktree or of excluded dirty groups.
+
+Binding:
+
+```yaml
+task_id: GROUP-05
+task_name: CHAIN-EVIDENCE-HARDENING
+primary_repo: agent-acceptance
+overall_judgment: accepted
+reviewer_type: gpt
+accepted_time: "2026-06-07T12:57:50+08:00"
+evidence_pack: evidence_packs/group-05-chain-evidence-hardening/closure-pack.zip
+evidence_pack_sha256: "d4b6b17b51abb0d44309d840f7b9c24110fd425a99f0749d8859af2e6eed1add"
+gpt_review_result: evidence_packs/group-05-chain-evidence-hardening/GPT_REVIEW_RESULT.txt
+gpt_review_result_sha256: "74f6fa173420f8ec9fb4b164fe79330e3b14a30f510046c3f586dbfbd79b1f61"
+web_gpt_submission_result: evidence_packs/group-05-chain-evidence-hardening/WEB_GPT_SUBMISSION_RESULT.json
+web_gpt_submission_result_sha256: "1bcc9afece2b617779ddfc264aa9a81e391f5fd0aadaeabdeb4585129fc2308a"
+binding_record: _reports/group-05-chain-evidence-hardening-binding/GROUP_05_BINDING_RECORD.yaml
+scope_limit: "only GROUP-05 selected files"
+whole_dirty_worktree_accepted: false
+implementation_commit: "b8338824"
+pushed_to_github: true
+```
+
 END_OF_PROJECT_HISTORY
