@@ -1,0 +1,44 @@
+task_id: GROUP-03
+task_name: MEMORY-A2-COMPILER-OUTPUT
+status: closed
+primary_repo: agent-acceptance
+submission_target: agent-acceptance
+task_nature: generated_backfill
+review_origin: DIRTY-WORKTREE-SPLIT-A1
+risk_level: medium
+gate_0:
+  inventory_evidence:
+    queried_sources:
+      - DIRTY-WORKTREE-SPLIT-A1_GPT_REVIEW_RESULT
+      - memory_compiler_output_files
+      - memory_lint_rules
+      - workflow_audit_ledger_sources
+    matched_capabilities:
+      - generated_memory_output
+      - memory_lint_validation
+      - privacy_boundary_check
+      - source_reference_check
+write_set:
+  - .ai/tasks/group-03-memory-a2-output.yaml
+  - memory/daily/2026-06-06.md
+  - memory/knowledge/index.md
+  - _reports/group-03-memory-a2-output/**
+  - _reports/group-03-memory-a2-output-binding/**
+  - PROJECT_HISTORY.md
+  - docs/WORKFLOW_AUDIT_LEDGER.yaml
+  - evidence_packs/group-03-memory-a2-output/**
+forbidden_paths:
+  - runs/*/POST_REVIEW_ROUTE.json
+  - HANDOFF_REPLY_V4.txt
+  - archive/draft-hooks/**
+  - tools/**
+  - schemas/agent-runtime/chain-evidence.schema.json
+  - .tmpconfig/**
+  - .tmpdata/**
+  - '**/__pycache__/**'
+  - '*.pyc'
+  - scripts/validate_paper_task.py
+  - tests/test_paper_task_validator.py
+verification:
+  - python scripts/memory_lint.py
+  - source reference scan on memory/daily/2026-06-06.md and memory/knowledge/index.md

@@ -1,0 +1,5 @@
+﻿GROUP-03 compiler note:
+- memory_compiler.py is writeful and expands output scope when rerun.
+- A verification rerun created memory/daily/2026-06-07.md and broadened memory/knowledge/index.md.
+- That side effect was not adopted into GROUP-03 scope.
+- Therefore GROUP-03 is reviewed as frozen generated output, validated by lint, source-reference scan, privacy scan, and diff evidence.

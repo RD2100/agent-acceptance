@@ -1,0 +1,12 @@
+﻿runs/*/POST_REVIEW_ROUTE.json
+HANDOFF_REPLY_V4.txt deletion
+archive/draft-hooks/*
+tools/*
+schemas/agent-runtime/chain-evidence.schema.json
+.tmpconfig/
+.tmpdata/
+__pycache__/
+*.pyc
+scripts/validate_paper_task.py
+tests/test_paper_task_validator.py
+compiler re-run output expansion beyond selected files

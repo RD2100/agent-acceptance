@@ -1,0 +1,2 @@
+﻿@{InputObject=D:\agent-acceptance\memory\knowledge\index.md	416dc35f1bf73368b7427b441b175136cf035b7923738339163797a814e6ba9a; SideIndicator==>}
+@{InputObject=D:\agent-acceptance\memory\knowledge\index.md	f8fe9fa374b0364fe19a2aef148ccd2bde568948d916d2eff2feebaffde8a6f7; SideIndicator=<=}

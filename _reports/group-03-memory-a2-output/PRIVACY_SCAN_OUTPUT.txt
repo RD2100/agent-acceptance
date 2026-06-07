@@ -1,0 +1,3 @@
+﻿pattern=real paper content|private manuscript|用户论文全文|博士论文全文|raw transcript|cookie|session|profile|api key
+exit=1
+PASS: no direct private-paper/session/secret markers found in selected memory files.
