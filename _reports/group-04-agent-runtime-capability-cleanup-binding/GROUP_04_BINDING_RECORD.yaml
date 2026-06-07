@@ -1,0 +1,32 @@
+task_id: GROUP-04
+binding_id: group-04-agent-runtime-capability-cleanup-binding-20260607
+binding_time: "2026-06-07T12:05:40+08:00"
+primary_repo: agent-acceptance
+mode: append_only_minimal_binding
+implementation_scope: "AGENT-RUNTIME-CAPABILITY-CLEANUP"
+implementation_commit: "1b78ce5"
+review_origin: DIRTY-WORKTREE-SPLIT-A1 accepted
+overall_judgment: accepted
+reviewer_type: gpt
+review_result:
+  path: evidence_packs/group-04-agent-runtime-capability-cleanup/GPT_REVIEW_RESULT.txt
+  sha256: "69cc53e531fbdbfac7758a02ebad298084f529bab4f2e1cb715c6ad190450fa9"
+web_submission:
+  path: evidence_packs/group-04-agent-runtime-capability-cleanup/WEB_GPT_SUBMISSION_RESULT.json
+  sha256: "3a14812e4f76f85ec2762c7b2855c983e21c5e81a4afc99bf499769bc84d6ab6"
+  file_uploaded: true
+  prompt_filled: true
+  send_clicked: true
+  reply_complete: true
+  overall_judgment_seen: true
+evidence_pack:
+  path: evidence_packs/group-04-agent-runtime-capability-cleanup/closure-pack.zip
+  sha256: "82998c458a1fb14448b7d8839bc2e9f7b0b5da24169465a01e3a9948fc64020d"
+  workflow_closure_validation: pass
+accepted_scope:
+  - only_group_04_selected_files
+  - capability_inventory_cleanup
+  - routing_summary_cleanup
+  - historical_blackboard_audit_preservation
+status: accepted
+pushed_to_github: true

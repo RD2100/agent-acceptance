@@ -338,6 +338,38 @@ tasks:
     status: accepted
     note: "GROUP-06 accepted as workflow closure validator hardening for control_plane actual deliverables."
 
+  - task_id: GROUP-04
+    plan: "AGENT-RUNTIME-CAPABILITY-CLEANUP"
+    repo: agent-acceptance
+    commit: "1b78ce5"
+    pushed: yes
+    evidence_pack:
+      path: evidence_packs/group-04-agent-runtime-capability-cleanup/closure-pack.zip
+      sha256: "82998c458a1fb14448b7d8839bc2e9f7b0b5da24169465a01e3a9948fc64020d"
+      actual_deliverables_count: 3
+      manifest_hash_check: pass
+      zip_manifest_bidirectional_match: pass
+    self_verify:
+      blackboard_reference_scan: "pass"
+      workflow_closure_validation: "pass"
+      historical_audit_preserved: "true"
+    gpt_review:
+      submitted: true
+      reviewer: GPT
+      verdict: accepted
+      review_result_path: evidence_packs/group-04-agent-runtime-capability-cleanup/GPT_REVIEW_RESULT.txt
+      review_result_sha256: "69cc53e531fbdbfac7758a02ebad298084f529bab4f2e1cb715c6ad190450fa9"
+      web_submission_result: evidence_packs/group-04-agent-runtime-capability-cleanup/WEB_GPT_SUBMISSION_RESULT.json
+      web_submission_result_sha256: "3a14812e4f76f85ec2762c7b2855c983e21c5e81a4afc99bf499769bc84d6ab6"
+      send_clicked: true
+    closure_binding:
+      accepted_time: "2026-06-07T12:05:40+08:00"
+      mode: append_only_minimal_binding
+      binding_record: _reports/group-04-agent-runtime-capability-cleanup-binding/GROUP_04_BINDING_RECORD.yaml
+      scope_limit: "accepted scope covers only GROUP-04 selected files"
+    status: accepted
+    note: "GROUP-04 accepted as capability inventory/routing cleanup with historical audit preserved."
+
 systemic_defects_identified:
   - id: SD-01
     pattern: "summary-only evidence pack submitted to GPT multiple times"

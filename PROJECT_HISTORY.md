@@ -505,4 +505,33 @@ implementation_commit: "10b9e8c"
 pushed_to_github: true
 ```
 
+## GROUP-04 Acceptance Binding (2026-06-07)
+
+Status: accepted by web GPT as capability inventory/routing cleanup with historical audit preserved.
+
+This entry binds GROUP-04 only. It must not be interpreted as acceptance of the
+whole dirty worktree, archive hook changes, or tools governance changes.
+
+Binding:
+
+```yaml
+task_id: GROUP-04
+task_name: AGENT-RUNTIME-CAPABILITY-CLEANUP
+primary_repo: agent-acceptance
+overall_judgment: accepted
+reviewer_type: gpt
+accepted_time: "2026-06-07T12:05:40+08:00"
+evidence_pack: evidence_packs/group-04-agent-runtime-capability-cleanup/closure-pack.zip
+evidence_pack_sha256: "82998c458a1fb14448b7d8839bc2e9f7b0b5da24169465a01e3a9948fc64020d"
+gpt_review_result: evidence_packs/group-04-agent-runtime-capability-cleanup/GPT_REVIEW_RESULT.txt
+gpt_review_result_sha256: "69cc53e531fbdbfac7758a02ebad298084f529bab4f2e1cb715c6ad190450fa9"
+web_gpt_submission_result: evidence_packs/group-04-agent-runtime-capability-cleanup/WEB_GPT_SUBMISSION_RESULT.json
+web_gpt_submission_result_sha256: "3a14812e4f76f85ec2762c7b2855c983e21c5e81a4afc99bf499769bc84d6ab6"
+binding_record: _reports/group-04-agent-runtime-capability-cleanup-binding/GROUP_04_BINDING_RECORD.yaml
+scope_limit: "only GROUP-04 selected files"
+whole_dirty_worktree_accepted: false
+implementation_commit: "1b78ce5"
+pushed_to_github: true
+```
+
 END_OF_PROJECT_HISTORY
