@@ -564,4 +564,32 @@ pushed_to_github: true
 supersedes: "prior local-only GROUP-05 accepted pack before rerun-timestamp semantic correction"
 ```
 
+## WorkQueue Integrity Acceptance Binding (2026-06-07)
+
+Status: accepted by web GPT as the current WorkQueue integrity slice.
+
+This entry binds only the current WorkQueue integrity slice. It must not be
+interpreted as completion of all future specialized WorkQueue batches.
+
+Binding:
+
+```yaml
+task_id: t-workqueue-integrity-20260601
+primary_repo: agent-acceptance
+overall_judgment: accepted
+reviewer_type: gpt
+accepted_time: "2026-06-07T15:36:00+08:00"
+evidence_pack: evidence_packs/t-workqueue-integrity-20260607-review/closure-pack.zip
+evidence_pack_sha256: "05375bcfbdebe94d10c5aaeef20052c7c65d54857b6736b5413c6383709aaf65"
+gpt_review_result: evidence_packs/t-workqueue-integrity-20260607-review/GPT_REVIEW_RESULT.txt
+gpt_review_result_sha256: "d2aca05fe87dc3cdf10345a4ae18ed0c8406686a743858b28dda9f8b72e72e8b"
+web_gpt_submission_result: evidence_packs/t-workqueue-integrity-20260607-review/WEB_GPT_SUBMISSION_RESULT.json
+web_gpt_submission_result_sha256: "9e1a7925c8a4d677ef6048cecccbb831e8007fea30c4b7d3e64b8b5279300302"
+binding_record: _reports/t-workqueue-integrity-20260601-binding/WORKQUEUE_INTEGRITY_BINDING_RECORD.yaml
+scope_limit: "current WorkQueue integrity slice only"
+whole_dirty_worktree_accepted: false
+implementation_commit: "361a2c9"
+pushed_to_github: true
+```
+
 END_OF_PROJECT_HISTORY

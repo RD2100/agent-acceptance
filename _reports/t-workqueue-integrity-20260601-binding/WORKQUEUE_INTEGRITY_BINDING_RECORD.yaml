@@ -1,0 +1,32 @@
+task_id: t-workqueue-integrity-20260601
+binding_id: t-workqueue-integrity-20260601-binding-20260607
+binding_time: "2026-06-07T15:36:00+08:00"
+primary_repo: agent-acceptance
+mode: append_only_minimal_binding
+implementation_scope: "WORKQUEUE-INTEGRITY"
+implementation_commit: "361a2c9"
+review_origin: GPT accepted workqueue integrity review
+overall_judgment: accepted
+reviewer_type: gpt
+review_result:
+  path: evidence_packs/t-workqueue-integrity-20260607-review/GPT_REVIEW_RESULT.txt
+  sha256: "d2aca05fe87dc3cdf10345a4ae18ed0c8406686a743858b28dda9f8b72e72e8b"
+web_submission:
+  path: evidence_packs/t-workqueue-integrity-20260607-review/WEB_GPT_SUBMISSION_RESULT.json
+  sha256: "9e1a7925c8a4d677ef6048cecccbb831e8007fea30c4b7d3e64b8b5279300302"
+  file_uploaded: true
+  prompt_filled: true
+  send_clicked: true
+  reply_complete: true
+  overall_judgment_seen: true
+evidence_pack:
+  path: evidence_packs/t-workqueue-integrity-20260607-review/closure-pack.zip
+  sha256: "05375bcfbdebe94d10c5aaeef20052c7c65d54857b6736b5413c6383709aaf65"
+accepted_scope:
+  - batch_local_quality_exists
+  - queue_references_resolve
+  - test_workqueue_passes
+  - batch_local_quality_passes
+  - local_quality_queue_passes
+status: accepted
+pushed_to_github: true

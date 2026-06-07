@@ -404,6 +404,37 @@ tasks:
     status: accepted
     note: "GROUP-05 accepted as chain-evidence schema/runtime hardening; R3 supersedes the earlier local-only accepted pack."
 
+  - task_id: t-workqueue-integrity-20260601
+    plan: "Restore WorkQueue module integrity"
+    repo: agent-acceptance
+    commit: "361a2c9"
+    pushed: yes
+    evidence_pack:
+      path: evidence_packs/t-workqueue-integrity-20260607-review/closure-pack.zip
+      sha256: "05375bcfbdebe94d10c5aaeef20052c7c65d54857b6736b5413c6383709aaf65"
+      manifest_hash_check: pass
+      zip_manifest_bidirectional_match: pass
+    self_verify:
+      workqueue_self_test: "PASS=26 FAILED=0 TOTAL=26"
+      batch_local_quality: "PASS=10 BLOCKED=0 FAILED=0"
+      local_quality_queue: "PASS=1 BLOCKED=0 FAILED=0 ESCALATED=0 SKIPPED=0 TOTAL=1"
+    gpt_review:
+      submitted: true
+      reviewer: GPT
+      verdict: accepted
+      review_result_path: evidence_packs/t-workqueue-integrity-20260607-review/GPT_REVIEW_RESULT.txt
+      review_result_sha256: "d2aca05fe87dc3cdf10345a4ae18ed0c8406686a743858b28dda9f8b72e72e8b"
+      web_submission_result: evidence_packs/t-workqueue-integrity-20260607-review/WEB_GPT_SUBMISSION_RESULT.json
+      web_submission_result_sha256: "9e1a7925c8a4d677ef6048cecccbb831e8007fea30c4b7d3e64b8b5279300302"
+      send_clicked: true
+    closure_binding:
+      accepted_time: "2026-06-07T15:36:00+08:00"
+      mode: append_only_minimal_binding
+      binding_record: _reports/t-workqueue-integrity-20260601-binding/WORKQUEUE_INTEGRITY_BINDING_RECORD.yaml
+      scope_limit: "accepted scope covers the current WorkQueue integrity slice only"
+    status: accepted
+    note: "WorkQueue integrity slice accepted; future specialized batches remain follow-up work."
+
 systemic_defects_identified:
   - id: SD-01
     pattern: "summary-only evidence pack submitted to GPT multiple times"
