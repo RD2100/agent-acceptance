@@ -98,6 +98,8 @@ write_set:
   - "evidence_packs/paper-c3-dry-run/*"
   - "RELEASE_SNAPSHOT.json"
   - "DASHBOARD.html"
+  - "scripts/check_submission_bypass.py"
+  - ".ai/bypass_approved"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
