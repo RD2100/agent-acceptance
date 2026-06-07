@@ -104,6 +104,9 @@ write_set:
   - "scripts/validate_taskspec.py"
   - ".ai/tasks/m4-m0-readiness-snapshot.yaml"
   - ".ai/tasks/t-workqueue-integrity-20260601.yaml"
+  - "memory/tasks/CONTEXT-COMPRESSION-A1.md"
+  - "_reports/post-commit-verification-a1/*"
+  - "evidence_packs/repo-code-verification-20260607/*"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"

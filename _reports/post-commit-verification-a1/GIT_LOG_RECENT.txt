@@ -1,0 +1,15 @@
+df530cfc feat: AI-GUARD-STAGED-SCOPE-A1 + CONTEXT-COMPRESSION-A1 binding
+ed47534b Finalize workqueue specialized runs
+ff6e8f54 Bind workqueue specialized closure after GPT review
+50f6b256 Restore specialized workqueue batches and queue propagation
+1393e388 Finalize workqueue integrity run evidence
+0c14081b Bind workqueue integrity acceptance after GPT review
+361a2c9f Restore workqueue integrity baseline
+94aa5731 Bind GROUP-05 R3 acceptance after GPT review
+abcee110 Align chain evidence rerun semantics with existing runs
+ba322a78 Bind GROUP-05 acceptance after GPT review
+b8338824 Harden chain evidence validation and synthesis
+3c1ded07 Bind GROUP-04 acceptance after GPT review
+1b78ce59 Clean up agent runtime capability inventory
+e307dceb Bind GROUP-06 acceptance after GPT review
+10b9e8c1 Harden workflow closure validator for control-plane deliverables

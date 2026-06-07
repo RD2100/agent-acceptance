@@ -1,0 +1,64 @@
+YAML
+overall_judgment: blocked
+reviewer_type: gpt
+task_id: REPO-CODE-VERIFICATION-R2
+evidence_pack_reviewed: true
+
+blocking_issues:
+  - issue_id: REPO-VERIFY-R2-BLOCKER-01
+    title: "报告仍以 summary 为主，缺少可复核的原始 git 输出"
+    detail: |
+      REPO_CODE_VERIFICATION_REPORT.md 已经比上一轮完整，包含 git status、git log、commit hash、binding 片段、敏感模式扫描结论和 SHA256。
+      但关键位置仍是自然语言归纳，而不是原始命令输出。例如：
+      - git diff fc2b2176^..a6fca74c --name-only 只写“没有超出 GROUP-01 selected files 范围的意外文件”，没有给出完整 name-only 列表。
+      - git diff 6304a632^..63005d95 --name-only 只写“确认只包含……”，没有给出完整 name-only 列表。
+      - git diff origin/master~10..origin/master --name-only 只写“100+ 文件变更，均属于各自 GROUP”，没有给出完整文件清单。
+      - git show --stat fc2b2176 只写 “140 files changed”，但没有完整 stat 文件列表。
+      - git show --stat 6304a632 只写 “36 files changed”，但没有完整 stat 文件列表。
+
+  - issue_id: REPO-VERIFY-R2-BLOCKER-02
+    title: "不能仅凭报告中的结论性表述确认远程仓库干净"
+    detail: |
+      Evidence-First 原则要求可复核 evidence，而不是 agent summary。
+      当前报告中的“没有夹带 dirty baseline”“所有变更都属于 selected files”“远程仓库当前状态干净”等是结论性陈述。
+      这些结论可能是真的，但缺少完整原始文件列表，GPT 无法独立复算。
+
+  - issue_id: REPO-VERIFY-R2-BLOCKER-03
+    title: "GROUP-01 提交范围较大，必须给出完整文件清单"
+    detail: |
+      GROUP-01 实现提交显示 140 files changed。
+      selected files 本身约 46 个，但提交还包含 _reports 和 evidence_packs。
+      这不一定错误，因为 evidence pack / reports 可以作为绑定证据提交。
+      但在 140 个文件规模下，必须提供完整 `git show --name-status fc2b2176` 或 `git diff --name-status fc2b2176^..fc2b2176`，否则无法排除夹带项。
+
+required_fixes:
+  - "补充原始命令输出文件，不要只写 summary。"
+  - "必须包含 `git show --name-status fc2b2176` 的完整输出。"
+  - "必须包含 `git show --name-status a6fca74c` 的完整输出。"
+  - "必须包含 `git show --name-status 6304a632` 的完整输出。"
+  - "必须包含 `git show --name-status 63005d95` 的完整输出。"
+  - "必须包含 `git diff --name-status fc2b2176^..a6fca74c` 的完整输出。"
+  - "必须包含 `git diff --name-status 6304a632^..63005d95` 的完整输出。"
+  - "必须包含 `git diff --name-status origin/master~20..origin/master` 的完整输出，至少覆盖 GROUP-01、GROUP-02 以及后续已 accepted GROUP 提交。"
+  - "必须包含原始 `git ls-files | grep -E ...` 输出，而不是只提供表格结论。"
+  - "保留当前 REPO_CODE_VERIFICATION_REPORT.md，但把它作为 summary；新增 raw outputs 作为 evidence。"
+
+review_findings:
+  positive_findings:
+    - "PACK_MANIFEST.md 与 ZIP 内 REPO_CODE_VERIFICATION_REPORT.md、GPT_REVIEW_PROMPT.md 的 sha256 可复核一致。"
+    - "报告显示本地 dirty worktree 仍存在，但声明这些为 local only，未 commit/push。"
+    - "报告显示 GROUP-01 / GROUP-02 binding 中均包含 `whole_dirty_worktree_accepted: false`。"
+    - "报告显示 __pycache__、*.pyc、.tmpconfig、.tmpdata 在 git ls-files 中为 0。"
+    - "报告显示 GROUP-01 / GROUP-02 有 implementation commit 与 binding commit，且 ledger / PROJECT_HISTORY 有对应绑定。"
+  remaining_uncertainty:
+    - "无法从当前报告独立验证 140 个 GROUP-01 变更文件全部合法。"
+    - "无法从当前报告独立验证 36 个 GROUP-02 变更文件全部合法。"
+    - "无法从当前报告独立验证 origin/master 最近 10 个提交的完整文件清单。"
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: REPO-CODE-VERIFICATION-R3
+
+结论：R2 仍 blocked，但已经很接近。 现在缺的不是解释，而是完整 raw git outputs。补上 git show --name-status 和 git diff --name-status 的原始输出后，我就可以真正核验是否夹带 dirty baseline。

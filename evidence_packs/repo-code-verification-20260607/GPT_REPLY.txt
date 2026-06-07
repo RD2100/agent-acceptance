@@ -1,0 +1,43 @@
+YAML
+overall_judgment: blocked
+reviewer_type: gpt
+task_id: REPO-CODE-VERIFICATION
+evidence_pack_reviewed: false
+
+blocking_issues:
+  - issue_id: REPO-VERIFY-BLOCKER-01
+    title: "未收到或无法访问 REPO_CODE_VERIFICATION_REPORT.md"
+    detail: >
+      当前消息中描述了应有的 REPO_CODE_VERIFICATION_REPORT.md，但我在当前可访问附件中没有看到该报告。
+      /mnt/data 中最新可见的 closure-pack.zip 仍是 GROUP-01 evidence pack，不是仓库代码核验报告。
+      因此无法核验 git status、git log、git show、git diff、git ls-files、PROJECT_HISTORY binding 和 ledger binding。
+
+  - issue_id: REPO-VERIFY-BLOCKER-02
+    title: "无法直接读取 GitHub 远程仓库"
+    detail: >
+      我尝试访问 https://github.com/RD2100/agent-acceptance，但当前环境没有成功读取仓库内容。
+      因此不能直接基于远端 master 的实际代码和提交历史给出 accepted 判定。
+
+  - issue_id: REPO-VERIFY-BLOCKER-03
+    title: "不能仅凭 agent 汇报判定仓库代码符合要求"
+    detail: >
+      Evidence-First 原则要求检查实际 git 输出、diff、提交文件清单、敏感模式扫描和 binding 记录。
+      当前只有任务说明和审查要求，没有可复核的 REPO_CODE_VERIFICATION_REPORT.md 内容。
+
+required_fixes:
+  - "重新上传 REPO_CODE_VERIFICATION_REPORT.md，或将其打包为 zip 并上传。"
+  - "报告必须包含 git status --short。"
+  - "报告必须包含 git log --oneline -n 20。"
+  - "报告必须包含 git show --stat fc2b2176 与 git show --stat a6fca74c。"
+  - "报告必须包含 GROUP-01 / GROUP-02 相关提交范围的 git diff --name-only。"
+  - "报告必须包含 git ls-files 对 __pycache__、*.pyc、.tmpconfig、.tmpdata、runs/*/POST_REVIEW_ROUTE.json、HANDOFF_REPLY_V4.txt、archive/draft-hooks、tools、memory 等模式的扫描结果。"
+  - "报告必须包含 PROJECT_HISTORY.md 与 WORKFLOW_AUDIT_LEDGER.yaml 中 GROUP-01 / GROUP-02 binding 片段。"
+  - "报告必须包含 PACK_MANIFEST.md 与 SHA256。"
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: REPO-CODE-VERIFICATION-R2
+
+结论：现在不能 accepted。请重新上传真正的 REPO_CODE_VERIFICATION_REPORT.md；我会按你列出的核验标准继续审查。

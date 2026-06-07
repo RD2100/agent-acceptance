@@ -1,0 +1,9 @@
+BOOT_CONTEXT.md
+HANDOFF_REPLY_V4.txt
+PROJECT_HISTORY.md
+archive/draft-hooks/pre-final.audit.ps1
+archive/draft-hooks/pre-task.audit.ps1
+archive/draft-hooks/pre-tool.audit.ps1
+memory/index.md
+runs/project-history-gaps-v1/POST_REVIEW_ROUTE.json
+runs/repo-routing-a1-v1/POST_REVIEW_ROUTE.json

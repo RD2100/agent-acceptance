@@ -1,0 +1,118 @@
+YAML
+overall_judgment: accepted
+reviewer_type: gpt
+task_id: REPO-CODE-VERIFICATION-R3
+evidence_pack_reviewed: true
+review_basis: "以用户本轮直接粘贴的 R3 RAW GIT 输出为准；上传 ZIP 中仍像是旧版 summary 报告，但本轮正文已补足 raw git evidence。"
+
+blocking_issues: []
+
+required_fixes: []
+
+review_findings:
+  local_dirty_worktree:
+    status: pass_with_scope_note
+    rationale: |
+      git status --short 显示本地仍有 dirty baseline：
+      HANDOFF_REPLY_V4.txt deletion、archive/draft-hooks 修改、runs/*/POST_REVIEW_ROUTE.json 修改、
+      .tmpconfig、.tmpdata、__pycache__、root scratch files 等。
+      但这些显示为 local modified / untracked，不等于已提交到远程。
+      后续仍不得 whole-dirty-tree commit。
+
+  group_01_commit_scope:
+    status: pass
+    rationale: |
+      fc2b2176 的 raw name-status 显示 GROUP-01 实现提交只包含：
+      - .ai/tasks/group-01-contract-backfill.yaml
+      - contracts/*
+      - policies/*
+      - tests/fixtures/*
+      - tests/test_* schema/policy files
+      - _reports/group-01-contract-backfill/*
+      - evidence_packs/group-01-contract-backfill/*
+      这些均属于 GROUP-01 selected files、evidence pack 或 baseline/evidence 记录。
+      未看到 runs/*/POST_REVIEW_ROUTE.json、HANDOFF_REPLY_V4.txt deletion、archive hooks、tools、memory、tmp/cache/root scratch files 被夹带。
+
+  group_01_binding_scope:
+    status: pass
+    rationale: |
+      a6fca74c 只修改 3 个文件：
+      - PROJECT_HISTORY.md
+      - _reports/group-01-contract-backfill-binding/GROUP_01_BINDING_RECORD.yaml
+      - docs/WORKFLOW_AUDIT_LEDGER.yaml
+      这是 accepted binding 的合理范围。
+
+  group_02_commit_scope:
+    status: pass
+    rationale: |
+      6304a632 的 raw name-status 显示 GROUP-02 实现提交只包含：
+      - .ai/tasks/group-02-paper-a3-validator-residual.yaml
+      - scripts/validate_paper_task.py
+      - tests/test_paper_task_validator.py
+      - _reports/group-02-paper-a3-validator-residual/*
+      - evidence_packs/group-02-paper-a3-validator-residual/*
+      这些均属于 GROUP-02 residual/backfill selected files 或对应 evidence。
+      未看到 GROUP-01 文件、archive hooks、tools governance、memory outputs、historical runs 修改、tmp/cache/root scratch files 被夹带。
+
+  group_02_binding_scope:
+    status: pass
+    rationale: |
+      63005d95 只修改 3 个文件：
+      - PROJECT_HISTORY.md
+      - _reports/group-02-paper-a3-validator-residual-binding/GROUP_02_BINDING_RECORD.yaml
+      - docs/WORKFLOW_AUDIT_LEDGER.yaml
+      这是 GROUP-02 accepted binding 的合理范围。
+
+  sensitive_pattern_scan:
+    status: pass
+    rationale: |
+      raw git ls-files 显示：
+      - __pycache__: ZERO tracked files
+      - *.pyc: ZERO tracked files
+      - .tmpconfig: ZERO tracked files
+      - .tmpdata: ZERO tracked files
+
+      runs/*/POST_REVIEW_ROUTE.json、HANDOFF_REPLY_V4.txt、archive/draft-hooks/*、tools/*、memory/*
+      虽然有 tracked 文件，但它们是历史/已接受范围中的已追踪文件，不是 GROUP-01/GROUP-02 本轮夹带项。
+      本地 dirty 状态中相关修改仍未提交。
+
+  binding_consistency:
+    status: pass
+    rationale: |
+      PROJECT_HISTORY.md 与 WORKFLOW_AUDIT_LEDGER.yaml 中 GROUP-01 / GROUP-02 均记录：
+      - overall_judgment/status: accepted
+      - implementation_commit 分别对应 fc2b217 / 6304a63
+      - whole_dirty_worktree_accepted: false
+      - scope_limit 只覆盖对应 GROUP selected files
+      这与提交范围一致。
+
+  remote_clean_for_reviewed_scope:
+    status: pass
+    rationale: |
+      基于本轮 raw git show / git diff / git ls-files 输出，可以确认 GROUP-01 与 GROUP-02 没有把本地 dirty baseline、缓存、临时目录或未授权 dirty groups 推送到远端。
+      origin/master 最近 20 个提交包含后续已 accepted 的 GROUP-03/04/05/06 与 WorkQueue 任务，未显示未授权缓存或临时文件被追踪。
+
+accepted_scope:
+  - "REPO-CODE-VERIFICATION-R3 accepted。"
+  - "GROUP-01 远端提交范围符合 accepted selected files + evidence/binding 范围。"
+  - "GROUP-02 远端提交范围符合 accepted selected files + evidence/binding 范围。"
+  - "未发现 __pycache__、*.pyc、.tmpconfig、.tmpdata 被 git 追踪。"
+  - "未发现 GROUP-01/GROUP-02 提交夹带 whole dirty worktree。"
+  - "本 accepted 不代表本地 dirty worktree 已清洁；本地仍存在未提交 dirty baseline，后续仍必须按组拆分处理。"
+
+non_blocking_notes:
+  - "本轮上传的 repo-code-verification ZIP 里看起来仍是较旧 summary 报告，不包含完整 R3 raw 输出；本次 accepted 主要依据用户消息正文中直接粘贴的 R3 RAW GIT 输出。"
+  - "git diff origin/master~20..origin/master 输出在正文中有截断，但 GROUP-01/GROUP-02 的关键 raw name-status 已足够支持本轮核验。后续若审查 GROUP-03/04/05/06/WorkQueue 的远端范围，应分别提供完整 raw name-status。"
+
+required_next_action: |
+  可以把 REPO-CODE-VERIFICATION-R3 结果记录为 accepted。
+  后续继续处理本地 dirty worktree 时，仍必须保持“一组一审、一组一提”的原则。
+  不得因为本轮远端核验 accepted 而执行 whole-dirty-tree commit。
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: no
+  ask_before_starting: yes
+  recommended_task_id: "CONTEXT-COMPRESSION-A1 或继续 dirty-worktree split 下一组"
+
+END_OF_GPT_RESPONSE
