@@ -75,6 +75,12 @@ write_set:
   - ".ai/current-task.yaml"
   - "_reports/ai-guard-staged-scope-a1/*"
   - "evidence_packs/ai-guard-staged-scope-a1/*"
+  - "schemas/review_ticket.schema.json"
+  - "scripts/review_queue.py"
+  - "tests/test_review_queue.py"
+  - ".ai/tasks/gpt-review-queue-a1.yaml"
+  - "_reports/gpt-review-queue-a1/*"
+  - "evidence_packs/gpt-review-queue-a1/*"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"

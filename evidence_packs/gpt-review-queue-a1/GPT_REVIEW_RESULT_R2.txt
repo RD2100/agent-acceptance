@@ -1,0 +1,57 @@
+overall_judgment: blocked
+blocking_issues:
+
+issue_id: GPT-REVIEW-QUEUE-A1-R2-BLOCKER-01
+title: "R2 只补了 raw test outputs，没有修复 R1 的核心功能缺口"
+detail: "R2 包内确实新增 reports/TARGETED_TEST_OUTPUT.txt 和 reports/FULL_TEST_OUTPUT.txt，且显示 5 targeted passed、244 full passed。但 R1 的核心阻塞项仍存在：缺少 contracts、queue/result schemas、QUEUE_STATE.json、review_queue/README.md、create/update/select/validate scripts、gateway policy、runbook、queue validation output、selected/excluded files、diff、changed files 等 TaskSpec 要求的关键交付物。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-R2-BLOCKER-02
+title: "fail-closed 覆盖仍不足"
+detail: "当前 review_queue.py 只检查 evidence_pack_path 存在和 evidence_pack_sha256 长度为 64，没有校验 sha256 是否匹配实际 evidence pack；没有校验 GPT_REVIEW_PROMPT 路径存在；没有校验 GPT 回复必须包含 END_OF_GPT_RESPONSE；没有校验 accepted 必须包含 next_task_authorization；没有校验 blocked 必须包含 required_fixes。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-R2-BLOCKER-03
+title: "blocked 状态语义仍错误"
+detail: "actual_deliverables/scripts/review_queue.py 中 ACTIVE_STATES 包含 blocked，但 TERMINAL_STATES 不包含 blocked。这样 blocked ticket 会继续占用 active slot，阻止后续 queued ticket 提交。这不符合 GPT review queue 的生命周期语义。blocked 应作为终态，或必须有明确 resubmission/supersede 机制。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-R2-BLOCKER-04
+title: "测试覆盖仍严重不足"
+detail: "TARGETED_TEST_OUTPUT.txt 显示只有 5 个测试。它们覆盖了 basic lifecycle、single active、blocked verdict cannot accept、missing evidence path 和 queue status，但没有覆盖 sha256 mismatch、missing GPT prompt、missing END_OF_GPT_RESPONSE、accepted without next_task_authorization、blocked without required_fixes、cancelled/superseded、review_unverified、FIFO/priority selection、queue/result schema validation。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-R2-BLOCKER-05
+title: "schema 与 TaskSpec 要求不匹配"
+detail: "actual_deliverables/schemas/review_ticket.schema.json 只支持 queued/submitted/gpt_replied/accepted/blocked/closed，缺少 review_unverified、cancelled、superseded 等 TaskSpec 要求状态；required 字段也缺少 GPT prompt path、expected_review_schema、submission_target、allowed_paths、forbidden_paths、safety_boundaries、requires_web_gpt、end_marker_required、next_task_authorization_required。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-R2-BLOCKER-06
+title: "CLOSURE_REPORT / GPT_REVIEW_PROMPT 仍过于 summary-only"
+detail: "CLOSURE_REPORT.md 仍只是简短摘要，没有 selected/excluded 范围、dirty baseline safety、queue validation、manifest/hash 解释、fail-closed 证明。GPT_REVIEW_PROMPT.md 也过短，未覆盖 TaskSpec 中的完整审查焦点。"
+
+required_fixes:
+
+"补齐 TaskSpec 要求的 contracts：gpt_review_queue_contract.yaml、gpt_review_ticket_contract.yaml、gpt_review_gateway_policy.yaml。"
+
+"补齐 schemas：gpt_review_ticket.schema.json、gpt_review_queue.schema.json、gpt_review_result.schema.json，并包含 review_unverified、cancelled、superseded 等状态。"
+
+"补齐 queue state 与文档：review_queue/QUEUE_STATE.json、review_queue/README.md、docs/GPT_REVIEW_QUEUE_POLICY.md、docs/GPT_REVIEW_GATEWAY_RUNBOOK.md。"
+
+"补齐脚本或等价 CLI：create_gpt_review_ticket.py、validate_gpt_review_queue.py、update_gpt_review_ticket.py、select_next_gpt_review.py，或在单一 review_queue.py 中完整实现并在 evidence 中说明。"
+
+"实现真实 evidence_pack_sha256 校验，不只检查长度。"
+
+"实现 GPT_REVIEW_PROMPT 路径存在校验。"
+
+"实现 GPT reply END_OF_GPT_RESPONSE 校验。"
+
+"实现 accepted 必须包含 next_task_authorization 的 fail-closed 校验。"
+
+"实现 blocked 必须包含 required_fixes 的 fail-closed 校验。"
+
+"修正 blocked 状态语义，避免 blocked ticket 永久占用 active slot。"
+
+"补充 targeted tests 覆盖 sha256 mismatch、missing GPT prompt、missing END_OF_GPT_RESPONSE、accepted without next_task_authorization、blocked without required_fixes、review_unverified/cancelled/superseded、FIFO/priority、multiple submitted fail-closed。"
+
+"补充 QUEUE_VALIDATION_OUTPUT.txt、SELECTED_FILES.txt、EXCLUDED_FILES.txt、DIFF、CHANGED_FILES、SAFETY_ATTESTATION.md。"
+
+"重写 CLOSURE_REPORT.md 和 GPT_REVIEW_PROMPT.md，避免 summary-only。"
+
+"重新生成 PACK_MANIFEST.md 和 closure-pack-r3.zip。"
+END_OF_GPT_RESPONSE

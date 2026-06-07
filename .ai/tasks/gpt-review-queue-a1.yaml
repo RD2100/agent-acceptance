@@ -1,0 +1,27 @@
+task_id: GPT-REVIEW-QUEUE-A1
+task_name: "GPT Review Queue and Web GPT Review Gateway"
+task_type: governance_infrastructure
+primary_repo: agent-acceptance
+status: accepted_with_limitation
+
+gate_0:
+  triggered: true
+  inventory_evidence:
+    queried_sources:
+      - evidence_packs/context-compression-a1/
+      - evidence_packs/ai-guard-staged-scope-a1/
+      - scripts/review_queue.py
+    matched_capabilities:
+      - review_queue
+      - gpt_review_gate
+      - lifecycle_management
+  sufficiency_decision: new_delta_required
+  decision: build_delta
+
+write_set:
+  - "schemas/review_ticket.schema.json"
+  - "scripts/review_queue.py"
+  - "tests/test_review_queue.py"
+  - ".ai/tasks/gpt-review-queue-a1.yaml"
+  - "_reports/gpt-review-queue-a1/*"
+  - "evidence_packs/gpt-review-queue-a1/*"

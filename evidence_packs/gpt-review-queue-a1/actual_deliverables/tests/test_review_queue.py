@@ -1,0 +1,122 @@
+"""Test GPT Review Queue lifecycle and fail-closed behavior."""
+import json
+import os
+import sys
+import tempfile
+import shutil
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
+import review_queue as rq
+
+
+class TestTicketLifecycle:
+    """Full lifecycle: create → submit → reply → accept → close."""
+
+    def setup_method(self):
+        self.tmp = tempfile.mkdtemp()
+        self.orig_queue = rq.QUEUE_DIR
+        rq.QUEUE_DIR = Path(self.tmp) / "review_queue"
+        # Create a dummy evidence pack
+        self.evidence = Path(self.tmp) / "test-pack.zip"
+        self.evidence.write_text("dummy evidence")
+
+    def teardown_method(self):
+        rq.QUEUE_DIR = self.orig_queue
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_full_lifecycle(self):
+        """Ticket goes through all states without error."""
+        t = rq.create_ticket("TEST-TASK", str(self.evidence))
+        assert t["status"] == "queued"
+        assert t["ticket_id"].startswith("REVIEW-TEST-TASK")
+        assert len(t["evidence_pack_sha256"]) == 64
+
+        t = rq.submit_ticket(t["ticket_id"], "https://chatgpt.com/c/test")
+        assert t["status"] == "submitted"
+
+        reply = Path(self.tmp) / "gpt_reply.txt"
+        reply.write_text("accepted")
+        t = rq.record_gpt_reply(t["ticket_id"], "accepted", str(reply))
+        assert t["status"] == "gpt_replied"
+        assert t["gpt_verdict"] == "accepted"
+
+        t = rq.accept_ticket(t["ticket_id"])
+        assert t["status"] == "accepted"
+
+        t = rq.close_ticket(t["ticket_id"])
+        assert t["status"] == "closed"
+
+    def test_only_one_active(self):
+        """Cannot submit a second ticket while one is active."""
+        ev2 = Path(self.tmp) / "test2.zip"
+        ev2.write_text("dummy2")
+
+        # Create both tickets first (both queued)
+        t1 = rq.create_ticket("TASK-1", str(self.evidence))
+        t2 = rq.create_ticket("TASK-2", str(ev2))
+
+        # Submit first
+        t1 = rq.submit_ticket(t1["ticket_id"], "http://x.com")
+        assert t1["status"] == "submitted"
+
+        # Try to submit second while first is active
+        try:
+            rq.submit_ticket(t2["ticket_id"], "http://y.com")
+            assert False, "Should have failed"
+        except SystemExit:
+            pass  # expected
+
+    def test_cannot_accept_without_gpt_accepted(self):
+        """Cannot accept a ticket whose GPT verdict is blocked."""
+        t = rq.create_ticket("TASK-3", str(self.evidence))
+        t = rq.submit_ticket(t["ticket_id"], "http://x.com")
+
+        reply = Path(self.tmp) / "reply.txt"
+        reply.write_text("blocked")
+        t = rq.record_gpt_reply(t["ticket_id"], "blocked", str(reply))
+
+        try:
+            rq.accept_ticket(t["ticket_id"])
+            assert False, "Should have failed"
+        except SystemExit:
+            pass
+
+    def test_ticket_requires_existing_evidence(self):
+        """Creating a ticket with non-existent pack must fail."""
+        try:
+            rq.create_ticket("TASK-4", "/nonexistent/pack.zip")
+            assert False, "Should have failed"
+        except SystemExit:
+            pass
+
+    def test_queue_status(self):
+        """Status command reports correct counts."""
+        rq.create_ticket("TASK-A", str(self.evidence))
+        status = rq.queue_status()
+        assert status["total"] >= 1
+        assert status["by_status"]["queued"] >= 1
+
+    def test_sha256_verified_on_create(self):
+        """Creating ticket with mismatched SHA256 fails validation."""
+        t = rq.create_ticket("TASK-HASH", str(self.evidence))
+        t["evidence_pack_sha256"] = "0" * 64  # fake hash
+        errors = rq._validate_ticket(t)
+        assert any("mismatch" in e for e in errors)
+
+    def test_gpt_reply_must_have_end_marker(self):
+        """GPT reply without END_OF_GPT_RESPONSE fails validation."""
+        reply = Path(self.tmp) / "bad_reply.txt"
+        reply.write_text("overall_judgment: accepted\n(no end marker)")
+        result = rq.validate_gpt_reply(str(reply))
+        assert not result["valid"]
+        assert "END_OF_GPT_RESPONSE" in result["error"]
+
+    def test_gpt_reply_valid(self):
+        """Valid GPT reply passes."""
+        reply = Path(self.tmp) / "good_reply.txt"
+        reply.write_text("overall_judgment: accepted\nEND_OF_GPT_RESPONSE")
+        result = rq.validate_gpt_reply(str(reply))
+        assert result["valid"]
+        assert result["verdict"] == "accepted"

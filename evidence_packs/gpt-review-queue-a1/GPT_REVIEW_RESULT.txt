@@ -1,0 +1,48 @@
+overall_judgment: blocked
+blocking_issues:
+
+issue_id: GPT-REVIEW-QUEUE-A1-BLOCKER-01
+title: "缺少原始测试输出文件"
+detail: "用户要求核验 reports/TARGETED_TEST_OUTPUT.txt、reports/FULL_TEST_OUTPUT.txt、reports/AI_GUARD_TASK_MODE_OUTPUT.txt，但 ZIP 中没有 reports/ 目录，也没有这些原始输出文件。CLOSURE_REPORT.md 只用一句话声明 5 PASS / 244 PASS，不能作为 evidence-first 验收依据。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-BLOCKER-02
+title: "实际交付物严重少于 TaskSpec 要求"
+detail: "ZIP 中只有 review_ticket.schema.json、review_queue.py、test_review_queue.py。缺少 queue/result schemas、contracts、gateway policy、QUEUE_STATE.json、review_queue/README.md、create/update/select/validate 脚本、docs runbook、selected/excluded files、diff、changed files、queue validation output 等关键交付物。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-BLOCKER-03
+title: "fail-closed 覆盖不足"
+detail: "实现没有验证 GPT 回复必须包含 END_OF_GPT_RESPONSE；没有验证 accepted 必须包含 next_task_authorization；没有验证 blocked 必须包含 required_fixes；没有验证 evidence_pack_sha256 与实际文件 hash 匹配；没有验证 GPT_REVIEW_PROMPT 路径存在。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-BLOCKER-04
+title: "blocked 状态语义错误，可能永久占用 active slot"
+detail: "ACTIVE_STATES 包含 blocked，TERMINAL_STATES 不包含 blocked。这样一个 blocked ticket 会继续被视为 active，导致后续 queued ticket 无法 submit。这与队列生命周期中 blocked 应作为审查终态或可重新排队状态的治理语义不一致。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-BLOCKER-05
+title: "测试数量和覆盖范围不足"
+detail: "当前只有 5 个测试，且未覆盖 sha256 mismatch、missing GPT prompt、missing END_OF_GPT_RESPONSE、accepted without next_task_authorization、blocked without required_fixes、multiple submitted beyond basic case、cancelled/superseded、priority/FIFO selection、queue/result schema validation。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-BLOCKER-06
+title: "CLOSURE_REPORT / GPT_REVIEW_PROMPT 过于 summary-only"
+detail: "CLOSURE_REPORT 只有简短摘要和测试声明，没有实际命令输出、selected/excluded 范围、dirty baseline safety 说明、queue validation 结果或 manifest/hash 解释。GPT_REVIEW_PROMPT 也过短，未包含 TaskSpec 中要求的完整审查焦点。"
+required_fixes:
+
+"补充完整原始测试输出：reports/TARGETED_TEST_OUTPUT.txt、reports/FULL_TEST_OUTPUT.txt、reports/QUEUE_VALIDATION_OUTPUT.txt、reports/AI_GUARD_TASK_MODE_OUTPUT.txt。"
+
+"补齐 TaskSpec 要求的 contracts、schemas、queue state、queue scripts、runbook、selected/excluded files、diff、changed files、safety attestation。"
+
+"实现并测试 evidence_pack_sha256 真实校验。"
+
+"实现并测试 GPT_REVIEW_PROMPT 路径存在校验。"
+
+"实现并测试 END_OF_GPT_RESPONSE 必须存在。"
+
+"实现并测试 accepted 必须包含 next_task_authorization。"
+
+"实现并测试 blocked 必须包含 required_fixes。"
+
+"修正 blocked 状态语义，不得让 blocked ticket 永久占用 active submitted slot。"
+
+"补充 FIFO / priority / cancelled / superseded / multiple submitted fail-closed 测试。"
+
+"重新生成 CLOSURE_REPORT.md、GPT_REVIEW_PROMPT.md、PACK_MANIFEST.md 和 closure-pack-r2.zip。"
+END_OF_GPT_RESPONSE

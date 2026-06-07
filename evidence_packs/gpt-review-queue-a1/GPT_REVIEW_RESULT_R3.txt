@@ -1,0 +1,48 @@
+overall_judgment: blocked
+blocking_issues:
+
+issue_id: GPT-REVIEW-QUEUE-A1-R3-BLOCKER-01
+title: "R3 仍未补齐 TaskSpec 要求的核心交付物"
+detail: "R3 ZIP 只有 review_ticket.schema.json、review_queue.py、test_review_queue.py 和测试输出。仍缺少 gpt_review_queue_contract.yaml、gpt_review_ticket_contract.yaml、gpt_review_gateway_policy.yaml、gpt_review_queue.schema.json、gpt_review_result.schema.json、review_queue/QUEUE_STATE.json、review_queue/README.md、create/update/select/validate 脚本或等价拆分说明、docs/GPT_REVIEW_QUEUE_POLICY.md、docs/GPT_REVIEW_GATEWAY_RUNBOOK.md、QUEUE_VALIDATION_OUTPUT.txt、SELECTED_FILES.txt、EXCLUDED_FILES.txt、DIFF、CHANGED_FILES、完整 SAFETY_ATTESTATION。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-R3-BLOCKER-02
+title: "GPT reply 校验函数未接入生命周期"
+detail: "review_queue.py 新增 validate_gpt_reply()，但 record_gpt_reply() 并没有调用它。也就是说，通过 CLI reply 仍可记录一个缺少 END_OF_GPT_RESPONSE 的回复，只要 reply 文件存在。R3 测试只测试 validate_gpt_reply() 函数本身，没有证明队列生命周期会 fail-closed。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-R3-BLOCKER-03
+title: "accepted / blocked 的必需字段仍未 fail-closed"
+detail: "实现仍未校验 accepted 回复必须包含 next_task_authorization，也未校验 blocked 回复必须包含 required_fixes。accept_ticket() 只检查 gpt_verdict == accepted，不检查 GPT reply 内容是否满足完整审查模板。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-R3-BLOCKER-04
+title: "blocked 状态语义仍错误"
+detail: "ACTIVE_STATES 仍包含 blocked，TERMINAL_STATES 仍不包含 blocked。这样 blocked ticket 会继续占用 active slot，阻止后续 queued ticket 提交。R3 没有修复 R2 已指出的生命周期语义问题。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-R3-BLOCKER-05
+title: "schema 仍不符合 TaskSpec"
+detail: "review_ticket.schema.json 仍只支持 queued、submitted、gpt_replied、accepted、blocked、closed，缺少 review_unverified、cancelled、superseded。required 字段仍缺少 gpt_review_prompt_path、expected_review_schema、submission_target、allowed_paths、forbidden_paths、safety_boundaries、requires_web_gpt、end_marker_required、next_task_authorization_required 等 TaskSpec 要求字段。"
+
+issue_id: GPT-REVIEW-QUEUE-A1-R3-BLOCKER-06
+title: "测试覆盖仍不足"
+detail: "TARGETED_TEST_OUTPUT.txt 显示 8 passed，只新增 sha256 mismatch 和 END marker 函数测试。仍缺少 missing GPT prompt、accepted without next_task_authorization、blocked without required_fixes、record_gpt_reply lifecycle END marker fail-closed、review_unverified/cancelled/superseded、FIFO/priority selection、multiple submitted 的更完整负向覆盖。"
+required_fixes:
+
+"将 validate_gpt_reply() 接入 record_gpt_reply()，缺少 END_OF_GPT_RESPONSE 或 overall_judgment 时必须 fail closed。"
+
+"实现 accepted 必须包含 next_task_authorization 的校验，并加入测试。"
+
+"实现 blocked 必须包含 required_fixes 的校验，并加入测试。"
+
+"修正 blocked 状态语义：blocked 应为 terminal，或实现明确 resubmission/supersede 机制，不能永久占用 active slot。"
+
+"补齐 review_unverified、cancelled、superseded 状态及对应测试。"
+
+"补齐 GPT prompt path 存在校验和测试。"
+
+"补齐 TaskSpec 要求的 contracts、queue/result schemas、QUEUE_STATE、README、gateway policy、runbook，或明确提供等价合并实现说明并由测试覆盖。"
+
+"补充 SELECTED_FILES、EXCLUDED_FILES、DIFF、CHANGED_FILES、QUEUE_VALIDATION_OUTPUT、完整 SAFETY_ATTESTATION。"
+
+"重写 CLOSURE_REPORT.md 和 GPT_REVIEW_PROMPT.md，说明完整范围、fail-closed 规则、dirty baseline 排除与测试覆盖。"
+
+"重新生成 PACK_MANIFEST.md 和 closure-pack-r4.zip。"
+END_OF_GPT_RESPONSE
