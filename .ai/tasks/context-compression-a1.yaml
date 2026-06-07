@@ -90,6 +90,7 @@ write_set:
   - "scripts/test_impact_map.py"
   - "scripts/ci_matrix.py"
   - "scripts/multi_repo_smoke.py"
+  - "scripts/paper_pilot_preflight.py"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
