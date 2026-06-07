@@ -1,0 +1,2 @@
+﻿D:\agent-acceptance\scripts\validate_workflow_closure.py	5162129a9a399d5ac368189bc1748752d6029b134669354beaf3881814f93842
+D:\agent-acceptance\tests\test_workflow_closure_validation.py	e60dcfb7019a3cbe999b75cbdb3e59a30428a71e4a46984da834cb3d3d6d4930

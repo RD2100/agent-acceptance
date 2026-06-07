@@ -1,0 +1,14 @@
+﻿runs/*/POST_REVIEW_ROUTE.json
+HANDOFF_REPLY_V4.txt deletion
+archive/draft-hooks/*
+tools/*
+memory/*
+.tmpconfig/
+.tmpdata/
+__pycache__/
+*.pyc
+contracts/*
+policies/*
+GROUP-01 residual files
+GROUP-02 residual files
+GROUP-03 memory files

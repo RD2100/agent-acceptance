@@ -1,0 +1,16 @@
+{
+  "task_id": "GROUP-06",
+  "target_url": "https://chatgpt.com/c/6a23dd8c-4550-83a8-bdee-76ca5a982edb",
+  "zip_path": "D:\\agent-acceptance\\evidence_packs\\group-06-workflow-closure-control-plane-pattern\\closure-pack.zip",
+  "file_uploaded": true,
+  "prompt_filled": true,
+  "send_clicked": true,
+  "reply_complete": true,
+  "overall_judgment_seen": true,
+  "reply_saved": true,
+  "errors": [],
+  "started_at": "2026-06-07T09:28:59+0800",
+  "clicked_selector": "button[data-testid=\"send-button\"]",
+  "end_marker_seen": true,
+  "finished_at": "2026-06-07T09:30:02+0800"
+}

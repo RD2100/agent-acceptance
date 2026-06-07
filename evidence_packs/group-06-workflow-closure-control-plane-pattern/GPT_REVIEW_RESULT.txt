@@ -1,0 +1,109 @@
+YAML
+overall_judgment: accepted
+reviewer_type: gpt
+task_id: GROUP-06
+evidence_pack_reviewed: true
+
+blocking_issues: []
+
+required_fixes: []
+
+review_findings:
+  group_06_only_isolation:
+    status: pass
+    rationale: |
+      GROUP_06_SELECTED_FILES.txt 只列出：
+      - scripts/validate_workflow_closure.py
+      - tests/test_workflow_closure_validation.py
+
+      actual_deliverables 中也只包含这两个对应文件的镜像：
+      - actual_deliverables/validate_workflow_closure.py
+      - actual_deliverables/test_workflow_closure_validation.py
+
+      未发现 archive hooks、tools governance、memory outputs、paper validator residuals、tmp/cache/root scratch files 或 historical runs 修改进入 GROUP-06 deliverables。
+
+  control_plane_deliverable_pattern:
+    status: pass
+    rationale: |
+      DIFF_GROUP_06.patch 显示 scripts/validate_workflow_closure.py 在 ACTUAL_DELIVERABLE_PATTERNS 中新增：
+      - "control_plane/"
+
+      该变更与 review focus 一致，即让 workflow closure validator 将 control_plane/ 文件识别为 actual deliverables。
+
+  targeted_test_coverage:
+    status: pass
+    rationale: |
+      tests/test_workflow_closure_validation.py 新增 test_sd01_control_plane_deliverable_passes。
+      该测试构造包含 control_plane/stage_executor.py 的 evidence ZIP，并断言：
+      - summary_only_pack 为 false
+      - control_plane/stage_executor.py 出现在 actual_deliverables_found
+      - result == "pass"
+
+      这直接证明 control_plane/stage_executor.py 会被计为 actual deliverable。
+
+  targeted_tests:
+    status: pass
+    rationale: |
+      TARGETED_TEST_OUTPUT.txt 显示 14 passed。
+
+  full_tests:
+    status: pass
+    rationale: |
+      TEST_OUTPUT.txt 显示 171 passed, 21 warnings。
+      剩余 PytestReturnNotNoneWarning 来自 legacy tests，例如 tests/test_framework_usage.py 和 tests/test_paper_acceptance_contracts.py，不是 GROUP-06 selected files。
+
+  excluded_dirty_groups:
+    status: pass
+    rationale: |
+      GROUP_06_EXCLUDED_FILES.txt 明确排除：
+      - runs/*/POST_REVIEW_ROUTE.json
+      - HANDOFF_REPLY_V4.txt deletion
+      - archive/draft-hooks/*
+      - tools/*
+      - memory/*
+      - .tmpconfig/
+      - .tmpdata/
+      - __pycache__/
+      - *.pyc
+      - contracts/*
+      - policies/*
+      - GROUP-01 residual files
+      - GROUP-02 residual files
+      - GROUP-03 memory files
+
+      evidence pack 中未发现这些 excluded dirty groups 作为 deliverables 纳入。
+
+  not_summary_only:
+    status: pass
+    rationale: |
+      evidence pack 包含 actual deliverables、DIFF_GROUP_06.patch、selected/excluded files、targeted/full test outputs、closure report、baseline reports 和 PACK_MANIFEST.md。
+      因此不是 summary-only pack。
+
+  manifest_hash_integrity:
+    status: pass
+    rationale: |
+      PACK_MANIFEST.md 列出的 18 个条目均存在于 ZIP 中。
+      除 PACK_MANIFEST.md self_excluded 外，其余文件的 bytes 与 sha256 均可复核一致。
+      ZIP 中未发现 manifest 未列出的额外文件。
+
+accepted_scope:
+  - "GROUP-06 accepted as VALIDATE-WORKFLOW-CLOSURE-CONTROL-PLANE-PATTERN."
+  - "该 accepted 只覆盖 scripts/validate_workflow_closure.py 与 tests/test_workflow_closure_validation.py。"
+  - "不得将该结果扩展解释为 whole dirty worktree accepted。"
+  - "不得顺手提交 excluded dirty groups。"
+
+required_next_action: |
+  将 GROUP-06 accepted 结果绑定到任务登记 / ledger / PROJECT_HISTORY 的相应条目中。
+  只允许提交 GROUP-06 selected files：
+  - scripts/validate_workflow_closure.py
+  - tests/test_workflow_closure_validation.py
+
+  提交前再次核对 staged files 与 GROUP_06_SELECTED_FILES.txt 完全一致。
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: no
+  ask_before_starting: yes
+  recommended_next_task: "继续 dirty worktree split 的下一组，或由用户指定转向 CONTEXT-COMPRESSION-A1 / GPT-REVIEW-QUEUE-A1"
+
+END_OF_GPT_RESPONSE_

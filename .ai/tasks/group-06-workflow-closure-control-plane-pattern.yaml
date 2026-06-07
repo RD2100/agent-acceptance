@@ -1,0 +1,40 @@
+task_id: GROUP-06
+task_name: VALIDATE-WORKFLOW-CLOSURE-CONTROL-PLANE-PATTERN
+status: closed
+primary_repo: agent-acceptance
+submission_target: agent-acceptance
+task_nature: validator_hardening
+review_origin: DIRTY-WORKTREE-SPLIT-A1
+risk_level: low
+gate_0:
+  inventory_evidence:
+    queried_sources:
+      - DIRTY-WORKTREE-SPLIT-A1_GPT_REVIEW_RESULT
+      - workflow_closure_validator_diff
+      - workflow_closure_validation_tests
+    matched_capabilities:
+      - workflow_closure_validator
+      - control_plane_actual_deliverable_pattern
+      - validator_targeted_test
+write_set:
+  - .ai/tasks/group-06-workflow-closure-control-plane-pattern.yaml
+  - scripts/validate_workflow_closure.py
+  - tests/test_workflow_closure_validation.py
+  - _reports/group-06-workflow-closure-control-plane-pattern/**
+  - _reports/group-06-workflow-closure-control-plane-pattern-binding/**
+  - PROJECT_HISTORY.md
+  - docs/WORKFLOW_AUDIT_LEDGER.yaml
+  - evidence_packs/group-06-workflow-closure-control-plane-pattern/**
+forbidden_paths:
+  - runs/*/POST_REVIEW_ROUTE.json
+  - HANDOFF_REPLY_V4.txt
+  - archive/draft-hooks/**
+  - tools/**
+  - memory/**
+  - .tmpconfig/**
+  - .tmpdata/**
+  - '**/__pycache__/**'
+  - '*.pyc'
+verification:
+  - python -m pytest tests/test_workflow_closure_validation.py -q
+  - python -m pytest tests -q
