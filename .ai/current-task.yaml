@@ -111,6 +111,7 @@ write_set:
   - "tests/test_integration_chain.py"
   - "CLAUDE.md"
   - "README.md"
+  - "tests/test_review_queue.py"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"

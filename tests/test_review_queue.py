@@ -11,6 +11,47 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 import review_queue as rq
 
 
+class TestE2EQueue:
+    """End-to-end: real evidence pack lifecycle."""
+
+    def setup_method(self):
+        self.tmp = tempfile.mkdtemp()
+        self.orig = rq.QUEUE_DIR
+        rq.QUEUE_DIR = Path(self.tmp) / "review_queue"
+
+    def teardown_method(self):
+        rq.QUEUE_DIR = self.orig
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_e2e_with_real_evidence_pack(self):
+        """Full lifecycle with actual evidence pack from agent-acceptance."""
+        real_pack = REPO_ROOT / "evidence_packs/context-compression-a1/closure-pack-r6.zip"
+        if not real_pack.exists():
+            return  # Skip if pack not found
+
+        t = rq.create_ticket("E2E-TEST", str(real_pack))
+        assert t["status"] == "queued"
+        assert len(t["evidence_pack_sha256"]) == 64
+
+        t = rq.submit_ticket(t["ticket_id"], "https://chatgpt.com/c/test")
+        assert t["status"] == "submitted"
+
+        reply = Path(self.tmp) / "gpt_reply.txt"
+        reply.write_text("overall_judgment: accepted\nEND_OF_GPT_RESPONSE")
+        validation = rq.validate_gpt_reply(str(reply))
+        assert validation["valid"]
+
+        t = rq.record_gpt_reply(t["ticket_id"], "accepted", str(reply))
+        assert t["status"] == "gpt_replied"
+        assert t["gpt_verdict"] == "accepted"
+
+        t = rq.accept_ticket(t["ticket_id"])
+        assert t["status"] == "accepted"
+
+        t = rq.close_ticket(t["ticket_id"])
+        assert t["status"] == "closed"
+
+
 class TestTicketLifecycle:
     """Full lifecycle: create → submit → reply → accept → close."""
 
