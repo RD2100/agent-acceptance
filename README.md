@@ -2,11 +2,12 @@
 
 > **Agent 冷启动：请按顺序读取以下文件，不要跳过。**
 >
-> 1. `PROJECT_HISTORY.md` — 项目生存文档（全部阶段历史、架构、经验、当前状态）
-> 2. `HANDOFF_V5.md` — 当前交接快照（上一个 GPT 生成的最新上下文）
-> 3. `D:\devframe-control-plane\PROJECT_HISTORY.md` — 子项目完整历史
+> 1. `BOOT_CONTEXT.md` — 冷启动入口（3K 字符，60 秒可读完）
+> 2. `memory/index.md` — 记忆索引（按需检索任务/知识）
+> 3. `PROJECT_HISTORY.md` — 完整项目历史（需要时阅读）
+> 4. `D:\devframe-control-plane\PROJECT_HISTORY.md` — 控制平面完整历史
 >
-> 读完三份文档后，你应能回答：项目是什么、做过什么、当前状态、安全边界、下一步。然后按 CLAUDE.md 中的协议工作。
+> 读完 BOOT_CONTEXT 后按 CLAUDE.md 协议工作。不再使用 HANDOFF 文档，不再通过 CDP 做任务交接。
 
 ---
 

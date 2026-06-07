@@ -110,6 +110,7 @@ write_set:
   - "scripts/cross_repo_verify.py"
   - "tests/test_integration_chain.py"
   - "CLAUDE.md"
+  - "README.md"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
