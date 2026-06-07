@@ -87,6 +87,7 @@ write_set:
   - "scripts/smoke_suite.py"
   - "scripts/run_demo.py"
   - "scripts/pre_push_verify.py"
+  - "scripts/test_impact_map.py"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
@@ -96,3 +97,4 @@ known_dirty_worktree_excluded:
   - "runs/project-history-gaps-v1/POST_REVIEW_ROUTE.json"
   - "runs/repo-routing-a1-v1/POST_REVIEW_ROUTE.json"
   - "hooks/sealed-files-manifest.json"
+  - "scripts/test_impact_map.py"
