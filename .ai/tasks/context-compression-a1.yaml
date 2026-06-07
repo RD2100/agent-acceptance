@@ -96,6 +96,7 @@ write_set:
   - "scripts/paper_dry_run_packet.py"
   - "scripts/paper_go_nogo.py"
   - "evidence_packs/paper-c3-dry-run/*"
+  - "RELEASE_SNAPSHOT.json"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"

@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-06-07T15:15:13.905104+00:00",
+  "repos": {
+    "agent-acceptance": {
+      "commit": "e7e8355e feat: PAPER-C3 dry-run packet + GO/NOGO gate",
+      "tests": "247 PASS"
+    },
+    "devframe-control-plane": {
+      "commit": "a22c018 feat: run history — log/tail workflow execution records",
+      "tests": "62 PASS"
+    }
+  },
+  "smoke": "PASS",
+  "tasks_completed": 24,
+  "scripts_built": 17
+}
