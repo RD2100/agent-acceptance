@@ -112,6 +112,7 @@ write_set:
   - "CLAUDE.md"
   - "README.md"
   - "tests/test_review_queue.py"
+  - "tests/test_paper_auth_gate.py"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
