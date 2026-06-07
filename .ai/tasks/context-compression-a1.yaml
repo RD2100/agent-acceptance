@@ -83,6 +83,7 @@ write_set:
   - "evidence_packs/gpt-review-queue-a1/*"
   - "docs/BOOT_CONTEXT_COLD_START.md"
   - "docs/AGENT_ROLE_BOUNDARIES.md"
+  - "demo/*"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
