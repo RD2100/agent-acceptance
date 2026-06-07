@@ -1,0 +1,113 @@
+YAML
+overall_judgment: blocked
+reviewer_type: gpt
+task_id: t-workqueue-integrity-20260601
+evidence_pack_reviewed: true
+
+blocking_issues:
+  - issue_id: WORKQUEUE-R2-BLOCKER-01
+    title: "证据包内部结论矛盾：实际运行输出显示 PASS，但 CLOSURE_REPORT / test-output / safety-report 仍声称 blocked"
+    detail: |
+      workqueue-selftest-output.txt 显示 Test-WorkQueue 通过：
+      Self-Test: PASS=26 FAILED=0 TOTAL=26
+
+      batch-local-quality-output.txt 显示 batch-local-quality 通过：
+      PASS=10 BLOCKED=0 FAILED=0
+
+      reports/batch-result.json 显示：
+      passed=10, failed=0, blocked=0
+
+      reports/batch-report.md 显示：
+      Executive Decision: PASS
+      PASS=10 BLOCKED=0 FAILED=0 TOTAL=10
+
+      queue-local-quality-output.txt 显示 local-quality queue 通过：
+      q-local-quality [PASS]
+
+      reports/queue-report.md 显示：
+      Executive Decision: PASS
+      PASS=1 BLOCKED=0 FAILED=0 ESCALATED=0 SKIPPED=0 TOTAL=1
+
+      但 CLOSURE_REPORT.md 仍写：
+      running shared local-quality batch still produces false failures inside Run-Batch.ps1 / Run-WorkQueue.ps1 reporting。
+
+      test-output.md 仍写：
+      batch still reports FAILED with alternating tasks marked exit=2；
+      queue fails because batch exits 2。
+
+      safety-report.json 也写：
+      exit_code: 1；
+      batch and queue execution still blocked by runner-side exit/result mismatch。
+
+      因此本包不能被视为 internally consistent。
+
+  - issue_id: WORKQUEUE-R2-BLOCKER-02
+    title: "无法确认 remaining blocker 是否仍属于 runner/reporting behavior"
+    detail: |
+      当前 actual execution artifacts 显示 runner/reporting 已经 PASS：
+      Run-Batch 输出、batch-result.json、batch-report.md、Run-WorkQueue 输出、queue-report.md 均为 PASS。
+      因此“仍被 runner/reporting behavior 阻塞，而不是 queue reference integrity 阻塞”的说法没有被当前运行证据支持。
+      如果仍存在 runner/reporting blocker，需要提供新的失败输出；如果已经修复，则 CLOSURE_REPORT、test-output.md、safety-report.json 必须更新为 PASS 状态。
+
+  - issue_id: WORKQUEUE-R2-BLOCKER-03
+    title: "下一任务是否应扩展到 Run-Batch.ps1 / Run-WorkQueue.ps1 的判断依据不足"
+    detail: |
+      因为当前实际 batch/queue 报告已经 PASS，不能基于 stale blocked narrative 直接授权扩大范围到 scripts/Run-Batch.ps1 和 scripts/Run-WorkQueue.ps1。
+      扩大范围属于 runner 行为变更，必须由真实失败输出证明必要性。
+      当前包更像是“WorkQueue reference integrity + local-quality batch/queue 已恢复 PASS”，而不是“runner/reporting 仍需扩展修复”。
+
+required_fixes:
+  - "重新生成 CLOSURE_REPORT.md，使其与实际运行证据一致。"
+  - "重新生成 test-output.md，使其不再声称 batch/queue FAILED，除非重新提供真实失败输出。"
+  - "重新生成 safety-report.json；如果 batch/queue 已 PASS，exit_code 不应为 1，也不应写 still blocked。"
+  - "若仍主张 runner/reporting blocked，必须提供新的 Run-Batch.ps1 / Run-WorkQueue.ps1 失败输出、batch-result、queue-report 和对应 per-task logs。"
+  - "重新生成 PACK_MANIFEST.md 和 ZIP，确保 manifest/hash 仍一致。"
+
+review_findings:
+  missing_batch_local_quality_fixed:
+    status: pass
+    rationale: |
+      batch-local-quality.json 已包含在 evidence pack 中。
+      workqueue-selftest-output.txt 显示 batch: local-quality.queue.json all task files exist，
+      且 Self-Test: PASS=26 FAILED=0 TOTAL=26。
+      因此 missing batch-local-quality.json 缺陷已修复。
+
+  test_workqueue_passes:
+    status: pass
+    rationale: |
+      workqueue-selftest-output.txt 显示 Test-WorkQueue 通过：
+      Self-Test: PASS=26 FAILED=0 TOTAL=26。
+
+  batch_local_quality_execution:
+    status: pass_by_actual_artifacts
+    rationale: |
+      batch-local-quality-output.txt、reports/batch-result.json、reports/batch-report.md 均显示 PASS。
+      这与 CLOSURE_REPORT.md / test-output.md 的 blocked narrative 矛盾。
+
+  local_quality_queue_execution:
+    status: pass_by_actual_artifacts
+    rationale: |
+      queue-local-quality-output.txt 与 reports/queue-report.md 均显示 q-local-quality PASS，
+      queue summary 为 PASS=1 BLOCKED=0 FAILED=0。
+      这与 test-output.md 中“queue fails because batch exits 2”的说法矛盾。
+
+  manifest_hash_integrity:
+    status: pass
+    rationale: |
+      PACK_MANIFEST.md 与 ZIP 内容双向一致，所有非 self 文件 bytes 与 sha256 可复核通过。
+
+next_task_recommendation:
+  recommended_task_id: "t-workqueue-integrity-r3-consistency-fix"
+  recommendation: |
+    不要立即扩大到 scripts/Run-Batch.ps1 / scripts/Run-WorkQueue.ps1。
+    先做 R3 consistency fix：更新 CLOSURE_REPORT.md、test-output.md、safety-report.json，使叙述与实际 PASS artifacts 一致。
+    如果 R3 重新运行后 batch/queue 仍 PASS，则 WorkQueue integrity 可作为 reference integrity fixed + local-quality batch/queue passing。
+    只有在重新运行产生真实 runner/reporting failure 时，才另开 runner/reporting task，纳入 Run-Batch.ps1 和 Run-WorkQueue.ps1。
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: "t-workqueue-integrity-r3-consistency-fix"
+
+END_OF_GPT_RESPONSE_

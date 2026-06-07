@@ -1,0 +1,86 @@
+YAML
+overall_judgment: accepted
+reviewer_type: gpt
+task_id: t-workqueue-integrity-20260601
+evidence_pack_reviewed: true
+
+blocking_issues: []
+
+required_fixes: []
+
+review_findings:
+  missing_batch_local_quality_fixed:
+    status: pass
+    rationale: |
+      batch-local-quality.json 已包含在 evidence pack 中。
+      local-quality.queue.json 中的 task_file 指向 scripts/examples/batch-local-quality.json。
+      workqueue-selftest-output.txt 显示 batch: local-quality.queue.json all task files exist，
+      Self-Test: PASS=26 FAILED=0 TOTAL=26。
+      因此 missing batch-local-quality.json defect 已修复。
+
+  test_workqueue_passes:
+    status: pass
+    rationale: |
+      workqueue-selftest-output.txt 显示 Test-WorkQueue 通过：
+      Self-Test: PASS=26 FAILED=0 TOTAL=26。
+
+  batch_local_quality_batch_passes:
+    status: pass
+    rationale: |
+      batch-local-quality-output.txt 显示 PASS=10 BLOCKED=0 FAILED=0。
+      reports/batch-result.json 中 total=10，所有 task verdict 均为 PASS。
+      reports/batch-report.md 显示 Executive Decision: PASS，Summary 为 PASS=10 BLOCKED=0 FAILED=0 TOTAL=10。
+
+  local_quality_queue_execution_passes:
+    status: pass
+    rationale: |
+      queue-local-quality-output.txt 显示 q-local-quality [PASS]。
+      reports/queue-report.md 显示 Executive Decision: PASS，Summary 为 PASS=1 BLOCKED=0 FAILED=0 ESCALATED=0 SKIPPED=0 TOTAL=1。
+
+  internal_consistency:
+    status: pass
+    rationale: |
+      R3 已修正 R2 中的叙述矛盾。
+      CLOSURE_REPORT.md、test-output.md、safety-report.json、batch output、queue output、batch-result.json、batch-report.md、queue-report.md 均一致指向 PASS。
+      safety-report.json 的 exit_code 也已为 0。
+
+  manifest_hash_integrity:
+    status: pass
+    rationale: |
+      PACK_MANIFEST.md 与 ZIP 内容双向一致。
+      所有非 self 文件的 bytes 与 sha256 均可复核通过，未发现 manifest 未列出的额外文件。
+
+accepted_scope:
+  - "WorkQueue integrity slice accepted."
+  - "missing batch-local-quality.json defect fixed."
+  - "Test-WorkQueue now passes."
+  - "batch-local-quality batch passes."
+  - "local-quality queue execution passes."
+  - "当前证据不支持继续把 Run-Batch.ps1 / Run-WorkQueue.ps1 作为阻塞性修复范围。"
+
+required_next_action: |
+  将 t-workqueue-integrity-20260601 accepted 结果绑定到任务登记 / ledger / PROJECT_HISTORY。
+  不要把该 accepted 结果扩展解释为所有 WorkQueue future queues 或 specialized batches 均已完成。
+  如果继续 WorkQueue 后续工作，应作为 enhancement / follow-up task，而不是当前 integrity blocker。
+
+next_task_recommendation:
+  recommended_task_id: "t-workqueue-specialized-batches-20260607"
+  rationale: |
+    当前 WorkQueue reference integrity 和 local-quality execution 已恢复 PASS。
+    下一步不应 supersede/expand 当前任务到 scripts/Run-Batch.ps1 和 scripts/Run-WorkQueue.ps1，
+    因为现有执行 artifacts 已显示 runner/reporting 路径通过。
+    更合理的后续任务是：恢复或设计 cleanup / recovery / release-readiness 等队列的 specialized active batches，
+    避免它们长期复用 batch-local-quality.json。
+  scope:
+    - "审查 cleanup-dryrun.queue.json、recovery-regression.queue.json、release-readiness.queue.json 当前是否仍临时复用 batch-local-quality.json。"
+    - "为需要独立语义的队列设计 specialized batch JSON。"
+    - "运行 Test-WorkQueue、对应 Run-Batch、对应 Run-WorkQueue。"
+    - "保持非破坏性、dry-run 优先。"
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: no
+  ask_before_starting: yes
+  recommended_task_id: "t-workqueue-specialized-batches-20260607"
+
+END_OF_GPT_RESPONSE_

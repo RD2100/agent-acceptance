@@ -1,0 +1,97 @@
+{
+  "batch_id": "batch-local-quality",
+  "mode": "dry-run",
+  "description": "Shared active Tier 0 quality batch for the current agent-acceptance repository. Used by local-quality and temporarily reused by recovery/release/cleanup queues until specialized active batches are restored.",
+  "tasks": [
+    {
+      "id": "py-compile-core-scripts",
+      "title": "Compile core governance scripts",
+      "tier": 0,
+      "command": "python -m py_compile tools/ai_guard.py tools/go_evidence.py scripts/validate_workflow_closure.py scripts/validate_paper_task.py scripts/memory_compiler.py scripts/memory_lint.py",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "schema-dispatch-result",
+      "title": "Validate DISPATCH_RESULT schema tests",
+      "tier": 0,
+      "command": "python -c \"import time; time.sleep(0.2)\"; python -m pytest tests/test_dispatch_result_schema.py -q",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "schema-flow-outcome",
+      "title": "Validate FLOW_OUTCOME schema tests",
+      "tier": 0,
+      "command": "python -c \"import time; time.sleep(0.2)\"; python -m pytest tests/test_flow_outcome_schema.py -q",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "schema-taskspec",
+      "title": "Validate TASKSPEC schema tests",
+      "tier": 0,
+      "command": "python -c \"import time; time.sleep(0.2)\"; python -m pytest tests/test_taskspec_schema.py -q",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "schema-runner-contract",
+      "title": "Validate RUNNER_CONTRACT schema tests",
+      "tier": 0,
+      "command": "python -c \"import time; time.sleep(0.2)\"; python -m pytest tests/test_runner_contract_schema.py -q",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "schema-runner-state",
+      "title": "Validate RUNNER_STATE schema tests",
+      "tier": 0,
+      "command": "python -c \"import time; time.sleep(0.2)\"; python -m pytest tests/test_runner_state_schema.py -q",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "schema-runner-step-result",
+      "title": "Validate RUNNER_STEP_RESULT schema tests",
+      "tier": 0,
+      "command": "python -c \"import time; time.sleep(0.2)\"; python -m pytest tests/test_runner_step_result_schema.py -q",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "policy-dispatch-and-terminal",
+      "title": "Validate dispatch and terminal policy tests",
+      "tier": 0,
+      "command": "python -c \"import time; time.sleep(0.2)\"; python -m pytest tests/test_dispatcher_policy.py tests/test_next_taskspec_consumption_policy.py tests/test_run_until_terminal_policy.py tests/test_terminal_state_policy.py -q",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "validator-hardening",
+      "title": "Validate workflow closure and chain evidence hardening tests",
+      "tier": 0,
+      "command": "python -m pytest tests/test_workflow_closure_validation.py tests/test_chain_evidence_hardening.py -q",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    },
+    {
+      "id": "memory-lint",
+      "title": "Run memory lint",
+      "tier": 0,
+      "command": "python scripts/memory_lint.py",
+      "expected_exit_codes": [0],
+      "required_artifacts": [],
+      "timeout_seconds": 60
+    }
+  ]
+}
