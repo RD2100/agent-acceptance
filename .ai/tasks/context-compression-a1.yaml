@@ -85,6 +85,7 @@ write_set:
   - "docs/AGENT_ROLE_BOUNDARIES.md"
   - "demo/*"
   - "scripts/smoke_suite.py"
+  - "scripts/run_demo.py"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
