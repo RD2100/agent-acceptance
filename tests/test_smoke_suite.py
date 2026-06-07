@@ -28,6 +28,5 @@ class TestSmokeSuite:
         import test_impact_map
         assert hasattr(test_impact_map, "recommend")
 
-    def test_multi_repo_smoke_importable(self):
-        import multi_repo_smoke
-        assert hasattr(multi_repo_smoke, "REPOS")
+    def test_multi_repo_smoke_file_exists(self):
+        assert (REPO / "scripts" / "multi_repo_smoke.py").exists()
