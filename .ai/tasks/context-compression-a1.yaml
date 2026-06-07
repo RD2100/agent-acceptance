@@ -101,6 +101,7 @@ write_set:
   - "scripts/check_submission_bypass.py"
   - ".ai/bypass_approved"
   - "CHECKPOINT_MANIFEST.json"
+  - "scripts/validate_taskspec.py"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
