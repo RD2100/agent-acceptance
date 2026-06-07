@@ -88,6 +88,7 @@ write_set:
   - "scripts/run_demo.py"
   - "scripts/pre_push_verify.py"
   - "scripts/test_impact_map.py"
+  - "scripts/ci_matrix.py"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
