@@ -22,8 +22,26 @@
 ## 测试
 
 ```bash
-cd D:\agent-acceptance && python -m pytest tests/ -q
+cd D:\agent-acceptance && python -m pytest tests/ -q      # 259+ PASS expected
+python scripts/smoke_suite.py                               # 9 checks
+python scripts/validate_taskspec.py                         # 25 TaskSpecs valid
+python scripts/paper_pilot_runner.py                        # PILOT PASS expected
 ```
+
+## 快速工具索引
+
+| 脚本 | 用途 |
+|------|------|
+| `smoke_suite.py` | 9 项健康检查 |
+| `run_demo.py` | 7 步 synthetic demo |
+| `pre_push_verify.py` | push 前 5 项验证 |
+| `cross_repo_verify.py` | 三仓库健康 |
+| `validate_taskspec.py` | TaskSpec YAML 验证 |
+| `review_queue.py` | GPT 审查队列 |
+| `test_impact_map.py` | 变更文件→测试映射 |
+| `paper_pilot_runner.py` | 论文 pilot runner |
+| `paper_auth_gate.py` | 论文授权 gate |
+| `paper_go_nogo.py` | GO/NOGO gate |
 
 
 ## Repo Routing (REPO-ROUTING-A1)
