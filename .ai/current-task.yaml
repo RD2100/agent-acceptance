@@ -102,6 +102,8 @@ write_set:
   - ".ai/bypass_approved"
   - "CHECKPOINT_MANIFEST.json"
   - "scripts/validate_taskspec.py"
+  - ".ai/tasks/m4-m0-readiness-snapshot.yaml"
+  - ".ai/tasks/t-workqueue-integrity-20260601.yaml"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"

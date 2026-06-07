@@ -131,8 +131,8 @@ conflict_registry:
 
 implementation_plan:
   - Read the active queue JSONs, WorkQueue docs, and root-cause notes first.
-  - Preferred convergence decision: restore `scripts/examples/batch-local-quality.json` as an active current-repo batch, instead of leaving four queues and multiple docs pointed at a missing file.
-  - Make the restored active batch match this repository's current reality; do not copy the future-only batch verbatim if it depends on non-existent `src/`, `tasks.yaml`, or unavailable external commands.
+  - "Preferred convergence decision: restore `scripts/examples/batch-local-quality.json` as an active current-repo batch, instead of leaving four queues and multiple docs pointed at a missing file."
+  - "Make the restored active batch match this repository's current reality; do not copy the future-only batch verbatim if it depends on non-existent `src/`, `tasks.yaml`, or unavailable external commands."
   - Make queue files, self-test, and docs tell one consistent story.
   - Initialize evidence with go_evidence.py init.
   - Run WorkQueue self-test and any focused queue/batch checks needed.
@@ -157,7 +157,7 @@ acceptance_criteria:
   - Test-WorkQueue no longer fails because of missing scripts/examples/batch-local-quality.json
   - WorkQueue queue JSONs reference valid active task files
   - COMMAND_CHEATSHEET, SINGLE_PROJECT_ADOPTION, and RUNBOOK match the active WorkQueue reality
-  - `scripts/examples/batch-local-quality.json` exists and is runnable for this repository's intended Tier 0 checks
+  - "scripts/examples/batch-local-quality.json` exists and is runnable for this repository's intended Tier 0 checks"
   - Dedicated run evidence exists under runs/t-workqueue-integrity-20260601/
   - Executor reports exact remaining blockers if full pass is not reached
 
