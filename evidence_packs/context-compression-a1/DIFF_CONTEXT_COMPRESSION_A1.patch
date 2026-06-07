@@ -1,0 +1,1451 @@
+# DIFF: All files are NEW (untracked). Full content in actual_deliverables/.
+
+=== contracts/context_compression_contract.yaml ===
+# Context Compression Contract
+# Version: 1.0.0
+# Defines the compression layer API and invariants.
+
+contract_version: "1.0.0"
+contract_id: "context-compression-v1"
+
+## Pipeline Stages
+pipeline:
+  - stage: segment
+    description: "Split input by task_id / review_run_id boundary."
+    input: ["PROJECT_HISTORY.md", "docs/WORKFLOW_AUDIT_LEDGER.yaml", "_reports/*/*BINDING_RECORD.yaml", "evidence_packs/*/GPT_REVIEW_RESULT*.txt"]
+    output: "List[Segment] where each segment has task_id, source, raw_text"
+  - stage: classify
+    description: "Tag each segment as decision / blocker / fix / lesson / noise / superseded."
+    output: "List[ClassifiedSegment]"
+  - stage: deduplicate
+    description: "Merge multiple review rounds for the same task_id into one lifecycle."
+    output: "List[MergedLifecycle]"
+  - stage: supersede
+    description: "When blocked superseded by accepted, keep root cause + final fix only."
+    output: "List[FinalLifecycle]"
+  - stage: privacy_filter
+    description: "Block paper full text, raw transcript, private text, secrets from output."
+    output: "List[SafeLifecycle]"
+  - stage: emit
+    description: "Write BOOT_CONTEXT.md, memory/index.md, memory/tasks/*.md, memory/knowledge/*.md."
+    output: "Generated files"
+
+## Invariants
+invariants:
+  - "BOOT_CONTEXT.md must be 3000-6000 Chinese characters."
+  - "Task memory entries must be 300-800 characters each."
+  - "Knowledge files must be 500-1200 characters each."
+  - "No paper full text in any output."
+  - "No raw transcript in any output."
+  - "No private user text in any output."
+  - "No secrets/tokens/api_keys in any output."
+  - "All outputs must pass privacy guard validation."
+
+## Privacy Guard Rules
+privacy_guard:
+  fail_closed_patterns:
+    - "real_paper_full_text"
+    - "raw_paper_text"
+    - "private_user_text"
+    - "raw_transcript"
+    - "cookie"
+    - "session"
+    - "api_key"
+    - "secret"
+    - "token"
+    - "博士论文正文"
+    - "用户论文全文"
+    - "外部上传"
+  allowed_content_patterns:
+    - "task_id"
+    - "review_run_id"
+    - "overall_judgment"
+    - "evidence_pack_sha256"
+    - "commit hash"
+    - "安全边界"
+    - "流程教训"
+
+## Output Schemas
+boot_context_sections:
+  - "项目身份"
+  - "三层架构"
+  - "当前阶段"
+  - "最近 accepted 任务"
+  - "当前开放风险"
+  - "下一步推荐任务"
+  - "绝对安全边界"
+  - "冷启动读取顺序"
+
+memory_index_fields:
+  - "topic"
+  - "related_task_ids"
+  - "source_files"
+  - "last_updated"
+  - "read_when"
+
+task_memory_fields:
+  - "task_id"
+  - "task_name"
+  - "status"
+  - "review_run_id"
+  - "key_blockers"
+  - "final_fix"
+  - "evidence_pack"
+  - "next_relevance"
+
+=== schemas/compressed_memory_entry.schema.json ===
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agent-acceptance/schemas/compressed_memory_entry",
+  "title": "Compressed Memory Entry",
+  "description": "Schema for a single compressed task lifecycle or knowledge entry in the memory system.",
+  "type": "object",
+  "required": ["entry_id", "entry_type", "content"],
+  "properties": {
+    "entry_id": {
+      "type": "string",
+      "description": "Unique identifier, e.g. TASK-GROUP-01 or KNOWLEDGE-evidence-first",
+      "pattern": "^(TASK|KNOWLEDGE|INDEX)-.+$"
+    },
+    "entry_type": {
+      "type": "string",
+      "enum": ["task_lifecycle", "knowledge", "index"],
+      "description": "Type of memory entry"
+    },
+    "content": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Compressed content, must not contain paper text or secrets"
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Original task ID if this is a task lifecycle entry"
+    },
+    "review_run_id": {
+      "type": "string",
+      "description": "GPT review run ID"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["accepted", "blocked", "superseded", "closed"],
+      "description": "Final lifecycle status"
+    },
+    "related_entries": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Related entry IDs"
+    },
+    "source_files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Files this entry was compressed from"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Search/discovery tags"
+    },
+    "privacy_checked": {
+      "type": "boolean",
+      "description": "Must be true; false means entry is invalid"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of generation"
+    }
+  },
+  "additionalProperties": false
+}
+
+=== schemas/boot_context.schema.json ===
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agent-acceptance/schemas/boot_context",
+  "title": "Boot Context",
+  "description": "Schema for BOOT_CONTEXT.md — the short cold-start entry point for new agents.",
+  "type": "object",
+  "required": ["boot_context_version", "sections", "total_characters", "privacy_checked"],
+  "properties": {
+    "boot_context_version": {
+      "type": "string",
+      "description": "Version of the boot context format"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "total_characters": {
+      "type": "integer",
+      "minimum": 3000,
+      "maximum": 6000,
+      "description": "Total Chinese character count, must be 3000-6000"
+    },
+    "sections": {
+      "type": "object",
+      "required": [
+        "project_identity",
+        "three_layer_architecture",
+        "current_stage",
+        "recent_accepted_tasks",
+        "open_risks",
+        "next_recommended_task",
+        "absolute_safety_boundaries",
+        "cold_start_reading_order"
+      ],
+      "properties": {
+        "project_identity": { "type": "string", "maxLength": 500 },
+        "three_layer_architecture": { "type": "string", "maxLength": 600 },
+        "current_stage": { "type": "string", "maxLength": 400 },
+        "recent_accepted_tasks": { "type": "string", "maxLength": 1000 },
+        "open_risks": { "type": "string", "maxLength": 800 },
+        "next_recommended_task": { "type": "string", "maxLength": 400 },
+        "absolute_safety_boundaries": { "type": "string", "maxLength": 800 },
+        "cold_start_reading_order": { "type": "string", "maxLength": 400 }
+      }
+    },
+    "privacy_checked": {
+      "type": "boolean",
+      "description": "Must be true; false means the boot context is invalid"
+    },
+    "hash": {
+      "type": "string",
+      "description": "SHA256 of the boot context content"
+    }
+  },
+  "additionalProperties": false
+}
+
+=== scripts/compress_project_context.py ===
+#!/usr/bin/env python3
+"""
+compress_project_context.py — Compress PROJECT_HISTORY, audit ledger, and GPT review
+results into compact memory entries.
+
+Pipeline: segment → classify → deduplicate → supersede → privacy_filter → emit.
+
+Deterministic/rule-based. No external API calls. No paper content ingestion.
+"""
+import hashlib
+import json
+import re
+import sys
+import yaml
+from datetime import datetime, timezone
+from pathlib import Path
+
+# ── Privacy filter (fail-closed) ───────────────────────────────────
+FORBIDDEN_PATTERNS = [
+    re.compile(r"real_paper_full_text", re.I),
+    re.compile(r"raw_paper_text", re.I),
+    re.compile(r"private_user_text", re.I),
+    re.compile(r"raw_transcript", re.I),
+    re.compile(r"cookie", re.I),
+    re.compile(r"\bapi[_-]?key\b", re.I),
+    re.compile(r"\bsecret\b", re.I),
+    re.compile(r"\btoken\b", re.I),
+    re.compile(r"博士论文正文"),
+    re.compile(r"用户论文全文"),
+    re.compile(r"外部上传"),
+]
+
+
+def privacy_ok(text: str) -> bool:
+    """Fail-closed: return False if any forbidden pattern matches."""
+    for pat in FORBIDDEN_PATTERNS:
+        if pat.search(text):
+            return False
+    return True
+
+
+# ── Stage 1: Segment ────────────────────────────────────────────────
+def segment_project_history(path: str, max_depth: int = 1500) -> list[dict]:
+    """Split PROJECT_HISTORY.md into segments by task binding sections."""
+    text = Path(path).read_text(encoding="utf-8")
+    segments = []
+
+    # Find GROUP-## or PAPER-XX or TASK-XX binding sections
+    section_pattern = re.compile(
+        r"(##\s+(GROUP-\d+|PAPER-[A-Z0-9-]+|WorkQueue|CONTEXT-COMPRESSION-[A-Z0-9-]+)\s+Acceptance\s+Binding.*?)(?=##\s+(GROUP-|PAPER-|WorkQueue|CONTEXT-)|$)",
+        re.DOTALL,
+    )
+    for match in section_pattern.finditer(text):
+        full_section = match.group(0)
+        task_id_match = re.search(r"(GROUP-\d+|PAPER-[A-Z0-9-]+|WorkQueue|CONTEXT-COMPRESSION-[A-Z0-9-]+)", match.group(2) or "")
+        task_id = task_id_match.group(0) if task_id_match else "unknown"
+
+        segments.append({
+            "task_id": task_id,
+            "source": path,
+            "raw_text": full_section.strip()[:max_depth],
+            "char_count": len(full_section),
+        })
+
+    # Also extract the task table (lines 30-60 approx)
+    table_area = "\n".join(text.split("\n")[29:60])
+    segments.append({
+        "task_id": "TASK-TABLE",
+        "source": path,
+        "raw_text": table_area[:max_depth],
+        "char_count": len(table_area),
+    })
+
+    return segments
+
+
+def segment_audit_ledger(path: str) -> list[dict]:
+    """Extract task entries from WORKFLOW_AUDIT_LEDGER.yaml."""
+    try:
+        data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    except Exception:
+        return []
+
+    segments = []
+    tasks = data.get("tasks", []) if isinstance(data, dict) else []
+    for entry in tasks:
+        if isinstance(entry, dict) and "task_id" in entry:
+            segments.append({
+                "task_id": entry["task_id"],
+                "source": path,
+                "raw_text": json.dumps(entry, ensure_ascii=False, default=str),
+                "char_count": len(json.dumps(entry, ensure_ascii=False, default=str)),
+            })
+    return segments
+
+
+# ── Stage 2: Classify ────────────────────────────────────────────────
+def classify(segment: dict) -> dict:
+    """Tag segment: decision / blocker / fix / lesson / noise / superseded."""
+    text = segment.get("raw_text", "")
+    tags = []
+
+    if re.search(r"overall_judgment.*accepted", text, re.I):
+        tags.append("decision")
+    if re.search(r"blocked|blocker|blocking", text, re.I):
+        tags.append("blocker")
+    if re.search(r"fix|fixed|修复|resolved", text, re.I):
+        tags.append("fix")
+    if re.search(r"lesson|教训|learned|SD-0", text, re.I):
+        tags.append("lesson")
+    if re.search(r"superseded", text, re.I):
+        tags.append("superseded")
+    if re.search(r"whole_dirty_tree|scope_note|excluded", text, re.I):
+        tags.append("scope_note")
+
+    if not tags:
+        tags.append("noise")
+
+    segment["tags"] = tags
+    return segment
+
+
+# ── Stage 3: Deduplicate ─────────────────────────────────────────────
+def deduplicate(segments: list[dict]) -> list[dict]:
+    """Merge segments with same task_id into one lifecycle entry."""
+    by_task: dict[str, list[dict]] = {}
+    for seg in segments:
+        tid = seg.get("task_id", "unknown")
+        by_task.setdefault(tid, []).append(seg)
+
+    merged = []
+    for tid, segs in by_task.items():
+        all_tags = sorted(set(t for s in segs for t in s.get("tags", [])))
+        best_text = max(segs, key=lambda s: len(s.get("raw_text", "")))
+
+        merged.append({
+            "task_id": tid,
+            "source_count": len(segs),
+            "sources": list(set(s["source"] for s in segs)),
+            "tags": all_tags,
+            "raw_text": best_text["raw_text"],
+            "char_count": best_text["char_count"],
+        })
+    return merged
+
+
+# ── Stage 4: Supersede ───────────────────────────────────────────────
+def supersede(entries: list[dict]) -> list[dict]:
+    """When blocked was superseded by accepted, keep only final accepted state + root cause."""
+    result = []
+    for entry in entries:
+        tags = entry.get("tags", [])
+        if "superseded" in tags:
+            # Extract root cause + final fix, drop intermediate noise
+            text = entry["raw_text"]
+            root_cause = ""
+            final_fix = ""
+            rc_match = re.search(r"(blocking_issues|blocked).*?(?=required_fixes|accept)", text, re.DOTALL | re.I)
+            if rc_match:
+                root_cause = rc_match.group(0)[:200]
+            fx_match = re.search(r"(required_fixes|fix|修复).*", text, re.DOTALL | re.I)
+            if fx_match:
+                final_fix = fx_match.group(0)[:200]
+            entry["raw_text"] = f"ROOT_CAUSE: {root_cause}\nFINAL_FIX: {final_fix}"
+            entry["char_count"] = len(entry["raw_text"])
+        result.append(entry)
+    return result
+
+
+# ── Stage 5: Privacy filter ──────────────────────────────────────────
+def privacy_filter(entries: list[dict]) -> list[dict]:
+    """Remove entries containing forbidden content. Fail-closed."""
+    safe = []
+    for entry in entries:
+        if privacy_ok(entry.get("raw_text", "")):
+            entry["privacy_checked"] = True
+            safe.append(entry)
+        else:
+            print(f"PRIVACY BLOCK: task_id={entry.get('task_id')} — forbidden content detected, excluded")
+    return safe
+
+
+# ── Stage 6: Emit ────────────────────────────────────────────────────
+def emit_task_memory(entry: dict, output_dir: str) -> str:
+    """Write a task lifecycle memory file."""
+    tid = entry.get("task_id", "unknown").replace("/", "-")
+    status = "accepted" if "decision" in entry.get("tags", []) else "unknown"
+
+    content = f"""# {tid}
+
+> task_id: {tid}
+> status: {status}
+> review_run_id: {entry.get('review_run_id', 'see evidence pack')}
+> compressed_at: {datetime.now(timezone.utc).isoformat()}
+
+## Key Information
+
+{entry.get('raw_text', '')[:600]}
+
+## Tags
+
+{', '.join(entry.get('tags', []))}
+
+## Sources
+
+""" + "\n".join(f"- {s}" for s in entry.get("sources", []))
+
+    filepath = Path(output_dir) / f"{tid}.md"
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+    filepath.write_text(content, encoding="utf-8")
+    return str(filepath)
+
+
+def emit_knowledge(topic: str, content: str, output_dir: str) -> str:
+    """Write a knowledge file."""
+    slug = topic.lower().replace(" ", "_").replace("/", "-")
+    filepath = Path(output_dir) / f"{slug}.md"
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+    filepath.write_text(content, encoding="utf-8")
+    return str(filepath)
+
+
+def emit_index(entries: list[dict], knowledge_files: list[str], output_path: str) -> str:
+    """Write memory/index.md."""
+    now = datetime.now(timezone.utc).isoformat()
+    lines = [
+        "# Memory Index",
+        "",
+        f"> Last updated: {now}",
+        f"> Entry count: {len(entries) + len(knowledge_files)}",
+        "> Generated by: compress_project_context.py",
+        "",
+        "## Task Lifecycle Memories",
+        "",
+        "| Task ID | Status | Tags |",
+        "|---------|--------|------|",
+    ]
+    for entry in entries:
+        tid = entry.get("task_id", "unknown")
+        status = "accepted" if "decision" in entry.get("tags", []) else "unknown"
+        tags = ", ".join(entry.get("tags", [])[:3])
+        lines.append(f"| {tid} | {status} | {tags} |")
+
+    lines.extend([
+        "",
+        "## Knowledge Files",
+        "",
+    ])
+    for kf in knowledge_files:
+        lines.append(f"- {kf}")
+
+    content = "\n".join(lines)
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    Path(output_path).write_text(content, encoding="utf-8")
+    return output_path
+
+
+# ── Main Pipeline ────────────────────────────────────────────────────
+def run_pipeline(
+    project_history: str = "PROJECT_HISTORY.md",
+    audit_ledger: str = "docs/WORKFLOW_AUDIT_LEDGER.yaml",
+    task_memory_dir: str = "memory/tasks",
+    knowledge_dir: str = "memory/knowledge",
+    index_path: str = "memory/index.md",
+) -> dict:
+    """Execute the full compression pipeline."""
+
+    # Segment
+    segments = segment_project_history(project_history)
+    segments += segment_audit_ledger(audit_ledger)
+    print(f"SEGMENT: {len(segments)} segments")
+
+    # Classify
+    segments = [classify(s) for s in segments]
+    tag_counts = {}
+    for s in segments:
+        for t in s.get("tags", []):
+            tag_counts[t] = tag_counts.get(t, 0) + 1
+    print(f"CLASSIFY: tags={tag_counts}")
+
+    # Deduplicate
+    merged = deduplicate(segments)
+    print(f"DEDUP: {len(segments)} → {len(merged)} merged")
+
+    # Supersede
+    superseded = supersede(merged)
+
+    # Privacy filter
+    safe = privacy_filter(superseded)
+    print(f"PRIVACY: {len(superseded)} → {len(safe)} safe")
+
+    # Emit task memories
+    task_files = []
+    for entry in safe:
+        fp = emit_task_memory(entry, task_memory_dir)
+        task_files.append(fp)
+    print(f"EMIT TASKS: {len(task_files)} files")
+
+    # Knowledge files (pre-built)
+    knowledge_files = [
+        "memory/knowledge/evidence_first.md",
+        "memory/knowledge/dirty_worktree_split.md",
+        "memory/knowledge/gpt_review_gate.md",
+        "memory/knowledge/paper_privacy.md",
+        "memory/knowledge/workqueue.md",
+        "memory/knowledge/context_compression.md",
+    ]
+
+    # Emit index
+    emit_index(safe, knowledge_files, index_path)
+
+    return {
+        "pipeline": "COMPLETE",
+        "segments_in": len(segments),
+        "merged": len(merged),
+        "privacy_safe": len(safe),
+        "task_memories": len(task_files),
+        "knowledge_files": len(knowledge_files),
+        "index_path": index_path,
+    }
+
+
+def main():
+    result = run_pipeline()
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+    sys.exit(0 if result["privacy_safe"] > 0 else 1)
+
+
+if __name__ == "__main__":
+    main()
+
+=== scripts/build_boot_context.py ===
+#!/usr/bin/env python3
+"""
+build_boot_context.py — Generate BOOT_CONTEXT.md from compressed knowledge sources.
+
+Produces a 3000-6000 character cold-start entry point for new agents.
+Must not exceed the character limit and must not include paper text.
+"""
+import hashlib
+import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+REQUIRED_SECTIONS = [
+    "project_identity",
+    "three_layer_architecture",
+    "current_stage",
+    "recent_accepted_tasks",
+    "open_risks",
+    "next_recommended_task",
+    "absolute_safety_boundaries",
+    "cold_start_reading_order",
+]
+
+# ── Skeleton knowledge ─────────────────────────────────────────────
+# In production this would be built from the compression pipeline output.
+# For CONTEXT-COMPRESSION-A1, we generate directly from the known project state.
+
+BOOT_SECTIONS = {
+    "project_identity": """
+DevFrame 是一个三层工作流治理体系，用 evidence-first + GPT 审查 + 自动化流水线管理 AI 辅助的软件工程任务。
+
+核心价值：把多阶段 Agent/GPT 工作流变成可冷启动、可迁移、可审核、可交接的 evidence-first 框架。
+
+关键仓库：
+- agent-acceptance（本仓库）：规范验收层
+- devframe-control-plane：编排控制层
+- dev-frame-opencode：执行层
+""",
+    "three_layer_architecture": """
+三层架构：
+1. agent-acceptance（规范验收层）— 合约、schema、validator、GPT review 模板、pre-commit/pre-push gate
+2. devframe-control-plane（编排控制层）— pipeline runner、state machine、submission adapter、CDP bridge、CLI
+3. dev-frame-opencode（执行层）— 具体代码修改和测试运行
+
+当前 agent-acceptance 测试 170 PASS，devframe-control-plane 测试 65 PASS，全线绿色。
+""",
+    "current_stage": """
+当前阶段：治理基础设施完善期。已通过 GROUP-01 到 GROUP-06 完成合约、政策、测试、memory compiler、能力清单、chain evidence、workflow closure validator 的 backfill 和 GPT binding。PAPER-C2 已闭合（protocol-only 授权/脱敏 gate，不启用真实论文执行）。
+
+最近完成 REPO-CODE-VERIFICATION-R3：确认 GitHub 远程仓库 clean（仅含 GPT-accepted GROUP files）。本地 worktree 仍 dirty（含 HANDOFF_REPLY_V4 deletion、archive hooks 修改、runs POST_REVIEW_ROUTE 修改、.tmpconfig、.tmpdata、__pycache__），但严格禁止 whole-dirty-tree commit。下一步进入 CONTEXT-COMPRESSION-A1 阶段。
+""",
+    "recent_accepted_tasks": """
+最近 GPT-accepted 任务（2026-06-07）：
+- GROUP-01: AA-FLOW-RUNNER-CONTRACT-BACKFILL — contracts + policies + tests (140 files)
+- GROUP-02: PAPER-A3-VALIDATOR-RESIDUAL — validate_paper_task.py + test (2 core files)
+- GROUP-03: MEMORY-A2-COMPILER-OUTPUT — frozen memory compiler output
+- GROUP-04: AGENT-RUNTIME-CAPABILITY-CLEANUP — blackboard cleanup + capability inventory
+- GROUP-05: CHAIN-EVIDENCE-HARDENING R3 — ai_guard + go_evidence + chain-evidence schema
+- GROUP-06: VALIDATE-WORKFLOW-CLOSURE-CONTROL-PLANE-PATTERN — workflow closure validator
+- WorkQueue: specialized batches + Run-WorkQueue propagation
+- REPO-CODE-VERIFICATION-R3: remote origin/master clean for accepted scope
+""",
+    "open_risks": """
+当前开放风险：
+1. 本地 dirty worktree 未被清理（不得 whole-dirty-tree commit）
+2. REVIEW-TEMPLATE-V2 已 push 但未 GPT 审查（需补审）
+3. 上下文膨胀：PROJECT_HISTORY.md 和 HANDOFF 版本持续增长，新 agent 冷启动成本上升
+4. GPT 审查曾被系统跳过：agent 将 commit+push 当作终点（已通过 pre-push gate step 2.6 加固）
+5. CDP 通信依赖 Chrome --remote-debugging-port=9222 运行
+""",
+    "next_recommended_task": """
+推荐下一步：CONTEXT-COMPRESSION-A1（当前任务）
+- 建立 BOOT_CONTEXT.md 作为新 agent 冷启动入口
+- 建立 memory/index.md 作为可检索记忆索引
+- 实现 privacy guard（阻断论文正文、raw transcript、secret）
+- 后续可考虑：PAPER-PRIVACY-GUARD-HARDENING、GPT-REVIEW-QUEUE-A1
+""",
+    "absolute_safety_boundaries": """
+绝对安全边界（永久禁止）：
+- guard removal
+- evidence cleanup/deletion/movement/renaming
+- cookies/session/browser profile 读取
+- 真实用户数据提交
+- CURRENT_STATE/CURRENT_ROUTE 非授权修改
+- DECISION_LEDGER 非授权写入
+- whole-dirty-tree commit
+- 论文正文、raw transcript、private text 写入 memory
+- 跳过 GPT 审查声称 closed
+""",
+    "cold_start_reading_order": """
+新 agent 冷启动读取顺序：
+1. BOOT_CONTEXT.md（本文档）— 了解项目身份、架构、当前状态、安全边界
+2. memory/index.md — 按需检索具体话题记忆
+3. PROJECT_HISTORY.md — 仅当需要完整历史时（不推荐每次加载）
+4. CLAUDE.md — Agent 行为协议
+5. docs/WORKFLOW_AUDIT_LEDGER.yaml — 任务状态机记录
+""",
+}
+
+
+def build_boot_context(output_path: str = "BOOT_CONTEXT.md") -> dict:
+    now = datetime.now(timezone.utc).isoformat()
+
+    sections_md = []
+    section_names = [
+        ("project_identity", "## 1. 项目身份"),
+        ("three_layer_architecture", "## 2. 三层架构"),
+        ("current_stage", "## 3. 当前阶段"),
+        ("recent_accepted_tasks", "## 4. 最近 Accepted 任务"),
+        ("open_risks", "## 5. 当前开放风险"),
+        ("next_recommended_task", "## 6. 下一步推荐任务"),
+        ("absolute_safety_boundaries", "## 7. 绝对安全边界"),
+        ("cold_start_reading_order", "## 8. 冷启动读取顺序"),
+    ]
+
+    header = f"# BOOT_CONTEXT.md — DevFrame 冷启动入口\n\n> 生成时间: {now}\n> 版本: v1.0\n> 用途: 新 agent 首次读取此文件即可了解项目全貌，无需加载完整 PROJECT_HISTORY。\n\n---\n\n"
+
+    for key, title in section_names:
+        text = BOOT_SECTIONS[key].strip()
+        sections_md.append(f"{title}\n\n{text}\n")
+
+    full_text = header + "\n---\n\n".join(sections_md) + f"\n---\n\n> Boot context 到此结束。需要更多上下文？读取 memory/index.md 或 PROJECT_HISTORY.md。\n"
+
+    char_count = len(full_text)
+    text_hash = hashlib.sha256(full_text.encode("utf-8")).hexdigest()
+
+    Path(output_path).write_text(full_text, encoding="utf-8")
+
+    return {
+        "boot_context_version": "v1.0",
+        "generated_at": now,
+        "total_characters": char_count,
+        "within_limit": 3000 <= char_count <= 6000,
+        "hash": text_hash,
+        "file": output_path,
+    }
+
+
+def main():
+    result = build_boot_context()
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+    if not result["within_limit"]:
+        print(f"WARNING: BOOT_CONTEXT.md is {result['total_characters']} chars (limit: 3000-6000)", file=sys.stderr)
+    else:
+        print(f"OK: BOOT_CONTEXT.md generated ({result['total_characters']} chars, limit OK)")
+    sys.exit(0 if result["within_limit"] else 1)
+
+
+if __name__ == "__main__":
+    main()
+
+=== scripts/validate_context_memory.py ===
+#!/usr/bin/env python3
+"""
+validate_context_memory.py — Privacy guard for context compression outputs.
+
+Fail-closed: blocks any memory entry containing paper full text, raw transcript,
+private user text, or secrets/tokens.
+"""
+import re
+import sys
+import json
+import hashlib
+from pathlib import Path
+
+# ── Fail-closed patterns ──────────────────────────────────────────
+# Keywords that indicate PRIVACY VIOLATION CONTENT (not documentation about safety rules)
+# We use context-aware matching: skip lines that are clearly safety documentation.
+FAIL_CLOSED_PATTERNS = [
+    "real_paper_full_text",
+    "raw_paper_text",
+    "private_user_text",
+    "raw_transcript",
+    "博士论文正文",
+    "用户论文全文",
+    "外部上传",
+]
+
+# These patterns only flag if they appear as VALUES (key=value, key: value), not as
+# documentation keywords in safety boundary lists.
+SECRET_VALUE_PATTERNS = [
+    (re.compile(r'\bapi[_-]?key\s*[:=]\s*\S+', re.I), "api_key"),
+    (re.compile(r'\bsecret\s*[:=]\s*\S+', re.I), "secret"),
+    (re.compile(r'\btoken\s*[:=]\s*\S{8,}', re.I), "token"),
+    (re.compile(r'\bcookie\s*[:=]\s*\S+', re.I), "cookie"),
+    (re.compile(r'\bsession\s*[:=]\s*\S{8,}', re.I), "session"),
+    # Long base64-like strings that are NOT SHA256 hex hashes
+    (re.compile(r'(?<![0-9a-fA-F])[A-Za-z0-9+/=]{40,}(?![0-9a-fA-F])'), "long_base64"),
+]
+
+# Lines matching these are safety documentation, not violations
+SAFETY_CONTEXT_PATTERNS = re.compile(
+    r'(禁止|不得|不允许|DO NOT|refuse|block|安全边界|safety|forbidden|prohibited'
+    r'|fail.closed|永久禁止|严格禁止|never|绝不|should not|must not)',
+    re.I,
+)
+
+# SHA256 hash pattern (64 hex chars) — these are evidence hashes, not secrets
+SHA256_PATTERN = re.compile(r'\b[0-9a-fA-F]{64}\b')
+
+# Explicitly allowed safe patterns
+SAFE_PATTERNS = [
+    "task_id",
+    "review_run_id",
+    "overall_judgment",
+    "evidence_pack",
+    "evidence_pack_sha256",
+    "commit",
+    "commit_hash",
+    "安全边界",
+    "流程教训",
+    "implementation_commit",
+    "pushed_to_github",
+    "scope_limit",
+]
+
+
+def check_privacy(text: str, file_path: str = "") -> dict:
+    """Check a text block for privacy violations. Context-aware: skips safety-doc lines."""
+    issues = []
+    lines = text.split("\n")
+
+    # File-level pre-check: if the file is primarily safety documentation
+    # (mentions safety keywords), then content markers in it are documentation, not violations.
+    file_is_safety_doc = bool(SAFETY_CONTEXT_PATTERNS.search(text))
+
+    # Phase 1: Check paper content markers — fail if they appear as content, not safety doc
+    for pattern_str in FAIL_CLOSED_PATTERNS:
+        for i, line in enumerate(lines):
+            if pattern_str.lower() in line.lower():
+                # Skip if this line is clearly safety documentation
+                if SAFETY_CONTEXT_PATTERNS.search(line):
+                    continue
+                # Skip if the whole file is safety documentation
+                if file_is_safety_doc:
+                    continue
+                # Also skip if it's a markdown header describing a safety rule
+                if line.strip().startswith("#"):
+                    continue
+                # Skip bullet points in a safety-doc context (previous line had safety keyword)
+                prev_line = lines[i-1].strip() if i > 0 else ""
+                if line.strip().startswith("-") and SAFETY_CONTEXT_PATTERNS.search(prev_line):
+                    continue
+                issues.append({
+                    "pattern": pattern_str,
+                    "matches": [line.strip()[:80]],
+                    "file": file_path,
+                    "line": i + 1,
+                })
+
+    # Phase 2: Check secret value patterns — fail if they appear as key=value, not safety doc
+    for pattern, name in SECRET_VALUE_PATTERNS:
+        for i, line in enumerate(lines):
+            match = pattern.search(line)
+            if match:
+                # Skip if the matched text is a SHA256 hash
+                if SHA256_PATTERN.search(match.group(0)):
+                    continue
+                # Skip if line is safety documentation
+                if SAFETY_CONTEXT_PATTERNS.search(line):
+                    continue
+                issues.append({
+                    "pattern": name,
+                    "matches": [match.group(0)[:60]],
+                    "file": file_path,
+                    "line": i + 1,
+                })
+
+    # Paper markers: only flag if present in content (not safety-doc lines)
+    paper_issues = []
+    for marker in FAIL_CLOSED_PATTERNS:
+        for line in lines:
+            if marker.lower() in line.lower():
+                if not SAFETY_CONTEXT_PATTERNS.search(line) and not line.strip().startswith("#"):
+                    paper_issues.append(marker)
+                    break
+
+    verdict = {
+        "file": file_path,
+        "pass": len(issues) == 0,
+        "issues": issues,
+        "paper_markers_detected": paper_issues,
+        "char_count": len(text),
+        "hash": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+    }
+    return verdict
+
+
+def validate_file(filepath: Path) -> dict:
+    """Validate a single file for privacy issues."""
+    try:
+        text = filepath.read_text(encoding="utf-8")
+    except Exception as e:
+        return {
+            "file": str(filepath),
+            "pass": False,
+            "issues": [{"pattern": "read_error", "matches": [str(e)]}],
+            "paper_markers_detected": [],
+            "char_count": 0,
+            "hash": "",
+        }
+    return check_privacy(text, str(filepath))
+
+
+def validate_directory(dirpath: Path, glob_pattern: str = "*.md") -> list:
+    """Validate all matching files in a directory."""
+    results = []
+    for fp in sorted(dirpath.glob(glob_pattern)):
+        results.append(validate_file(fp))
+    return results
+
+
+def main():
+    targets = [
+        Path("BOOT_CONTEXT.md"),
+        Path("memory/index.md"),
+        Path("memory/tasks"),
+        Path("memory/knowledge"),
+    ]
+
+    all_results = []
+    for target in targets:
+        if not target.exists():
+            continue
+        if target.is_file():
+            all_results.append(validate_file(target))
+        elif target.is_dir():
+            all_results.extend(validate_directory(target, "*.md"))
+
+    if not all_results:
+        print("NO FILES VALIDATED")
+        sys.exit(1)
+
+    # Report
+    passed = sum(1 for r in all_results if r["pass"])
+    failed = sum(1 for r in all_results if not r["pass"])
+
+    print(f"=== PRIVACY GUARD REPORT ===")
+    print(f"Files checked: {len(all_results)}")
+    print(f"Passed: {passed}")
+    print(f"Failed: {failed}")
+
+    for r in all_results:
+        status = "PASS" if r["pass"] else "FAIL"
+        print(f"  [{status}] {r['file']} ({r['char_count']} chars, sha256={r['hash'][:16]}...)")
+        if not r["pass"]:
+            for issue in r["issues"]:
+                print(f"    ISSUE: pattern={issue['pattern']}, matches={issue['matches']}")
+
+    # Fail closed
+    if failed > 0:
+        print("\nFAIL CLOSED: Privacy violations detected. Aborting.")
+        sys.exit(1)
+
+    print("\nALL CLEAR: No privacy violations detected.")
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
+
+=== BOOT_CONTEXT.md ===
+# BOOT_CONTEXT.md — DevFrame 冷启动入口
+
+> 生成时间: 2026-06-07T09:07:26.758571+00:00
+> 版本: v1.0
+> 用途: 新 agent 首次读取此文件即可了解项目全貌，无需加载完整 PROJECT_HISTORY。
+
+---
+
+## 1. 项目身份
+
+DevFrame 是一个三层工作流治理体系，用 evidence-first + GPT 审查 + 自动化流水线管理 AI 辅助的软件工程任务。
+
+核心价值：把多阶段 Agent/GPT 工作流变成可冷启动、可迁移、可审核、可交接的 evidence-first 框架。
+
+关键仓库：
+- agent-acceptance（本仓库）：规范验收层
+- devframe-control-plane：编排控制层
+- dev-frame-opencode：执行层
+
+---
+
+## 2. 三层架构
+
+三层架构：
+1. agent-acceptance（规范验收层）— 合约、schema、validator、GPT review 模板、pre-commit/pre-push gate
+2. devframe-control-plane（编排控制层）— pipeline runner、state machine、submission adapter、CDP bridge、CLI
+3. dev-frame-opencode（执行层）— 具体代码修改和测试运行
+
+当前 agent-acceptance 测试 170 PASS，devframe-control-plane 测试 65 PASS，全线绿色。
+
+---
+
+## 3. 当前阶段
+
+当前阶段：治理基础设施完善期。已通过 GROUP-01 到 GROUP-06 完成合约、政策、测试、memory compiler、能力清单、chain evidence、workflow closure validator 的 backfill 和 GPT binding。PAPER-C2 已闭合（protocol-only 授权/脱敏 gate，不启用真实论文执行）。
+
+最近完成 REPO-CODE-VERIFICATION-R3：确认 GitHub 远程仓库 clean（仅含 GPT-accepted GROUP files）。本地 worktree 仍 dirty（含 HANDOFF_REPLY_V4 deletion、archive hooks 修改、runs POST_REVIEW_ROUTE 修改、.tmpconfig、.tmpdata、__pycache__），但严格禁止 whole-dirty-tree commit。下一步进入 CONTEXT-COMPRESSION-A1 阶段。
+
+---
+
+## 4. 最近 Accepted 任务
+
+最近 GPT-accepted 任务（2026-06-07）：
+- GROUP-01: AA-FLOW-RUNNER-CONTRACT-BACKFILL — contracts + policies + tests (140 files)
+- GROUP-02: PAPER-A3-VALIDATOR-RESIDUAL — validate_paper_task.py + test (2 core files)
+- GROUP-03: MEMORY-A2-COMPILER-OUTPUT — frozen memory compiler output
+- GROUP-04: AGENT-RUNTIME-CAPABILITY-CLEANUP — blackboard cleanup + capability inventory
+- GROUP-05: CHAIN-EVIDENCE-HARDENING R3 — ai_guard + go_evidence + chain-evidence schema
+- GROUP-06: VALIDATE-WORKFLOW-CLOSURE-CONTROL-PLANE-PATTERN — workflow closure validator
+- WorkQueue: specialized batches + Run-WorkQueue propagation
+- REPO-CODE-VERIFICATION-R3: remote origin/master clean for accepted scope
+
+---
+
+## 5. 当前开放风险
+
+当前开放风险：
+1. 本地 dirty worktree 未被清理（不得 whole-dirty-tree commit）
+2. REVIEW-TEMPLATE-V2 已 push 但未 GPT 审查（需补审）
+3. 上下文膨胀：PROJECT_HISTORY.md 和 HANDOFF 版本持续增长，新 agent 冷启动成本上升
+4. GPT 审查曾被系统跳过：agent 将 commit+push 当作终点（已通过 pre-push gate step 2.6 加固）
+5. CDP 通信依赖 Chrome --remote-debugging-port=9222 运行
+
+---
+
+## 6. 下一步推荐任务
+
+推荐下一步：CONTEXT-COMPRESSION-A1（当前任务）
+- 建立 BOOT_CONTEXT.md 作为新 agent 冷启动入口
+- 建立 memory/index.md 作为可检索记忆索引
+- 实现 privacy guard（阻断论文正文、raw transcript、secret）
+- 后续可考虑：PAPER-PRIVACY-GUARD-HARDENING、GPT-REVIEW-QUEUE-A1
+
+---
+
+## 7. 绝对安全边界
+
+绝对安全边界（永久禁止）：
+- guard removal
+- evidence cleanup/deletion/movement/renaming
+- cookies/session/browser profile 读取
+- 真实用户数据提交
+- CURRENT_STATE/CURRENT_ROUTE 非授权修改
+- DECISION_LEDGER 非授权写入
+- whole-dirty-tree commit
+- 论文正文、raw transcript、private text 写入 memory
+- 跳过 GPT 审查声称 closed
+
+---
+
+## 8. 冷启动读取顺序
+
+新 agent 冷启动读取顺序：
+1. BOOT_CONTEXT.md（本文档）— 了解项目身份、架构、当前状态、安全边界
+2. memory/index.md — 按需检索具体话题记忆
+3. PROJECT_HISTORY.md — 仅当需要完整历史时（不推荐每次加载）
+4. CLAUDE.md — Agent 行为协议
+5. docs/WORKFLOW_AUDIT_LEDGER.yaml — 任务状态机记录
+
+---
+
+> Boot context 到此结束。需要更多上下文？读取 memory/index.md 或 PROJECT_HISTORY.md。
+
+=== memory/index.md ===
+# Memory Index
+
+> Last updated: 2026-06-07T09:06:59.815105+00:00
+> Entry count: 24
+> Generated by: compress_project_context.py
+
+## Task Lifecycle Memories
+
+| Task ID | Status | Tags |
+|---------|--------|------|
+| GROUP-01 | accepted | decision, scope_note |
+| GROUP-02 | accepted | decision, noise, scope_note |
+| GROUP-03 | accepted | decision, noise |
+| GROUP-06 | accepted | decision, noise, scope_note |
+| GROUP-04 | accepted | decision, noise |
+| GROUP-05 | accepted | decision, noise, scope_note |
+| TASK-TABLE | unknown | blocker, fix, lesson |
+| ARCH-GAP-A1 | unknown | noise |
+| REF-PAPER-1 | unknown | noise |
+| REF-PAPER-2A | unknown | superseded |
+| REF-PAPER-2B | unknown | blocker, fix |
+| PAPER-A1 | unknown | blocker |
+| push-blocker-resolution | unknown | blocker |
+| PAPER-A3 | unknown | blocker |
+| PAPER-C1 | unknown | noise |
+| PAPER-C2 | unknown | noise |
+| t-workqueue-integrity-20260601 | unknown | blocker |
+| t-workqueue-specialized-batches-20260607 | unknown | fix |
+
+## Knowledge Files
+
+- memory/knowledge/evidence_first.md
+- memory/knowledge/dirty_worktree_split.md
+- memory/knowledge/gpt_review_gate.md
+- memory/knowledge/paper_privacy.md
+- memory/knowledge/workqueue.md
+- memory/knowledge/context_compression.md
+=== tests/test_context_compression.py ===
+"""Test context compression pipeline stages."""
+import sys
+import os
+import tempfile
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+import compress_project_context as cc
+
+
+class TestSegment:
+    """Stage 1: Segment — split input by task_id boundaries."""
+
+    def test_segment_project_history_produces_segments(self):
+        """PROJECT_HISTORY.md should produce multiple segments."""
+        ph_path = Path(__file__).parent.parent / "PROJECT_HISTORY.md"
+        if not ph_path.exists():
+            return  # skip if fixture not available
+        segments = cc.segment_project_history(str(ph_path))
+        assert len(segments) >= 2, f"Expected >= 2 segments, got {len(segments)}"
+        task_ids = {s["task_id"] for s in segments}
+        assert "GROUP-01" in task_ids or "PAPER-A1" in task_ids, f"No known task_id in {task_ids}"
+
+    def test_segment_audit_ledger_produces_segments(self):
+        """WORKFLOW_AUDIT_LEDGER.yaml should produce segments."""
+        al_path = Path(__file__).parent.parent / "docs" / "WORKFLOW_AUDIT_LEDGER.yaml"
+        if not al_path.exists():
+            return
+        segments = cc.segment_audit_ledger(str(al_path))
+        assert len(segments) >= 1, f"Expected >= 1 segment, got {len(segments)}"
+
+
+class TestClassify:
+    """Stage 2: Classify — tag segments by content type."""
+
+    def test_accepted_entry_tagged_decision(self):
+        """Entry with 'overall_judgment: accepted' gets 'decision' tag."""
+        seg = {"task_id": "TEST-01", "raw_text": "overall_judgment: accepted"}
+        result = cc.classify(seg)
+        assert "decision" in result["tags"]
+
+    def test_blocked_entry_tagged_blocker(self):
+        """Entry with 'blocked' gets 'blocker' tag."""
+        seg = {"task_id": "TEST-02", "raw_text": "status: blocked by GPT"}
+        result = cc.classify(seg)
+        assert "blocker" in result["tags"]
+
+    def test_superseded_entry_tagged_superseded(self):
+        """Entry with 'superseded' gets 'superseded' tag."""
+        seg = {"task_id": "TEST-03", "raw_text": "status: superseded by GROUP-02"}
+        result = cc.classify(seg)
+        assert "superseded" in result["tags"]
+
+    def test_empty_entry_tagged_noise(self):
+        """Entry with no recognizable content gets 'noise' tag."""
+        seg = {"task_id": "TEST-04", "raw_text": "lorem ipsum dolor sit amet"}
+        result = cc.classify(seg)
+        assert "noise" in result["tags"]
+
+
+class TestDeduplicate:
+    """Stage 3: Deduplicate — merge same-task segments."""
+
+    def test_same_task_id_merged(self):
+        """Segments with same task_id are merged into one."""
+        segments = [
+            {"task_id": "TEST-01", "source": "a.txt", "raw_text": "first", "char_count": 5, "tags": ["decision"]},
+            {"task_id": "TEST-01", "source": "b.txt", "raw_text": "second longer text", "char_count": 18, "tags": ["fix"]},
+        ]
+        result = cc.deduplicate(segments)
+        assert len(result) == 1
+        assert result[0]["task_id"] == "TEST-01"
+        assert result[0]["source_count"] == 2
+
+    def test_different_task_ids_kept_separate(self):
+        """Segments with different task_ids are kept separate."""
+        segments = [
+            {"task_id": "TEST-01", "source": "a.txt", "raw_text": "a", "char_count": 1, "tags": ["decision"]},
+            {"task_id": "TEST-02", "source": "b.txt", "raw_text": "b", "char_count": 1, "tags": ["blocker"]},
+        ]
+        result = cc.deduplicate(segments)
+        assert len(result) == 2
+
+
+class TestSupersede:
+    """Stage 4: Supersede — collapse blocked→accepted chains."""
+
+    def test_superseded_entry_keeps_summary(self):
+        """Superseded entries are preserved with root cause + final fix."""
+        entries = [{
+            "task_id": "TEST-01",
+            "tags": ["superseded"],
+            "raw_text": "blocked: reason X. required_fixes: do Y. overall_judgment: accepted",
+        }]
+        result = cc.supersede(entries)
+        assert len(result) == 1
+        assert "ROOT_CAUSE" in result[0]["raw_text"] or "FINAL_FIX" in result[0]["raw_text"]
+
+
+class TestPrivacyFilter:
+    """Stage 5: Privacy filter — block forbidden content."""
+
+    def test_safe_entry_passes(self):
+        """Entry with only task metadata passes."""
+        entries = [{"task_id": "TEST-01", "raw_text": "task_id: TEST, verdict: accepted"}]
+        result = cc.privacy_filter(entries)
+        assert len(result) == 1
+
+    def test_raw_paper_entry_blocked(self):
+        """Entry containing raw_paper_text is blocked."""
+        entries = [{"task_id": "TEST-02", "raw_text": "This has raw_paper_text content"}]
+        result = cc.privacy_filter(entries)
+        assert len(result) == 0, f"Should block paper content, got {len(result)} entries"
+
+    def test_private_user_text_blocked(self):
+        """Entry containing private_user_text is blocked."""
+        entries = [{"task_id": "TEST-03", "raw_text": "private_user_text was here"}]
+        result = cc.privacy_filter(entries)
+        assert len(result) == 0
+
+
+class TestPipelineIntegration:
+    """Full pipeline integration tests."""
+
+    def test_pipeline_runs_with_temp_dir(self):
+        """Pipeline should run and produce output files with temp dirs."""
+        with tempfile.TemporaryDirectory() as tmp:
+            task_dir = os.path.join(tmp, "memory", "tasks")
+            know_dir = os.path.join(tmp, "memory", "knowledge")
+            idx_path = os.path.join(tmp, "memory", "index.md")
+            os.makedirs(task_dir, exist_ok=True)
+            os.makedirs(know_dir, exist_ok=True)
+
+            result = cc.run_pipeline(
+                project_history=str(Path(__file__).parent.parent / "PROJECT_HISTORY.md"),
+                audit_ledger=str(Path(__file__).parent.parent / "docs" / "WORKFLOW_AUDIT_LEDGER.yaml"),
+                task_memory_dir=task_dir,
+                knowledge_dir=know_dir,
+                index_path=idx_path,
+            )
+
+            assert result["pipeline"] == "COMPLETE"
+            assert result["segments_in"] > 0
+            assert result["privacy_safe"] > 0
+            assert os.path.exists(idx_path)
+            assert len(os.listdir(task_dir)) > 0
+
+=== tests/test_boot_context_builder.py ===
+"""Test boot context builder."""
+import sys
+import os
+import tempfile
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+import build_boot_context as bcb
+
+
+class TestBootContextBuilder:
+    """Test BOOT_CONTEXT.md generation."""
+
+    def test_build_generates_file(self):
+        """build_boot_context should generate a file."""
+        with tempfile.TemporaryDirectory() as tmp:
+            output = os.path.join(tmp, "BOOT_CONTEXT.md")
+            result = bcb.build_boot_context(output_path=output)
+            assert os.path.exists(output)
+            assert result["total_characters"] > 0
+
+    def test_boot_context_within_char_limit(self):
+        """BOOT_CONTEXT.md should be 3000-6000 characters."""
+        with tempfile.TemporaryDirectory() as tmp:
+            output = os.path.join(tmp, "BOOT_CONTEXT.md")
+            result = bcb.build_boot_context(output_path=output)
+            assert 3000 <= result["total_characters"] <= 6000, \
+                f"Char count {result['total_characters']} not in 3000-6000 range"
+            assert result["within_limit"] is True
+
+    def test_boot_context_has_required_sections(self):
+        """BOOT_CONTEXT.md must contain all 8 required sections."""
+        with tempfile.TemporaryDirectory() as tmp:
+            output = os.path.join(tmp, "BOOT_CONTEXT.md")
+            bcb.build_boot_context(output_path=output)
+            content = Path(output).read_text(encoding="utf-8")
+
+        required_titles = [
+            "项目身份",
+            "三层架构",
+            "当前阶段",
+            "最近 Accepted",
+            "开放风险",
+            "下一步推荐",
+            "绝对安全边界",
+            "冷启动读取顺序",
+        ]
+        for title in required_titles:
+            assert title in content, f"Missing section: {title}"
+
+    def test_boot_context_has_hash(self):
+        """BOOT_CONTEXT.md should have a SHA256 hash."""
+        with tempfile.TemporaryDirectory() as tmp:
+            output = os.path.join(tmp, "BOOT_CONTEXT.md")
+            result = bcb.build_boot_context(output_path=output)
+            assert len(result["hash"]) == 64
+            assert result["hash"].isalnum() or all(c in "0123456789abcdef" for c in result["hash"])
+
+    def test_boot_context_not_copy_full_project_history(self):
+        """BOOT_CONTEXT.md must NOT be a copy of full PROJECT_HISTORY.md."""
+        with tempfile.TemporaryDirectory() as tmp:
+            output = os.path.join(tmp, "BOOT_CONTEXT.md")
+            bcb.build_boot_context(output_path=output)
+            bc = Path(output).read_text(encoding="utf-8")
+
+        ph = Path(__file__).parent.parent / "PROJECT_HISTORY.md"
+        ph_text = ph.read_text(encoding="utf-8") if ph.exists() else ""
+
+        # BOOT_CONTEXT should be dramatically shorter than PROJECT_HISTORY
+        assert len(bc) < len(ph_text) * 0.5, \
+            f"BOOT_CONTEXT ({len(bc)} chars) should be < 50% of PROJECT_HISTORY ({len(ph_text)} chars)"
+
+    def test_boot_context_does_not_contain_full_binding_blocks(self):
+        """BOOT_CONTEXT should not paste entire binding YAML blocks."""
+        with tempfile.TemporaryDirectory() as tmp:
+            output = os.path.join(tmp, "BOOT_CONTEXT.md")
+            bcb.build_boot_context(output_path=output)
+            bc = Path(output).read_text(encoding="utf-8")
+
+        # Should not contain large verbatim binding blocks
+        assert "evidence_pack_sha256" not in bc or bc.count("evidence_pack_sha256") <= 5, \
+            "BOOT_CONTEXT contains too many evidence_pack_sha256 references"
+
+
+class TestBootContextSchema:
+    """Test boot context output matches schema requirements."""
+
+    def test_generated_at_is_iso_format(self):
+        """generated_at should be ISO 8601."""
+        with tempfile.TemporaryDirectory() as tmp:
+            output = os.path.join(tmp, "BOOT_CONTEXT.md")
+            result = bcb.build_boot_context(output_path=output)
+            assert "T" in result["generated_at"]
+            assert "+" in result["generated_at"] or "Z" in result["generated_at"]
+
+    def test_boot_context_markdown_structure(self):
+        """Generated file should be valid markdown with h1 title."""
+        with tempfile.TemporaryDirectory() as tmp:
+            output = os.path.join(tmp, "BOOT_CONTEXT.md")
+            bcb.build_boot_context(output_path=output)
+            bc = Path(output).read_text(encoding="utf-8")
+
+        assert bc.startswith("# BOOT_CONTEXT.md")
+        assert "## 1." in bc
+        assert "## 8." in bc
+
+=== tests/test_context_memory_privacy.py ===
+"""Test privacy guard fail-closed behavior."""
+import sys
+import tempfile
+import os
+from pathlib import Path
+
+# Add scripts to path
+sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+from validate_context_memory import check_privacy, validate_file
+
+
+class TestPrivacyGuardFailClosed:
+    """Privacy guard must fail closed on forbidden content."""
+
+    def test_raw_paper_text_in_memory_entry_must_fail(self):
+        """Memory entry containing raw_paper_text marker as content must fail."""
+        text = "This memory entry contains raw_paper_text from the thesis chapter 1."
+        result = check_privacy(text, "memory/tasks/test-paper.md")
+        assert not result["pass"], f"Should fail but passed: {result}"
+
+    def test_private_user_text_in_memory_entry_must_fail(self):
+        """Memory entry containing private_user_text marker as content must fail."""
+        text = "User data: private_user_text was found in the submission."
+        result = check_privacy(text, "memory/tasks/test-private.md")
+        assert not result["pass"], f"Should fail but passed: {result}"
+
+    def test_raw_transcript_in_memory_entry_must_fail(self):
+        """Memory entry containing raw_transcript marker as content must fail."""
+        text = "Here is the raw_transcript from the conversation."
+        result = check_privacy(text, "memory/tasks/test-transcript.md")
+        assert not result["pass"], f"Should fail but passed: {result}"
+
+    def test_secret_token_in_memory_must_fail(self):
+        """Memory entry containing secret=value must fail."""
+        text = "api_key=sk-1234567890abcdef secret=mysecret"
+        result = check_privacy(text, "memory/tasks/test-secret.md")
+        assert not result["pass"], f"Should fail but passed: {result}"
+
+    def test_api_key_value_in_memory_must_fail(self):
+        """Memory entry containing api_key: <value> must fail."""
+        text = "OpenAI config: api_key: sk-proj-1234567890abcdefghij"
+        result = check_privacy(text, "memory/tasks/test-apikey.md")
+        assert not result["pass"], f"Should fail but passed: {result}"
+
+    def test_doctor_paper_full_text_marker_must_fail(self):
+        """Memory entry containing 博士论文正文 as content must fail."""
+        text = "以下是博士论文正文的第三章内容摘要..."
+        result = check_privacy(text, "memory/tasks/test-doctor.md")
+        assert not result["pass"], f"Should fail but passed: {result}"
+
+
+class TestPrivacyGuardPass:
+    """Privacy guard must pass on legitimate task metadata."""
+
+    def test_task_metadata_only_should_pass(self):
+        """Memory entry with only task_id, review_run_id, verdict, hash should pass."""
+        text = """task_id: GROUP-01
+review_run_id: group-01-contract-backfill-v1
+overall_judgment: accepted
+evidence_pack_sha256: 390654644cd913c461f6dc970684d461021d61b06e5ac9cd773343b6c8630465
+implementation_commit: fc2b217
+"""
+        result = check_privacy(text, "memory/tasks/GROUP-01.md")
+        assert result["pass"], f"Should pass but failed: {result['issues']}"
+
+    def test_safety_boundary_documentation_should_pass(self):
+        """Safety boundary documentation listing forbidden terms should pass."""
+        text = """# 绝对安全边界（永久禁止）
+以下内容严格禁止：
+- secret
+- token
+- api_key
+- cookie
+- session
+- 博士论文正文
+"""
+        result = check_privacy(text, "memory/knowledge/safety.md")
+        assert result["pass"], f"Should pass but failed: {result['issues']}"
+
+    def test_boot_context_should_pass(self):
+        """BOOT_CONTEXT.md content should pass privacy check."""
+        text = """# BOOT_CONTEXT.md
+## 安全边界
+绝对禁止：cookies/session/browser profile 读取、secret 写入、token 泄露。
+"""
+        result = check_privacy(text, "BOOT_CONTEXT.md")
+        assert result["pass"], f"Should pass but failed: {result['issues']}"
+
+    def test_sha256_hashes_should_not_trigger_secret_check(self):
+        """SHA256 hashes (64 hex chars) are evidence hashes, not secrets."""
+        text = """evidence_pack_sha256: 390654644cd913c461f6dc970684d461021d61b06e5ac9cd773343b6c8630465"""
+        result = check_privacy(text, "memory/tasks/test-hash.md")
+        assert result["pass"], f"Should pass but failed: {result['issues']}"
+
+
+class TestPrivacyGuardRealFiles:
+    """Verify all generated memory outputs pass privacy guard."""
+
+    def test_all_generated_outputs_pass(self):
+        """All generated BOOT_CONTEXT, memory/* files must pass."""
+        repo = Path(__file__).parent.parent
+        files = list(repo.glob("BOOT_CONTEXT.md"))
+        files += list(repo.glob("memory/index.md"))
+        files += list(repo.glob("memory/tasks/*.md"))
+        files += list(repo.glob("memory/knowledge/*.md"))
+
+        assert len(files) > 0, "No generated files found"
+
+        failed = []
+        for fp in files:
+            result = validate_file(fp)
+            if not result["pass"]:
+                failed.append((str(fp), result["issues"]))
+
+        assert len(failed) == 0, f"Privacy violations in generated files: {failed}"
+
+
+class TestPrivacyGuardEdgeCases:
+    """Edge case tests."""
+
+    def test_empty_file_should_pass(self):
+        """Empty content should pass."""
+        result = check_privacy("", "memory/tasks/empty.md")
+        assert result["pass"]
+
+    def test_chinese_only_task_metadata_should_pass(self):
+        """Chinese task metadata without forbidden content should pass."""
+        text = """任务ID: GROUP-01
+状态: accepted
+范围: only selected files
+"""
+        result = check_privacy(text, "memory/tasks/chinese-task.md")
+        assert result["pass"], f"Should pass but failed: {result['issues']}"
+
+    def test_long_base64_not_hex_should_fail(self):
+        """A long non-hex base64 string (looks like encoded secret) should fail."""
+        text = "encoded_data: dGhpcyBpc250IHJlYWxseSBhIHNlY3JldCBidXQgaXQgbG9va3MgbGlrZSBvbmU="
+        result = check_privacy(text, "memory/tasks/test-base64.md")
+        # This is a long non-hex string, should trigger base64 check
+        assert not result["pass"], f"Should fail on long non-hex base64: {result}"

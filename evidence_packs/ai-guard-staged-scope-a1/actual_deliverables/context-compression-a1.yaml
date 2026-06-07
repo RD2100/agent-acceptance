@@ -1,0 +1,80 @@
+task_id: CONTEXT-COMPRESSION-A1
+title: Build long-conversation context compression layer
+priority: P1
+status: in_progress
+mode: "@go edit"
+whole_dirty_worktree_allowed: false
+external_upload_allowed: false
+raw_transcript_allowed: false
+real_paper_text_allowed: false
+description: >
+  Establish a cold-start context layer so new agent/GPT sessions no longer rely
+  on rereading large PROJECT_HISTORY/HANDOFF documents every time.
+
+goal:
+  user_visible_success: >
+    The repository gains a short boot context plus memory index path that can
+    support fresh sessions without loading the full long conversation history.
+  in_scope:
+    - Define BOOT_CONTEXT and memory-index generation path
+    - Keep PROJECT_HISTORY as long-lived truth source, not per-turn injection payload
+    - Add machine-checkable guardrails preventing raw paper/private text/transcript ingress
+    - Add tests for compression/output boundaries
+  out_of_scope:
+    - Real paper processing
+    - Browser/GPT queue redesign
+    - WorkQueue execution changes
+
+gate_0:
+  triggered: true
+  inventory_evidence:
+    queried_sources:
+      - PROJECT_HISTORY.md
+      - docs/workflow-memory-compiler.md
+      - scripts/memory_compiler.py
+      - evidence_packs/paper-c2-closure/GPT_REVIEW_RESULT.txt
+      - current dirty-worktree split history
+    matched_capabilities:
+      - memory_compilation
+      - workflow_memory
+      - privacy_boundary
+    compared_against_request:
+      - "long conversation compression and cold-start boot context"
+  sufficiency_decision: new_delta_required
+  decision: build_delta
+
+write_set:
+  - ".ai/tasks/context-compression-a1.yaml"
+  - "BOOT_CONTEXT.md"
+  - "contracts/context_compression_contract.yaml"
+  - "schemas/compressed_memory_entry.schema.json"
+  - "schemas/boot_context.schema.json"
+  - "scripts/compress_project_context.py"
+  - "scripts/build_boot_context.py"
+  - "scripts/validate_context_memory.py"
+  - "memory/index.md"
+  - "memory/tasks/*.md"
+  - "memory/knowledge/evidence_first.md"
+  - "memory/knowledge/dirty_worktree_split.md"
+  - "memory/knowledge/gpt_review_gate.md"
+  - "memory/knowledge/paper_privacy.md"
+  - "memory/knowledge/workqueue.md"
+  - "memory/knowledge/context_compression.md"
+  - "tests/test_context_compression.py"
+  - "tests/test_boot_context_builder.py"
+  - "tests/test_context_memory_privacy.py"
+  - "_reports/context-compression-a1/*"
+  - "_reports/context-compression-a1-binding/*"
+  - "evidence_packs/context-compression-a1/*"
+  - "PROJECT_HISTORY.md"
+  - "docs/WORKFLOW_AUDIT_LEDGER.yaml"
+  - "hooks/sealed-files-manifest.json"
+
+known_dirty_worktree_excluded:
+  - "HANDOFF_REPLY_V4.txt"
+  - "archive/draft-hooks/pre-final.audit.ps1"
+  - "archive/draft-hooks/pre-task.audit.ps1"
+  - "archive/draft-hooks/pre-tool.audit.ps1"
+  - "runs/project-history-gaps-v1/POST_REVIEW_ROUTE.json"
+  - "runs/repo-routing-a1-v1/POST_REVIEW_ROUTE.json"
+  - "hooks/sealed-files-manifest.json"

@@ -1,0 +1,88 @@
+YAML
+overall_judgment: accepted
+reviewer_type: gpt
+task_id: CONTEXT-COMPRESSION-A1
+evidence_pack_reviewed: true
+
+blocking_issues: []
+
+required_fixes: []
+
+review_findings:
+  r5_blockers_fixed:
+    status: pass
+    rationale: |
+      R6 已修复 R5 的两个阻塞项：
+      1. PACK_MANIFEST.md 只有一个 self_excluded entry，没有重复/stale 自记录。
+      2. session safety-context payload 负向测试已补齐，并出现在 TARGETED_TEST_OUTPUT.txt 中。
+
+  targeted_tests:
+    status: pass
+    rationale: |
+      reports/TARGETED_TEST_OUTPUT.txt 显示 collected 51 items / 51 passed。
+      输出中包含 api_key、token、secret、cookie、session safety-context payload 负向测试。
+
+  full_tests:
+    status: pass
+    rationale: |
+      reports/FULL_TEST_OUTPUT.txt 显示 232 passed, 21 warnings。
+      warnings 来自 legacy tests，不属于 CONTEXT-COMPRESSION-A1 新增测试。
+
+  privacy_guard:
+    status: pass
+    rationale: |
+      reports/PRIVACY_GUARD_OUTPUT.txt 显示 27 files checked, 27 passed, 0 failed。
+      我复核实际 validate_context_memory.py 后确认：
+      - bare safety references 如 "- api_key"、"- raw_paper_text" 可以 pass；
+      - payload 形式如 "- api_key: sk-..."、"- session: ..."、"- raw_paper_text: ACTUAL CONTENT" 均 fail closed。
+
+  boot_context:
+    status: pass
+    rationale: |
+      BOOT_CONTEXT.md 存在，reports/CONTEXT_SIZE_OUTPUT.txt 显示 3035 characters，满足 3000-6000 字符限制。
+      文件包含项目身份、三层架构、当前阶段、最近任务、开放风险、下一步、安全边界和冷启动读取顺序。
+
+  actual_deliverables_consistency:
+    status: pass
+    rationale: |
+      SELECTED_FILES.txt 与 actual_deliverables 结构一致：
+      contracts、schemas、scripts、tests、memory、.ai/tasks 均在对应路径下。
+      未发现旧 GROUP-03 memory/knowledge/index.md 被误作为 CONTEXT-COMPRESSION-A1 deliverable。
+
+  manifest_hash_integrity:
+    status: pass
+    rationale: |
+      PACK_MANIFEST.md 与 ZIP 内容双向一致。
+      所有非 self 文件 bytes 与 sha256 均可复核通过，ZIP 中未发现 manifest 未列出的额外文件。
+
+  dirty_baseline_exclusion:
+    status: pass
+    rationale: |
+      evidence pack 未包含 runs/*、HANDOFF_REPLY_V4.txt、archive/draft-hooks/*、tools/*、paper validator residual、tmp/cache、root scratch files 等 dirty baseline。
+
+  not_summary_only:
+    status: pass
+    rationale: |
+      evidence pack 包含实际 contract、schemas、scripts、BOOT_CONTEXT、memory outputs、tests、reports、diff、manifest 和 safety attestation。
+      该包不是 summary-only。
+
+accepted_scope:
+  - "CONTEXT-COMPRESSION-A1 accepted."
+  - "本次 accepted 覆盖 privacy-safe context compression layer。"
+  - "BOOT_CONTEXT.md 可作为新 agent 冷启动短上下文入口。"
+  - "memory/index.md、memory/tasks/*.md、memory/knowledge/*.md 可作为结构化压缩记忆。"
+  - "validate_context_memory.py 的隐私 guard 对 paper/private/transcript/secret payload fail closed。"
+  - "不得将该 accepted 扩展解释为 GPT-REVIEW-QUEUE-A1、TDD-GOVERNANCE-A1、PAPER-C3 或 whole dirty worktree accepted。"
+
+required_next_action: |
+  将 CONTEXT-COMPRESSION-A1 accepted 结果绑定到 PROJECT_HISTORY.md 与 docs/WORKFLOW_AUDIT_LEDGER.yaml。
+  只允许提交 CONTEXT-COMPRESSION-A1 selected files 和对应 binding 记录。
+  提交前再次核对 staged files，不得夹带 dirty baseline。
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: CONTEXT-COMPRESSION-A1-BINDING
+
+END_OF_GPT_RESPONSE

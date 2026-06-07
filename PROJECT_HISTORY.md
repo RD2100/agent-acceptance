@@ -621,4 +621,29 @@ implementation_commit: "50f6b25"
 pushed_to_github: true
 ```
 
+## CONTEXT-COMPRESSION-A1 Acceptance Binding (2026-06-07)
+
+Status: accepted by web GPT as privacy-safe context compression layer (R6).
+
+This entry binds CONTEXT-COMPRESSION-A1 only. It must not be interpreted as acceptance of the
+whole dirty worktree or of excluded dirty groups.
+
+Binding:
+
+```yaml
+task_id: CONTEXT-COMPRESSION-A1
+task_name: "Long Conversation Context Compression Layer"
+primary_repo: agent-acceptance
+overall_judgment: accepted
+reviewer_type: gpt
+evidence_pack: evidence_packs/context-compression-a1/closure-pack-r6.zip
+evidence_pack_sha256: "0dc2c3359f12dd7f4e31d78e00291961383ac5ca1c47fc3e847ba12778ce375e"
+gpt_review_result: evidence_packs/context-compression-a1/GPT_REVIEW_RESULT_R6.txt
+gpt_review_result_sha256: "99e0ac7942c6dd13f1cd1c939e5e3babc0925999a20291ca5392810151b5e2f3"
+scope_limit: "only CONTEXT-COMPRESSION-A1 selected files"
+whole_dirty_worktree_accepted: false
+implementation_commit: "TBD"
+pushed_to_github: false
+```
+
 END_OF_PROJECT_HISTORY

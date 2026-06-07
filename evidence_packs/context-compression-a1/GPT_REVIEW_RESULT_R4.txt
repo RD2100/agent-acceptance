@@ -1,0 +1,130 @@
+YAML
+overall_judgment: blocked
+reviewer_type: gpt
+task_id: CONTEXT-COMPRESSION-A1
+evidence_pack_reviewed: true
+
+blocking_issues:
+  - issue_id: CONTEXT-COMPRESSION-A1-R4-BLOCKER-01
+    title: "PACK_MANIFEST.md 存在重复且不一致的 PACK_MANIFEST 自身记录"
+    detail: |
+      PACK_MANIFEST.md 中同时出现两条 PACK_MANIFEST.md 记录：
+      1. `| PACK_MANIFEST.md | 6752 | 94d9f132... |`
+      2. `| PACK_MANIFEST.md | self | self_excluded |`
+
+      实际 ZIP 中 PACK_MANIFEST.md 的大小为 6857 bytes，sha256 为：
+      f4affda9984fdddf89c2da52c6609ef6587970b16ce891b372ef2804c52d446b
+
+      因此第一条 manifest 自身记录是 stale / wrong hash。虽然第二条 self_excluded 是正确做法，但重复记录会导致 manifest/hash 证据链不干净。
+    required_fix: |
+      重新生成 PACK_MANIFEST.md，只保留：
+      `| PACK_MANIFEST.md | self | self_excluded |`
+      不要同时写入 stale 的 PACK_MANIFEST.md bytes/hash 记录。
+      重新打包 closure-pack-r5.zip。
+
+  - issue_id: CONTEXT-COMPRESSION-A1-R4-BLOCKER-02
+    title: "privacy guard 仍会放行 safety context 中的 secret/token/api_key payload"
+    detail: |
+      R4 已修复 raw_paper_text / private_user_text / raw_transcript / 博士论文正文 在 safety bullet/header 中夹带 payload 的问题。
+      我用 R4 包内 actual_deliverables/scripts/validate_context_memory.py 复核以下用例：
+
+      # 安全边界
+      - api_key: sk-abcdef1234567890
+
+      结果仍为 pass。
+
+      类似地：
+      # 安全边界
+      - token: abcdefghijklmnop
+      - cookie: abcdefghijklmnop
+
+      也会因为 `_line_is_safety_doc()` 判定为 safety documentation 而跳过 SECRET_VALUE_PATTERNS。
+      但 GPT_REVIEW_PROMPT.md 明确要求 privacy guard fails closed for secrets/tokens。
+      因此 secret/token/api_key 的 payload 不能在 safety bullet/header 中被豁免。
+    required_fix: |
+      对 SECRET_VALUE_PATTERNS 也增加 payload-in-safety-context fail-closed 逻辑。
+      纯安全边界 bullet list 仍可 pass，例如：
+      - secret
+      - token
+      - api_key
+
+      但以下必须 fail：
+      - api_key: sk-abcdef1234567890
+      - token: abcdefghijklmnop
+      - secret: actual-secret
+      - cookie: actual-cookie
+      - session: actual-session
+
+      新增对应测试并重新运行 targeted/full/privacy guard。
+
+required_fixes:
+  - "重新生成 PACK_MANIFEST.md，移除 stale 的 PACK_MANIFEST.md bytes/hash 自记录，只保留 self_excluded。"
+  - "修复 SECRET_VALUE_PATTERNS 在 safety bullet/header 中的 payload 豁免漏洞。"
+  - "新增 secret/token/api_key/cookie/session safety-context payload 负向测试。"
+  - "重新运行 targeted tests、full tests、privacy guard。"
+  - "重新生成 CLOSURE_REPORT.md、TARGETED_TEST_OUTPUT.txt、FULL_TEST_OUTPUT.txt、PRIVACY_GUARD_OUTPUT.txt、PACK_MANIFEST.md 和 closure-pack-r5.zip。"
+
+review_findings:
+  r3_blocker_fixed:
+    status: pass
+    rationale: |
+      R4 已修复 R3 指出的 raw_paper_text / private_user_text / raw_transcript / 博士论文正文 payload-in-safety-context 漏洞。
+      我复核以下用例均 fail closed：
+      - `# 安全边界\n- raw_paper_text: ACTUAL PAPER CONTENT`
+      - `# raw_paper_text: ACTUAL PAPER CONTENT`
+      - `# 隐私规则\n- private_user_text: ACTUAL USER DATA`
+      - `# 注意事项\n- raw_transcript: User: ... GPT: ...`
+      - `# 禁止事项\n- 博士论文正文: 本研究探讨...`
+
+  targeted_tests:
+    status: pass
+    rationale: |
+      TARGETED_TEST_OUTPUT.txt 显示 46 passed。
+      新增 TestPrivacyGuardPayloadInSafetyContext 测试已覆盖 raw paper/private text/raw transcript/博士论文正文的 safety-context payload。
+
+  full_tests:
+    status: pass
+    rationale: |
+      FULL_TEST_OUTPUT.txt 显示 227 passed, 21 warnings。
+      剩余 warnings 来自 legacy tests，不是 CONTEXT-COMPRESSION-A1 新增测试。
+
+  boot_context:
+    status: pass
+    rationale: |
+      BOOT_CONTEXT.md 存在，实际字符数为 3035，符合 3000-6000 字符限制。
+
+  actual_deliverables_consistency:
+    status: pass
+    rationale: |
+      actual_deliverables 结构已与 SELECTED_FILES 基本一致：
+      contracts、schemas、scripts、tests、memory、.ai/tasks 均在对应目录下。
+      未发现 dirty baseline 文件进入 actual deliverables。
+
+  dirty_baseline_exclusion:
+    status: pass
+    rationale: |
+      ZIP 中未发现 runs/*、HANDOFF_REPLY_V4.txt、archive/draft-hooks/*、tools/*、paper validator residual、tmp/cache、root scratch files 等 forbidden dirty baseline 作为 deliverables 纳入。
+
+  not_summary_only:
+    status: pass
+    rationale: |
+      evidence pack 包含实际 scripts、schemas、contract、BOOT_CONTEXT、memory outputs、tests、reports、diff 和 manifest。
+      不是 summary-only pack。
+
+accepted_parts:
+  - "CONTEXT-COMPRESSION-A1 的主体实现已基本成型。"
+  - "BOOT_CONTEXT、memory index、task memories、knowledge files 已生成。"
+  - "raw/private/transcript/paper-content 的 safety-context payload 漏洞已修复。"
+  - "targeted/full tests 均有原始输出。"
+  - "dirty baseline 隔离通过。"
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: CONTEXT-COMPRESSION-A1-R5
+  scope: |
+    只修复 PACK_MANIFEST 自记录不一致，以及 secret/token/api_key/cookie/session 在 safety-context 中的 payload fail-closed。
+    不扩大到 GPT-REVIEW-QUEUE-A1、TDD-GOVERNANCE-A1、PAPER-C3 或 dirty worktree cleanup。
+
+END_OF_GPT_RESPONSE

@@ -1,0 +1,136 @@
+YAML
+overall_judgment: blocked
+reviewer_type: gpt
+task_id: CONTEXT-COMPRESSION-A1
+evidence_pack_reviewed: true
+
+blocking_issues:
+  - issue_id: CONTEXT-COMPRESSION-A1-BLOCKER-01
+    title: "缺少 full test suite 的原始输出证据"
+    detail: |
+      CLOSURE_REPORT.md 声称 Full test suite: 216 PASS，但 evidence pack 中没有 FULL_TEST_OUTPUT.txt 或 TEST_OUTPUT.txt。
+      当前包只包含 reports/TARGETED_TEST_OUTPUT.txt，显示 35 passed。
+      按 evidence-first 原则，不能仅凭 CLOSURE_REPORT 的文字声明确认 full suite 216 PASS。
+    required_fix: |
+      补充原始 full test 输出文件，例如：
+      - reports/FULL_TEST_OUTPUT.txt
+      或：
+      - reports/TEST_OUTPUT.txt
+
+      内容必须显示完整 pytest 运行结果，例如 216 passed，并重新生成 PACK_MANIFEST.md。
+
+  - issue_id: CONTEXT-COMPRESSION-A1-BLOCKER-02
+    title: "privacy guard 的 safety-doc 豁免过宽，不满足严格 fail-closed"
+    detail: |
+      scripts/validate_context_memory.py 中的 check_privacy() 使用 file_is_safety_doc：
+      只要整个文件出现 safety / forbidden / 禁止 等安全文档关键词，就会跳过 raw_paper_text、private_user_text、raw_transcript、博士论文正文 等 marker。
+      这会导致如下内容错误通过：
+
+      # 安全边界
+      raw_paper_text: ACTUAL PAPER CONTENT
+
+      也就是说，当前 guard 可以阻断普通 raw_paper_text，但不能阻断“混在 safety 文档中的敏感正文”。
+      对 CONTEXT-COMPRESSION-A1 来说，memory 输出必须 fail-closed，不能因为文件中有安全说明就整文件豁免。
+    required_fix: |
+      修改 validate_context_memory.py：
+      - 移除或收窄 file_is_safety_doc 整文件豁免。
+      - 只允许明确的安全规则行通过，例如 bullet list 中单独列出 forbidden term。
+      - 如果 marker 后面出现冒号、正文、长文本、payload、quoted content，应 fail closed。
+      - 增加负向测试：
+        1. safety header + raw_paper_text: actual content 必须 fail。
+        2. safety document + private_user_text: actual content 必须 fail。
+        3. safety document + raw_transcript: actual content 必须 fail。
+      - 保留正向测试：单纯列出 forbidden terms 的安全边界文档应 pass。
+
+  - issue_id: CONTEXT-COMPRESSION-A1-BLOCKER-03
+    title: "selected files 与 actual_deliverables 存在不一致"
+    detail: |
+      reports/SELECTED_FILES.txt 中列出 .ai/tasks/context-compression-a1.yaml，
+      但 actual_deliverables 中没有该 TaskSpec 文件。
+
+      reports/SELECTED_FILES.txt 中列出 memory/index.md，
+      但 actual_deliverables 中对应文件被放成 actual_deliverables/index.md，而不是 actual_deliverables/memory/index.md。
+
+      同时 actual_deliverables/memory/knowledge/index.md 被包含进 evidence pack，
+      但它没有出现在 SELECTED_FILES.txt / CHANGED_FILES_CONTEXT_COMPRESSION_A1.txt 中；
+      其内容还是旧 memory_compiler.py 生成的 2026-06-06 索引，而不是 CONTEXT-COMPRESSION-A1 的 6 个 knowledge files 之一。
+    required_fix: |
+      重新整理 evidence pack：
+      - actual_deliverables 必须与 SELECTED_FILES.txt / CHANGED_FILES_CONTEXT_COMPRESSION_A1.txt 一致。
+      - 补入 actual_deliverables/.ai/tasks/context-compression-a1.yaml。
+      - 将 memory/index.md 镜像为 actual_deliverables/memory/index.md。
+      - 若 memory/knowledge/index.md 是本任务 selected file，则加入 SELECTED_FILES 和 CHANGED_FILES，并说明其作用。
+      - 若 memory/knowledge/index.md 不是本任务 selected file，则从 actual_deliverables 中移除。
+
+required_fixes:
+  - "补充 full test suite 原始输出，证明 216 PASS。"
+  - "修复 validate_context_memory.py 的整文件 safety-doc 豁免，改为更严格的行级/上下文级判断。"
+  - "新增 privacy guard 负向测试，覆盖 safety-doc 中夹带 raw_paper_text / private_user_text / raw_transcript 的场景。"
+  - "重新运行 targeted tests 和 full tests。"
+  - "重新运行 privacy guard，确保所有生成输出 pass，恶意 fixture fail closed。"
+  - "修正 SELECTED_FILES / CHANGED_FILES / actual_deliverables 的一致性。"
+  - "重新生成 PACK_MANIFEST.md 和 closure-pack-r2.zip。"
+
+review_findings:
+  manifest_hash_integrity:
+    status: pass
+    rationale: |
+      PACK_MANIFEST.md 中 50 个非 self 条目均能在 ZIP 中找到，bytes 与 sha256 校验一致。
+      ZIP 中未发现 manifest 未列出的额外文件。
+
+  targeted_tests:
+    status: pass
+    rationale: |
+      reports/TARGETED_TEST_OUTPUT.txt 显示 35 passed。
+      这些测试覆盖 segmentation、classification、deduplication、supersede、privacy filter、BOOT_CONTEXT 生成和 privacy guard 基础行为。
+      但 privacy guard 仍缺少 safety-doc 夹带敏感内容的负向测试。
+
+  boot_context:
+    status: pass
+    rationale: |
+      BOOT_CONTEXT.md 存在。
+      reports/CONTEXT_SIZE_OUTPUT.txt 显示 3035 characters，满足 3000-6000 字符限制。
+      BOOT_CONTEXT.md 包含项目身份、三层架构、当前阶段、最近 accepted 任务、开放风险、下一步、安全边界和冷启动读取顺序。
+
+  generated_memory_outputs:
+    status: partial
+    rationale: |
+      evidence pack 包含 memory index、task memories 和 knowledge files。
+      但 actual_deliverables 路径与 selected files 不完全一致，且包含一个未在 selected/changed 列表中的 memory/knowledge/index.md。
+
+  privacy_scan:
+    status: partial
+    rationale: |
+      reports/PRIVACY_GUARD_OUTPUT.txt 显示 27 files ALL CLEAR。
+      但由于 validate_context_memory.py 存在整文件 safety-doc 豁免，当前 privacy scan 不能充分证明 fail-closed 行为。
+
+  dirty_baseline_exclusion:
+    status: pass
+    rationale: |
+      reports/EXCLUDED_FILES.txt 明确排除 runs/*、HANDOFF_REPLY_V4.txt、archive/draft-hooks/*、tools/*、
+      paper validator residual、tmp/cache、root scratch files 等 dirty baseline。
+      evidence pack 中未发现这些 dirty baseline 作为实际 deliverables 纳入。
+
+  not_summary_only:
+    status: pass
+    rationale: |
+      evidence pack 包含实际脚本、schemas、contract、BOOT_CONTEXT、memory outputs、tests、reports、diff、manifest。
+      该包不是 summary-only。
+
+accepted_parts:
+  - "CONTEXT-COMPRESSION-A1 的总体方向正确。"
+  - "BOOT_CONTEXT.md 的长度和结构基本符合冷启动入口要求。"
+  - "压缩层、boot builder、privacy guard 三个脚本已提供。"
+  - "35 个 targeted tests 已通过。"
+  - "manifest/hash 完整性通过。"
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: CONTEXT-COMPRESSION-A1-R2
+  scope: |
+    只修复 full test evidence、privacy guard fail-closed 严格性、actual_deliverables/selected files 一致性。
+    不扩大到 GPT-REVIEW-QUEUE-A1、TDD-GOVERNANCE-A1、PAPER-C3 或 dirty worktree cleanup。
+
+END_OF_GPT_RESPONSE_

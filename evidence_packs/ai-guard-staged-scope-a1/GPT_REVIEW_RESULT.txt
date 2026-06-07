@@ -1,0 +1,32 @@
+overall_judgment: blocked
+blocking_issues:
+
+issue_id: AI-GUARD-STAGED-SCOPE-A1-BLOCKER-01
+title: "task mode 仍扫描 working tree 的 security/deny/restricted 文件集合"
+detail: "actual_deliverables/ai_guard.py 中 task mode 虽然用 git_staged_files() 做 scope check，但随后设置 changed_all = git_changed_files(repo_root=repo_root)，并用 scan_security = changed_all 继续扫描 deny_paths、restricted_paths、secret_patterns。这不满足“commit mode 只扫描 staged files，repo-audit mode 才保留全量扫描”的要求。reports/AI_GUARD_TASK_MODE_OUTPUT.txt 中仍出现 RESTRICTED warning，也证明 task mode 仍受非 staged/full-tree 内容影响。"
+
+issue_id: AI-GUARD-STAGED-SCOPE-A1-BLOCKER-02
+title: "4 个 targeted tests 主要是结构/冒烟测试，未真实证明 staged-only fail-closed 行为"
+detail: "actual_deliverables/test_ai_guard_staged_scope.py 没有构造真实 staged/unstaged 文件场景；没有测试 unstaged forbidden marker 不阻塞 clean staged commit；没有测试 staged forbidden marker 必须 BLOCKED；没有测试 repo-audit mode 仍检测 full working tree；test_smoke_fail_closed 只是检查源码中存在 sys.exit(1) 和 BLOCKED 字符串。"
+
+issue_id: AI-GUARD-STAGED-SCOPE-A1-BLOCKER-03
+title: "actual_deliverables 路径未保留 tools/ai_guard.py 原始路径"
+detail: "审查请求要求核验 actual_deliverables/tools/ai_guard.py，但 ZIP 中实际是 actual_deliverables/ai_guard.py。该路径镜像不利于确认 selected file 与原仓库路径一一对应。"
+required_fixes:
+
+"将 commit/task mode 的所有 commit-blocking 检查限定到 staged files；full working tree 扫描应移入 repo-audit/audit/full 模式。"
+
+"保留 repo-audit mode 的全量扫描能力。"
+
+"补充真实 git fixture 测试：unstaged dirty forbidden marker 不阻塞 clean staged commit。"
+
+"补充真实 git fixture 测试：staged forbidden marker 必须 fail closed。"
+
+"补充真实 git fixture 测试：repo-audit mode 仍能检测 working tree forbidden marker。"
+
+"补充 unknown/invalid mode fail-closed 测试。"
+
+"将 deliverable 镜像路径改为 actual_deliverables/tools/ai_guard.py。"
+
+"重新运行 targeted tests 和 full tests，重新生成 AI_GUARD_TASK_MODE_OUTPUT.txt、PACK_MANIFEST.md 和 closure-pack-r2.zip。"
+END_OF_GPT_RESPONSE

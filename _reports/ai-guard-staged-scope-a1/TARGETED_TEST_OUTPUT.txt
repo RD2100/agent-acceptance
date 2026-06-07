@@ -1,0 +1,19 @@
+============================= test session starts =============================
+platform win32 -- Python 3.10.11, pytest-9.0.3, pluggy-1.6.0 -- C:\Users\RD\AppData\Local\Programs\Python\Python310\python.exe
+cachedir: .pytest_cache
+metadata: {'Python': '3.10.11', 'Platform': 'Windows-10-10.0.19045-SP0', 'Packages': {'pytest': '9.0.3', 'pluggy': '1.6.0'}, 'Plugins': {'allure-pytest': '2.16.0', 'anyio': '4.13.0', 'langsmith': '0.8.5', 'asyncio': '1.3.0', 'cov': '7.1.0', 'json-report': '1.5.0', 'metadata': '3.1.1', 'random-order': '1.2.0'}, 'JAVA_HOME': 'D:\\Program Files\\Java\\jdk-21.0.10'}
+Test order randomisation NOT enabled. Enable with --random-order or --random-order-bucket=<bucket_type>
+rootdir: D:\agent-acceptance
+plugins: allure-pytest-2.16.0, anyio-4.13.0, langsmith-0.8.5, asyncio-1.3.0, cov-7.1.0, json-report-1.5.0, metadata-3.1.1, random-order-1.2.0
+asyncio: mode=strict, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 7 items
+
+tests/test_ai_guard_staged_scope.py::TestTaskModeStagedOnly::test_unstaged_forbidden_does_not_block_clean_staged_commit PASSED [ 14%]
+tests/test_ai_guard_staged_scope.py::TestTaskModeStagedOnly::test_staged_forbidden_marker_fails_closed PASSED [ 28%]
+tests/test_ai_guard_staged_scope.py::TestTaskModeStagedOnly::test_task_mode_ignores_unstaged_secret PASSED [ 42%]
+tests/test_ai_guard_staged_scope.py::TestAuditModeFull::test_audit_mode_scans_working_tree_secrets PASSED [ 57%]
+tests/test_ai_guard_staged_scope.py::TestFailClosed::test_guard_has_blocked_exit PASSED [ 71%]
+tests/test_ai_guard_staged_scope.py::TestFailClosed::test_guard_has_staged_mode PASSED [ 85%]
+tests/test_ai_guard_staged_scope.py::TestFailClosed::test_guard_has_audit_mode PASSED [100%]
+
+============================== 7 passed in 1.58s ==============================

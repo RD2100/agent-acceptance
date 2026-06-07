@@ -1,0 +1,99 @@
+YAML
+overall_judgment: blocked
+reviewer_type: gpt
+task_id: CONTEXT-COMPRESSION-A1
+evidence_pack_reviewed: true
+
+blocking_issues:
+  - issue_id: CONTEXT-COMPRESSION-A1-R2-BLOCKER-01
+    title: "R2 包内证据仍是部分 stale，未体现用户声明的 R2 修复"
+    detail: |
+      用户说明 R2 targeted tests 应为 40 PASS，CLOSURE_REPORT / TARGETED_TEST_OUTPUT 实际仍显示 35 PASS。
+      CLOSURE_REPORT.md 仍写：
+      - Targeted tests (35): PASS
+      - Full test suite (216): PASS
+
+      但 reports/FULL_TEST_OUTPUT.txt 显示 221 passed。
+      这说明 closure narrative、targeted output 与 R2 delta 不一致，存在 stale evidence。
+
+  - issue_id: CONTEXT-COMPRESSION-A1-R2-BLOCKER-02
+    title: "privacy guard 的 file-level safety-doc exemption 实际仍存在"
+    detail: |
+      actual_deliverables/scripts/validate_context_memory.py 中仍存在：
+      - file_is_safety_doc = bool(SAFETY_CONTEXT_PATTERNS.search(text))
+      - if file_is_safety_doc: continue
+
+      这仍是整文件级 safety-doc 豁免。
+      因此如果一个文件包含 safety / forbidden / 禁止 等词，raw_paper_text、private_user_text、raw_transcript 等 marker 仍可能被跳过。
+      这正是上一轮要求移除的 blocker。
+
+  - issue_id: CONTEXT-COMPRESSION-A1-R2-BLOCKER-03
+    title: "新增的 5 个 safety-doc 夹带敏感内容负向测试未出现在实际测试文件中"
+    detail: |
+      actual_deliverables/tests/test_context_memory_privacy.py 中仍只有原有 35 个 targeted tests。
+      未看到用户声明的 5 个新增安全测试，例如：
+      - safety doc with embedded raw_paper_text must fail
+      - safety doc with embedded private_user_text must fail
+      - safety doc with embedded raw_transcript must fail
+      - safety doc with embedded doctor paper content must fail
+
+      TARGETED_TEST_OUTPUT.txt 也显示 collected 35 items，而不是 40 items。
+
+  - issue_id: CONTEXT-COMPRESSION-A1-R2-BLOCKER-04
+    title: "SELECTED_FILES 与 actual_deliverables 仍有路径不一致"
+    detail: |
+      reports/SELECTED_FILES.txt 列出：
+      - contracts/context_compression_contract.yaml
+
+      但 actual_deliverables 中实际路径是：
+      - actual_deliverables/context_compression_contract.yaml
+
+      不是：
+      - actual_deliverables/contracts/context_compression_contract.yaml
+
+      因此 selected files / actual deliverables 仍未完全一致。
+
+  - issue_id: CONTEXT-COMPRESSION-A1-R2-BLOCKER-05
+    title: "PRIVACY_GUARD_OUTPUT 检查了非 selected 的 memory/knowledge/index.md"
+    detail: |
+      reports/SELECTED_FILES.txt 已不再列出 memory/knowledge/index.md。
+      actual_deliverables 中也没有 actual_deliverables/memory/knowledge/index.md。
+      但 reports/PRIVACY_GUARD_OUTPUT.txt 仍显示检查了：
+      - memory\knowledge\index.md
+
+      这说明 privacy guard output 不是严格基于本任务 selected files 生成，仍存在范围漂移。
+
+required_fixes:
+  - "重新真正移除 validate_context_memory.py 中的 file_is_safety_doc 整文件豁免。"
+  - "改为行级/上下文级豁免：纯安全边界 bullet list 可 pass，但 safety 文档中夹带 raw_paper_text: actual content 必须 fail。"
+  - "补齐 5 个新增负向测试，并确保 TARGETED_TEST_OUTPUT.txt 显示 40 passed。"
+  - "重新生成 CLOSURE_REPORT.md，使其与实际 R2 输出一致：targeted 40 PASS，full 221 PASS。"
+  - "修正 actual_deliverables 路径：contracts/context_compression_contract.yaml 应镜像为 actual_deliverables/contracts/context_compression_contract.yaml。"
+  - "重新生成 PRIVACY_GUARD_OUTPUT.txt，确保只检查本任务 selected/generated outputs，或明确说明 memory/knowledge/index.md 为什么仍在扫描范围。"
+  - "重新生成 SELECTED_FILES.txt、CHANGED_FILES_CONTEXT_COMPRESSION_A1.txt、PACK_MANIFEST.md 和 closure-pack-r3.zip。"
+  - "重新运行 targeted tests、full tests、privacy guard。"
+
+review_findings:
+  fixed_from_r1:
+    - "reports/FULL_TEST_OUTPUT.txt 已加入，且显示 221 passed。"
+    - ".ai/tasks/context-compression-a1.yaml 已加入 actual_deliverables。"
+    - "memory/index.md 已放入 actual_deliverables/memory/index.md。"
+    - "actual_deliverables 中已移除旧 GROUP-03 的 memory/knowledge/index.md。"
+
+  still_not_accepted:
+    reason: |
+      R2 声称三个 blocker 全部修复，但 ZIP 内实际文件显示 blocker 02 没有修复，
+      blocker 03 仍有路径一致性问题，且测试输出/closure report 与用户声明不一致。
+      不能 accepted。
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: CONTEXT-COMPRESSION-A1-R3
+  scope: |
+    只修复 privacy guard 整文件豁免、补齐 5 个新增负向测试、同步 stale test/closure evidence、
+    修正 actual_deliverables 路径一致性。
+    不扩大到 GPT-REVIEW-QUEUE-A1、TDD-GOVERNANCE-A1、PAPER-C3 或 dirty worktree cleanup。
+
+END_OF_GPT_RESPONSE

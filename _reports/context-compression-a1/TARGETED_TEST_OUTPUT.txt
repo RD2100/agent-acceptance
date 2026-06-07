@@ -1,0 +1,63 @@
+============================= test session starts =============================
+platform win32 -- Python 3.10.11, pytest-9.0.3, pluggy-1.6.0 -- C:\Users\RD\AppData\Local\Programs\Python\Python310\python.exe
+cachedir: .pytest_cache
+metadata: {'Python': '3.10.11', 'Platform': 'Windows-10-10.0.19045-SP0', 'Packages': {'pytest': '9.0.3', 'pluggy': '1.6.0'}, 'Plugins': {'allure-pytest': '2.16.0', 'anyio': '4.13.0', 'langsmith': '0.8.5', 'asyncio': '1.3.0', 'cov': '7.1.0', 'json-report': '1.5.0', 'metadata': '3.1.1', 'random-order': '1.2.0'}, 'JAVA_HOME': 'D:\\Program Files\\Java\\jdk-21.0.10'}
+Test order randomisation NOT enabled. Enable with --random-order or --random-order-bucket=<bucket_type>
+rootdir: D:\agent-acceptance
+plugins: allure-pytest-2.16.0, anyio-4.13.0, langsmith-0.8.5, asyncio-1.3.0, cov-7.1.0, json-report-1.5.0, metadata-3.1.1, random-order-1.2.0
+asyncio: mode=strict, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 51 items
+
+tests/test_context_compression.py::TestSegment::test_segment_project_history_produces_segments PASSED [  1%]
+tests/test_context_compression.py::TestSegment::test_segment_audit_ledger_produces_segments PASSED [  3%]
+tests/test_context_compression.py::TestClassify::test_accepted_entry_tagged_decision PASSED [  5%]
+tests/test_context_compression.py::TestClassify::test_blocked_entry_tagged_blocker PASSED [  7%]
+tests/test_context_compression.py::TestClassify::test_superseded_entry_tagged_superseded PASSED [  9%]
+tests/test_context_compression.py::TestClassify::test_empty_entry_tagged_noise PASSED [ 11%]
+tests/test_context_compression.py::TestDeduplicate::test_same_task_id_merged PASSED [ 13%]
+tests/test_context_compression.py::TestDeduplicate::test_different_task_ids_kept_separate PASSED [ 15%]
+tests/test_context_compression.py::TestSupersede::test_superseded_entry_keeps_summary PASSED [ 17%]
+tests/test_context_compression.py::TestPrivacyFilter::test_safe_entry_passes PASSED [ 19%]
+tests/test_context_compression.py::TestPrivacyFilter::test_raw_paper_entry_blocked PASSED [ 21%]
+tests/test_context_compression.py::TestPrivacyFilter::test_private_user_text_blocked PASSED [ 23%]
+tests/test_context_compression.py::TestPipelineIntegration::test_pipeline_runs_with_temp_dir PASSED [ 25%]
+tests/test_boot_context_builder.py::TestBootContextBuilder::test_build_generates_file PASSED [ 27%]
+tests/test_boot_context_builder.py::TestBootContextBuilder::test_boot_context_within_char_limit PASSED [ 29%]
+tests/test_boot_context_builder.py::TestBootContextBuilder::test_boot_context_has_required_sections PASSED [ 31%]
+tests/test_boot_context_builder.py::TestBootContextBuilder::test_boot_context_has_hash PASSED [ 33%]
+tests/test_boot_context_builder.py::TestBootContextBuilder::test_boot_context_not_copy_full_project_history PASSED [ 35%]
+tests/test_boot_context_builder.py::TestBootContextBuilder::test_boot_context_does_not_contain_full_binding_blocks PASSED [ 37%]
+tests/test_boot_context_builder.py::TestBootContextSchema::test_generated_at_is_iso_format PASSED [ 39%]
+tests/test_boot_context_builder.py::TestBootContextSchema::test_boot_context_markdown_structure PASSED [ 41%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardFailClosed::test_raw_paper_text_in_memory_entry_must_fail PASSED [ 43%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardFailClosed::test_private_user_text_in_memory_entry_must_fail PASSED [ 45%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardFailClosed::test_raw_transcript_in_memory_entry_must_fail PASSED [ 47%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardFailClosed::test_secret_token_in_memory_must_fail PASSED [ 49%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardFailClosed::test_api_key_value_in_memory_must_fail PASSED [ 50%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardFailClosed::test_doctor_paper_full_text_marker_must_fail PASSED [ 52%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPass::test_task_metadata_only_should_pass PASSED [ 54%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPass::test_safety_boundary_documentation_should_pass PASSED [ 56%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPass::test_boot_context_should_pass PASSED [ 58%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPass::test_sha256_hashes_should_not_trigger_secret_check PASSED [ 60%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardRealFiles::test_all_generated_outputs_pass PASSED [ 62%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardSafetyDocWithContent::test_safety_header_with_raw_paper_text_content_must_fail PASSED [ 64%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardSafetyDocWithContent::test_safety_doc_with_private_user_text_must_fail PASSED [ 66%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardSafetyDocWithContent::test_safety_doc_with_raw_transcript_must_fail PASSED [ 68%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardSafetyDocWithContent::test_safety_doc_with_doctor_paper_content_must_fail PASSED [ 70%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardSafetyDocWithContent::test_safety_bullet_list_only_must_pass PASSED [ 72%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPayloadInSafetyContext::test_safety_bullet_with_raw_paper_payload_must_fail PASSED [ 74%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPayloadInSafetyContext::test_safety_header_with_raw_paper_payload_must_fail PASSED [ 76%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPayloadInSafetyContext::test_safety_bullet_with_private_user_text_payload_must_fail PASSED [ 78%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPayloadInSafetyContext::test_safety_bullet_with_raw_transcript_payload_must_fail PASSED [ 80%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPayloadInSafetyContext::test_pure_safety_bullet_list_still_passes PASSED [ 82%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPayloadInSafetyContext::test_bullet_with_doctor_paper_payload_must_fail PASSED [ 84%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPayloadInSafetyContext::test_safety_bullet_with_api_key_payload_must_fail PASSED [ 86%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPayloadInSafetyContext::test_safety_bullet_with_token_payload_must_fail PASSED [ 88%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPayloadInSafetyContext::test_safety_bullet_with_secret_payload_must_fail PASSED [ 90%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPayloadInSafetyContext::test_safety_bullet_with_cookie_payload_must_fail PASSED [ 92%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardPayloadInSafetyContext::test_safety_bullet_with_session_payload_must_fail PASSED [ 94%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardEdgeCases::test_empty_file_should_pass PASSED [ 96%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardEdgeCases::test_chinese_only_task_metadata_should_pass PASSED [ 98%]
+tests/test_context_memory_privacy.py::TestPrivacyGuardEdgeCases::test_long_base64_not_hex_should_fail PASSED [100%]
+
+============================= 51 passed in 0.25s ==============================

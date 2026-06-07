@@ -1,0 +1,19 @@
+task_id: CONTEXT-COMPRESSION-A1
+task_name: "Long Conversation Context Compression Layer"
+primary_repo: agent-acceptance
+overall_judgment: accepted
+reviewer_type: gpt
+accepted_time: "2026-06-07T17:35:00+08:00"
+evidence_pack: evidence_packs/context-compression-a1/closure-pack-r6.zip
+evidence_pack_sha256: "0dc2c3359f12dd7f4e31d78e00291961383ac5ca1c47fc3e847ba12778ce375e"
+gpt_review_result: evidence_packs/context-compression-a1/GPT_REVIEW_RESULT_R6.txt
+gpt_review_result_sha256: "99e0ac7942c6dd13f1cd1c939e5e3babc0925999a20291ca5392810151b5e2f3"
+scope_limit: "only CONTEXT-COMPRESSION-A1 selected files"
+whole_dirty_worktree_accepted: false
+implementation_commit: "TBD"
+pushed_to_github: false
+binding_version: v1
+delta_summary: >
+  Implemented privacy-safe context compression layer.
+  New agents read BOOT_CONTEXT.md (~3K chars) + memory index instead of full PROJECT_HISTORY (~25K chars).
+  51 targeted tests + 232 full tests PASS. 6 GPT review rounds.

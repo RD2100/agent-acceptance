@@ -1,0 +1,19 @@
+# Files deliberately excluded from CONTEXT-COMPRESSION-A1 scope
+# These are dirty baseline files that must not be committed.
+
+runs/*
+HANDOFF_REPLY_V4.txt
+archive/draft-hooks/*
+tools/*
+scripts/validate_paper_task.py
+tests/test_paper_task_validator.py
+docs/submit_proposal_to_gpt.py
+memory/daily/2026-06-06.md
+.tmpconfig/
+.tmpdata/
+__pycache__/
+*.pyc
+GPT_REVIEW_RESULT.md
+GPT_HANDOFF_ARCHITECTURE_RESPONSE.md
+HISTORY_ANALYSIS.md
+PROJECT_HISTORY_FINAL.md

@@ -1,0 +1,24 @@
+overall_judgment: blocked
+blocking_issues:
+
+issue_id: AI-GUARD-STAGED-SCOPE-A1-R3-BLOCKER-01
+title: "R3 文档仍然 stale，仍写 task mode 使用 full-tree security scan"
+detail: "CLOSURE_REPORT.md 的 Summary 仍写 task mode 使用 staged files 做 scope checks，但 keeping full working-tree scan for deny_paths and secret scanning；GPT_REVIEW_PROMPT.md 也仍写 task mode uses staged files for scope, full tree for security。这与 R3 声称的“task mode = staged only for ALL checks；audit mode = full tree”矛盾。"
+
+issue_id: AI-GUARD-STAGED-SCOPE-A1-R3-BLOCKER-02
+title: "GPT_REVIEW_PROMPT.md 仍保留旧测试数量和 full suite 数字"
+detail: "GPT_REVIEW_PROMPT.md 仍写 4 new tests, all pass 和 Full suite: 236 PASS；但 reports/TARGETED_TEST_OUTPUT.txt 显示 7 passed，reports/FULL_TEST_OUTPUT.txt 显示 239 passed。证据包叙述与原始测试输出不一致。"
+
+issue_id: AI-GUARD-STAGED-SCOPE-A1-R3-BLOCKER-03
+title: "CLOSURE_REPORT.md 的测试描述仍与 R2/R3 真实测试不一致"
+detail: "CLOSURE_REPORT.md 在 tests/test_ai_guard_staged_scope.py 小节仍写 4 tests with real git fixtures，并列出 Deny/secret scan still uses full working tree。实际 targeted output 是 7 tests，且任务目标要求 task/commit mode 对 scope、deny、secret、restricted 全部 staged-only。"
+required_fixes:
+
+"重新生成 CLOSURE_REPORT.md，删除所有 task mode full working-tree security scan / deny secret full tree 的旧描述。"
+
+"CLOSURE_REPORT.md 必须明确写：task/commit mode 对 scope、deny_paths、restricted_paths、secret_patterns 全部只扫描 staged files；audit mode 才扫描 full tree。"
+
+"重新生成 GPT_REVIEW_PROMPT.md，更新为 7 targeted tests、239 full tests，并删除 full tree for security 的旧描述。"
+
+"重新生成 PACK_MANIFEST.md 和 closure-pack-r4.zip。"
+END_OF_GPT_RESPONSE

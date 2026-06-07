@@ -1,0 +1,130 @@
+YAML
+overall_judgment: blocked
+reviewer_type: gpt
+task_id: CONTEXT-COMPRESSION-A1
+evidence_pack_reviewed: true
+
+blocking_issues:
+  - issue_id: CONTEXT-COMPRESSION-A1-R5-BLOCKER-01
+    title: "R5 测试输出仍是 stale，与 CLOSURE_REPORT / 用户声明不一致"
+    detail: |
+      CLOSURE_REPORT.md 声称：
+      - Targeted tests (50): PASS
+      - Full test suite (231): PASS
+
+      但 evidence pack 中的实际原始输出显示：
+      - reports/TARGETED_TEST_OUTPUT.txt: 46 passed
+      - reports/FULL_TEST_OUTPUT.txt: 227 passed, 21 warnings
+
+      这与用户声明的 50 PASS / 231 PASS 不一致。
+      说明 R5 的测试输出没有重新生成，或没有把 fresh 输出放进包里。
+    required_fix: |
+      重新运行 targeted tests 和 full tests，并把 fresh 输出写入：
+      - reports/TARGETED_TEST_OUTPUT.txt
+      - reports/FULL_TEST_OUTPUT.txt
+
+      targeted output 必须显示 50 passed。
+      full output 必须显示 231 passed，或 CLOSURE_REPORT 必须改为与真实输出一致。
+
+  - issue_id: CONTEXT-COMPRESSION-A1-R5-BLOCKER-02
+    title: "R5 新增 secret/token/api_key/cookie 测试存在于文件中，但未被当前 TARGETED_TEST_OUTPUT 证明执行"
+    detail: |
+      actual_deliverables/tests/test_context_memory_privacy.py 中确实包含新增测试：
+      - test_safety_bullet_with_api_key_payload_must_fail
+      - test_safety_bullet_with_token_payload_must_fail
+      - test_safety_bullet_with_secret_payload_must_fail
+      - test_safety_bullet_with_cookie_payload_must_fail
+
+      但 reports/TARGETED_TEST_OUTPUT.txt 中没有这四个测试名称。
+      当前 targeted output 停留在 R4 的 46 passed 状态。
+      因此不能证明 R5 新增测试实际运行通过。
+    required_fix: |
+      重新运行 targeted tests，并确认输出中出现上述四个测试名称。
+
+  - issue_id: CONTEXT-COMPRESSION-A1-R5-BLOCKER-03
+    title: "缺少 session safety-context payload 负向测试"
+    detail: |
+      R4 要求 secret/token/api_key/cookie/session safety-context payload 都必须 fail closed。
+      R5 中新增了 api_key、token、secret、cookie 四个测试，但没有看到 session payload 测试。
+      虽然我手动 spot check 当前脚本逻辑时，`- session: abcdefghijklmnop` 会 fail closed，
+      但 evidence pack 缺少对应测试，不能作为完整验收。
+    required_fix: |
+      新增测试：
+      - test_safety_bullet_with_session_payload_must_fail
+
+      示例：
+      `# 安全边界\n- session: abcdefghijklmnop`
+
+      该测试必须 fail closed，并出现在 fresh TARGETED_TEST_OUTPUT.txt 中。
+
+required_fixes:
+  - "新增 session safety-context payload 负向测试。"
+  - "重新运行 targeted tests，确保输出显示 51 passed，或如测试总数不同，CLOSURE_REPORT 与实际输出必须完全一致。"
+  - "重新运行 full tests，确保 FULL_TEST_OUTPUT.txt 与 CLOSURE_REPORT 完全一致。"
+  - "重新运行 privacy guard。"
+  - "重新生成 CLOSURE_REPORT.md、TARGETED_TEST_OUTPUT.txt、FULL_TEST_OUTPUT.txt、PRIVACY_GUARD_OUTPUT.txt、PACK_MANIFEST.md 和 closure-pack-r6.zip。"
+
+review_findings:
+  pack_manifest_duplicate_fixed:
+    status: pass
+    rationale: |
+      PACK_MANIFEST.md 中现在只有一条：
+      `PACK_MANIFEST.md | self | self_excluded`
+      不再存在 stale hash 自记录。该 blocker 已修复。
+
+  secret_payload_code_behavior:
+    status: partial_pass
+    rationale: |
+      我用 R5 包内实际 validate_context_memory.py spot check：
+      - api_key: sk-...
+      - token: ...
+      - secret: ...
+      - cookie: ...
+      - session: ...
+      均会 fail closed。
+      但当前测试输出没有证明新增 api_key/token/secret/cookie 测试被执行，也没有 session 测试。
+
+  targeted_tests:
+    status: fail
+    rationale: |
+      TARGETED_TEST_OUTPUT.txt 仍显示 46 passed，不是 R5 声称的 50 passed。
+      该输出没有包含新增 secret/token/api_key/cookie payload 测试名称。
+
+  full_tests:
+    status: fail
+    rationale: |
+      FULL_TEST_OUTPUT.txt 仍显示 227 passed，不是 R5 声称的 231 passed。
+
+  privacy_guard:
+    status: pass_for_generated_outputs
+    rationale: |
+      PRIVACY_GUARD_OUTPUT.txt 显示 27 files ALL CLEAR。
+      但因为测试输出 stale，不能完全替代 targeted negative tests。
+
+  boot_context:
+    status: pass
+    rationale: |
+      BOOT_CONTEXT.md 存在，大小 3035 chars，符合 3000-6000 字符限制。
+
+  dirty_baseline_exclusion:
+    status: pass
+    rationale: |
+      evidence pack 未将 runs/*、HANDOFF_REPLY_V4.txt、archive/draft-hooks/*、tools/*、
+      paper validator residual、tmp/cache、root scratch files 等 dirty baseline 纳入 actual deliverables。
+
+accepted_parts:
+  - "PACK_MANIFEST duplicate/self_excluded 问题已修复。"
+  - "validate_context_memory.py 的 secret/token/api_key/cookie/session payload fail-closed 逻辑基本正确。"
+  - "BOOT_CONTEXT 与 memory 输出结构基本符合 CONTEXT-COMPRESSION-A1 目标。"
+  - "actual_deliverables 隔离范围基本正确。"
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: CONTEXT-COMPRESSION-A1-R6
+  scope: |
+    只补 session payload 测试，并重新生成 fresh targeted/full/privacy/manifest evidence。
+    不扩大到 GPT-REVIEW-QUEUE-A1、TDD-GOVERNANCE-A1、PAPER-C3 或 dirty worktree cleanup。
+
+END_OF_GPT_RESPONSE

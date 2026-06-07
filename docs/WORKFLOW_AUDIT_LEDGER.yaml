@@ -499,3 +499,23 @@ systemic_defects_identified:
       - "GOVERNANCE_TASK_REVIEW_CONTRACT (governance tasks require GPT review)"
       - "ARCH-GAP-A1 retroactively submitted and GPT accepted"
     lint_note: "ARCH-GAP-A1 was retroactively reviewed and accepted."
+
+  - task_id: CONTEXT-COMPRESSION-A1
+    plan: "LONG-CONVERSATION-CONTEXT-COMPRESSION-LAYER"
+    repo: agent-acceptance
+    commit: "TBD"
+    pushed: false
+    evidence_pack:
+      path: evidence_packs/context-compression-a1/closure-pack-r6.zip
+      sha256: "0dc2c3359f12dd7f4e31d78e00291961383ac5ca1c47fc3e847ba12778ce375e"
+    gpt_review:
+      submitted: true
+      reviewer: GPT
+      verdict: accepted
+      review_result_path: evidence_packs/context-compression-a1/GPT_REVIEW_RESULT_R6.txt
+      review_result_sha256: "99e0ac7942c6dd13f1cd1c939e5e3babc0925999a20291ca5392810151b5e2f3"
+    closure_binding:
+      mode: append_only_minimal_binding
+      scope_limit: "accepted scope covers only CONTEXT-COMPRESSION-A1 selected files"
+    status: accepted
+    note: "CONTEXT-COMPRESSION-A1 accepted as privacy-safe context compression layer; this does not accept the whole dirty worktree."

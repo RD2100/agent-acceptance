@@ -1,0 +1,358 @@
+task_id: AI-GUARD-STAGED-SCOPE-A1
+task_name: "Fix ai_guard pre-commit scope to staged-files-only"
+task_type: governance_guard_hardening
+primary_repo: agent-acceptance
+status: closed
+
+gate_0:
+  triggered: true
+  inventory_evidence:
+    queried_sources:
+      - tools/ai_guard.py
+      - hooks/pre-commit.governance.ps1
+      - scripts/sadp-audit.ps1
+      - PROJECT_HISTORY.md
+    matched_capabilities:
+      - ai_guard_staged_scope
+      - pre_commit_gate
+      - governance_guard
+    compared_against_request: "fix ai_guard to scan staged files only in commit mode"
+  sufficiency_decision: new_delta_required
+  decision: build_delta
+
+write_set:
+  - "tools/ai_guard.py"
+  - "tests/test_ai_guard_staged_scope.py"
+  - ".ai/tasks/ai-guard-staged-scope-a1.yaml"
+  - "_reports/ai-guard-staged-scope-a1/*"
+  - "evidence_packs/ai-guard-staged-scope-a1/*"
+
+background:
+  summary: >
+    CONTEXT-COMPRESSION-A1 has been GPT accepted at R6 and its selected files
+    are staged for commit. The commit is currently blocked because the pre-commit
+    gate invokes ai_guard.py in a mode that scans the whole working tree
+    using git diff HEAD. This causes 7 unstaged dirty baseline files to be
+    reported as SCOPE ERROR even though they are not part of the staged
+    CONTEXT-COMPRESSION-A1 commit.
+  current_blocker:
+    source: "pre-commit gate / ai_guard.py"
+    incorrect_behavior: "commit path scans whole working tree"
+    expected_behavior: "commit path scans staged files only"
+  accepted_upstream_task:
+    task_id: CONTEXT-COMPRESSION-A1
+    review_status: "GPT accepted R6"
+    pending_action: "binding + commit"
+  dirty_baseline_note: >
+    Local dirty baseline still exists and must not be deleted, restored,
+    moved, renamed, staged, committed, or silently cleaned by this task.
+
+objective:
+  - "Make ai_guard commit mode scan only staged files from git diff --cached."
+  - "Preserve repo-audit mode as full working tree / repo-wide scan using git diff HEAD or equivalent."
+  - "Prevent unstaged dirty baseline files from blocking a clean staged commit."
+  - "Ensure staged forbidden content still fails closed."
+  - "Do not disable ai_guard, do not downgrade blockers to warnings, and do not allow whole-dirty-tree commits."
+
+scope:
+  in_scope:
+    - "Minimal change to ai_guard invocation or mode selection."
+    - "Add explicit commit-mode staged-files-only behavior."
+    - "Keep or add explicit repo-audit mode for full scan behavior."
+    - "Tests proving staged-only commit behavior and fail-closed behavior."
+    - "Evidence pack proving CONTEXT-COMPRESSION-A1 staged files can pass after fix."
+  out_of_scope:
+    - "No CONTEXT-COMPRESSION-A1 implementation changes except rerunning/recording guard evidence if needed."
+    - "No dirty worktree cleanup."
+    - "No archive hook cleanup."
+    - "No historical evidence rewrite."
+    - "No GPT-REVIEW-QUEUE-A1."
+    - "No TDD-GOVERNANCE-A1."
+    - "No PAPER-C3 or real-paper execution."
+
+allowed_paths:
+  implementation:
+    - "tools/ai_guard.py"
+    - "hooks/pre-commit*"
+    - ".git-hooks/pre-commit*"
+    - "scripts/pre-commit*"
+    - "scripts/run_pre_commit*"
+  tests:
+    - "tests/test_ai_guard_staged_scope.py"
+    - "tests/test_chain_evidence_hardening.py"
+    - "tests/test_*ai_guard*.py"
+  task_spec:
+    - ".ai/tasks/ai-guard-staged-scope-a1.yaml"
+  reports:
+    - "_reports/ai-guard-staged-scope-a1/**"
+  evidence_pack:
+    - "evidence_packs/ai-guard-staged-scope-a1/**"
+  docs_if_needed:
+    - "docs/WORKFLOW_AUDIT_LEDGER.yaml"
+    - "PROJECT_HISTORY.md"
+
+forbidden_paths:
+  historical_evidence:
+    - "runs/**"
+    - "archived_evidence/**"
+    - "evidence_packs/**/actual_deliverables/runs/**"
+  dirty_baseline:
+    - "HANDOFF_REPLY_V4.txt"
+    - "archive/draft-hooks/**"
+    - ".tmpconfig/**"
+    - ".tmpdata/**"
+    - "**/__pycache__/**"
+    - "**/*.pyc"
+    - "GPT_HANDOFF_ARCHITECTURE_RESPONSE.md"
+    - "GPT_REVIEW_RESULT.md"
+    - "HISTORY_ANALYSIS.md"
+    - "PROJECT_HISTORY_FINAL.md"
+  unrelated_groups:
+    - "scripts/validate_paper_task.py"
+    - "tests/test_paper_task_validator.py"
+    - "memory/daily/2026-06-06.md"
+    - "memory/knowledge/index.md"
+    - "docs/submit_proposal_to_gpt.py"
+  context_compression_implementation:
+    - "scripts/compress_project_context.py"
+    - "scripts/build_boot_context.py"
+    - "scripts/validate_context_memory.py"
+    - "contracts/context_compression_contract.yaml"
+    - "schemas/compressed_memory_entry.schema.json"
+    - "schemas/boot_context.schema.json"
+    - "tests/test_context_compression.py"
+    - "tests/test_boot_context_builder.py"
+    - "tests/test_context_memory_privacy.py"
+    - "BOOT_CONTEXT.md"
+    - "memory/index.md"
+    - "memory/tasks/**"
+    - "memory/knowledge/**"
+
+write_set:
+  required:
+    - ".ai/tasks/ai-guard-staged-scope-a1.yaml"
+    - "_reports/ai-guard-staged-scope-a1/BASELINE_GIT_STATUS_BEFORE.txt"
+    - "_reports/ai-guard-staged-scope-a1/BASELINE_STAGED_FILES_BEFORE.txt"
+    - "_reports/ai-guard-staged-scope-a1/BASELINE_UNSTAGED_DIFF_BEFORE.txt"
+    - "_reports/ai-guard-staged-scope-a1/AI_GUARD_FAILURE_BEFORE.txt"
+    - "_reports/ai-guard-staged-scope-a1/AI_GUARD_STAGED_MODE_OUTPUT.txt"
+    - "_reports/ai-guard-staged-scope-a1/AI_GUARD_REPO_AUDIT_MODE_OUTPUT.txt"
+    - "_reports/ai-guard-staged-scope-a1/TARGETED_TEST_OUTPUT.txt"
+    - "_reports/ai-guard-staged-scope-a1/FULL_TEST_OUTPUT.txt"
+    - "_reports/ai-guard-staged-scope-a1/SELECTED_FILES.txt"
+    - "_reports/ai-guard-staged-scope-a1/EXCLUDED_FILES.txt"
+    - "_reports/ai-guard-staged-scope-a1/SAFETY_ATTESTATION.md"
+    - "_reports/ai-guard-staged-scope-a1/DIFF_AI_GUARD_STAGED_SCOPE_A1.patch"
+    - "_reports/ai-guard-staged-scope-a1/CHANGED_FILES_agent-acceptance.txt"
+    - "evidence_packs/ai-guard-staged-scope-a1/closure-pack.zip"
+  conditional:
+    - "tools/ai_guard.py"
+    - "hooks/pre-commit"
+    - ".git-hooks/pre-commit"
+    - "scripts/pre-commit.ps1"
+    - "scripts/run_pre_commit.ps1"
+    - "tests/test_ai_guard_staged_scope.py"
+  prohibited:
+    - "any forbidden_paths entry"
+
+design_constraints:
+  minimal_change:
+    - "Do not rewrite ai_guard.py wholesale."
+    - "Do not refactor unrelated chain-evidence validation."
+    - "Do not modify rerun semantics from GROUP-05 R3."
+  mode_semantics:
+    commit_mode:
+      name_options:
+        - "commit"
+        - "pre-commit"
+        - "staged"
+      required_behavior:
+        - "Scan only staged file content or staged diff."
+        - "Use git diff --cached or git show :path where needed."
+        - "Unstaged dirty files must not be inspected for commit blocking."
+        - "If staged forbidden marker exists, fail closed."
+    repo_audit_mode:
+      name_options:
+        - "repo-audit"
+        - "audit"
+        - "full"
+      required_behavior:
+        - "Preserve full working tree / repo-wide scan."
+        - "May use git diff HEAD, git status, tracked and untracked scan as existing behavior requires."
+        - "Repo-audit findings may block audit tasks, but must not be confused with commit-mode staged-only gate."
+  fail_closed:
+    - "Staged forbidden content must still block commit."
+    - "Malformed evidence or missing required guard inputs must fail closed."
+    - "Unknown mode must fail closed."
+    - "No bypass flag may silently disable ai_guard."
+    - "If staged file list cannot be determined, commit mode must fail closed."
+  no_guard_weakening:
+    - "Do not convert blocker to warning."
+    - "Do not add broad ignore patterns for dirty baseline."
+    - "Do not whitelist archive/draft-hooks or runs globally."
+    - "Do not skip ai_guard in pre-commit."
+  dirty_baseline_handling:
+    - "Dirty baseline may remain in working tree."
+    - "Dirty baseline must not be staged or committed."
+    - "This task must prove dirty baseline files are unstaged and excluded from selected files."
+
+implementation_steps:
+  - step: 1
+    name: "Freeze baseline"
+    actions:
+      - "Save git status --short to _reports/ai-guard-staged-scope-a1/BASELINE_GIT_STATUS_BEFORE.txt."
+      - "Save git diff --cached --name-only to BASELINE_STAGED_FILES_BEFORE.txt."
+      - "Save git diff --name-only to BASELINE_UNSTAGED_DIFF_BEFORE.txt."
+      - "Capture the current failing pre-commit / ai_guard output to AI_GUARD_FAILURE_BEFORE.txt."
+  - step: 2
+    name: "Identify current ai_guard invocation"
+    actions:
+      - "Find where pre-commit invokes ai_guard.py."
+      - "Record whether current invocation uses git diff HEAD or whole-tree scan."
+      - "Do not edit unrelated hooks."
+  - step: 3
+    name: "Implement staged-only commit mode"
+    actions:
+      - "Add or use explicit ai_guard mode for staged-files-only scanning."
+      - "Ensure commit/pre-commit invocation uses staged-only mode."
+      - "Ensure repo-audit mode still performs full scan."
+      - "Unknown mode must fail closed."
+  - step: 4
+    name: "Add targeted tests"
+    actions:
+      - "Create or update tests/test_ai_guard_staged_scope.py."
+      - "Test unstaged dirty forbidden marker does not block clean staged file."
+      - "Test staged forbidden marker fails closed."
+      - "Test repo-audit mode still detects unstaged/working-tree forbidden marker."
+      - "Test unknown mode fails closed."
+      - "Test CONTEXT-COMPRESSION-A1 staged selected files can pass staged-mode guard."
+  - step: 5
+    name: "Run verification"
+    actions:
+      - "Run targeted ai_guard staged scope tests."
+      - "Run relevant existing chain-evidence / ai_guard tests."
+      - "Run full pytest suite."
+      - "Run ai_guard staged mode against current staged CONTEXT-COMPRESSION-A1 selected files."
+      - "Run ai_guard repo-audit mode and record expected dirty baseline findings if present."
+  - step: 6
+    name: "Prove no dirty baseline staged"
+    actions:
+      - "Save git diff --cached --name-only after fix."
+      - "Verify staged files contain only AI-GUARD-STAGED-SCOPE-A1 files and/or CONTEXT-COMPRESSION-A1 selected files depending on commit plan."
+      - "Verify forbidden dirty baseline files remain unstaged."
+  - step: 7
+    name: "Build evidence pack"
+    actions:
+      - "Generate CLOSURE_REPORT.md with final_status: ready_for_review."
+      - "Generate GPT_REVIEW_PROMPT.md."
+      - "Generate PACK_MANIFEST.md with sha256 for every file and self_excluded for PACK_MANIFEST.md."
+      - "Create evidence_packs/ai-guard-staged-scope-a1/closure-pack.zip."
+      - "Do not mark task closed before GPT accepted."
+
+testing_requirements:
+  targeted_tests:
+    required:
+      - "pytest tests/test_ai_guard_staged_scope.py"
+    must_prove:
+      - "unstaged dirty forbidden marker does not block clean staged commit"
+      - "staged forbidden marker blocks commit"
+      - "repo-audit mode still detects dirty working tree findings"
+      - "unknown mode fails closed"
+      - "staged CONTEXT-COMPRESSION-A1 selected files pass staged guard"
+  regression_tests:
+    required:
+      - "pytest tests/test_chain_evidence_hardening.py"
+      - "pytest"
+  command_outputs_required:
+    - "_reports/ai-guard-staged-scope-a1/TARGETED_TEST_OUTPUT.txt"
+    - "_reports/ai-guard-staged-scope-a1/FULL_TEST_OUTPUT.txt"
+    - "_reports/ai-guard-staged-scope-a1/AI_GUARD_STAGED_MODE_OUTPUT.txt"
+    - "_reports/ai-guard-staged-scope-a1/AI_GUARD_REPO_AUDIT_MODE_OUTPUT.txt"
+
+evidence_requirements:
+  required_files:
+    - "CLOSURE_REPORT.md"
+    - "GPT_REVIEW_PROMPT.md"
+    - "PACK_MANIFEST.md"
+    - "DIFF_AI_GUARD_STAGED_SCOPE_A1.patch"
+    - "CHANGED_FILES_agent-acceptance.txt"
+    - "BASELINE_GIT_STATUS_BEFORE.txt"
+    - "BASELINE_STAGED_FILES_BEFORE.txt"
+    - "BASELINE_UNSTAGED_DIFF_BEFORE.txt"
+    - "AI_GUARD_FAILURE_BEFORE.txt"
+    - "AI_GUARD_STAGED_MODE_OUTPUT.txt"
+    - "AI_GUARD_REPO_AUDIT_MODE_OUTPUT.txt"
+    - "TARGETED_TEST_OUTPUT.txt"
+    - "FULL_TEST_OUTPUT.txt"
+    - "SELECTED_FILES.txt"
+    - "EXCLUDED_FILES.txt"
+    - "SAFETY_ATTESTATION.md"
+    - "actual deliverables"
+  closure_report_must_state:
+    - "This task fixes ai_guard scope selection only."
+    - "commit mode scans staged files only."
+    - "repo-audit mode remains full scan."
+    - "guard remains fail-closed."
+    - "dirty baseline was not modified or committed."
+    - "CONTEXT-COMPRESSION-A1 remains accepted R6 but pending binding/commit until this task is accepted."
+
+safety_attestation:
+  must_assert:
+    whole_dirty_tree_committed: false
+    ai_guard_disabled: false
+    blocker_downgraded_to_warning: false
+    fail_closed_weakened: false
+    runs_modified: false
+    archive_hooks_modified: false
+    handoff_reply_modified_or_deleted: false
+    dirty_baseline_staged: false
+    tmp_or_cache_staged: false
+    context_compression_reimplemented: false
+    real_paper_text_included: false
+    raw_transcript_included: false
+    external_upload_performed: false
+    live_cdp_used_for_execution: false
+
+gpt_review_prompt_template: |
+  # GPT Review Prompt — AI-GUARD-STAGED-SCOPE-A1
+
+  Please review the attached AI-GUARD-STAGED-SCOPE-A1 evidence pack.
+
+  Review focus:
+  - Verify commit/pre-commit mode scans only staged files.
+  - Verify repo-audit mode still performs full working-tree/repo scan.
+  - Verify unstaged dirty baseline files no longer block clean staged commits.
+  - Verify staged forbidden content still fails closed.
+  - Verify ai_guard was not disabled, weakened, or downgraded to warning.
+  - Verify runs/*, archive hooks, HANDOFF_REPLY_V4.txt, tmp/cache, and root scratch files were not modified or committed.
+  - Verify targeted tests and full tests pass.
+  - Verify evidence pack is not summary-only and includes actual deliverables.
+
+  Return structured output:
+  overall_judgment: accepted|blocked
+  reviewer_type: gpt
+  task_id: AI-GUARD-STAGED-SCOPE-A1
+  evidence_pack_reviewed: true
+  blocking_issues: []
+  required_fixes: []
+  next_task_authorization:
+    authorized: yes|no
+    execute_immediately: yes|no
+    ask_before_starting: yes|no
+    recommended_task_id: ""
+
+  End with END_OF_GPT_RESPONSE.
+
+completion_definition:
+  ready_for_review_when:
+    - "staged-only commit mode implemented"
+    - "repo-audit mode preserved"
+    - "targeted tests pass"
+    - "full tests pass"
+    - "staged mode passes on intended staged selected files"
+    - "repo-audit mode still reports dirty baseline if applicable"
+    - "evidence pack generated with manifest/hash"
+  closed_when:
+    - "Web GPT returns overall_judgment: accepted"
+    - "PROJECT_HISTORY.md and docs/WORKFLOW_AUDIT_LEDGER.yaml are updated with binding"
+    - "implementation commit and binding commit are pushed"
