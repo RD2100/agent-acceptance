@@ -272,6 +272,39 @@ tasks:
     status: accepted
     note: "GROUP-02 accepted as PAPER-A3 residual backfill; this does not accept the whole dirty worktree."
 
+  - task_id: GROUP-03
+    plan: "MEMORY-A2-COMPILER-OUTPUT"
+    repo: agent-acceptance
+    commit: "e98676f"
+    pushed: yes
+    evidence_pack:
+      path: evidence_packs/group-03-memory-a2-output/closure-pack.zip
+      sha256: "e125f992d45060ca8e6d287dcd1c4b2dc3de4d5818e1da0d60f5bddfb8c1881c"
+      actual_deliverables_count: 3
+      manifest_hash_check: pass
+      zip_manifest_bidirectional_match: pass
+    self_verify:
+      memory_lint: "pass"
+      privacy_scan: "pass"
+      source_reference_scan: "pass"
+      workflow_closure_validation: "pass"
+    gpt_review:
+      submitted: true
+      reviewer: GPT
+      verdict: accepted
+      review_result_path: evidence_packs/group-03-memory-a2-output/GPT_REVIEW_RESULT.txt
+      review_result_sha256: "2e9c0df8a1e2c239b3228201930b40d4fa7c18b1032af1f9d9dc431d6a899af1"
+      web_submission_result: evidence_packs/group-03-memory-a2-output/WEB_GPT_SUBMISSION_RESULT.json
+      web_submission_result_sha256: "45004e11efcd84dedf047ee193da84116d24b065988ab7781b3df3193b8ca86c"
+      send_clicked: true
+    closure_binding:
+      accepted_time: "2026-06-07T09:16:30+08:00"
+      mode: append_only_minimal_binding
+      binding_record: _reports/group-03-memory-a2-output-binding/GROUP_03_BINDING_RECORD.yaml
+      scope_limit: "accepted scope covers only GROUP-03 selected files"
+    status: accepted
+    note: "GROUP-03 accepted as frozen generated memory output review; this does not accept new memory compiler functionality."
+
 systemic_defects_identified:
   - id: SD-01
     pattern: "summary-only evidence pack submitted to GPT multiple times"

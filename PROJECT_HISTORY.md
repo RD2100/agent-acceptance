@@ -447,4 +447,33 @@ implementation_commit: "6304a63"
 pushed_to_github: true
 ```
 
+## GROUP-03 Acceptance Binding (2026-06-07)
+
+Status: accepted by web GPT as frozen generated memory output review.
+
+This entry binds GROUP-03 only. It must not be interpreted as acceptance of the
+whole dirty worktree or as acceptance of new memory compiler functionality.
+
+Binding:
+
+```yaml
+task_id: GROUP-03
+task_name: MEMORY-A2-COMPILER-OUTPUT
+primary_repo: agent-acceptance
+overall_judgment: accepted
+reviewer_type: gpt
+accepted_time: "2026-06-07T09:16:30+08:00"
+evidence_pack: evidence_packs/group-03-memory-a2-output/closure-pack.zip
+evidence_pack_sha256: "e125f992d45060ca8e6d287dcd1c4b2dc3de4d5818e1da0d60f5bddfb8c1881c"
+gpt_review_result: evidence_packs/group-03-memory-a2-output/GPT_REVIEW_RESULT.txt
+gpt_review_result_sha256: "2e9c0df8a1e2c239b3228201930b40d4fa7c18b1032af1f9d9dc431d6a899af1"
+web_gpt_submission_result: evidence_packs/group-03-memory-a2-output/WEB_GPT_SUBMISSION_RESULT.json
+web_gpt_submission_result_sha256: "45004e11efcd84dedf047ee193da84116d24b065988ab7781b3df3193b8ca86c"
+binding_record: _reports/group-03-memory-a2-output-binding/GROUP_03_BINDING_RECORD.yaml
+scope_limit: "only GROUP-03 selected files"
+whole_dirty_worktree_accepted: false
+implementation_commit: "e98676f"
+pushed_to_github: true
+```
+
 END_OF_PROJECT_HISTORY

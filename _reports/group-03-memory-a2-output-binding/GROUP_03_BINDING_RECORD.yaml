@@ -1,0 +1,31 @@
+task_id: GROUP-03
+binding_id: group-03-memory-a2-output-binding-20260607
+binding_time: "2026-06-07T09:16:30+08:00"
+primary_repo: agent-acceptance
+mode: append_only_minimal_binding
+implementation_scope: "MEMORY-A2-COMPILER-OUTPUT"
+implementation_commit: "e98676f"
+review_origin: DIRTY-WORKTREE-SPLIT-A1 accepted
+overall_judgment: accepted
+reviewer_type: gpt
+review_result:
+  path: evidence_packs/group-03-memory-a2-output/GPT_REVIEW_RESULT.txt
+  sha256: "2e9c0df8a1e2c239b3228201930b40d4fa7c18b1032af1f9d9dc431d6a899af1"
+web_submission:
+  path: evidence_packs/group-03-memory-a2-output/WEB_GPT_SUBMISSION_RESULT.json
+  sha256: "45004e11efcd84dedf047ee193da84116d24b065988ab7781b3df3193b8ca86c"
+  file_uploaded: true
+  prompt_filled: true
+  send_clicked: true
+  reply_complete: true
+  overall_judgment_seen: true
+evidence_pack:
+  path: evidence_packs/group-03-memory-a2-output/closure-pack.zip
+  sha256: "e125f992d45060ca8e6d287dcd1c4b2dc3de4d5818e1da0d60f5bddfb8c1881c"
+  workflow_closure_validation: pass
+accepted_scope:
+  - only_group_03_selected_files
+  - frozen_generated_output_review
+  - not_new_memory_compiler_functionality
+status: accepted
+pushed_to_github: true
