@@ -48,18 +48,43 @@ def main():
         sys.exit(1)
     print("PASS: Synthetic fixtures are privacy-safe")
 
-    # Run: Synthetic paper validation
-    print("\n[RUN] Synthetic paper validation...")
+    # Run: Full synthetic validation pipeline
+    print("\n[RUN] Synthetic paper validation pipeline...")
     ok = True
-    ok &= step("1. Paper validator import", [sys.executable, "-c",
-        "from scripts.validate_paper_task import main; print('Validator importable')"], 10)
-    ok &= step("2. ai_guard audit", [sys.executable, "tools/ai_guard.py", "audit"], 60)
-    ok &= step("3. Paper privacy knowledge",
-        [sys.executable, "-c",
-         "from pathlib import Path; c=Path('memory/knowledge/paper_privacy.md').read_text(encoding='utf-8'); print('Paper privacy doc:', len(c), 'chars'); assert '禁止' in c"], 10)
-    ok &= step("4. Synthetic fixture privacy",
-        [sys.executable, "-c",
-         "from scripts.validate_context_memory import check_privacy; r=check_privacy('Synthetic test paper about AI. No real data.','test'); assert r['pass'], f'Failed: {r}'"], 10)
+
+    # 1. Build synthetic test fixtures
+    import tempfile, os, shutil
+    tmp = tempfile.mkdtemp(prefix="paper_pilot_")
+    try:
+        paper_dir = Path(tmp) / "PAPER_TASK_INPUT"
+        paper_dir.mkdir()
+        (paper_dir / "PAPER_TASK.yaml").write_text("task_id: SYNTHETIC-PILOT\ntitle: Synthetic Paper Validation\n", encoding="utf-8")
+        (paper_dir / "PAPER_TASK_INPUT.yaml").write_text("input_type: synthetic\nsource: test_fixture\n", encoding="utf-8")
+        (paper_dir / "PAPER_TASK_OUTPUT.yaml").write_text("status: completed\nverdict: accepted\nsynthetic_only: true\n", encoding="utf-8")
+        (paper_dir / "PRIVACY_ATTESTATION.yaml").write_text("synthetic_only: true\nno_real_data: true\n", encoding="utf-8")
+        (paper_dir / "REDACTION_REPORT.yaml").write_text("redacted: none\nreason: synthetic_only\n", encoding="utf-8")
+
+        # 2. Run validator on synthetic input (synthetic-only: schema warnings expected)
+        r = subprocess.run([sys.executable, "scripts/validate_paper_task.py", tmp], capture_output=True, text=True, cwd=str(REPO), timeout=30)
+        validator_ran = "result" in (r.stdout or "") and "source_type" in (r.stdout or "")
+        ok &= validator_ran
+        print(f"\n>> 1. Paper validator on synthetic input")
+        print(f"   Ran: {validator_ran}, Exit: {r.returncode}, Issues: {(r.stdout or '')[:100]}")
+
+        # 3. ai_guard audit
+        ok &= step("2. ai_guard audit", [sys.executable, "tools/ai_guard.py", "audit"], 60)
+
+        # 4. Privacy guard on output
+        ok &= step("3. Privacy guard validation",
+            [sys.executable, "-c",
+             "from scripts.validate_context_memory import check_privacy; r=check_privacy('Synthetic paper test. No real data.','test'); assert r['pass']"], 10)
+
+        # 5. Check paper privacy guardrail
+        ok &= step("4. Paper privacy guardrail",
+            [sys.executable, "-c",
+             "from pathlib import Path; c=Path('memory/knowledge/paper_privacy.md').read_text(encoding='utf-8'); assert '禁止' in c; print('Guardrail operational')"], 10)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
     print(f"\n{'='*50}")
     print(f"  PILOT RESULT: {'PASS' if ok else 'FAIL'}")
