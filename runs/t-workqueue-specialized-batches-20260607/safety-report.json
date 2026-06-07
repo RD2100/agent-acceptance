@@ -1,10 +1,8 @@
-﻿{
-  "generated_at": "2026-06-07T16:10:00+08:00",
-  "producer": "workqueue-specialized-batches-review",
-  "command": "specialized batch review synthesis",
-  "exit_code": 1,
-  "stdout": "Specialized batch files pass directly, but queue runner still fails on recovery/release queue execution.",
-  "stderr": "",
-  "blocker_classification": "TaskSpec_boundary",
-  "blocker_detail": "Remaining defect appears to live in Run-WorkQueue / batch exit propagation, which is outside current task allow_write."
+{
+  "generated_at": "2026-06-07T16:18:00+08:00",
+  "producer": "workqueue-specialized-batches-closure",
+  "command": "specialized batches and queue propagation closure",
+  "exit_code": 0,
+  "stdout": "Specialized batch files exist, direct specialized batch runs pass, and cleanup/recovery/release queue executions pass after queue runner propagation fix.",
+  "stderr": ""
 }

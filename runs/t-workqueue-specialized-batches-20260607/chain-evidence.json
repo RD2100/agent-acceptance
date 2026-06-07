@@ -2,7 +2,11 @@
   "run_id": "t-workqueue-specialized-batches-20260607",
   "task_file": ".ai/tasks/t-workqueue-specialized-batches-20260607.yaml",
   "executor_id": "executor-t-workqueue-specialized-batches-20260607",
-  "reviewer_id": null,
+  "reviewer_id": "gpt-web-reviewer-workqueue-followon-20260607",
   "created_at": "2026-06-07T07:56:55+00:00",
-  "producer": "tools/go_evidence.py init"
+  "producer": "tools/go_evidence.py init",
+  "reviewer_role": "reviewer",
+  "reviewed_at": "2026-06-07T08:25:55+00:00",
+  "rerun_verified_at": "2026-06-07T08:25:56+00:00",
+  "rerun_summary": "guard=pass; evidence=pass; reviewer=accepted; final=pass"
 }

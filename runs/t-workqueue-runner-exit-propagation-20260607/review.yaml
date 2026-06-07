@@ -1,0 +1,17 @@
+﻿reviewer_role: reviewer
+reviewer_id: gpt-web-reviewer-workqueue-followon-20260607
+executor_id: executor-t-workqueue-runner-exit-propagation-20260607
+reviewed_inputs:
+  - diff.patch
+  - test-output.md
+  - safety-report.json
+  - chain-evidence.json
+verdict: pass
+verdict_reason: >
+  Queue-level exit/result propagation now matches direct batch outcomes for cleanup,
+  recovery, and release queues.
+checks:
+  cleanup_queue_passes: pass
+  recovery_queue_passes: pass
+  release_queue_passes: pass
+accepted: true
