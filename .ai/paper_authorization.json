@@ -1,0 +1,15 @@
+{
+  "authorized": true,
+  "token": "e52c73cfb7982c22419550c6be8ba27bd406933671fc2f35e68e946e5eede033",
+  "scope": "bounded_pilot",
+  "expires_at": "2026-06-09T05:37:29.998239+00:00",
+  "purpose": "Single paper section review — sanitized metadata extraction",
+  "paper_title": "教育强国战略下高等教育提质扩容的必然逻辑、内在张力与治理进路",
+  "restrictions": [
+    "No full-text ingestion into memory",
+    "Section-level processing only",
+    "No external upload",
+    "Output must be structural diagnosis only",
+    "No paper content stored in memory system"
+  ]
+}
