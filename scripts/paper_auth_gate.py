@@ -20,13 +20,20 @@ def check():
         return {"authorized": False, "reason": "authorization expired"}
     if not gate.get("token") or len(gate.get("token", "")) < 16:
         return {"authorized": False, "reason": "invalid authorization token"}
+    # Reject high-risk boolean fields regardless of scope
+    forbidden_fields = {
+        "real_paper_full_text_allowed", "external_upload_allowed",
+        "live_cdp_allowed", "memory_write_with_paper_content",
+        "real_paper_text", "private_user_text",
+    }
+    for field in forbidden_fields:
+        if gate.get(field):
+            return {"authorized": False, "reason": f"forbidden field '{field}' is set to true"}
+
     scope = gate.get("scope", "")
     allowed_scopes = {"synthetic_only", "metadata_only", "bounded_pilot", "dry_run"}
-    forbidden_scopes = {"full pilot", "real_paper", "real_paper_full_text", "external_upload", "live_cdp", "memory_write"}
-    if scope in forbidden_scopes:
-        return {"authorized": False, "reason": f"scope '{scope}' is forbidden"}
     if scope not in allowed_scopes:
-        return {"authorized": False, "reason": f"scope '{scope}' not in allowed scopes: {sorted(allowed_scopes)}"}
+        return {"authorized": False, "reason": f"scope '{scope}' not in allowed: {sorted(allowed_scopes)}"}
     return {"authorized": True, "reason": f"scope={scope}", "expires": gate.get("expires_at")}
 
 def main():

@@ -56,23 +56,62 @@ def main():
     import tempfile, os, shutil
     tmp = tempfile.mkdtemp(prefix="paper_pilot_")
     try:
-        paper_dir = Path(tmp) / "PAPER_TASK_INPUT"
-        paper_dir.mkdir()
-        # Proper YAML mappings (not bare scalars) so validator passes schema checks
-        (paper_dir / "PAPER_TASK.yaml").write_text("task_id: SYNTHETIC-PILOT\ntitle: Synthetic Paper Validation\nstatus: ready\n", encoding="utf-8")
-        (paper_dir / "PAPER_TASK_INPUT.yaml").write_text("input_type: synthetic\nsource: test_fixture\ncontent: \"Synthetic test data only\"\n", encoding="utf-8")
-        (paper_dir / "PAPER_TASK_OUTPUT.yaml").write_text("status: completed\nverdict: accepted\nsynthetic_only: true\naction: none\n", encoding="utf-8")
-        (paper_dir / "PRIVACY_ATTESTATION.yaml").write_text("synthetic_only: true\nno_real_data: true\nno_pii: true\nno_secrets: true\n", encoding="utf-8")
-        (paper_dir / "REDACTION_REPORT.yaml").write_text("redacted: none\nreason: synthetic_only\nirreversible: false\nrisk_level: none\n", encoding="utf-8")
+        # Validator expects the 4 required files directly in the source directory, each with full schema
+        import yaml
+        privacy_fields = {
+            "task_id": "SYNTHETIC-PILOT",
+            "contains_real_paper_full_text": False,
+            "contains_user_private_text": False,
+            "contains_raw_transcript": False,
+            "contains_memory_write": False,
+            "contains_external_upload": False,
+            "redaction_applied": True,
+            "manual_review_required": False,
+            "memory_write_policy": "redacted_workflow_lesson_only",
+        }
+        redaction_fields = {
+            "task_id": "SYNTHETIC-PILOT",
+            "redaction_applied": True,
+            "contains_real_paper_full_text": False,
+            "contains_user_private_text": False,
+            "contains_raw_transcript": False,
+            "manual_review_required": False,
+        }
+        (Path(tmp) / "PAPER_TASK_INPUT.yaml").write_text(yaml.dump({
+            "task_id": "SYNTHETIC-PILOT",
+            "task_type": "cssci_review",
+            "paper_data_classification": "synthetic",
+            "user_authorization": "synthetic",
+            "input_materials": ["synthetic_test_data.md"],
+            "privacy_constraints": ["no_real_paper"],
+            "memory_policy": "redacted_workflow_lesson_only",
+            "expected_outputs": ["report"]
+        }), encoding="utf-8")
+        (Path(tmp) / "PAPER_TASK_OUTPUT.yaml").write_text(yaml.dump({
+            "task_id": "SYNTHETIC-PILOT",
+            "task_type": "cssci_review",
+            "output_summary": "Synthetic validation passed.",
+            "findings": [{"severity": "info", "description": "Synthetic-only test"}],
+            "evidence_basis": "synthetic_test_fixtures",
+            "privacy_redaction_status": "full",
+            "manual_review_required": False,
+            "limitations": ["synthetic_data_only"],
+            "contains_real_paper_full_text": False,
+            "contains_unredacted_excerpt": False,
+            "contains_user_identity": False
+        }), encoding="utf-8")
+        (Path(tmp) / "PRIVACY_ATTESTATION.yaml").write_text(yaml.dump(privacy_fields), encoding="utf-8")
+        (Path(tmp) / "REDACTION_REPORT.yaml").write_text(yaml.dump(redaction_fields), encoding="utf-8")
 
-        # 2. Exercise validator on synthetic input (schema validation expected to be strict)
+        # 2. Run validator on synthetic input — MUST exit 0 for PILOT PASS
         r = subprocess.run([sys.executable, "scripts/validate_paper_task.py", tmp], capture_output=True, text=True, cwd=str(REPO), timeout=30)
-        validator_ran = r.returncode in (0, 1)  # Either pass or fail on schema — both mean it ran
-        ok &= validator_ran
+        validator_pass = r.returncode == 0
+        ok &= validator_pass
         print(f"\n>> 1. Paper validator on synthetic input")
-        print(f"   Exit: {r.returncode} (validator exercised, schema strictness expected)")
-        if not validator_ran:
-            print("   ERROR: Validator crashed or did not run.")
+        print(f"   Exit: {r.returncode}, {'PASS' if validator_pass else 'FAIL'}")
+        if not validator_pass:
+            print(f"   Validator output: {(r.stdout or '')[:300]}")
+            print("   BLOCKED: Validator must pass for PILOT PASS.")
 
         # 3. ai_guard audit
         ok &= step("2. ai_guard audit", [sys.executable, "tools/ai_guard.py", "audit"], 60)
