@@ -1,0 +1,55 @@
+{
+  "task_id": "unknown",
+  "section_name": "M3-实然之境-第二轮",
+  "suggestions": [
+    {
+      "type": "compression",
+      "target": "P1",
+      "current_chars": 1032,
+      "strategy": "该段1032字，建议压缩至516字以内。方法：提取1个核心论点，将支撑性论证移至脚注或附录",
+      "example": null
+    },
+    {
+      "type": "compression",
+      "target": "P2",
+      "current_chars": 1241,
+      "strategy": "该段1241字，建议压缩至620字以内。方法：提取1个核心论点，将支撑性论证移至脚注或附录",
+      "example": null
+    },
+    {
+      "type": "evidence_gap",
+      "target": "P1",
+      "count": 1,
+      "strategy": "发现1个长段落缺少引用。建议：(1)每个事实性陈述补充1个文献支撑 (2)每个方法论选择补充1个方法论文献 (3)每个对立观点补充1个对比文献"
+    },
+    {
+      "type": "evidence_balance",
+      "current": 0,
+      "target": 1,
+      "strategy": "实证段落占比偏低。建议每3段至少包含1处数据引用或案例支撑"
+    },
+    {
+      "type": "prescriptive_balance",
+      "current": 1,
+      "ratio": "50%",
+      "strategy": "规范性/政策建议段落占比50%，偏高。建议压缩至总段数的30%以内，将腾出的空间用于理论分析和实证验证"
+    }
+  ],
+  "suggestion_count": 5,
+  "generated_at": "2026-06-08T08:27:57.845030+00:00",
+  "disclaimer": "仅提供修改策略和模板，不生成具体改写文本。用户需自行完成修改。",
+  "addressing_gpt_p1_issues": [
+    {
+      "issue": "M3-P1-01",
+      "fix": "将标题从实然之境改为实然之困，或重写内容为正面论证实然层面的统一性"
+    },
+    {
+      "issue": "M3-P1-02",
+      "fix": "明确阐述内在统一性的具体机制：规模扩张如何倒逼质量提升？质量提升如何为规模扩张提供合法性？"
+    },
+    {
+      "issue": "M3-P1-03",
+      "fix": "补充3-5个高等教育研究文献：方法论文献1个，比较研究1个，实证数据1个"
+    }
+  ]
+}
