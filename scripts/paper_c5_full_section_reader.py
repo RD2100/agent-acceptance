@@ -39,23 +39,24 @@ def split_paragraphs(text: str) -> list[dict]:
 
     body = '\n'.join(lines[body_start+1:])
 
-    # Split by sub-section headers (（一）（二）etc), then by numbered points, then by blanks
-    # PDF text often loses paragraph breaks; use structural markers first
+    # Normalize PDF line breaks: single newline within text = PDF artifact, not para break.
+    # Real paragraph breaks are: double newlines, sub-section headers, or indentation changes.
+    body = re.sub(r'([^。\n])\n([^ \n（])', r'\1\2', body)  # Join broken lines within sentences
+
+    # Split by sub-section headers first
     sub_sections = re.split(r'\n(?=（[一二三四五六七八九十]）)', body)
     paragraphs = []
     for ss in sub_sections:
         ss = ss.strip()
-        if not ss:
+        if not ss or len(ss) < 30:
             continue
-        # If this sub-section is >500 chars, try splitting by sentence clusters
-        if len(ss) > 500:
-            # Split by Chinese period + newline patterns, or by 3+ sentence boundaries
-            chunks = re.split(r'(?<=[。])\s*(?=[^。]{50,})', ss)
-            for chunk in chunks:
-                chunk = chunk.strip()
-                if len(chunk) >= 50:
-                    paragraphs.append(chunk)
-        else:
+        # Split by natural paragraph markers
+        chunks = re.split(r'\n{2,}', ss)  # Double newlines = real paragraph breaks
+        for chunk in chunks:
+            chunk = chunk.strip()
+            if len(chunk) >= 100:  # Minimum paragraph size for meaningful analysis
+                paragraphs.append(chunk)
+        if not chunks and len(ss) >= 100:
             paragraphs.append(ss)
 
     result = []
@@ -144,18 +145,21 @@ def analyze_section(text: str, section_name: str) -> dict:
     para_diagnoses = []
 
     for p in paragraphs:
-        # Get the actual paragraph text for diagnosis
         idx = p["index"] - 1
-        all_texts = []
+        # Re-run the same split logic used in split_paragraphs
         body = text.split('\n', 1)[1] if '\n' in text else text
+        body = re.sub(r'([^。\n])\n([^ \n（])', r'\1\2', body)
         ss_list = re.split(r'\n(?=（[一二三四五六七八九十]）)', body)
+        all_texts = []
         for ss in ss_list:
             ss = ss.strip()
-            if not ss: continue
-            if len(ss) > 500:
-                chunks = re.split(r'(?<=[。])\s*(?=[^。]{50,})', ss)
-                all_texts.extend(c.strip() for c in chunks if len(c.strip()) >= 50)
-            else:
+            if not ss or len(ss) < 30: continue
+            chunks = re.split(r'\n{2,}', ss)
+            for chunk in chunks:
+                chunk = chunk.strip()
+                if len(chunk) >= 100:
+                    all_texts.append(chunk)
+            if not chunks and len(ss) >= 100:
                 all_texts.append(ss)
         full_para = all_texts[idx] if idx < len(all_texts) else ""
 
