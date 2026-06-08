@@ -60,7 +60,11 @@ def validate_gpt_reply(reply_path: str) -> dict:
         return {"valid": False, "error": "missing END_OF_GPT_RESPONSE marker"}
     if "overall_judgment" not in content.lower():
         return {"valid": False, "error": "missing overall_judgment in GPT reply"}
-    verdict = "accepted" if "overall_judgment: accepted" in content.lower() or "overall_judgment:accepted" in content.lower().replace(" ", "") else "blocked"
+    # Accepted replies must include next_task_authorization
+    is_accepted = "overall_judgment: accepted" in content.lower() or "overall_judgment:accepted" in content.lower().replace(" ", "")
+    if is_accepted and "next_task_authorization" not in content.lower():
+        return {"valid": False, "error": "accepted reply missing next_task_authorization"}
+    verdict = "accepted" if is_accepted else "blocked"
     return {"valid": True, "verdict": verdict, "size": len(content)}
 
 
@@ -154,7 +158,9 @@ def record_gpt_reply(ticket_id: str, verdict: str, reply_path: str, blocker_issu
         print(f"ERROR: GPT reply validation failed: {validation['error']}")
         sys.exit(1)
 
-    ticket["status"] = "gpt_replied"
+    # Blocked verdict goes directly to terminal; accepted stays in gpt_replied for accept step
+    final_status = "blocked" if validation["verdict"] == "blocked" else "gpt_replied"
+    ticket["status"] = final_status
     ticket["gpt_replied_at"] = _now()
     ticket["gpt_verdict"] = validation["verdict"]
     ticket["gpt_reply_path"] = str(reply_file.resolve())

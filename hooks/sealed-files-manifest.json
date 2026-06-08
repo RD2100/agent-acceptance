@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-08T08:12:03.3525459+08:00",
+    "generated":  "2026-06-08T08:17:24.4075345+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",

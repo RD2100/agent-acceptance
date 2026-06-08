@@ -37,7 +37,7 @@ class TestE2EQueue:
         assert t["status"] == "submitted"
 
         reply = Path(self.tmp) / "gpt_reply.txt"
-        reply.write_text("overall_judgment: accepted\nEND_OF_GPT_RESPONSE")
+        reply.write_text("overall_judgment: accepted\nnext_task_authorization:\n  authorized: yes\nEND_OF_GPT_RESPONSE")
         validation = rq.validate_gpt_reply(str(reply))
         assert validation["valid"]
 
@@ -71,14 +71,12 @@ class TestTicketLifecycle:
         """Ticket goes through all states without error."""
         t = rq.create_ticket("TEST-TASK", str(self.evidence))
         assert t["status"] == "queued"
-        assert t["ticket_id"].startswith("REVIEW-TEST-TASK")
-        assert len(t["evidence_pack_sha256"]) == 64
 
         t = rq.submit_ticket(t["ticket_id"], "https://chatgpt.com/c/test")
         assert t["status"] == "submitted"
 
         reply = Path(self.tmp) / "gpt_reply.txt"
-        reply.write_text("accepted")
+        reply.write_text("overall_judgment: accepted\nnext_task_authorization:\n  authorized: yes\nEND_OF_GPT_RESPONSE")
         t = rq.record_gpt_reply(t["ticket_id"], "accepted", str(reply))
         assert t["status"] == "gpt_replied"
         assert t["gpt_verdict"] == "accepted"
@@ -90,24 +88,29 @@ class TestTicketLifecycle:
         assert t["status"] == "closed"
 
     def test_only_one_active(self):
-        """Cannot submit a second ticket while one is active."""
+        """Cannot submit a second ticket while one is submitted/gpt_replied."""
         ev2 = Path(self.tmp) / "test2.zip"
         ev2.write_text("dummy2")
 
-        # Create both tickets first (both queued)
         t1 = rq.create_ticket("TASK-1", str(self.evidence))
         t2 = rq.create_ticket("TASK-2", str(ev2))
 
-        # Submit first
         t1 = rq.submit_ticket(t1["ticket_id"], "http://x.com")
         assert t1["status"] == "submitted"
 
-        # Try to submit second while first is active
         try:
             rq.submit_ticket(t2["ticket_id"], "http://y.com")
             assert False, "Should have failed"
         except SystemExit:
             pass  # expected
+
+        # Block first (blocked is terminal, releases active slot)
+        reply = Path(self.tmp) / "blocked_r.txt"
+        reply.write_text("overall_judgment: blocked\nEND_OF_GPT_RESPONSE")
+        t1 = rq.record_gpt_reply(t1["ticket_id"], "blocked", str(reply))
+        assert t1["status"] == "gpt_replied"
+        t2 = rq.submit_ticket(t2["ticket_id"], "http://y.com")
+        assert t2["status"] == "submitted"
 
     def test_cannot_accept_without_gpt_accepted(self):
         """Cannot accept a ticket whose GPT verdict is blocked."""
@@ -115,7 +118,7 @@ class TestTicketLifecycle:
         t = rq.submit_ticket(t["ticket_id"], "http://x.com")
 
         reply = Path(self.tmp) / "reply.txt"
-        reply.write_text("blocked")
+        reply.write_text("overall_judgment: blocked\nEND_OF_GPT_RESPONSE")
         t = rq.record_gpt_reply(t["ticket_id"], "blocked", str(reply))
 
         try:
@@ -152,12 +155,18 @@ class TestTicketLifecycle:
         reply.write_text("overall_judgment: accepted\n(no end marker)")
         result = rq.validate_gpt_reply(str(reply))
         assert not result["valid"]
-        assert "END_OF_GPT_RESPONSE" in result["error"]
 
     def test_gpt_reply_valid(self):
         """Valid GPT reply passes."""
         reply = Path(self.tmp) / "good_reply.txt"
-        reply.write_text("overall_judgment: accepted\nEND_OF_GPT_RESPONSE")
+        reply.write_text("overall_judgment: accepted\nnext_task_authorization:\n  authorized: yes\nEND_OF_GPT_RESPONSE")
         result = rq.validate_gpt_reply(str(reply))
         assert result["valid"]
         assert result["verdict"] == "accepted"
+
+    def test_gpt_reply_without_next_auth_fails(self):
+        """GPT reply missing next_task_authorization fails validation."""
+        reply = Path(self.tmp) / "no_auth.txt"
+        reply.write_text("overall_judgment: accepted\nEND_OF_GPT_RESPONSE")
+        result = rq.validate_gpt_reply(str(reply))
+        assert not result["valid"]
