@@ -8,12 +8,33 @@ import paper_auth_gate
 
 class TestPaperAuthGate:
     def test_no_auth_file_returns_unauthorized(self):
-        result = paper_auth_gate.check()
-        assert not result["authorized"]
+        # Test with non-existent GATE_FILE
+        orig = paper_auth_gate.GATE_FILE
+        paper_auth_gate.GATE_FILE = Path("/nonexistent/auth.json")
+        try:
+            result = paper_auth_gate.check()
+            assert not result["authorized"]
+        finally:
+            paper_auth_gate.GATE_FILE = orig
 
     def test_expired_auth_returns_unauthorized(self):
-        result = paper_auth_gate.check()
-        assert not result["authorized"]
+        import json, tempfile, shutil
+        d = tempfile.mkdtemp()
+        try:
+            gate_file = Path(d) / ".ai" / "paper_authorization.json"
+            gate_file.parent.mkdir()
+            gate_file.write_text(json.dumps({
+                "authorized": True, "token": "x" * 20,
+                "scope": "synthetic_only",
+                "expires_at": "2020-01-01T00:00:00Z"
+            }))
+            orig = paper_auth_gate.GATE_FILE
+            paper_auth_gate.GATE_FILE = gate_file
+            result = paper_auth_gate.check()
+            assert not result["authorized"]
+            paper_auth_gate.GATE_FILE = orig
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
 
     def test_gate_has_proper_structure(self):
         result = paper_auth_gate.check()

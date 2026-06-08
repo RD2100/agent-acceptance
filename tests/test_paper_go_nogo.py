@@ -7,6 +7,15 @@ sys.path.insert(0, str(REPO / "scripts"))
 import paper_go_nogo
 
 class TestPaperGoNogo:
+    def setup_method(self):
+        import paper_auth_gate
+        self.orig_gate = paper_auth_gate.GATE_FILE
+        paper_auth_gate.GATE_FILE = Path("/nonexistent/auth.json")
+
+    def teardown_method(self):
+        import paper_auth_gate
+        paper_auth_gate.GATE_FILE = self.orig_gate
+
     def test_default_is_nogo(self):
         r = paper_go_nogo.check()
         assert not r["go"], "Must be NOGO by default"

@@ -1,0 +1,12 @@
+full_paper_text_stored: false
+full_section_text_stored: false
+raw_paper_text_written_to_memory: false
+external_upload_performed: false
+web_gpt_called_by_runner: false
+live_cdp_used_by_runner: false
+output_scope: structural_diagnosis_and_revision_blueprint_only
+no_full_text_in_evidence_pack: true
+no_paper_content_in_memory: true
+no_paper_content_in_BOOT_CONTEXT: true
+no_paper_content_in_PROJECT_HISTORY: true
+tests_pass: true (296)
