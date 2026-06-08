@@ -15,7 +15,10 @@
     "dev-frame-opencode": "5/5 monorepo smoke",
     "codegraph": "tsc 0 errors, fork pool stable"
   },
-  "scripts_built": 25,
+  "scripts_built": 26,
   "dirty_baseline_protected": true,
-  "push_successful": true
+  "push_successful": true,
+  "release_status": "final",
+  "ci_gate": "5/5 PASS",
+  "finalized_at": "2026-06-08T05:04:00Z"
 }
