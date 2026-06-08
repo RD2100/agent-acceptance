@@ -1,0 +1,21 @@
+{
+  "release_id": "v0.3.0-rc1",
+  "timestamp": "2026-06-08T04:51:47.464847+00:00",
+  "previous": "v0.2.0-rc1",
+  "highlights": [
+    "Paper C4 pipeline: section review + revision blueprint + utility eval (5 scripts)",
+    "Pre-submission gate chain: transaction -> pre-gate -> linter -> verify_gpt_reply (4 scripts)",
+    "P0 rules codified: GPT reply binding guard + Shell health check",
+    "devframe-control-plane CI green (68 passed + 3 xfail)",
+    "8 GPT-accepted task groups"
+  ],
+  "test_health": {
+    "agent-acceptance": "296 PASS",
+    "devframe-control-plane": "68+3xfail (CI green)",
+    "dev-frame-opencode": "5/5 monorepo smoke",
+    "codegraph": "tsc 0 errors, fork pool stable"
+  },
+  "scripts_built": 25,
+  "dirty_baseline_protected": true,
+  "push_successful": true
+}
