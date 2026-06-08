@@ -1,0 +1,12 @@
+task_id: USER-PILOT-C4-002
+paper_project_type: dissertation
+paper_title: "[AUTHORIZED] Dissertation Pilot — Section 2"
+target_section_name: "Related Work — Comparative Analysis"
+section_purpose: "Compare existing approaches and identify positioning"
+research_question: "How does the proposed approach differ from [REDACTED] and [REDACTED]?"
+argument_outline: "1) Taxonomy of existing approaches 2) Strengths and weaknesses 3) Gap analysis 4) Positioning of proposed work"
+known_problems: "Too many approaches listed; needs focus on 3-5 most relevant"
+desired_output: "Tighten comparative analysis to 3-5 key approaches with clear differentiation"
+privacy_mode: sanitized_section
+authorization_ref: "USER-AUTH-2026-PILOT-001"
+section_content_sanitized: "Previous work in [REDACTED] has focused on [REDACTED]. Smith (2023) proposed [REDACTED] while Jones (2024) extended this to [REDACTED]. However, neither address [REDACTED] which is the focus of this study."
