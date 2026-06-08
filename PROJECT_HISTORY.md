@@ -727,4 +727,26 @@ implementation_commit: "52487a2f"
 pushed_to_github: false
 ```
 
+## Batch Review Acceptance Binding (2026-06-08)
+
+Status: Batch review R3. Multiple tasks accepted by web GPT with captured replies.
+
+```yaml
+batch_id: BATCH-FINAL-20260608
+gpt_reply_source: "GPT conversation 6a23dd8c, replies 55-57"
+gpt_reply_55_sha256: "549a924bbed73aa17438eb48f29a91e3..."
+gpt_reply_56_sha256: "698a09386368732001b4cdd324dbef0d..."
+overall_verdict: >
+  TASKSPEC-VALIDATOR: accepted_with_limitation
+  INFRASTRUCTURE-SCRIPTS: accepted_with_limitation
+  PAPER-SAFETY: accepted_with_limitation
+  CONTROL-PLANE-SCRIPTS: accepted_with_limitation
+  CONTROL-PLANE-BYPASS: accepted_with_limitation
+  REVIEW-QUEUE: accepted_with_limitation
+  CODEGRAPH-FORK-POOL: review_unverified
+evidence_pack: evidence_packs/batch-final-20260608/final-batch-r3.zip
+whole_dirty_worktree_accepted: false
+p0_rule_applied: "GPT replies captured with SHA256 before reporting verdict"
+```
+
 END_OF_PROJECT_HISTORY
