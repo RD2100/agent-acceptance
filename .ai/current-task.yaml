@@ -117,6 +117,7 @@ write_set:
   - "tests/test_smoke_suite.py"
   - "SESSION_REPORT.md"
   - "tests/test_bypass_checker.py"
+  - "RELEASE_CANDIDATE_v0.2.0-rc1.json"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
