@@ -54,5 +54,7 @@
     "smoke": "9/9 PASS",
     "manifest_consistent": true,
     "status": "PASS"
-  }
+  },
+  "release_status": "final",
+  "finalized_at": "2026-06-08T02:15:08.104344+00:00"
 }
