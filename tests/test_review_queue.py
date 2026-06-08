@@ -108,7 +108,7 @@ class TestTicketLifecycle:
         reply = Path(self.tmp) / "blocked_r.txt"
         reply.write_text("overall_judgment: blocked\nEND_OF_GPT_RESPONSE")
         t1 = rq.record_gpt_reply(t1["ticket_id"], "blocked", str(reply))
-        assert t1["status"] == "gpt_replied"
+        assert t1["status"] == "blocked"
         t2 = rq.submit_ticket(t2["ticket_id"], "http://y.com")
         assert t2["status"] == "submitted"
 
