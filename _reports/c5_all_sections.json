@@ -1,0 +1,1556 @@
+{
+  "必然逻辑": {
+    "section_name": "必然逻辑",
+    "paragraph_count": 36,
+    "total_chars": 3646,
+    "paragraph_diagnoses": [
+      {
+        "index": 1,
+        "char_count": 174,
+        "functions": [
+          "opening"
+        ],
+        "diagnosis": [
+          "开场段落——应承担问题引入或背景铺垫功能"
+        ],
+        "citation_count": 0,
+        "policy_term_density": 8
+      },
+      {
+        "index": 2,
+        "char_count": 108,
+        "functions": [
+          "definitional"
+        ],
+        "diagnosis": [
+          "第二段通常承担核心概念界定功能"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 3,
+        "char_count": 116,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 4,
+        "char_count": 131,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 2,
+        "policy_term_density": null
+      },
+      {
+        "index": 5,
+        "char_count": 78,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(78字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 6,
+        "char_count": 177,
+        "functions": [
+          "conclusion"
+        ],
+        "diagnosis": [],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 7,
+        "char_count": 119,
+        "functions": [
+          "evidence"
+        ],
+        "diagnosis": [
+          "包含实证数据或案例引用"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 8,
+        "char_count": 101,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 9,
+        "char_count": 134,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 10,
+        "char_count": 133,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 11,
+        "char_count": 86,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(86字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 12,
+        "char_count": 110,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 13,
+        "char_count": 99,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(99字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 14,
+        "char_count": 74,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(74字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 15,
+        "char_count": 140,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 16,
+        "char_count": 69,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(69字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 17,
+        "char_count": 153,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 18,
+        "char_count": 81,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(81字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 19,
+        "char_count": 62,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(62字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 20,
+        "char_count": 61,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(61字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 21,
+        "char_count": 149,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 22,
+        "char_count": 99,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(99字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 23,
+        "char_count": 83,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(83字)——论证展开不充分"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 24,
+        "char_count": 60,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(60字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 25,
+        "char_count": 61,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(61字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 26,
+        "char_count": 58,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(58字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 27,
+        "char_count": 100,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 28,
+        "char_count": 109,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 29,
+        "char_count": 190,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 2,
+        "policy_term_density": null
+      },
+      {
+        "index": 30,
+        "char_count": 80,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(80字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 31,
+        "char_count": 89,
+        "functions": [
+          "underdeveloped",
+          "conclusion"
+        ],
+        "diagnosis": [
+          "段落过短(89字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 32,
+        "char_count": 69,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(69字)——论证展开不充分"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 33,
+        "char_count": 71,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(71字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 34,
+        "char_count": 62,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(62字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 35,
+        "char_count": 62,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(62字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 36,
+        "char_count": 78,
+        "functions": [
+          "closing",
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "结尾段落——应承担总结或过渡功能",
+          "段落过短(78字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      }
+    ],
+    "function_distribution": {
+      "opening": 1,
+      "definitional": 1,
+      "expository": 12,
+      "underdeveloped": 20,
+      "conclusion": 2,
+      "evidence": 1,
+      "closing": 1
+    },
+    "structure_issues": [],
+    "summary": "本节共36段，总字数约3626字。论证功能分布：{\"opening\": 1, \"definitional\": 1, \"expository\": 12, \"underdeveloped\": 20, \"conclusion\": 2, \"evidence\": 1, \"closing\": 1}。",
+    "analyzed_at": "2026-06-08T06:48:20.149425+00:00"
+  },
+  "内在张力": {
+    "section_name": "内在张力",
+    "paragraph_count": 40,
+    "total_chars": 3908,
+    "paragraph_diagnoses": [
+      {
+        "index": 1,
+        "char_count": 104,
+        "functions": [
+          "opening"
+        ],
+        "diagnosis": [
+          "开场段落——应承担问题引入或背景铺垫功能"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 2,
+        "char_count": 182,
+        "functions": [
+          "definitional",
+          "citation_dense"
+        ],
+        "diagnosis": [
+          "第二段通常承担核心概念界定功能",
+          "引用密集(3处)——确认非简单堆砌"
+        ],
+        "citation_count": 3,
+        "policy_term_density": null
+      },
+      {
+        "index": 3,
+        "char_count": 77,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(77字)——论证展开不充分"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 4,
+        "char_count": 58,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(58字)——论证展开不充分"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 5,
+        "char_count": 86,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(86字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 6,
+        "char_count": 55,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(55字)——论证展开不充分"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 7,
+        "char_count": 75,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(75字)——论证展开不充分"
+        ],
+        "citation_count": 2,
+        "policy_term_density": null
+      },
+      {
+        "index": 8,
+        "char_count": 103,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 9,
+        "char_count": 56,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(56字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 10,
+        "char_count": 77,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(77字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 11,
+        "char_count": 120,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 12,
+        "char_count": 123,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 13,
+        "char_count": 151,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 14,
+        "char_count": 129,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 15,
+        "char_count": 83,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(83字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 16,
+        "char_count": 111,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 17,
+        "char_count": 59,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(59字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 18,
+        "char_count": 65,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(65字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 19,
+        "char_count": 97,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(97字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 20,
+        "char_count": 93,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(93字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 21,
+        "char_count": 134,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 22,
+        "char_count": 116,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 23,
+        "char_count": 115,
+        "functions": [
+          "transition",
+          "counterpoint"
+        ],
+        "diagnosis": [
+          "包含转折或对立论点"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 24,
+        "char_count": 93,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(93字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 25,
+        "char_count": 182,
+        "functions": [
+          "counterpoint"
+        ],
+        "diagnosis": [
+          "包含转折或对立论点"
+        ],
+        "citation_count": 2,
+        "policy_term_density": null
+      },
+      {
+        "index": 26,
+        "char_count": 153,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 27,
+        "char_count": 85,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(85字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 28,
+        "char_count": 111,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 29,
+        "char_count": 94,
+        "functions": [
+          "underdeveloped",
+          "counterpoint"
+        ],
+        "diagnosis": [
+          "段落过短(94字)——论证展开不充分",
+          "包含转折或对立论点"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 30,
+        "char_count": 61,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(61字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 31,
+        "char_count": 89,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(89字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 32,
+        "char_count": 53,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(53字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 33,
+        "char_count": 122,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 2,
+        "policy_term_density": null
+      },
+      {
+        "index": 34,
+        "char_count": 58,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(58字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 35,
+        "char_count": 107,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 36,
+        "char_count": 53,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(53字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 37,
+        "char_count": 97,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(97字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 38,
+        "char_count": 53,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(53字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 39,
+        "char_count": 140,
+        "functions": [
+          "counterpoint"
+        ],
+        "diagnosis": [
+          "包含转折或对立论点"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 40,
+        "char_count": 66,
+        "functions": [
+          "closing",
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "结尾段落——应承担总结或过渡功能",
+          "段落过短(66字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      }
+    ],
+    "function_distribution": {
+      "opening": 1,
+      "definitional": 1,
+      "citation_dense": 1,
+      "underdeveloped": 23,
+      "expository": 12,
+      "transition": 1,
+      "counterpoint": 4,
+      "closing": 1
+    },
+    "structure_issues": [],
+    "summary": "本节共40段，总字数约3886字。论证功能分布：{\"opening\": 1, \"definitional\": 1, \"citation_dense\": 1, \"underdeveloped\": 23, \"expository\": 12, \"transition\": 1, \"counterpoint\": 4, \"closing\": 1}。",
+    "analyzed_at": "2026-06-08T06:48:20.152425+00:00"
+  },
+  "平衡之道": {
+    "section_name": "平衡之道",
+    "paragraph_count": 47,
+    "total_chars": 10054,
+    "paragraph_diagnoses": [
+      {
+        "index": 1,
+        "char_count": 128,
+        "functions": [
+          "opening"
+        ],
+        "diagnosis": [
+          "开场段落——应承担问题引入或背景铺垫功能"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 2,
+        "char_count": 105,
+        "functions": [
+          "definitional"
+        ],
+        "diagnosis": [
+          "第二段通常承担核心概念界定功能"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 3,
+        "char_count": 70,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(70字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 4,
+        "char_count": 56,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(56字)——论证展开不充分"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 5,
+        "char_count": 82,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(82字)——论证展开不充分"
+        ],
+        "citation_count": 2,
+        "policy_term_density": null
+      },
+      {
+        "index": 6,
+        "char_count": 63,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(63字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 7,
+        "char_count": 90,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(90字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 8,
+        "char_count": 79,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(79字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 9,
+        "char_count": 106,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 10,
+        "char_count": 74,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(74字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 11,
+        "char_count": 71,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(71字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 12,
+        "char_count": 66,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(66字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 13,
+        "char_count": 107,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 14,
+        "char_count": 59,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(59字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 15,
+        "char_count": 243,
+        "functions": [
+          "prescriptive"
+        ],
+        "diagnosis": [
+          "包含规范性/政策建议表述"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 16,
+        "char_count": 145,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 17,
+        "char_count": 62,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(62字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 18,
+        "char_count": 54,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(54字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 19,
+        "char_count": 68,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(68字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 20,
+        "char_count": 64,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(64字)——论证展开不充分"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 21,
+        "char_count": 63,
+        "functions": [
+          "underdeveloped",
+          "transition"
+        ],
+        "diagnosis": [
+          "段落过短(63字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 22,
+        "char_count": 84,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(84字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 23,
+        "char_count": 82,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(82字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 24,
+        "char_count": 99,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(99字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 25,
+        "char_count": 78,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(78字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 26,
+        "char_count": 144,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 2,
+        "policy_term_density": null
+      },
+      {
+        "index": 27,
+        "char_count": 160,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 28,
+        "char_count": 225,
+        "functions": [
+          "prescriptive"
+        ],
+        "diagnosis": [
+          "包含规范性/政策建议表述"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 29,
+        "char_count": 59,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(59字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 30,
+        "char_count": 200,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 31,
+        "char_count": 115,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 32,
+        "char_count": 102,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 33,
+        "char_count": 124,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 34,
+        "char_count": 84,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(84字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 35,
+        "char_count": 54,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(54字)——论证展开不充分"
+        ],
+        "citation_count": 1,
+        "policy_term_density": null
+      },
+      {
+        "index": 36,
+        "char_count": 87,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(87字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 37,
+        "char_count": 96,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(96字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 38,
+        "char_count": 88,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(88字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 39,
+        "char_count": 89,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(89字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 40,
+        "char_count": 142,
+        "functions": [
+          "transition",
+          "counterpoint"
+        ],
+        "diagnosis": [
+          "包含转折或对立论点"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 41,
+        "char_count": 75,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(75字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 42,
+        "char_count": 93,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(93字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 43,
+        "char_count": 120,
+        "functions": [
+          "expository"
+        ],
+        "diagnosis": [
+          "阐述性段落——功能不明确，建议明确论证角色"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 44,
+        "char_count": 76,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(76字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 45,
+        "char_count": 97,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(97字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 46,
+        "char_count": 84,
+        "functions": [
+          "underdeveloped"
+        ],
+        "diagnosis": [
+          "段落过短(84字)——论证展开不充分"
+        ],
+        "citation_count": 0,
+        "policy_term_density": null
+      },
+      {
+        "index": 47,
+        "char_count": 5519,
+        "functions": [
+          "closing",
+          "overlong",
+          "prescriptive",
+          "citation_dense"
+        ],
+        "diagnosis": [
+          "结尾段落——应承担总结或过渡功能",
+          "段落过长(5519字)——可能混合多个论点，建议拆分为2-3段",
+          "包含规范性/政策建议表述",
+          "引用密集(44处)——确认非简单堆砌",
+          "政策术语密度高(18次)——检查是否做了学理化转换"
+        ],
+        "citation_count": 44,
+        "policy_term_density": 18
+      }
+    ],
+    "function_distribution": {
+      "opening": 1,
+      "definitional": 1,
+      "underdeveloped": 31,
+      "expository": 10,
+      "prescriptive": 3,
+      "transition": 2,
+      "counterpoint": 1,
+      "closing": 1,
+      "overlong": 1,
+      "citation_dense": 1
+    },
+    "structure_issues": [],
+    "summary": "本节共47段，总字数约10031字。论证功能分布：{\"opening\": 1, \"definitional\": 1, \"underdeveloped\": 31, \"expository\": 10, \"prescriptive\": 3, \"transition\": 2, \"counterpoint\": 1, \"closing\": 1, \"overlong\": 1, \"citation_dense\": 1}。",
+    "analyzed_at": "2026-06-08T06:48:20.160423+00:00"
+  }
+}
