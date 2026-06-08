@@ -25,10 +25,13 @@ def check():
     import paper_auth_gate
     checks["auth"] = paper_auth_gate.check()
 
-    # 2. Preflight — check output file for PASS
-    preflight_out = REPO / "_reports" / "paper_pilot_preflight_output.txt"
-    preflight_ok = preflight_out.exists() and "PREFLIGHT: PASS" in preflight_out.read_text(encoding="utf-8", errors="replace")
-    checks["preflight"] = preflight_ok
+    # 2. Preflight — validate structured result
+    preflight_json = REPO / "_reports" / "paper_pilot_preflight_output.json"
+    if preflight_json.exists():
+        preflight_data = _read_json(preflight_json)
+        checks["preflight"] = preflight_data is not None and preflight_data.get("status") == "PASS"
+    else:
+        checks["preflight"] = False
 
     # 3. Pilot runner — check result semantics
     pilot_json = REPO / "evidence_packs" / "paper-c3-dry-run" / "PILOT_RESULT.json"
@@ -36,11 +39,10 @@ def check():
     pilot_ok = pilot_data is not None and pilot_data.get("pilot") == "PASS"
     checks["pilot_runner"] = pilot_ok
 
-    # 4. Dry run packet — check result semantics
+    # 4. Dry run packet — enforce result semantics
     dr_json = REPO / "evidence_packs" / "paper-c3-dry-run" / "PILOT_RESULT.json"
     dr_data = _read_json(dr_json) if dr_json.exists() else None
-    dr_ok = dr_data is not None and not dr_data.get("all_gates_passed", True)
-    checks["dry_run_packet"] = True  # packet exists if we read JSON
+    checks["dry_run_packet"] = dr_ok = (dr_data is not None and not dr_data.get("all_gates_passed", True))
 
     all_ok = checks["auth"]["authorized"] and all(v for v in checks.values() if isinstance(v, bool))
     return {"go": all_ok, "checks": checks, "timestamp": datetime.now(timezone.utc).isoformat()}
