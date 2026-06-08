@@ -749,4 +749,20 @@ whole_dirty_worktree_accepted: false
 p0_rule_applied: "GPT replies captured with SHA256 before reporting verdict"
 ```
 
+## PAPER-C4-BOUNDED-SECTION-REVIEW-A1 Acceptance Binding (2026-06-08)
+
+Status: accepted_with_limitation (GPT R5, code proof inline verified).
+
+```yaml
+task_id: PAPER-C4-BOUNDED-SECTION-REVIEW-A1
+task_name: "Bounded paper section review workflow"
+overall_judgment: accepted_with_limitation
+review_rounds: 5
+evidence_pack: evidence_packs/paper-c4-section-review/closure-pack-r2.zip
+scope: "synthetic/sanitized section-level review only, no real paper ingestion"
+whole_dirty_worktree_accepted: false
+implementation_commit: "876e07b3"
+pushed_to_github: true
+```
+
 END_OF_PROJECT_HISTORY
