@@ -120,7 +120,12 @@ write_set:
   - "RELEASE_CANDIDATE_v0.2.0-rc1.json"
   - "scripts/verify_gpt_reply.py"
   - "tests/test_gpt_review_response_binding.py"
-
+  - "schemas/paper_c4_section_review_input.schema.json"
+  - "schemas/paper_c4_section_review_result.schema.json"
+  - "examples/paper_c4_section_review/*"
+  - "scripts/paper_c4_section_packet_validator.py"
+  - "scripts/paper_c4_section_review.py"
+  - "tests/test_paper_c4_section_review.py"
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
   - "archive/draft-hooks/pre-final.audit.ps1"

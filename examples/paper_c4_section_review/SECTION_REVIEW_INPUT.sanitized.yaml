@@ -1,0 +1,12 @@
+task_id: SANITIZED-C4-001
+paper_project_type: dissertation
+paper_title: "[REDACTED] Dissertation"
+target_section_name: "Methodology — Experimental Design"
+section_purpose: "Describe experimental setup for user study"
+research_question: "Does the proposed intervention improve task completion time?"
+argument_outline: "1) Participants and sampling 2) Task design 3) Measurement instruments 4) Statistical analysis plan"
+known_problems: "Sample size may be insufficient for subgroup analysis"
+desired_output: "Validate experimental design and suggest power analysis adjustments"
+privacy_mode: sanitized_section
+authorization_ref: "USER-AUTH-2026-001"
+section_content_sanitized: "Participants were recruited from [REDACTED]. The task involved [REDACTED]. Measurements were collected using [REDACTED] instruments."
