@@ -49,6 +49,10 @@ def verify(reply_path: str) -> dict:
     # 5. next_task_authorization if accepted
     checks["has_next_task_auth"] = "next_task_authorization:" in content.lower()
 
+    # Accepted verdicts must include next_task_authorization
+    if judgment in ("accepted", "accepted_with_limitation") and not checks["has_next_task_auth"]:
+        errors.append("accepted verdict missing next_task_authorization")
+
     valid = len(errors) == 0 and checks["has_end_marker"] and judgment is not None
 
     return {
