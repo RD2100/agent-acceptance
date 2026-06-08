@@ -46,5 +46,13 @@
     "bypass_approved_committed": false,
     "push_successful": true,
     "ci_green": true
+  },
+  "clean_room_verification": {
+    "verified_at": "2026-06-08T02:12:15.290806+00:00",
+    "clone_source": "git@github.com:RD2100/agent-acceptance.git tag v0.2.0-rc1",
+    "tests": "275 PASS",
+    "smoke": "9/9 PASS",
+    "manifest_consistent": true,
+    "status": "PASS"
   }
 }
