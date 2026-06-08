@@ -1,0 +1,15 @@
+## M10 First-Pass Review
+Section: 三、高等教育提质扩容的平衡之道
+Subsection: （一）坚守从优先发展到协同发力的价值平衡
+Chars: 1396, Citations: 3
+
+### Claude Diagnosis
+Issues: ['段落过长问题突出：1/1段超过800字']
+Functions: {'opening': 1, 'overlong': 1, 'prescriptive': 1, 'citation_dense': 1}
+
+### Strategy (3 suggestions)
+- [compression] 该段1326字，建议压缩至663字以内。方法：提取1个核心论点，将支撑性论证移至脚注或附录
+- [evidence_balance] 实证段落占比偏低。建议每3段至少包含1处数据引用或案例支撑
+- [prescriptive_balance] 规范性/政策建议段落占比100%，偏高。建议压缩至总段数的30%以内，将腾出的空间用于理论分析和实证验证
+
+Review: P0/P1 issues? Return verdict. END_OF_GPT_RESPONSE

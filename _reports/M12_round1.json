@@ -1,0 +1,67 @@
+{
+  "diagnosis": {
+    "section_name": "三、高等教育提质扩容的平衡之道",
+    "paragraph_count": 1,
+    "total_chars": 7027,
+    "paragraph_diagnoses": [
+      {
+        "index": 1,
+        "char_count": 6847,
+        "functions": [
+          "opening",
+          "overlong",
+          "prescriptive",
+          "citation_dense"
+        ],
+        "diagnosis": [
+          "开场段落——应承担问题引入或背景铺垫功能",
+          "段落过长(6847字)——可能混合多个论点，建议拆分为2-3段",
+          "包含规范性/政策建议表述",
+          "引用密集(46处)——确认非简单堆砌",
+          "政策术语密度高(42次)——检查是否做了学理化转换"
+        ],
+        "citation_count": 46,
+        "policy_term_density": 42
+      }
+    ],
+    "function_distribution": {
+      "opening": 1,
+      "overlong": 1,
+      "prescriptive": 1,
+      "citation_dense": 1
+    },
+    "structure_issues": [
+      "段落过长问题突出：1/1段超过800字"
+    ],
+    "summary": "本节共1段，总字数约6847字。结构问题：段落过长问题突出：1/1段超过800字论证功能分布：{\"opening\": 1, \"overlong\": 1, \"prescriptive\": 1, \"citation_dense\": 1}。",
+    "analyzed_at": "2026-06-08T09:11:17.519350+00:00"
+  },
+  "strategy": {
+    "task_id": "unknown",
+    "section_name": "三、高等教育提质扩容的平衡之道",
+    "suggestions": [
+      {
+        "type": "compression",
+        "target": "P1",
+        "current_chars": 6847,
+        "strategy": "该段6847字，建议压缩至3423字以内。方法：提取1个核心论点，将支撑性论证移至脚注或附录",
+        "example": null
+      },
+      {
+        "type": "evidence_balance",
+        "current": 0,
+        "target": 1,
+        "strategy": "实证段落占比偏低。建议每3段至少包含1处数据引用或案例支撑"
+      },
+      {
+        "type": "prescriptive_balance",
+        "current": 1,
+        "ratio": "100%",
+        "strategy": "规范性/政策建议段落占比100%，偏高。建议压缩至总段数的30%以内，将腾出的空间用于理论分析和实证验证"
+      }
+    ],
+    "suggestion_count": 3,
+    "generated_at": "2026-06-08T09:11:17.519350+00:00",
+    "disclaimer": "仅提供修改策略和模板，不生成具体改写文本。用户需自行完成修改。"
+  }
+}
