@@ -12,6 +12,17 @@
 4. Web GPT = 审查者/决策者，Claude Code = 执行者。CDP = 仅提交 evidence pack。
 5. PROJECT_HISTORY.md 必须包含 END_OF_PROJECT_HISTORY 标记。
 
+### P0 规则：Shell 健康检查（2026-06-08 GPT 诊断新增）
+
+**一句话：关键操作必须在验证过的健康 shell 中执行。不要在已饱和的 shell 中修修补补。**
+
+1. 长会话上限 3 小时，超时主动换新 shell
+2. 关键操作（CDP 提交、GPT 回复捕获、evidence pack 生成、测试、发布、push）前，必须先运行 `pwd && date && git status --short` 确认 shell 响应
+3. 任何预期超过 30 秒的命令必须前台运行、输出落盘、设超时
+4. Git 远程操作（push/fetch/ls-remote）必须隔离，超时不得重复尝试
+5. 饱和标志（echo 进后台、10+ 后台任务、git 反复超时）出现时，立即停止当前回路，开新 shell
+6. 同一时间最多 1 个活跃的长运行子进程
+
 ### P0 规则：GPT 审查回复绑定（2026-06-08 新增）
 
 **一句话：未读取 GPT 回复，不得报告 verdict。**
