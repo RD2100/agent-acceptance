@@ -25,7 +25,7 @@ def check():
         "real_paper_full_text_allowed", "external_upload_allowed",
         "live_cdp_allowed", "memory_write_with_paper_content",
         "real_paper_text", "private_user_text",
-        "paper_excerpt_allowed", "raw_paper_text",
+        "paper_excerpt_allowed", "raw_paper_text", "paper_excerpt",
     }
     for field in forbidden_fields:
         if gate.get(field):
