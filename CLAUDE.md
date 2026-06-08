@@ -12,6 +12,17 @@
 4. Web GPT = 审查者/决策者，Claude Code = 执行者。CDP = 仅提交 evidence pack。
 5. PROJECT_HISTORY.md 必须包含 END_OF_PROJECT_HISTORY 标记。
 
+### P0 规则：GPT 审查回复绑定（2026-06-08 新增）
+
+**一句话：未读取 GPT 回复，不得报告 verdict。**
+
+1. CDP 提交 evidence pack 后，必须等待 GPT 响应、捕获回复全文、提取 overall_judgment
+2. 不得从记忆、假设、或"提交成功"推断审查结果
+3. 不得将旧的 blocked 状态当作当前 verdict（如果存在更新的 GPT 响应）
+4. 不得将自己的总结当作 GPT 的 verdict
+5. 只有 GPT 回复包含 END_OF_GPT_RESPONSE 且 overall_judgment 为 accepted 或 accepted_with_limitation，才可进入 binding/commit/next-task
+6. 所有 binding 记录必须包含 evidence_pack_sha256 + gpt_reply_sha256
+
 ## 禁止
 
 - 跳过 GPT 审查
