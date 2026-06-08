@@ -126,6 +126,8 @@ write_set:
   - "scripts/paper_c4_section_packet_validator.py"
   - "scripts/paper_c4_section_review.py"
   - "tests/test_paper_c4_section_review.py"
+  - "scripts/paper_c4_revision_blueprint.py"
+  - "scripts/evidence_pack_linter.py"
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
   - "archive/draft-hooks/pre-final.audit.ps1"
