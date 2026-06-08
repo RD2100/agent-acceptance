@@ -119,6 +119,7 @@ write_set:
   - "tests/test_bypass_checker.py"
   - "RELEASE_CANDIDATE_v0.2.0-rc1.json"
   - "scripts/verify_gpt_reply.py"
+  - "tests/test_gpt_review_response_binding.py"
 
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"
