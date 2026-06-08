@@ -1,0 +1,72 @@
+{
+  "diagnosis": {
+    "section_name": "一、高等教育提质扩容的必然逻辑",
+    "paragraph_count": 1,
+    "total_chars": 1057,
+    "paragraph_diagnoses": [
+      {
+        "index": 1,
+        "char_count": 995,
+        "functions": [
+          "opening",
+          "overlong",
+          "prescriptive"
+        ],
+        "diagnosis": [
+          "开场段落——应承担问题引入或背景铺垫功能",
+          "段落过长(995字)——可能混合多个论点，建议拆分为2-3段",
+          "包含规范性/政策建议表述",
+          "警告：本段超过300字但无引用标记——可能需要补充文献支撑",
+          "政策术语密度高(24次)——检查是否做了学理化转换"
+        ],
+        "citation_count": 0,
+        "policy_term_density": 24
+      }
+    ],
+    "function_distribution": {
+      "opening": 1,
+      "overlong": 1,
+      "prescriptive": 1
+    },
+    "structure_issues": [
+      "段落过长问题突出：1/1段超过800字",
+      "1个长段落缺少引用支撑"
+    ],
+    "summary": "本节共1段，总字数约995字。结构问题：段落过长问题突出：1/1段超过800字；1个长段落缺少引用支撑论证功能分布：{\"opening\": 1, \"overlong\": 1, \"prescriptive\": 1}。",
+    "analyzed_at": "2026-06-08T08:45:18.360034+00:00"
+  },
+  "strategy": {
+    "task_id": "unknown",
+    "section_name": "一、高等教育提质扩容的必然逻辑",
+    "suggestions": [
+      {
+        "type": "compression",
+        "target": "P1",
+        "current_chars": 995,
+        "strategy": "该段995字，建议压缩至497字以内。方法：提取1个核心论点，将支撑性论证移至脚注或附录",
+        "example": null
+      },
+      {
+        "type": "evidence_gap",
+        "target": "P1",
+        "count": 1,
+        "strategy": "发现1个长段落缺少引用。建议：(1)每个事实性陈述补充1个文献支撑 (2)每个方法论选择补充1个方法论文献 (3)每个对立观点补充1个对比文献"
+      },
+      {
+        "type": "evidence_balance",
+        "current": 0,
+        "target": 1,
+        "strategy": "实证段落占比偏低。建议每3段至少包含1处数据引用或案例支撑"
+      },
+      {
+        "type": "prescriptive_balance",
+        "current": 1,
+        "ratio": "100%",
+        "strategy": "规范性/政策建议段落占比100%，偏高。建议压缩至总段数的30%以内，将腾出的空间用于理论分析和实证验证"
+      }
+    ],
+    "suggestion_count": 4,
+    "generated_at": "2026-06-08T08:45:18.360034+00:00",
+    "disclaimer": "仅提供修改策略和模板，不生成具体改写文本。用户需自行完成修改。"
+  }
+}
