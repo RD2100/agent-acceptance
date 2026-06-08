@@ -1,0 +1,61 @@
+severity_issues: []
+
+remaining_nonblocking_issues:
+
+id: M3-P2-01
+severity: P2
+status: accepted_limitation
+issue: "机制链已建立，但仍需作者在实际正文中完成学术化展开"
+detail: "Round 3 已明确双向机制，但目前仍是结构方案，不是最终正文。作者写作时需要避免把机制写成口号式判断。"
+
+id: M3-P2-02
+severity: P2
+status: accepted_limitation
+issue: "引用功能地图已成立，但具体文献仍需人工补充"
+detail: "5 类引用功能已经满足关闭 P1 的要求，但不能视为完成真实文献配置。后续需要作者补入可检索、真实、匹配的政策文件、数据与高等教育研究文献。"
+
+id: M3-P2-03
+severity: P2
+status: accepted_limitation
+issue: "正文长度与段落拆分仍需人工控制"
+detail: "三单元结构合理，但实际写作时应避免重新形成一个超长段落，建议拆为 2—3 个自然段。"
+
+verdict: pass_with_limitation
+
+close_module: true
+
+p1_resolution:
+M3-P1-01:
+status: resolved
+reason: "已作出标题/功能决策：保留原标题，并将内容改为正面论证实然层面的统一性。"
+
+M3-P1-02:
+status: resolved
+reason: "已明确双向机制链：规模扩张倒逼质量提升，质量提升为扩容提供合法性、承载力和可持续性。"
+
+M3-P1-03:
+status: resolved
+reason: "已形成 5 类引用功能地图：政策依据、研究依据、比较依据、数据依据、理论依据。"
+
+module_closure_decision:
+module_id: M3
+status: closed_as_pass_with_limitation
+reason: >
+Round 3 已直接回应前两轮遗留的 P1 问题。它不再停留在通用压缩和泛泛补引用，
+而是完成了标题功能决策、机制链重建、过渡关系设计和引用功能分类。
+因此 M3 可以关闭，不需要进入 human_required。
+
+approved_revision_structure:
+unit_1: "统一性命题：说明提质与扩容不是简单并列，而是现实发展中的相互规定关系。"
+unit_2: "双向机制：规模扩张倒逼质量保障与治理改进；质量提升增强扩容的合法性、承载力和可持续性。"
+unit_3: "向第二节过渡：统一性并不消除现实张力，反而构成公平与效率、普惠与卓越、统一与分类等张力的分析前提。"
+
+next_action:
+recommended: "进入 M3 人工正文修订，而不是继续 GPT-Claude 循环。"
+constraints:
+- "不得生成整节代写稿。"
+- "不得虚构具体参考文献。"
+- "作者应基于三单元结构自行改写正文。"
+- "补充真实可检索文献后，再做 citation QA。"
+
+END_OF_GPT_RESPONSE
