@@ -20,10 +20,12 @@ def generate(output_dir=None, task_id="paper-c3-dry-run"):
 
     ts = datetime.now(timezone.utc).isoformat()
     files = {
-        "DRY_RUN_REPORT.md": f"# {task_id.upper()} Dry Run Report\n\nSynthetic-only. No real paper. All gates passed.\nGenerated: {ts}\n",
+        "DRY_RUN_REPORT.md": f"# {task_id.upper()} Dry Run Report\n\nSynthetic-only. No real paper. Auth gate: CLOSED (dry run).\nGenerated: {ts}\n",
         "PILOT_RESULT.json": json.dumps({
             "task_id": task_id, "pilot": "PASS", "preflight": "PASS",
             "auth_gate": "CLOSED", "timestamp": ts,
+            "warning": "auth_gate is CLOSED — this is a dry run, not a real-paper pilot.",
+            "all_gates_passed": False,
         }, indent=2),
         "SYNTHETIC_FIXTURES.md": "# Synthetic Fixtures\n\nPlaceholder paper metadata. No real paper content.\n",
     }

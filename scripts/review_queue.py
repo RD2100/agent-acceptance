@@ -15,8 +15,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 QUEUE_DIR = REPO_ROOT / ".ai" / "review_queue"
 
 STATES = ["queued", "submitted", "gpt_replied", "accepted", "blocked", "closed"]
-TERMINAL_STATES = {"accepted", "closed"}
-ACTIVE_STATES = {"submitted", "gpt_replied", "blocked"}
+TERMINAL_STATES = {"accepted", "closed", "blocked"}
+ACTIVE_STATES = {"submitted", "gpt_replied"}
 
 # One active submission at a time
 MAX_ACTIVE = 1
@@ -148,16 +148,22 @@ def record_gpt_reply(ticket_id: str, verdict: str, reply_path: str, blocker_issu
         print(f"ERROR: reply file not found: {reply_path}")
         sys.exit(1)
 
+    # Validate GPT reply before recording
+    validation = validate_gpt_reply(str(reply_file))
+    if not validation["valid"]:
+        print(f"ERROR: GPT reply validation failed: {validation['error']}")
+        sys.exit(1)
+
     ticket["status"] = "gpt_replied"
     ticket["gpt_replied_at"] = _now()
-    ticket["gpt_verdict"] = verdict
+    ticket["gpt_verdict"] = validation["verdict"]
     ticket["gpt_reply_path"] = str(reply_file.resolve())
     ticket["gpt_reply_sha256"] = hashlib.sha256(reply_file.read_bytes()).hexdigest()
     if blocker_issues:
         ticket["blocking_issues"] = blocker_issues
     ticket["round"] = ticket.get("round", 1)
     _save_ticket(ticket)
-    print(f"GPT REPLIED: {ticket_id} verdict={verdict}")
+    print(f"GPT REPLIED: {ticket_id} verdict={validation['verdict']}")
     return ticket
 
 

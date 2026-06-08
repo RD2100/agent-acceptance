@@ -64,12 +64,14 @@ def main():
         (paper_dir / "PRIVACY_ATTESTATION.yaml").write_text("synthetic_only: true\nno_real_data: true\n", encoding="utf-8")
         (paper_dir / "REDACTION_REPORT.yaml").write_text("redacted: none\nreason: synthetic_only\n", encoding="utf-8")
 
-        # 2. Run validator on synthetic input (synthetic-only: schema warnings expected)
+        # 2. Run validator on synthetic input — must PASS (exit 0)
         r = subprocess.run([sys.executable, "scripts/validate_paper_task.py", tmp], capture_output=True, text=True, cwd=str(REPO), timeout=30)
-        validator_ran = "result" in (r.stdout or "") and "source_type" in (r.stdout or "")
-        ok &= validator_ran
+        validator_pass = r.returncode == 0
+        ok &= validator_pass
         print(f"\n>> 1. Paper validator on synthetic input")
-        print(f"   Ran: {validator_ran}, Exit: {r.returncode}, Issues: {(r.stdout or '')[:100]}")
+        print(f"   Exit: {r.returncode}, {'PASS' if validator_pass else 'FAIL'}: {(r.stdout or '')[:200]}")
+        if not validator_pass:
+            print("   BLOCKED: Validator failed. Pilot cannot proceed.")
 
         # 3. ai_guard audit
         ok &= step("2. ai_guard audit", [sys.executable, "tools/ai_guard.py", "audit"], 60)
