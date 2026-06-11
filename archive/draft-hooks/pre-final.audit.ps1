@@ -73,7 +73,7 @@ $forbiddenReportPatterns = @(
     "npm install(ed)?",
     "pip install(ed)?",
     "skill-installer",
-    "bb_solidify_knowledge",
+    "memory_bridge_sync",
     "MCP config.*modif",
     "hook.*register",
     "git commit",

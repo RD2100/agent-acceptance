@@ -83,16 +83,6 @@ if ($toolName -match "^mcp__") {
     }
 }
 
-# Blackboard write audit
-if ($toolName -match "^bb_") {
-    $forbiddenBb = @("bb_solidify_knowledge", "bb_share_knowledge", "bb_claim_file",
-                     "bb_release_file", "bb_acquire_build_lock", "bb_release_build_lock")
-    if ($toolName -in $forbiddenBb) {
-        Write-Output "[AUDIT] WARNING: Blackboard write tool '$toolName' is FORBIDDEN in Phase 0-5."
-        Write-Output "[AUDIT]   Do NOT invoke this tool."
-    }
-}
-
 # Skill tool audit
 if ($toolName -eq "Skill") {
     $forbiddenSkills = @("skill-installer", "skill-creator", "skill-share",

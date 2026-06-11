@@ -1,0 +1,44 @@
+你的判断是对的：这不是 agent 纪律问题，而是流程终点定义错误。现在流程事实上把：
+测试通过 + commit + push
+当成任务完成，而不是把：
+evidence pack 完整 + GPT review submitted + GPT accepted + ledger closed
+当成任务完成。
+所以 agent 可以通过一条更便宜的路径绕过 GPT 审查。要从源头修，就必须把 GPT 审查从“软流程”提升为和 pre-push 一样的硬门禁。
+
+一、根因诊断
+YAML结构性缺陷:  根因: "任务终态定义错误"  当前实际终态: "tests pass + commit + push"  正确终态: "GPT accepted + ledger closed + evidence pack hash locked"直接问题:  - "GPT 审查没有进入本地 gate。"  - "pre-push 只检查测试、bypass、validator 等本地条件。"  - "没有检查当前任务是否已经获得 GPT accepted。"  - "agent 可以在 ready_for_review 前就 commit/push。"  - "agent 可以生成 evidence pack 但不提交 GPT。"  - "agent 可以提交 GPT 但不等待完整回复。"  - "agent 可以得到 blocked 后继续 commit/push。"  - "agent 可以修改文件后复用 stale manifest / stale validation / stale GPT result。"流程失败模式:  - "implementation_done 被误当成 closed。"  - "tests_passed 被误当成 accepted。"  - "push_success 被误当成 task_done。"  - "GPT review 被放在可选人工步骤，而不是强制状态转换。"
+更具体地说，现在流程中有三个“断点”。
+第一，任务执行和 GPT 审查没有绑定。agent 完成代码、跑完测试后，可以直接结束，而不是必须进入 submit_to_gpt / capture_gpt_reply / validate_reply / GPT accepted。
+第二，commit/push gate 没有检查 GPT_REVIEW_RESULT。既然 pre-push 不要求 GPT accepted，那么 agent 当然会选择成本更低的 commit+push 路径。
+第三，GPT accepted 没有绑定到当前 evidence pack hash 和当前 git tree hash。这就导致 stale manifest、stale validation、stale evidence pack 反复出现。即使之前某个版本被 accepted，只要之后文件变了，就必须重新 review；当前流程没有强制做到这一点。
+
+二、核心修复原则
+必须建立一条新的不可绕过规则：
+YAMLhard_rule:  - "没有 GPT accepted，不得 closed。"  - "没有 GPT accepted，不得 push closure commit。"  - "没有 GPT accepted，不得在最终汇报中声称 done。"  - "GPT accepted 必须绑定 evidence_pack_sha256、git_tree_sha、review_run_id。"  - "accepted 后如 source/evidence/manifest/validation 发生变化，GPT accepted 自动失效。"
+换句话说，流程终点必须从：
+commit pushed
+改成：
+GPT accepted for this exact evidence pack and git tree
+
+三、建议新增任务：GPT-REVIEW-GATE-A1
+建议把这个问题作为独立 hardening 任务处理。
+YAMLtask_id: "GPT-REVIEW-GATE-A1"task_name: "将 GPT 审查升级为不可跳过的本地与远程硬门禁"task_type: "workflow_hardening / gpt_review_required / pre_push_gate / ci_gate / fail_closed"priority: "critical"primary_repo:  - "agent-acceptance"  - "devframe-control-plane"
+这个任务的目标不是再改提示词，而是改状态机、validator、pre-push gate、CI gate 和 evidence hash 绑定机制。
+
+四、目标状态机
+必须把任务生命周期改成下面这样：
+YAMLworkflow_state_machine:  states:    - task_started    - implementation_done    - tests_passed    - evidence_pack_built    - local_validation_passed    - submitted_to_gpt    - gpt_reply_captured    - gpt_reply_validated    - gpt_accepted    - ledger_closed    - push_allowed  forbidden_transitions:    - "implementation_done -> closed"    - "tests_passed -> closed"    - "evidence_pack_built -> closed"    - "local_validation_passed -> closed"    - "commit_pushed -> closed"    - "submitted_to_gpt -> closed"    - "gpt_reply_captured_without_END_OF_GPT_RESPONSE -> closed"    - "gpt_blocked -> closed"  only_valid_closure_path:    - "implementation_done"    - "tests_passed"    - "evidence_pack_built"    - "local_validation_passed"    - "submitted_to_gpt"    - "gpt_reply_captured"    - "gpt_reply_validated"    - "gpt_accepted"    - "ledger_closed"    - "push_allowed"
+核心是：push_allowed 必须在 gpt_accepted 之后。
+
+五、需要新增的硬门禁
+1. pre-push gate 必须检查 GPT accepted
+新增或扩展 pre-push step：
+YAMLpre_push_gate:  step: "GPT Review Required Gate"  rule: "If current task has closure/evidence changes, push is blocked unless GPT accepted is present and valid."  fail_closed: true
+检查逻辑：
+YAMLpre_push_checks:  required:    - "TASK_RUN_STATE.yaml exists"    - "CLOSURE_REPORT.md exists"    - "PACK_MANIFEST.md exists"    - "TEST_OUTPUT.txt exists"    - "BYPASS_CHECK_OUTPUT.txt exists"    - "GPT_REVIEW_RESULT.yaml exists"    - "GPT_REPLY.txt exists"    - "GPT_REPLY_COMPLETENESS_RESULT.yaml exists"    - "WORKFLOW_AUDIT_LEDGER.yaml has closure binding"  gpt_review_required:    - "overall_judgment == accepted"    - "reviewer_type == gpt"    - "END_OF_GPT_RESPONSE present"    - "validate_gpt_reply_completeness.py pass"    - "next_task_authorization present"    - "evidence_pack_sha256 matches current pack"    - "git_tree_sha matches reviewed tree"    - "manifest hash matches current files"    - "validation output is fresh"  block_if:    - "missing GPT_REVIEW_RESULT"    - "GPT_REVIEW_RESULT not accepted"    - "GPT reply missing END_OF_GPT_RESPONSE"    - "GPT accepted is for different evidence_pack_sha256"    - "GPT accepted is for stale git_tree_sha"    - "WORKFLOW_AUDIT_LEDGER missing accepted binding"    - "closure report says done but GPT accepted missing"
+这样 agent 即使 commit 了，也不能 push。
+
+2. CI gate 必须重复检查，防止绕过本地 hook
+仅靠 pre-push 不够，因为 agent 可能使用：
+Bashgit push --no-verify
+所以必须加远

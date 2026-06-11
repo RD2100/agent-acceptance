@@ -1,0 +1,56 @@
+REVIEW_RUN_ID: "gpt-review-template-final-review-v1"
+template_version: "gpt-review-template-v1"
+task_type: "design_review"
+review_stage: "closure"
+overall_judgment: "blocked"
+reviewer_type: "gpt"
+contract_id: null
+contract_version: null
+evidence_pack:
+path: null
+sha256: null
+manifest_valid: false
+evidence_inspected:
+
+
+path: "GPT_REVIEW_PROMPT_TEMPLATE.md"
+sha256: "de4c590402b1470c334a9d81734117a264df542ff060f05d96bbb802d2250172"
+inspected: true
+role: "human_facing_template"
+
+
+path: "gpt_review_result.schema.json"
+sha256: "e3d350119618248050cf81fd7fdd298584b09b5eedab37318c0ed7a49ebb5945"
+inspected: true
+role: "machine_validation_schema"
+blocking_reasons:
+
+
+"The Markdown template says the base fields are mandatory and includes contract_id, contract_version, evidence_pack, review_unverified_reason, created_at, and task_type_specific in the required reply format, but the JSON Schema required list omits contract_id, contract_version, evidence_pack, review_unverified_reason, created_at, and task_type_specific. This creates a template/schema inconsistency. GPT_REVIEW_PROMPT_TEMPLATE gpt_review_result.schema"
+
+
+"The schema does not actually enforce task_type_specific to be keyed by the selected task_type. It only defines task_type_specific as a generic object, so the grouped-by-task_type design is documented but not machine-validated. gpt_review_result.schema"
+
+
+"The template quotes nullable placeholders such as contract_id, contract_version, evidence_pack.sha256, and review_unverified_reason. If filled as "null", YAML will parse them as strings rather than null values, while the schema expects true null to be valid. GPT_REVIEW_PROMPT_TEMPLATE"
+missing_evidence: []
+scope_violation: false
+fake_green_risk: false
+safety_boundaries_respected: true
+required_next_action: "Align the JSON Schema with the Markdown template by requiring the mandatory base fields, add task_type_specific validation keyed by task_type, and remove quotes around nullable placeholders in the template."
+allow_proceed: false
+review_unverified_reason: null
+created_at: "2026-06-06T22:00:00+09:00"
+rationale: "The design is very close and all major conceptual fixes are present in the template, but final acceptance is blocked because the human-facing template and machine schema are not yet equivalent. For a canonical GPT review standard, the schema must enforce the same mandatory base fields and task_type_specific grouping that the template requires."
+task_type_specific:
+design_review:
+design_completeness: "needs_more"
+template_completeness: "adequate"
+schema_completeness: "needs_more"
+template_schema_alignment: "no"
+task_type_enum_present: "yes"
+task_type_specific_grouped: "documented_but_not_schema_enforced"
+overall_judgment_standardized: "yes"
+evidence_inspected_hashes_supported: "yes"
+md_and_s
+

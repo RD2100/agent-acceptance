@@ -1,0 +1,5 @@
+下面这次应当合并成一个任务来做，不要拆成两个任务。因为 END_OF_GPT_RESPONSE 完整性标记 和 accepted 后 next_task_authorization 都属于 GPT 审查模板的强制输出协议，应该一起固化到 review template、schema、validator 和测试中。
+可以把任务命名为：
+YAMLtask_id: REVIEW-TEMPLATE-A2task_name: GPT 审查回复完整性标记与 accepted 后续任务授权强制化
+下面这份可以直接交给 agent。
+Markdown# TaskSpec — REVIEW-TEMPLATE-A2：GPT 审查回复完整性标记与 accepted 后续任务授权强制化## 1. 任务背景当前 workflow 已修复 capture_gpt_reply.py 的关键缺陷：capture_gpt_reply.py 现在必须等待 END_OF_GPT_RESPONSE 标记后才停止捕获，并在捕获后运行 validate_gpt_reply_completeness.py 验证。但是，仅靠 capture 脚本等待标记还不够。GPT 审查模板本身也必须强制要求每次审查回复末尾包含 END_OF_GPT_RESPONSE；如果是 handoff 文档或 handoff 确认类输出，则必须包含 END_OF_HANDOFF。同时，当前 GPT closure review 在 accepted 后经常只给出 accepted 结论，没有给出下一步任务计划，导致 agent 停在任务完成处，不知道接下来应执行什么。这说明 GPT 审

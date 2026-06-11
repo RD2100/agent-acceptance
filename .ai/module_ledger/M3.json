@@ -1,0 +1,50 @@
+{
+  "module_id": "M3",
+  "rounds": [
+    {
+      "round": 1,
+      "started_at": "2026-06-08T07:33:28.870661+00:00",
+      "issues": [
+        {
+          "issue_id": "M3-P1-01",
+          "severity": "P1",
+          "description": "Section function misalignment: claims 实然之境 but text is normative/prescriptive",
+          "source": "GPT",
+          "status": "open"
+        },
+        {
+          "issue_id": "M3-P1-02",
+          "severity": "P1",
+          "description": "Unified mechanism gap: mentions 内在统一性 without specifying mechanism",
+          "source": "GPT",
+          "status": "open"
+        },
+        {
+          "issue_id": "M3-P1-03",
+          "severity": "P1",
+          "description": "Citation credibility: 1057 chars, 0 citations, policy-language only",
+          "source": "GPT",
+          "status": "open"
+        }
+      ],
+      "status": "blocked",
+      "ended_at": "2026-06-08T07:38:29.372186+00:00",
+      "verdict_reason": "GPT: 3 P1 issues found"
+    },
+    {
+      "round": 1,
+      "started_at": "2026-06-08T07:34:31.069621+00:00",
+      "issues": [],
+      "status": "in_progress"
+    },
+    {
+      "round": 2,
+      "started_at": "2026-06-08T07:38:29.374188+00:00",
+      "issues": [],
+      "status": "in_progress"
+    }
+  ],
+  "status": "in_progress",
+  "created_at": "2026-06-08T07:33:28.870661+00:00",
+  "last_issue_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

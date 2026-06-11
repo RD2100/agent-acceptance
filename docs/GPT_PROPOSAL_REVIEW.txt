@@ -1,0 +1,123 @@
+review_result:
+overall_judgment: accepted_with_revisions
+proposal_understood: yes
+evidence_inspected:
+- file: proposal-gpt-review-template.md
+inspected: yes
+note: "The proposal defines a two-layer GPT review template with mandatory base fields and task-specific extensions. proposal-gpt-review-template"
+answers:
+1_base_fields_completeness:
+judgment: needs_more
+current_strengths:
+- "Base layer already includes core decision fields: REVIEW_RUN_ID, overall_judgment, reviewer_type, evidence_inspected, blocking_reasons, missing_evidence, scope_violation, fake_green_risk, required_next_action, allow_proceed, rationale."
+missing_fields:
+- "template_version: to prevent parser drift."
+- "task_type: to drive task_type_specific validation."
+- "review_stage: authorization | execution | closure | audit | handoff."
+- "contract_id and contract_version: especially for agent-acceptance reviews."
+- "evidence_pack_id or evidence_pack_sha256: to bind judgment to a specific pack."
+- "safety_boundaries_respected: yes | no."
+- "review_unverified_reason: required when overall_judgment is review_unverified."
+- "created_at or reviewed_at: useful for audit trail."
+recommendation: "Keep the base concise, but add task_type, template_version, review_stage, contract_id/version, evidence pack hash, and safety_boundaries_respected."
+2_task_type_specific_structure:
+judgment: "group_by_task_type"
+answer: "Use a task_type enum plus grouped task_type_specific, not a flat map."
+recommended_shape:
+task_type: paper_contract_design
+task_type_specific:
+paper_contract_design:
+design_completeness: adequate
+contracts_coverage: adequate
+fail_closed_rules_adequate: yes
+reason: "A flat map is easier for humans but weaker for validation. Grouping by task_type prevents field collisions between authorization, closure, paper review, citation verification, and runtime execution reviews."
+3_overall_judgment_naming:
+judgment: "use overall_judgment"
+answer: "Standardize on lowercase snake_case: overall_judgment."
+reason: "YAML/JSON parsers handle snake_case more reliably. Title Case keys such as Overall Judgment should be treated as legacy aliases only."
+compatibility_policy:
+canonical: overall_judgment
+legacy_aliases:
+- "Overall Judgment"
+parser_behavior: "accept legacy aliases during migration, emit only overall_judgment in new outputs"
+4_evidence_inspected_sha256:
+judgment: "include filenames plus hashes when available"
+answer: "evidence_inspected should not be only filenames. It should include path, sha256 when available, and inspection status."
+recommended_shape:
+evidence_inspected:
+- path: contracts/paper_acceptance_contracts.yaml
+sha256: "<hash-or-null>"
+inspected: yes
+role: normative_contract
+reason: "Filename-only evidence is too weak for Evidence-First review. SHA256 binds the judgment to the exact artifact. If a hash is unavailable, use sha256: null and explain why."
+5_template_md_or_schema_json:
+judgment: "both"
+answer: "Use both .md and .schema.json."
+recommended_files:
+- "templates/GPT_REVIEW_PROMPT_TEMPLATE.md: human-facing prompt template"
+- "schemas/gpt_review_result.schema.json: machine validation schema"
+- "docs/gpt-review-template.md: rationale and migration policy"
+reason: "The .md file is necessary for GPT usability, but the schema is necessary for automated validation and fail-closed parsing."
+6_task_type_enum_needed:
+judgment: yes
+answer: "A task_type enum is necessary."
+suggested_enum:
+- authorization
+- execution_closure
+- design_review
+- paper_contract_design
+- citation_verification
+- paper_revision_review
+- context_handoff
+- cdp_pilot
+- archive_governance
+validation_rule: "task_type determines which task_type_specific object is allowed and required."
+7_contradictions_or_inconsistencies:
+found: yes
+issues:
+- "The proposal says template lives in ONE place as templates/GPT_REVIEW_PROMPT_TEMPLATE.md, but machine validation requires a schema; the correct design should include both template and schema."
+- "The examples use evidence_inspected as filenames only, but Evidence-First practice needs hashes or at least pack-level hash."
+- "The PAPER-A1 example says proceed to runtime integration, but PAPER-A1 is design-only; a safer next action is proceed to control-plane template design only after contract acceptance."
+- "The proposal mixes boolean true/false with yes/no style in task-specific fields. Use true/false for machine fields, and reserve yes/no only if legacy compatibility requires it."
+- "blocking_reasons: none conflicts with the declared type list or 'none'. Prefer an empty list [] or a list of strings; avoid union types."
+- "missing_evidence: none has the same issue. Use [] for none."
+- "allow_proceed can conflict with overall_judgment if not constrained. Schema should enforce accepted -> allow_proceed true, blocked/review_unverified -> false, human_required -> false unless explicitly authorized."
+recommended_canonical_base_schema:
+REVIEW_RUN_ID: "<string>"
+template_version: "gpt-review-template-v1"
+task_type: "<enum>"
+review_stage: "authorization | execution | closure | audit | handoff"
+overall_judgment: "accepted | blocked | human_required | review_unverified"
+reviewer_type: "gpt | human | agent"
+contract_id: "<string-or-null>"
+contract_version: "<string-or-null>"
+evidence_pack:
+path: "<path-or-null>"
+sha256: "<sha256-or-null>"
+manifest_valid: true
+evidence_inspected:
+- path: "<file>"
+sha256: "<sha256-or-null>"
+inspected: true
+blocking_reasons: []
+missing_evidence: []
+scope_violation: false
+fake_green_risk: false
+safety_boundaries_respected: true
+required_next_action: "<string>"
+allow_proceed: true
+review_unverified_reason: null
+rationale: "<string>"
+task_type_specific:
+"<task_type>": {}
+final_recommendation:
+judgment: "accept proposal direction, revise before standardization"
+priority_fixes:
+- "Add task_type enum."
+- "Use grouped task_type_specific keyed by task_type."
+- "Standardize on overall_judgment."
+- "Add SHA256 support to evidence_inspected and evidence_pack."
+- "Ship both .md template and .schema.json."
+- "Use [] instead of 'none' for list fields."
+- "Add schema constraints linking overall_judgment and allow_proceed."
+rationale: "The two-layer design is correct, but the current draft is not yet strict enough for Evidence-First automation. It needs a canonical schema, task_type-driven validation, artifact hashes, and consistent field naming before becoming the unified GPT Review Prompt standard."

@@ -1,4 +1,12 @@
 {
-  "review_run_id": "project-history-gaps-v1-20260605",
-  "overall_judgment": "accepted"
+  "review_run_id": "project-history-gaps-closure-v4-20260605",
+  "overall_judgment": "accepted",
+  "gaps_fixed": true,
+  "gate_proof_included": true,
+  "gate_hardened": true,
+  "gate_checks": [
+    "no_POST_REVIEW_ROUTE",
+    "submitted_for_gpt_review",
+    "missing_GPT_REVIEW_RESULT"
+  ]
 }

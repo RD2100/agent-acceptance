@@ -59,7 +59,6 @@ if ($taskStatus -and $taskStatus -notin $validStatuses) {
 $forbiddenPatterns = @(
     "npm install", "pip install", "yarn add",
     "skill-installer install", "skill-installer",
-    "bb_solidify_knowledge", "bb_share_knowledge",
     "MCP config", "register hook",
     "git commit", "git push", "git reset --hard", "git clean",
     "clone.*repo", "git clone",

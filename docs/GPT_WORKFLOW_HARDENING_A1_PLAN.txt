@@ -1,0 +1,93 @@
+你说得对。以后我在 task_type_specific 区域会使用中文字段名，只保留 schema 强制要求的顶层字段名和枚举值为英文。下面给出可直接复制给 agent 的完整任务书。
+
+任务书：WORKFLOW-HARDENING-A1
+Evidence-First 工作流闭合状态与提交前验证机制固化
+任务名称：WORKFLOW-HARDENING-A1：Evidence-First 工作流闭合状态与提交前验证机制固化执行仓库：agent-acceptance任务性质：governance_hardening / workflow_state_enforcement / pre_submission_validation / no_live_cdp / no_real_user_data任务背景：近期 MEMORY-A1 的 WORKFLOW_AUDIT_LEDGER.yaml 已记录 3 个仍未关闭的系统性缺陷：SD-01: summary-only evidence pack pattern- 该模式已多次出现：证据包只有 closure report / safety attestation / GPT prompt / summary，而缺少实际产物文件。- 问题本质：agent summary 被错误当成 evidence。- 目标：让 summary-only pack 在提交 GPT 前本地失败。SD-02: ready_for_review 被当作 closed- ARCH-GAP-A1 和 REF-PAPER-1 都曾只标注 ready_for_review / ready_for_gpt_review，但没有 GPT accepted 审查证据。- 问题本质：任务状态定义不清，ready_for_review 被误当成 closed。- 目标：明确 ready_for_review、accepted、closed 三种状态，禁止无 GPT accepted 的 closed。SD-03: self-referential failure- ARCH-GAP-A1 本身定义“绕过框架不可验收”，但它最初的 closure 自身没有提交 GPT 审查。- 问题本质：治理任务也可能自我闭合，缺少外部 GPT 审查要求。- 目标：治理类任务必须经过 GPT closure review；事后补审必须显式记录 prior_status、corrected_status 和 retroactive_review。核心目标：把 SD-01、SD-02、SD-03 从“memory 中记录的 open 缺陷”固化为合约、模板、validator 和测试，使它们在后续任务中能够被本地阻断，而不是继续依赖 GPT 审查时人工发现。
+
+一、总体目标
+YAML本任务必须完成:  - "定义工作流状态合约：planned / executed / self_verified / ready_for_review / accepted / closed"  - "定义 evidence pack 完整性合约，阻断 summary-only pack"  - "定义治理任务闭合规则，阻断 self-referential closure"  - "新增 workflow closure validator"  - "新增 workflow audit ledger 模板或更新现有模板"  - "更新 GPT 审查提示词模板，加入提交前自检要求"  - "新增测试覆盖 SD-01、SD-02、SD-03"  - "运行全量测试和 bypass check"
+
+二、三个 SD 的具体修复方案
+SD-01 修复方案：summary-only evidence pack 本地阻断
+问题定义
+YAML缺陷编号: SD-01缺陷名称: summary-only evidence pack pattern严重程度: high根因:  - "agent 提交的 evidence pack 只有说明性文件"  - "缺少实际产物文件、diff、schema、contract、script、test、pipeline、review output 等"  - "GPT 被迫在第一轮审查中发现缺实际证据"
+修复目标
+YAML修复目标:  - "summary-only pack 在提交 GPT 前 fail"  - "CLOSURE_REPORT / SAFETY_ATTESTATION / GPT_REVIEW_PROMPT 不能替代 actual deliverables"  - "如果 closure 声称修改了文件，pack 必须包含实际文件或 diff"  - "如果声称 tests pass，必须有 TEST_OUTPUT.txt"  - "如果声称 bypass/gate pass，必须有 BYPASS_CHECK_OUTPUT.txt 或 GATE_OUTPUT.txt"
+需要新增的规则
+在 contracts/workflow_closure_contract.yaml 中新增：
+YAMLEVIDENCE_PACK_COMPLETENESS_CONTRACT:  contract_version: "1.0.0"  scope: "all GPT closure evidence packs"  summary_only_files:    - "GPT_REVIEW_PROMPT.md"    - "CLOSURE_REPORT.md"    - "CLOSURE_REPORT.yaml"    - "SAFETY_ATTESTATION.md"    - "PACK_MANIFEST.md"  actual_deliverable_patterns:    - "contracts/**"    - "schemas/**"    - "docs/**"    - "templates/**"    - "scripts/**"    - "tests/**"    - "pipelines/**"    - "examples/**"    - "review/**"    - "input/**"    - "closure/FLOW_OUTCOME.json"    - "submission/SUBMISSION_RESULT.json"    - "diff.patch"  required_checks:    - "PACK_MANIFEST.md must exist"    - "ZIP content must match manifest bidirectionally"    - "At least one actual deliverable must exist"    - "Summary-only files do not count as actual deliverables"    - "Claimed tests pass requires TEST_OUTPUT.txt"    - "Claimed bypass check pass requires BYPASS_CHECK_OUTPUT.txt or GATE_OUTPUT.txt"  blocked_conditions:    - "summary_only_pack"    - "missing_actual_deliverables"    - "manifest_zip_mismatch"    - "missing_test_output_when_tests_claimed"    - "missing_gate_output_when_gate_claimed"    - "missing_bypass_output_when_bypass_claimed"
+validator 必须实现的检查
+scripts/validate_workflow_closure.py 中必须实现：
+YAMLSD-01 检查项:  - "读取 ZIP 文件列表"  - "读取 PACK_MANIFEST.md"  - "校验 manifest 与 ZIP 双向一致"  - "识别 summary-only files"  - "判断是否存在 actual deliverables"  - "如果 pack 只有 summary files，则 fail"  - "如果 CLOSURE_REPORT 声称 tests pass 但无 TEST_OUTPUT.txt，则 fail"  - "如果 CLOSURE_REPORT 声称 bypass/gate pass 但无对应输出，则 fail"
+测试要求
+新增测试覆盖：
+YAMLSD-01 测试:  - "fail: pack 只有 GPT_REVIEW_PROMPT.md、CLOSURE_REPORT.md、SAFETY_ATTESTATION.md、PACK_MANIFEST.md"  - "pass: pack 包含 docs/ 或 contracts/ 或 scripts/ 等实际产物"  - "fail: CLOSURE_REPORT 声称 tests pass 但缺 TEST_OUTPUT.txt"  - "fail: CLOSURE_REPORT 声称 bypass check pass 但缺 BYPASS_CHECK_OUTPUT.txt"  - "fail: manifest 列出文件但 ZIP 缺失"  - "fail: ZIP 有文件但 manifest 未列"
+
+SD-02 修复方案：ready_for_review 不得当作 closed
+问题定义
+YAML缺陷编号: SD-02缺陷名称: ready_for_review 被当作 closed严重程度: high根因:  - "agent closure report 中出现 ready_for_review"  - "流程或人工阅读时误把 ready_for_review 当作 closed"  - "缺少 accepted / closed 状态的硬定义"
+修复目标
+YAML修复目标:  - "ready_for_review 只能表示等待 GPT 审查"  - "accepted 必须有 GPT accepted review result"  - "closed 必须同时有 GPT accepted + ledger/state 持久化"  - "closed_without_gpt_accepted 必须本地 fail"
+需要新增的状态合约
+在 contracts/workflow_closure_contract.yaml 中新增：
+YAMLWORKFLOW_STATE_CONTRACT:  contract_version: "1.0.0"  allowed_states:    - planned    - executed    - self_verified    - ready_for_review    - review_unverified    - blocked    - accepted    - closed  state_definitions:    planned: "任务已定义，但尚未执行"    executed: "任务已执行，但尚未完成自检"    self_verified: "本地测试、gate 或 validator 已通过"    ready_for_review: "证据包已准备好，可以提交 GPT 审查，但尚未 accepted"    review_unverified: "GPT 无法基于证据确认，需要补证据"    blocked: "GPT 或本地 gate 发现阻断问题"    accepted: "GPT 已基于 evidence pack 给出 accepted 判决"    closed: "accepted 结果已写入 workflow ledger / state / closure record"  transition_rules:    - from: "ready_for_review"      to: "accepted"      requires:        - "gpt_review_result"        - "overall_judgment: accepted"    - from: "accepted"      to: "closed"      requires:        - "workflow_ledger_entry"        - "accepted_review_run_id"        - "evidence_pack_sha256"  blocked_conditions:    - "ready_for_review_counted_as_closed"    - "accepted_without_gpt_review_result"    - "closed_without_gpt_accepted"    - "closed_without_workflow_ledger_entry"
+closure report 模板必须修改
+新增或更新：
+templates/CLOSURE_REPORT_TEMPLATE.md
+或者更新项目现有 closure report 模板。
+必须加入：
+Markdown## 状态声明- task_status: ready_for_review | blocked- gpt_review_submitted: yes | no- gpt_review_result: accepted | blocked | review_unverified | not_submitted- final_status: ready_for_review | accepted | closed | blocked规则：1. 未提交 GPT 审查时，final_status 不得写 closed。2. GPT 未返回 accepted 时，final_status 不得写 accepted 或 closed。3. 只有 accepted 已写入 workflow ledger 后，final_status 才能写 closed。
+validator 必须实现的检查
+YAMLSD-02 检查项:  - "解析 CLOSURE_REPORT.md / CLOSURE_REPORT.yaml"  - "如果 final_status: closed，则必须存在 GPT accepted evidence"  - "如果 task_status: ready_for_review，则 final_status 不得为 closed"  - "如果 gpt_review_submitted: no，则 final_status 不得为 accepted/closed"  - "如果 gpt_review_result 不是 accepted，则 final_status 不得为 closed"
+测试要求
+YAMLSD-02 测试:  - "fail: ready_for_review 被写成 closed"  - "fail: final_status closed 但无 GPT_REVIEW_RESULT"  - "fail: accepted_without_review_result"  - "pass: ready_for_review + gpt_review_submitted: no"  - "pass: accepted + GPT_REVIEW_RESULT accepted + ledger entry"
+
+SD-03 修复方案：self-referential failure 本地识别
+问题定义
+YAML缺陷编号: SD-03缺陷名称: self-referential failure严重程度: medium-high根因:  - "治理类任务定义外部审查规则"  - "但治理任务自身未经过 GPT closure review 就被视作完成"
+修复目标
+YAML修复目标:  - "治理类任务不得自我闭合"  - "凡修改 contracts / governance docs / validators / review templates 的任务，必须有 GPT closure review"  - "事后补审必须显式标注 retroactive_review"  - "retroactive review 不能伪装成原始当时已闭合"
+新增治理任务闭合合约
+在 contracts/workflow_closure_contract.yaml 中新增：
+YAMLGOVERNANCE_TASK_REVIEW_CONTRACT:  contract_version: "1.0.0"  governance_task_patterns:    - "contracts/**"    - "policies/**"    - "schemas/**"    - "templates/GPT_REVIEW_PROMPT_TEMPLATE.md"    - "scripts/validate_*"    - "scripts/check_*"    - "docs/*governance*"    - "docs/*workflow*"    - "docs/*memory*"  required_for_governance_tasks:    - "external_gpt_review_required"    - "gpt_review_result_required"    - "cannot_self_close"  blocked_conditions:    - "governance_task_self_closed"    - "governance_contract_changed_without_gpt_review"    - "review_template_changed_without_gpt_review"    - "validator_changed_without_gpt_review"
+新增：
+YAMLRETROACTIVE_REVIEW_CONTRACT:  contract_version: "1.0.0"  allowed: true  required_fields:    - "retroactive_review"    - "prior_status"    - "corrected_status"    - "reason_for_retroactive_review"    - "original_missing_review_acknowledged"    - "actual_artifacts"    - "gpt_review_result"  blocked_conditions:    - "retroactive_review_hides_prior_missing_review"    - "retroactive_review_claims_original_closure_without_evidence"    - "retroactive_review_without_prior_status"    - "retroactive_review_without_corrected_status"
+validator 必须实现的检查
+YAMLSD-03 检查项:  - "识别治理类任务：修改 contracts / schemas / templates / validators / governance docs"  - "治理类任务如果 final_status 为 closed，必须有 GPT accepted result"  - "retroactive_review: true 时必须有 prior_status、corrected_status、reason_for_retroactive_review"  - "retroactive review 不得声称原始流程当时已正常 closed"
+测试要求
+YAMLSD-03 测试:  - "fail: governance contract 修改后无 GPT review 但 final_status closed"  - "fail: validator 脚本修改后无 GPT review 但 final_status closed"  - "fail: retroactive_review true 但缺 prior_status"  - "fail: retroactive_review true 但缺 corrected_status"  - "pass: retroactive_review true + prior_status ready_for_review + corrected_status accepted + GPT result"
+
+三、需要修改哪些既有文件
+请先检查仓库现有结构，以下为建议路径。
+YAML需要修改:  - "templates/GPT_REVIEW_PROMPT_TEMPLATE.md"  - "templates/CLOSURE_REPORT_TEMPLATE.md 如果存在"  - "scripts/check_submission_bypass.py 如需与新 validator 共享绕过检测规则"  - "README 或 docs 索引文件，如项目有文档目录索引"  - "tests 目录下相关测试注册文件，如项目需要"
+GPT_REVIEW_PROMPT_TEMPLATE.md 必须新增一节：
+Markdown## 提交前自检要求提交 GPT 审查前，执行方必须运行 workflow closure validation 或 pre-submission gate，并将输出加入 evidence pack。如果出现以下情况，GPT 应判定为 review_unverified 或 blocked：- 没有 WORKFLOW_CLOSURE_VALIDATION.yaml 或 PRE_SUBMISSION_CHECK.yaml- evidence pack 只有 summary / closure report / safety attestation / GPT prompt，没有实际产物- manifest 与 ZIP 不一致- 声称 tests pass 但没有 TEST_OUTPUT.txt- 声称 gate pass 但没有 GATE_OUTPUT.txt 或 BYPASS_CHECK_OUTPUT.txt- final_status 写 closed 但没有 GPT accepted 证据- ready_for_review 被当作 closed- 治理类任务自我闭合- 出现未授权 submission bypass
+
+四、需要新增哪些文件
+YAML必须新增:  - "docs/workflow-state-and-closure-policy.md"  - "contracts/workflow_closure_contract.yaml"  - "templates/WORKFLOW_AUDIT_LEDGER.yaml"  - "docs/pre-submission-checklist.md"  - "scripts/validate_workflow_closure.py"  - "tests/test_workflow_closure_validation.py"建议新增:  - "templates/CLOSURE_REPORT_TEMPLATE.md"  - "schemas/workflow_closure_validation.schema.json"  - "schemas/workflow_audit_ledger.schema.json"  - "examples/workflow_closure_synthetic_case/"
+
+五、执行顺序与依赖关系
+YAML执行顺序:  第一步_文档定义:    目标:      - "先写 workflow-state-and-closure-policy.md"      - "明确 ready_for_review / accepted / closed"      - "定义 retroactive review"    依赖: []    完成标志:      - "状态定义可被 contract 引用"  第二步_合约定义:    目标:      - "新增 workflow_closure_contract.yaml"      - "覆盖 SD-01 / SD-02 / SD-03"    依赖:      - "第一步"    完成标志:      - "四类 contract 存在并有 blocked_conditions"  第三步_模板更新:    目标:      - "更新 GPT 审查模板"      - "新增 closure report 模板"      - "新增 workflow audit ledger 模板"      - "新增 pre-submission checklist"    依赖:      - "第一步"      - "第二步"    完成标志:      - "模板不再允许无 GPT accepted 写 closed"  第四步_validator实现:    目标:      - "新增 validate_workflow_closure.py"      - "实现 manifest 检查、summary-only 检查、状态检查、治理任务检查、retroactive review 检查"    依赖:      - "第二步"      - "第三步"    完成标志:      - "validator 能输出 WORKFLOW_CLOSURE_VALIDATION.yaml"  第五步_测试:    目标:      - "新增 test_workflow_closure_validation.py"      - "覆盖 SD-01 / SD-02 / SD-03"    依赖:      - "第四步"    完成标志:      - "新增测试全部通过"  第六步_运行全量验证:    目标:      - "python -m pytest"      - "bypass checker"      - "workflow closure validator 自测"    依赖:      - "第五步"    完成标志:      - "全量测试通过，bypass check PASS，validator PASS"  第七步_构建证据包:    目标:      - "构建 closure evidence pack"      - "包含实际产物、测试输出、安全证言、closure report"    依赖:      - "第六步"    完成标志:      - "manifest 双向一致，非 summary-only"
+
+六、验收标准
+YAML功能验收:  SD-01:    - "summary-only pack 会被 validate_workflow_closure.py 阻断"    - "缺 actual deliverables 会 fail"    - "缺 TEST_OUTPUT / BYPASS_CHECK_OUTPUT 会 fail"    - "manifest mismatch 会 fail"  SD-02:    - "ready_for_review 不会被视为 closed"    - "closed_without_gpt_accepted 会 fail"    - "accepted_without_review_result 会 fail"    - "closed 必须要求 GPT accepted + ledger entry"  SD-03:    - "治理类任务不能自我闭合"    - "修改 contracts/templates/validators 的任务必须有 GPT review"    - "retroactive review 必须记录 prior_status / corrected_status / reason"    - "事后补审不得掩盖原始缺失"证据验收:  - "evidence pack 包含实际产物文件"  - "PACK_MANIFEST.md 与 ZIP 内容双向一致"  - "TEST_OUTPUT.txt 存在并显示通过"  - "BYPASS_CHECK_OUTPUT.txt 存在并显示通过"  - "WORKFLOW_CLOSURE_VALIDATION.yaml 存在并 result=pass"  - "SAFETY_ATTESTATION.md 存在"  - "CLOSURE_REPORT.md 存在"  - "GPT_REVIEW_PROMPT.md 存在"安全验收:  - "不得删除、移动、重命名 evidence"  - "不得清理 runs"  - "不得伪造 GPT accepted"  - "不得伪造测试输出"  - "不得移除或弱化 guard"  - "不得启用 live CDP"  - "不得处理真实论文或私密文本"
+
+七、验证命令
+Bashgit statusgit log --oneline -8find . -maxdepth 3 -type f | sort | head -200python -m pytestpython scripts/check_submission_bypass.py .python scripts/validate_workflow_closure.py <sample-pack-or-fixture>
+如果新增 synthetic fixture，请放在：
+examples/workflow_closure_synthetic_case/
+不得使用真实论文、真实聊天 transcript 或私密数据。
+
+八、Agent 完成后回传格式
+注意：以下是 agent 发给 GPT 的 closure summary，不是 GPT 审查判决。
+YAMLREVIEW_RUN_ID: "workflow-hardening-a1-v1"repo: "agent-acceptance"branch: "<branch>"commit: "<commit-or-null>"pushed: yes | notask_status: "ready_for_gpt_review | blocked"deliverables:  workflow_state_policy: "<path-or-null>"  workflow_closure_contract: "<path-or-null>"  workflow_audit_ledger_template: "<path-or-null>"  pre_submission_checklist: "<path-or-null>"  closure_report_template: "<path-or-null>"  closure_validation_script: "<path-or-null>"  tests: "<path-or-null>"  synthetic_examples: "<path-or-null>"sd_fix_status:  sd_01_summary_only_pack:    fixed: yes | no    blocked_by_validator: yes | no    tests_added: yes | no  sd_02_ready_for_review_as_closed:    fixed: yes | no    closed_requires_gpt_accepted: yes | no    tests_added: yes | no  sd_03_self_referential_failure:    fixed: yes | no    governance_task_requires_gpt_review: yes | no    retroactive_review_defined: yes | no    tests_added: yes | novalidation:  pytest: pass | fail | not_run  test_summary: "<summary>"  bypass_check: pass | fail | not_run  workflow_closure_validator: pass | fail | not_runevidence_pack:  path: "<path>"  sha256: "<sha256-or-null>"  manifest_valid: yes | no  summary_only_pack: yes | nosafety:  evidence_deleted: no  evidence_moved: no  evidence_renamed: no  evidence_fabricated: no  guard_removed: no  guard_weakened: no  live_cdp_enabled: no  real_user_data_processed: no  raw_transcript_processed: no  private_paper_text_processed: no  external_api_called: noblocking_issues:  - "<none or exact issue>"rationale: "说明本任务如何把 SD-01、SD-02、SD-03 从 memory 中的 open 缺陷固化为合约、模板、validator 和测试。"
+
+九、GPT 审查重点
+YAMLGPT审查时重点检查:  - "是否真正修复 SD-01，而不是只在文档中描述"  - "summary-only pack 是否有失败测试"  - "closed_without_gpt_accepted 是否有失败测试"  - "governance self-close 是否有失败测试"  - "validator 是否真实存在并可运行"  - "WORKFLOW_CLOSURE_VALIDATION.yaml 是否 result=pass"  - "evidence pack 是否包含实际产物"  - "是否没有删除、移动、重命名、伪造 evidence"  - "是否没有启用 live CDP"  - "是否没有处理真实论文或私密文本"
+
+十、后续任务规划
+YAML后续任务规划:  WORKFLOW-HARDENING-A2:    任务名称: "将 workflow closure validator 接入 pre-submission / pre-push gate"    前置条件:      - "WORKFLOW-HARDENING-A1 GPT accepted"    目标:      - "让 validator 不只是独立脚本，而是进入默认提交流程"      - "任何 closure pack 提交 GPT 前必须 validator pass"      - "summary-only pack、closed_without_gpt_accepted、governance self-close 在本地直接失败"  CONTROL-PLANE-A1:    任务名称: "devframe-control-plane 调用 workflow closure validation"    前置条件:      - "WORKFLOW-HARDENING-A2 accepted"    目标:      - "devframe pack validate 调用 workflow closure validator"      - "reference_paper_review pipeline 自动生成 WORKFLOW_CLOSURE_VALIDATION.yaml"      - "pre_submission_check fail 时 runner 停止"  MEMORY-A2:    任务名称: "最小 Memory Compiler 原型"    前置条件:      - "WORKFLOW-HARDENING-A1 accepted"      - "最好等待 WORKFLOW-HARDENING-A2 accepted"    目标:      - "从 GPT_REVIEW_RESULT 和 WORKFLOW_AUDIT_LEDGER 提取 lesson"      - "生成 memory daily log / concept / index"      - "不读取 raw transcript"      - "不处理真实论文"      - "不调用外部 API"
+
+十一、最终提醒
+YAML执行提醒:  - "本任务不是继续扩展论文功能"  - "本任务不是开发 memory compiler"  - "本任务只做 workflow hardening"  - "必须优先修复 SD-01 / SD-02 / SD-03"  - "完成后只能回传 ready_for_gpt_review，不能自称 accepted"
+这份可以直接发给 agent。后续 agent 回传 closure summary 和 evidence pack 后，我会按同一标准审查，并且在 task_type_specific 区域继续使用中文字段名。

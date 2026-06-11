@@ -1,0 +1,42 @@
+你这次观察到的不是偶发行为，而是任务边界处的授权断裂。
+YAML诊断结论:  问题类型: "流程设计问题为主，agent 纪律问题为辅"  反复发生原因: "直接执行规则只覆盖当前任务内部，没有覆盖任务完成后的下一任务切换"  核心缺口: "缺少机器可读的 next_task_authorization / rolling authorization 机制"
+一、为什么“直接执行”在任务边界处总是失效
+因为 agent 的判断逻辑通常是：
+YAML当前任务内:  用户已授权: "可以继续改代码、补测试、修 evidence pack"  agent行为: "可以直接执行"当前任务完成后:  状态变成: "一个任务已结束，下一个任务尚未被正式授权"  agent行为: "询问是否继续"
+所以“不要再问，直接执行”在 agent 看来只对 A2 当前任务有效，不自动延伸到 CONTROL-PLANE-A1 新任务。
+这不是它完全不听话，而是它缺少一个明确的跨任务授权对象。
+真正要修的是：GPT 每次发布下一任务时，必须同时给出 next_task_authorization，并明确它就是用户授权。
+
+二、需要固化的机制
+以后每个 GPT 审查通过后的回复，都必须包含一个机器可读块：
+YAMLnext_task_authorization:  authorized: yes  task_id: "CONTROL-PLANE-A1"  execute_immediately: yes  ask_before_starting: no  allowed_changes:    - "新增/修改文档"    - "新增/修改测试"    - "新增/修改 pipeline 集成代码"    - "新增/修改 CLI / pack validate 调用逻辑"    - "构建 closure evidence pack"  must_stop_and_ask_only_if:    - "删除、移动、重命名、清理 evidence"    - "移除或弱化 guard"    - "启用 live CDP"    - "处理真实用户数据或真实论文"    - "伪造/覆盖历史证据"    - "修改密钥、cookie、session、browser profile"
+同时要求 agent 在任务开始前读取这个块。只要 authorized: yes 且 execute_immediately: yes，就不允许再问“继续吗”。
+一句话固化：
+YAML一句话机制: "每个 accepted 判决后必须附带 next_task_authorization；agent 看到 authorized=yes + execute_immediately=yes 时，直接进入下一任务，不得再次确认。"
+
+任务书：CONTROL-PLANE-A1
+将 workflow closure validator 接入 devframe-control-plane 的 pack validate 与 reference pipeline
+任务名称：CONTROL-PLANE-A1：devframe-control-plane 接入 workflow closure validation执行仓库：devframe-control-plane任务性质：minimal_integration / pipeline_enforcement / no_live_cdp / no_real_user_data授权状态：本任务已授权直接执行。不要再询问“是否继续”。不要把本任务当成建议或待确认计划。直接按本任务书执行，完成后提交 closure summary 和 evidence pack 给 GPT 审查。只有触发以下高风险操作时才停止确认：- 删除、移动、重命名、清理 evidence- 移除或弱化 guard- 启用 live CDP- 处理真实用户数据或真实论文- 伪造、覆盖、补造历史证据- 读取 cookie、session、browser profile、密钥
+
+一、任务背景
+WORKFLOW-HARDENING-A1 已 accepted，WORKFLOW-HARDENING-A2 已将 scripts/validate_workflow_closure.py 接入 agent-acceptance 的 pre-push gate。
+现在要做的是把这个 validator 接入 devframe-control-plane，使 control-plane 在构建或验证 evidence pack 时也能自动执行 workflow closure validation。
+目标不是重写 validator，而是调用已经存在的 agent-acceptance validator。
+
+二、核心目标
+YAML目标:  - "devframe pack validate 能调用 workflow closure validator"  - "reference_paper_review pipeline 的 pre_submission_check 阶段能生成 WORKFLOW_CLOSURE_VALIDATION.yaml"  - "validator fail 时，pipeline / pack validate 必须 fail-closed"  - "summary-only pack / closed_without_gpt_accepted / governance self-close 在提交 GPT 前本地失败"  - "不启用 live CDP"  - "不处理真实论文"  - "不写临时 submit_to_gpt.py 或手写 Playwright"
+
+三、最小实现方案
+优先采用外部 validator 调用方式，不复制 agent-acceptance 的 validator 逻辑。
+YAML推荐方案:  方式: "subprocess 调用 agent-acceptance/scripts/validate_workflow_closure.py"  原因:    - "agent-acceptance 仍然拥有规范层"    - "devframe-control-plane 只负责调用和编排"    - "避免两套 validator 漂移"
+
+四、需要修改的文件
+请先查仓库结构，再按实际路径修改。重点查找：
+Bashgit statusgit log --oneline -8find . -maxdepth 4 -type f | grep -Ei "pack|validate|pipeline|stage|runner|cli|evidence|closure"
+优先可能涉及：
+YAML可能修改:  - "control_plane/cli.py"  - "control_plane/stage_executor.py"  - "control_plane/pipeline_runner.py"  - "control_plane/evidence_pack_builder.py 如果存在"  - "control_plane/pack_validator.py 如果存在"  - "pipelines/reference_paper_review.yaml"  - "tests/test_stage_executor.py"  - "tests/test_pack_validate.py"  - "tests/test_reference_paper_review.py"
+不要盲目新建重复模块。先复用已有 pack validate、stage_executor、pipeline_runner。
+
+五、具体执行步骤
+第一步：定位现有 pack validate 入口
+查找当前是否已有：

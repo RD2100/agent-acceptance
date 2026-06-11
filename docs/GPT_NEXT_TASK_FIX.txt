@@ -1,0 +1,32 @@
+下面是我的诊断和具体修复方案。
+YAML诊断结论:  根因: "GPT 审查模板把 accepted 视为审查终点，而没有强制把 accepted 转化为下一任务授权。"  直接缺陷:    - "required_next_action 字段约束太弱。"    - "accepted 后没有强制 next_task_authorization。"    - "validator 没有检查 accepted 结果是否包含下一步任务。"    - "agent 只读取 overall_judgment，而不读取下一任务字段。"  修复方向:    - "审查模板增加条件字段约束。"    - "accepted 必须输出 next_task_authorization。"    - "blocked 必须输出 blocking_issues 与 revision_plan。"    - "closure validator 必须检查这些字段。"    - "agent 执行器必须优先读取 next_task_authorization。"
+1. 哪个环节导致 accepted 后没有下一步计划？
+主要是 GPT_REVIEW_PROMPT / closure review template 这一层。
+现在的流程大概是：
+agent 提交 evidence pack→ GPT 审查→ GPT 给 accepted / blocked→ agent 根据 accepted 结束任务
+问题在于，模板只强制 GPT 判断当前任务是否 accepted，却没有强制 GPT 在 accepted 后继续给出：
+YAMLnext_task_authorization:  authorized: yes  task_id: "<NEXT_TASK_ID>"  execute_immediately: yes  ask_before_starting: no
+所以 GPT 很容易只输出：
+YAMLoverall_judgment: accepted
+然后 agent 就认为当前任务完成，但不知道下一步做什么。
+这不是单个 GPT 回复质量问题，而是模板没有把“accepted 后必须交代下一步”变成硬约束。
+
+2. required_next_action 字段是不是太弱？
+是的，太弱。
+现在如果只有一个类似字段：
+YAMLrequired_next_action: "<text>"
+它的问题有四个。
+第一，它通常是自然语言字段，不够机器可读。
+第二，它没有条件约束。也就是说，accepted 后有没有都行，blocked 后写不写具体修复也行。
+第三，它没有区分两类动作：
+blocked → 给修复项accepted → 给下一任务
+第四，它没有授权语义。agent 不知道“是否可以直接执行”，也不知道“是否需要再问用户”。
+所以应该废弃单一的弱字段，改成两个强制分支：
+YAMLif_blocked:  blocking_issues: [...]  required_fixes: [...]  resubmission_requirements: [...]if_accepted:  next_task_authorization:    authorized: yes | no    task_id: ""    execute_immediately: yes | no    ask_before_starting: yes | no
+
+3. 需要给审查模板加什么强制规则？
+建议加一条总规则：
+YAMLreview_output_validity_rule:  - "如果 overall_judgment = blocked，则必须给出 blocking_issues、required_fixes、resubmission_requirements。"  - "如果 overall_judgment = accepted，则必须给出 next_task_authorization。"  - "accepted 但缺少 next_task_authorization 的 GPT_REVIEW_RESULT 必须视为 invalid_review_output。"  - "blocked 但缺少 required_fixes 的 GPT_REVIEW_RESULT 必须视为 invalid_review_output。"
+也就是说，GPT 审查结果不能只有判决，必须包含判决后的行动指令。
+推荐标准输出结构如下：
+YAMLREVIEW_RUN_ID: "<

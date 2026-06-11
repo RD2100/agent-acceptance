@@ -1,15 +1,14 @@
 {
   "authorized": true,
-  "token": "e52c73cfb7982c22419550c6be8ba27bd406933671fc2f35e68e946e5eede033",
+  "token": "b3a6e9ab67b1c32ad20564088166738baa6caecf164fcd918d9133df8956df4b",
   "scope": "bounded_pilot",
-  "expires_at": "2026-06-09T05:37:29.998239+00:00",
-  "purpose": "Single paper section review — sanitized metadata extraction",
-  "paper_title": "教育强国战略下高等教育提质扩容的必然逻辑、内在张力与治理进路",
+  "permanent": true,
+  "purpose": "常驻开放——论文结构诊断与修订协作",
+  "created_at": "2026-06-08T07:20:22.607502+00:00",
   "restrictions": [
-    "No full-text ingestion into memory",
-    "Section-level processing only",
+    "No full-text storage in memory",
     "No external upload",
-    "Output must be structural diagnosis only",
-    "No paper content stored in memory system"
+    "Structural diagnosis and revision strategy only",
+    "No full rewrites without explicit per-section approval"
   ]
 }

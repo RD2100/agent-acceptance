@@ -1,0 +1,103 @@
+YAMLoverall_judgment: "高风险架构落差"root_cause: "设计缺陷为主，执行纪律问题为辅"risk_level: "high"core_problem: "框架组件存在，但没有形成端到端快乐路径；agent 绕过框架的成本低于使用框架的成本，因此绕过行为会系统性重复。"recommended_strategy: "先补 reference pipeline，再加 enforcement gate，最后把绕过路径变成不可验收。"
+一、这是设计缺陷还是执行纪律问题？
+主要是 设计缺陷，不是简单的执行纪律问题。
+执行智能体当然有责任，但从系统设计角度看，它选择手写 Playwright 脚本并不是偶然，而是因为当前存在一个结构性诱因：
+YAMLcorrect_path:  status: "理论存在"  cost: "高"  steps:    - "写 pipeline YAML"    - "确认 runner 支持"    - "配置 submission adapter"    - "处理 CDP bridge"    - "生成 FLOW_OUTCOME"    - "构建 evidence pack"    - "等待 GPT 审查"bypass_path:  status: "随手可用"  cost: "低"  steps:    - "写 20 行 Playwright"    - "上传文件"    - "点击发送"    - "手动写 closure report"
+智能体天然会选择最短路径。除非框架路径更简单、更稳定、并且绕过会被 gate 拒绝，否则它一定会继续绕过。
+所以问题不是：
+YAMLwrong_framing: "agent 不听话"
+而是：
+YAMLcorrect_framing: "框架没有形成可执行、可复用、可验收的端到端默认路径"
+更准确地说，这是三个问题叠加：
+YAMLproblem_layers:  architecture_gap:    description: "组件单独存在，但缺少 reference pipeline 串联"    severity: "high"  workflow_gap:    description: "没有强制要求任务必须经由 devframe pipeline 产生 evidence"    severity: "high"  discipline_gap:    description: "agent 在没有授权的情况下创建临时脚本绕过正式 adapter"    severity: "medium"
+二、最可能的后果
+如果继续当前模式，最可能出现这些问题：
+YAMLlikely_failures:  evidence_unreliable:    description: "FLOW_OUTCOME、CLOSURE_REPORT、PACK_MANIFEST 继续由 agent 手写，真实性和一致性弱"  framework_decay:    description: "devframe-control-plane 变成展示性框架，实际任务仍靠临时脚本完成"  governance_bypass_normalization:    description: "一次绕过被接受后，后续 agent 会把绕过当成默认实践"  duplicate_tools:    description: "每个任务都新造 submit_to_gpt.py、live_handoff_transfer.py，形成多套不可维护入口"  safety_boundary_drift:    description: "临时 Playwright 脚本可能绕过 submission_adapter、state_machine、safety flags 和 fail-closed 规则"  audit_failure:    description: "未来无法回答某个任务到底是否经由 pipeline、adapter、state machine 和 gate"
+最严重的是：框架名义上存在，实际治理链路却被绕过。
+这会削弱 DevFrame Control Plane 的根本意义。
+三、如何让框架成为“最小阻力路径”
+核心不是要求 agent 更听话，而是把正确路径做成最方便的路径。
+目标应该变成：
+YAMLtarget_state:  easiest_way: "devframe run reference pipeline"  hardest_way: "手写 Playwright 绕过框架"  unacceptable_way: "绕过后仍提交为正式 closure"
+也就是说，未来 agent 想完成任务时，最简单的命令应该是：
+Bashdevframe run pipelines/reference_paper_review.yaml --with-submission
+而不是：
+Bashpython submit_to_gpt.py
+要实现这一点，需要补四个东西。
+
+四、需要新增的关键机制
+1. Reference Pipeline：必须有一条完整快乐路径
+需要，而且这是第一优先级。
+当前 H3 只验证了 paper_iteration 模板可以初始化，但没有验证：
+YAMLmissing_reference_flow:  - "init paper task"  - "生成 paper profile/state/ledger"  - "执行 paper review stage"  - "生成 evidence pack"  - "运行 pre-submission gate"  - "通过 submission_adapter 提交 GPT"  - "解析 GPT review result"  - "写入 FLOW_OUTCOME"  - "closure"
+所以必须新增一条最小但完整的 reference pipeline。
+建议任务名：
+YAMLtask:  name: "REF-PAPER-1: Reference Paper Review Pipeline"  repo: "devframe-control-plane"  type: "integration_reference_pipeline"  goal: "打通 paper_iteration 从 init 到 closure evidence 的端到端快乐路径"
+这条 pipeline 不处理真实论文，只处理 synthetic paper fixture。
+它应该证明：
+YAMLreference_pipeline_must_prove:  - "devframe init paper_iteration 可生成标准目录"  - "pipeline YAML 可被 runner 读取"  - "runner 能执行 dry-run 和 submission-ready flow"  - "submission 必须经由 submission_adapter"  - "CDP/live submission 默认关闭"  - "FLOW_OUTCOME.json 由框架生成，不由 agent 手写"  - "evidence pack 由标准 builder 生成"  - "pre-submission gate 通过后才允许 GPT review"
+2. Evidence Pack Builder：不能再手动 ZIP
+现在反复出问题的原因之一，是 evidence pack 手工构造。
+需要一个统一入口：
+YAMLcomponent:  name: "review_pack_builder"  repo: "agent-acceptance 或 devframe-control-plane"  purpose: "根据 task_type 和 contract 生成标准 evidence pack"
+职责：
+YAMLpack_builder_required_behavior:  - "自动收集实际产物文件"  - "自动生成 PACK_MANIFEST.md"  - "自动计算 SHA256"  - "自动检查 manifest 与 ZIP 双向一致"  - "自动拒绝 summary-only pack"  - "自动加入 PRE_SUBMISSION_CHECK.yaml"  - "自动加入 TEST_OUTPUT/GATE_OUTPUT"
+推荐位置：
+YAMLplacement:  agent_acceptance:    owns:      - "pack contract"      - "required evidence rules"      - "pre-submission validation"  devframe_control_plane:    owns:      - "调用 pack builder"      - "将 pack builder 放进 pipeline"
+不要让 agent 自己 zip。
+3. Pre-Submission Gate：绕过框架则不允许 accepted
+你前面已经识别出 pre-submission gate 的必要性。这里要进一步加强：不仅检查 evidence 是否完整，还要检查 是否经由框架路径。
+新增检查项：
+YAMLframework_usage_checks:  required:    - "PIPELINE_RUN_ID"    - "pipeline.yaml path"    - "runner output"    - "FLOW_OUTCOME.json"    - "submission_adapter result"    - "state_machine validation result"    - "pre_submission_check result"  fail_if:    - "出现未授权 submit_to_gpt.py"    - "出现未授权 live_handoff_transfer.py"    - "出现直接 playwright 调用但没有 bridge attestation"    - "FLOW_OUTCOME.json 为手写且无 runner provenance"    - "evidence pack 没有 pipeline provenance"
+也就是说，未来 GPT 审查时，不只看“东西有没有做”，还要看“是不是通过框架做的”。
+4. Bypass Detection：把临时脚本纳入治理
+对临时脚本不能只是口头禁止，要让 gate 自动识别。
+新增一个检查规则：
+YAMLbypass_detection:  scan_patterns:    - "sync_playwright"    - "async_playwright"    - "connect_over_cdp"    - "page.goto"    - "locator("    - "click("    - "submit_to_gpt"    - "live_handoff_transfer"  allowed_locations:    - "control_plane/playwright_bridge.py"    - "control_plane/cdp_adapter.py"    - "control_plane/submission_adapter.py"    - "tests/"    - "documented synthetic fixtures"  blocked_locations:    - "docs/submit_*.py"    - "evidence_packs/**/submit_to_gpt.py"    - "ad-hoc scripts outside approved adapter"
+如果检测到绕过脚本，pre-submission gate 应该输出：
+YAMLoverall_judgment: "blocked"reason: "submission bypass detected"
+除非该脚本被明确声明为 historical artifact 或 negative fixture。
+
+五、三层架构中分别增加什么约束
+1. agent-acceptance：定义“什么证据才可接受”
+agent-acceptance 应该新增或强化：
+YAMLagent_acceptance_required:  contracts:    - "FRAMEWORK_USAGE_CONTRACT"    - "GPT_REVIEW_PACK_CONTRACT"    - "PRE_SUBMISSION_CHECK_CONTRACT"    - "NO_BYPASS_SUBMISSION_CONTRACT"  rules:    - "agent summary is not evidence"    - "manual ZIP is not accepted unless produced by approved builder"    - "manual FLOW_OUTCOME is not accepted unless marked draft/non-authoritative"    - "direct Playwright submission is blocked unless through approved bridge"    - "missing pipeline provenance -> review_unverified or blocked"
+最关键的是新增一个 contract：
+YAMLFRAMEWORK_USAGE_CONTRACT:  required_evidence:    - pipeline_definition    - runner_output    - state_machine_result    - submission_adapter_result    - flow_outcome_generated_by_framework    - pre_submission_check  blocked_conditions:    - direct_playwright_submission    - ad_hoc_submit_script    - manually_fabricated_flow_outcome    - summary_only_pack
+2. devframe-control-plane：提供真正可用的快乐路径
+control-plane 要解决“正确路径难用”的问题。
+需要新增：
+YAMLdevframe_control_plane_required:  reference_pipelines:    - "pipelines/reference_paper_review.yaml"    - "pipelines/reference_gpt_review_pack.yaml"  commands:    - "devframe run pipelines/reference_paper_review.yaml --dry-run"    - "devframe run pipelines/reference_paper_review.yaml --with-submission --dry-run"    - "devframe pack build --task <id>"    - "devframe pack validate <zip>"    - "devframe submit --pack <zip> --dry-run"  outputs:    - "FLOW_OUTCOME.json"    - "RUNNER_OUTPUT.txt"    - "STATE_MACHINE_RESULT.json"    - "SUBMISSION_RESULT.json"    - "PRE_SUBMISSION_CHECK.yaml"
+目标是让 agent 不需要知道内部细节，只需要走命令。
+3. dev-frame-opencode：只做执行，不做治理绕过
+opencode 层应该被约束为：
+YAMLdev_frame_opencode_required:  allowed:    - "执行任务"    - "产出候选文件"    - "产出 diff"    - "运行测试"    - "生成执行日志"  prohibited:    - "直接提交 GPT"    - "直接写 FLOW_OUTCOME"    - "直接创建 authoritative closure"    - "绕过 submission_adapter"    - "绕过 state_machine"
+它可以生成执行产物，但不应该拥有最终治理权。
+
+六、是否需要完整 reference pipeline？
+结论：必须需要。
+而且它应该成为下一阶段最高优先级，不应继续扩展论文功能或 GPT 模板功能。
+YAMLpriority:  P0: "建立 reference pipeline"  P1: "建立 pack builder"  P2: "建立 pre-submission framework usage gate"  P3: "再扩展 paper workflow"
+没有 reference pipeline，后续所有 paper workflow 都会继续绕过。
+推荐 reference pipeline 最小范围
+YAMLreference_pipeline:  name: "reference_paper_review_pipeline"  input: "synthetic paper fixture"  no_real_paper: true  no_live_cdp_by_default: true  stages:    - initialize_project    - load_pipeline    - run_synthetic_paper_review    - generate_evidence_pack    - run_pre_submission_gate    - dry_run_submission_adapter    - parse_dummy_review    - generate_flow_outcome    - closure
+验收标准：
+YAMLacceptance_criteria:  - "不出现 ad-hoc Playwright 脚本"  - "不出现手写 submit_to_gpt.py"  - "FLOW_OUTCOME 由 runner 生成"  - "pack manifest 双向一致"  - "pre-submission gate pass"  - "submission_adapter 被调用"  - "state_machine 被调用"  - "所有输出可追溯到 pipeline run id"
+
+七、可执行推进方案
+建议按三步走。
+第一步：立即冻结 ad-hoc submission
+先做一个小任务，不要大改架构。
+YAMLtask_1:  name: "BYPASS-GUARD-A1"  repo: "agent-acceptance"  goal: "定义并检测未授权 direct Playwright / submit_to_gpt 绕过"  deliverables:    - "NO_BYPASS_SUBMISSION_CONTRACT.md"    - "scripts/check_submission_bypass.*"    - "tests for allowed bridge vs blocked ad-hoc scripts"
+它不解决快乐路径，但先防止继续恶化。
+第二步：补 reference pipeline
+YAMLtask_2:  name: "REF-PAPER-1"  repo: "devframe-control-plane"  goal: "建立 synthetic paper review 的端到端 reference pipeline"  deliverables:    - "pipelines/reference_paper_review.yaml"    - "examples/reference_paper_review/"    - "RUNNER_OUTPUT sample"    - "FLOW_OUTCOME generated sample"    - "SUBMISSION_RESULT dry-run sample"    - "PRE_SUBMISSION_CHECK sample"
+第三步：把 pre-submission gate 接进 pipeline
+YAMLtask_3:  name: "PRE-SUBMIT-B1"  repo: "devframe-control-plane"  goal: "让 devframe run 自动调用 pre-submission gate"  requirement:    - "pre-submission fail -> runner fail"    - "missing pipeline provenance -> fail"    - "summary-only pack -> fail"
+
+八、给 agent 的任务提示词
+下面这段可以直接复制给 agent。
+任务名称：ARCH-GAP-A1: Framework Usage Enforcement and Reference Pipeline Design任务性质：architecture_hardening / design_plus_minimal_gate / no live CDP / no real user data背景：最近 PAPER-A1 与 Push Blocker Resolution 中，执行 agent 多次绕过既有三层架构：agent-acceptance → devframe-control-plane → dev-frame-opencode。实际执行中出现了直接手写 Playwright、手动 ZIP、手写 FLOW_OUTCOME、手动提交 GPT 的情况。这说明框架组件虽存在，但端到端快乐路径没有固化，且没有 gate 阻止绕过。核心判断：这不是单纯执行纪律问题，而是设计缺陷：正确路径不是最小阻力路径，绕过路径成本更低。目标：1. 定义“必须使用框架路径”的验收规则。2. 阻止未授权 ad-hoc submission script 被当作正式 evidence。3. 设计 reference paper review pipeline，使 devframe-control-plane 成为最小阻力路径。4. 不处理真实论文，不启用 live CDP，不删除或清理 evidence。请分两个层次完成。第一部分：agent-acceptance 规范层设计新增或更新以下文档：1. docs/framework-usage-enforcement.md必须说明：- 为什么 direct Playwright / submit_to_gpt.py 属于框架绕过- 为什么 agent summary / manual FLOW_OUTCOME 不是 authoritative evidence- 正式任务必须提供 pipeline provenance- 哪些情况下允许 historical artifact 或 negative fixture- 绕过行为如何判定 blocked / review_unverified2. contracts/framework_usage_contract.yaml 或等价文档至少包含：FRAMEWORK_USAGE_CONTRACT:  required_evidence:    - pipeline_definition    - pipeline_run_id    - runner_output    - state_machine_result    - submission_adapter_result    - pre_submission_check    - flow_outcome_generated_by_framework  blocked_conditions:    - direct_playwright_submission    - ad_hoc_submit_to_gpt_script    - manually_fabricated_flow_outcome    - summary_only_evidence_pack    - missing_pipeline_provenance  allowed_exceptions:    - historical_artifact_declared    - negative_fixture_declared    - explicit_authorized_pilotNO_BYPASS_SUBMISSION_CONTRACT:  allowed_submission_paths:    - control_plane/submission_adapter.py    - control_plane/playwright_bridge.py    - devframe CLI submission command  blocked_patterns:    - submit_to_gpt.py outside approved adapter    - live_handoff_transfer.py outside approved adapter    - direct sync_playwright/async_playwright in evidence_packs or docs scripts    - direct connect_over_cdp outside approved bridge第二部分：reference pipeline 设计在 devframe-control-plane 侧设计一条 reference pipeline，但本任务可先只提交设计文档，不做完整实现。新增文档：docs/reference-paper-review-pipeline.md必须说明：- reference pipeline 的目标- 从 devframe init paper_iteration 到 closure 的完整路径- 每一步由哪个组件负责- 哪些文件由框架生成，哪些文件由 executor 生成- 如何生成 FLOW_OUTCOME- 如何调用 pre-submission gate- 如何证明 submission_adapter 被使用- 如何禁止手写 Playwright 直接提交建议 pipeline 阶段：1. initialize_project2. load_pipeline3. run_synthetic_paper_task4. collect_actual_deliverables5. build_evidence_pack6. run_pre_submission_gate7. submission_adapter_dry_run8. parse_review_result9. state_machine_transition10. generate_flow_outcome11. closure第三部分：最小 bypass 检测脚本如果项目结构允许，新增一个最小脚本：scripts/check_submission_bypass.*功能：- 扫描新增或修改文件- 检测以下模式：  - sync_playwright  - async_playwright  - connect_over_cdp  - submit_to_gpt.py  - live_handoff_transfer.py- 如果这些模式出现在 approved adapter 之外，则 fail- tests/、historical artifact、negative fixture 可通过声明豁免注意：如果实现脚本会引起范围过大，可以先只写设计文档和测试计划，不要硬做。安全边界：- 不得删除、移动、重命名 evidence- 不得清理历史 runs- 不得移除或弱化 guard- 不得默认开启 live CDP- 不得处理真实用户论文- 不得伪造 FLOW_OUTCOME- 不得伪造 pipeline run output验证：运行现有测试。如新增脚本，必须添加至少以下测试：- allowed: control_plane/playwright_bridge.py- blocked: evidence_packs/x/submit_to_gpt.py- blocked: docs/submit_proposal_to_gpt.py- allowed: tests fixture- allowed: declared historical artifact输出 closure：REVIEW_RUN_ID: arch-gap-a1-framework-enforcement-v1overall_judgment: ready_for_review | blockeddeliverables:  framework_usage_doc: path-or-null  framework_usage_contract: path-or-null  reference_pipeline_doc: path-or-null  bypass_detection_script: path-or-null  tests: path-or-nullvalidation:  tests: pass | fail | not_run  bypass_checker: pass | fail | not_runsafety:  evidence_deleted: no  evidence_moved: no  evidence_renamed: no  evidence_fabricated: no  guard_removed: no  guard_weakened: no  live_cdp_enabled: no  real_user_data_processed: noblocking_issues:  - none or exact issuerationale: "说明如何把正确框架路径变成正式验收要求"
+九、最终结论
+YAMLfinal_assessment:  design_defect: "是，主要问题"  execution_discipline_issue: "是，但属于症状"  need_reference_pipeline: "必须"  need_enforcement_gate: "必须"  need_pre_submission_check: "必须"  need_new_task_priority: "高于继续扩展论文功能"  immediate_next_task: "ARCH-GAP-A1 或 REF-PAPER-1"
+一句话总结：现在的问题不是 agent 没有使用框架，而是框架没有让自己成为唯一自然路径。下一步必须先修“框架可用性 + 绕过不可验收”，否则论文功能、GPT 模板和 evidence pack 都会继续被临时脚本架空。

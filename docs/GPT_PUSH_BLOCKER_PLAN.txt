@@ -1,0 +1,64 @@
+推荐 C 方案：不要补伪 closure，也不要简单排除目录；应当给 runs 目录建立“证据类型分类机制”，让 pre-push governance gate 区分 completed run、historical incomplete run 和 negative test fixture。
+这既不删除 evidence，也不伪造 evidence，也不是绕过 hook，而是修正 gate 的错误前提：不是 runs/ 下每个目录都必然代表“已完成闭合的正式 run”。**
+YAMLrecommendation: "C：引入 run evidence classification，而不是补假文件或硬编码排除"judgment:  A: "不推荐作为主方案"  B: "不推荐"  C: "推荐"reason: "t-governance-convergence 是历史未闭合 run，negative-incomplete-chain 是负向测试样例；二者都不应被当成正式 completed run 强制要求 closure evidence。"
+为什么不推荐 A
+A 方案是“补充如实声明未完成闭合的占位文件”。它比伪造 evidence 好，但有一个问题：如果补的是 review.md、review.yaml、final-report.md 这类名字，容易让后续 reviewer 误以为这个 run 已经正式 closure。
+可以补“声明文件”，但不应该伪装成正常 closure 文件。也就是说，可以补：
+RUN_CLASSIFICATION.yamlINCOMPLETE_RUN_DECLARATION.md
+但不建议补：
+review.mdreview.yamlfinal-report.md
+除非这些文件内部非常明确地写：
+YAMLoverall_judgment: review_unverifiedclosure_completed: falseaccepted: false
+即便如此，也容易污染证据语义。
+为什么不推荐 B
+B 方案是“修改 governance gate 排除这两个目录”。这会变成路径级特判，短期能 push，长期会损害 governance gate 的可信度。
+问题在于：
+这两个目录不是“应该被忽略”，而是“应该被正确分类”。如果直接排除，后续就看不出它们为什么不参与 completed-run 验证。
+推荐方案 C：分类验证
+把 runs/** 下的 evidence 分成三类：
+YAMLrun_evidence_classes:  completed_run:    meaning: "正式闭合 run"    validation: "必须具备完整 closure evidence"  historical_incomplete_run:    meaning: "历史遗留、未完成闭合的 run"    validation: "必须有明确未闭合声明，不允许被计入 accepted evidence"  negative_test_fixture:    meaning: "故意构造的不完整/错误样例，用于测试 gate 能否识别失败"    validation: "必须声明 expected_invalid，不允许被当作正式 run"
+这样处理后，pre-push gate 不是被绕过，而是变得更准确。
+
+具体执行步骤
+第一步：给第一个目录加“未闭合声明”
+新增文件：
+runs/t-governance-convergence-20260601/RUN_CLASSIFICATION.yaml
+建议内容：
+YAMLrun_id: "t-governance-convergence-20260601"classification: "historical_incomplete_run"closure_status: "not_closed"accepted: falsereview_verified: falsesynthetic_or_real: "historical_project_evidence"reason: "This run was started but never received a formal closure review."existing_files:  - "chain-evidence.json"  - "diff.patch"  - "test-output.md"known_missing_closure_files:  - "safety-report.json"  - "review.md"  - "review.yaml"  - "final-report.md"governance_rule:  - "Must not be counted as completed run evidence."  - "Must not be used to support accepted closure."  - "May be retained as historical incomplete evidence."safety:  evidence_deleted: false  evidence_moved: false  evidence_renamed: false  evidence_fabricated: false
+再新增：
+runs/t-governance-convergence-20260601/INCOMPLETE_RUN_DECLARATION.md
+内容写清楚：
+Markdown# Incomplete Run DeclarationThis directory is retained as historical evidence only.This run was not formally closed.It must not be interpreted as accepted closure evidence.No missing review, safety, or final report files are being fabricated.Known existing files:- chain-evidence.json- diff.patch- test-output.mdKnown missing closure files:- safety-report.json- review.md- review.yaml- final-report.mdGovernance disposition:- classification: historical_incomplete_run- accepted: false- review_verified: false
+第二步：给 negative case 加“负向测试声明”
+新增文件：
+runs/t-chain-evidence-hardening-20260601/negative-incomplete-chain/RUN_CLASSIFICATION.yaml
+建议内容：
+YAMLrun_id: "negative-incomplete-chain"classification: "negative_test_fixture"expected_valid: falseexpected_invalid: trueaccepted: falsereview_verified: falsepurpose: "Negative fixture used to verify that governance validation catches incomplete or inconsistent chain evidence."expected_failures:  - "chain-evidence.json missing executor_id"  - "run_id mismatch"governance_rule:  - "Must not be validated as a completed run."  - "Must be allowed only as an explicitly declared negative fixture."  - "Must not be used as passing evidence."safety:  evidence_deleted: false  evidence_moved: false  evidence_renamed: false  evidence_fabricated: false
+可选新增：
+runs/t-chain-evidence-hardening-20260601/negative-incomplete-chain/NEGATIVE_FIXTURE_DECLARATION.md
+内容：
+Markdown# Negative Fixture DeclarationThis directory is intentionally invalid.It exists to test that governance validation detects:- missing executor_id- run_id mismatchThis fixture must not be treated as completed run evidence.This fixture must not support any accepted closure claim.Governance disposition:- classification: negative_test_fixture- expected_valid: false- expected_invalid: true
+第三步：修改 pre-push governance gate
+不要写成：
+Python运行if path in [...]:    skip()
+而应写成分类逻辑：
+YAMLgate_logic:  if RUN_CLASSIFICATION.yaml absent:    treat_as: completed_run    require_full_closure_evidence: true  if classification == completed_run:    require:      - chain-evidence.json      - diff.patch      - test-output.md      - safety-report.json      - review.md      - review.yaml      - final-report.md    validate_chain_evidence: strict  if classification == historical_incomplete_run:    require:      - RUN_CLASSIFICATION.yaml      - INCOMPLETE_RUN_DECLARATION.md    assert:      - accepted == false      - review_verified == false      - no claim of closure accepted    do_not_require_full_closure_files: true  if classification == negative_test_fixture:    require:      - RUN_CLASSIFICATION.yaml    assert:      - expected_invalid == true      - accepted == false      - review_verified == false    do_not_require_strict_chain_validity: true    do_not_count_as_completed_evidence: true
+这个改动的本质是：
+gate 继续验证 evidence，只是按照 evidence 类型使用不同规则。
+第四步：增加测试
+至少加 3 类测试：
+YAMLtests:  completed_run:    expected: "完整 evidence 才 pass"  historical_incomplete_run:    expected: "有 RUN_CLASSIFICATION + INCOMPLETE_RUN_DECLARATION 时 pass，但不得计入 accepted closure"  negative_test_fixture:    expected: "允许保留故意无效 chain，但必须 expected_invalid=true，且不得计入 completed run"
+重点测试：
+YAMLmust_fail_cases:  - "negative fixture 没有 RUN_CLASSIFICATION.yaml"  - "historical incomplete run 声称 accepted: true"  - "negative fixture 声称 review_verified: true"  - "completed_run 缺少 review.yaml"
+第五步：运行验证
+建议 agent 执行：
+Bashgit statusgit log --oneline -8# 查找 pre-push gate 位置find . -maxdepth 4 -type f | grep -Ei 'pre-push|governance|gate|hook|chain|evidence'# 运行测试python -m pytest# 直接运行 pre-push governance gate# 以仓库实际脚本名为准，例如：python scripts/pre_push_governance_gate.py
+如果 hook 是 .git/hooks/pre-push 调用项目脚本，也要运行项目脚本本体，不要只运行 pytest。
+第六步：提交顺序
+建议把治理修复做成一个独立 commit，放在这 5 个未推送 commits 之后：
+Bashgit add runs/t-governance-convergence-20260601/RUN_CLASSIFICATION.yamlgit add runs/t-governance-convergence-20260601/INCOMPLETE_RUN_DECLARATION.mdgit add runs/t-chain-evidence-hardening-20260601/negative-incomplete-chain/RUN_CLASSIFICATION.yamlgit add runs/t-chain-evidence-hardening-20260601/negative-incomplete-chain/NEGATIVE_FIXTURE_DECLARATION.mdgit add <pre-push gate script>git add <tests>git commit -m "fix: classify historical and negative run evidence for governance gate"
+然后再 push：
+Bashgit push
+最终判断
+YAMLrecommended_plan: "C"summary: "新增 run evidence classification，保留历史 evidence，显式标记未闭合 run 和负向测试样例，并修改 governance gate 按类型验证。"do_not_do:  - "不要删除 runs 目录"  - "不要移动或重命名 evidence"  - "不要伪造 review.md / review.yaml / final-report.md"  - "不要跳过 pre-push hook"  - "不要硬编码排除这两个目录"acceptable:  - "新增声明文件"  - "新增分类 metadata"  - "修改 gate 的验证语义"  - "新增测试覆盖 completed / incomplete / negative 三类 run"expected_result: "pre-push gate 通过，同时 governance 语义更清晰，不损害 Evidence-First 原则"
+一句话：不要把历史不完整 evidence 修成“看似完整”，而要让系统承认并识别它是不完整 evidence；不要把 negative case 当成错误目录排除，而要让系统知道它是故意失败的测试样例。

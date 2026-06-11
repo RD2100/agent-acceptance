@@ -1,0 +1,48 @@
+REVIEW_RUN_ID: "gpt-review-template-chinese-final-review-v1"
+template_version: "gpt-review-template-v1"
+task_type: "design_review"
+review_stage: "closure"
+overall_judgment: "accepted"
+reviewer_type: "gpt"
+contract_id: null
+contract_version: null
+evidence_pack: null
+evidence_inspected:
+
+
+path: "GPT_REVIEW_PROMPT_TEMPLATE(5).md"
+sha256: null
+inspected: true
+role: "human_facing_chinese_template"
+
+
+path: "gpt_review_result.schema(4).json"
+sha256: null
+inspected: true
+role: "machine_validation_schema"
+blocking_reasons: []
+missing_evidence: []
+scope_violation: false
+fake_green_risk: false
+safety_boundaries_respected: true
+required_next_action: "Adopt the Chinese GPT review prompt template as the standard template, with a minor follow-up note clarifying that enum values must remain English schema values."
+allow_proceed: true
+review_unverified_reason: null
+created_at: "2026-06-06T22:00:00+09:00"
+rationale: "The Chinese template preserves schema-compatible English field names while translating author-facing explanations, instructions, comments, and rules into Chinese. The six-step prompt-author workflow is clear, the required reply format remains aligned with the schema, evidence_pack remains valid as null or object, and the core Evidence-First / safety constraints are retained. The only minor non-blocking issue is that placeholders such as {{任务类型}} could be clarified to mean an English enum value such as design_review, not a Chinese free-text label. GPT_REVIEW_PROMPT_TEMPLATE gpt_review_result.schema"
+task_type_specific:
+design_review:
+chinese_translation_clarity: "adequate"
+ambiguous_phrases:
+
+
+"Non-blocking: {{任务类型}}, {{审查阶段}}, {{角色}} 等中文占位符建议补一句说明：实际填充值必须符合 schema 枚举或字段约束，不能随意翻译为中文。"
+mixed_language_strategy:
+judgment: "reasonable"
+rationale: "字段名保持英文可以维持 schema 兼容；说明、注释和作者须知使用中文，便于当前项目中文化后的使用。"
+author_instructions_six_steps:
+judgment: "clear"
+rationale: "6 步流程覆盖复制模板、替换占位符、填写任务上下文、定义 task_type_specific、保持回复格式不变、提交 evidence pack，流
+
+
+

@@ -1,0 +1,65 @@
+简洁版方案：HANDOFF-A1
+对话超载与 GPT 回复截断防护
+YAML任务判断: "必须立即处理"风险等级: "high"核心问题:  - "agent 可能在 GPT 回复尚未完整生成时读取 GPT_REPLY.txt"  - "长对话导致 GPT 响应变慢、截断风险增加、审查稳定性下降"  - "缺少自动 handoff 阈值、完整性检测和新对话接续流程"下一步任务: "HANDOFF-A1：自动化对话交接与 GPT 回复完整性保护"
+
+a) 阈值建议
+YAMLhandoff触发阈值:  强制触发:    assistant_message_count: ">= 60"    gpt_response_time: ">= 60s"    review_rounds_same_task: ">= 3"    gpt_reply_bytes: "< 2000 且任务要求结构化审查/任务书/closure 判决"    gpt_reply_missing_required_fields: true  建议触发:    assistant_message_count: ">= 45"    gpt_response_time: ">= 40s"    closure_review_iterations: ">= 2"    evidence_pack_resubmissions: ">= 2"  当前状态:    assistant_message_count: 82    response_time: "90s+"    judgment: "已经超过强制 handoff 阈值"
+针对 174 bytes 问题，必须新增：
+YAMLgpt_reply_completeness_guard:  min_bytes_for_review: 2000  min_bytes_for_task_plan: 3000  required_end_marker: "END_OF_GPT_RESPONSE"  required_yaml_fields:    - overall_judgment    - blocking_reasons    - required_next_action    - allow_proceed  if_missing_or_too_short: "do_not_execute; wait_or_retry"
+一句话：GPT_REPLY.txt 少于 2000 bytes 或没有结束标记，agent 不得执行。
+
+b) HANDOFF.md 内容要求
+HANDOFF.md 必须由当前 GPT 生成，agent 只负责保存和传递，不得改写实质内容。
+YAMLHANDOFF.md必须包含:  1_项目身份:    - "项目名称"    - "三层架构"    - "当前仓库"    - "当前任务链"  2_已完成事项:    - "WORKFLOW-HARDENING-A1 accepted"    - "WORKFLOW-HARDENING-A2 deployed"    - "CONTROL-PLANE-A1 accepted"    - "各任务 REVIEW_RUN_ID"    - "accepted / blocked / open 状态"  3_当前未解决问题:    - "GPT 回复 174 bytes 提前读取"    - "长对话 82 assistant messages"    - "缺少 handoff 自动化"    - "缺少 GPT_REPLY 完整性 guard"  4_安全边界:    - "不得删除、移动、重命名 evidence"    - "不得伪造 GPT accepted"    - "不得启用 live CDP"    - "不得处理真实论文/用户私密文本"    - "不得读取 cookies/session/profile"    - "不得绕过 validator"  5_执行规则:    - "Evidence-First"    - "agent summary is not evidence"    - "ready_for_review is not closed"    - "closed requires GPT accepted + ledger"    - "summary-only pack 本地 fail"    - "validator fail 必须 fail-closed"  6_当前上下文压缩摘要:    - "关键决策"    - "关键失败模式"    - "关键修复"    - "后续任务排序"  7_下一任务:    task_id: "HANDOFF-A1"    task_goal: "实现自动化 handoff 与 GPT reply completeness guard"    status: "authorized_to_execute"  8_新对话启动提示词:    - "让新 GPT 读取 HANDOFF.md"    - "要求 YAML 确认理解"    - "确认 ready_for_next_authorization"  9_结束标记:    - "END_OF_HANDOFF"
+必须要求：
+YAMLhandoff质量要求:  min_size: ">= 8000 bytes"  max_size: "不强制，但建议 8k-20k 字符"  must_be_markdown: true  must_have_end_marker: "END_OF_HANDOFF"  agent_may_edit: false
+
+c) agent 端自动化执行步骤
+任务书：HANDOFF-A1
+自动化对话交接与 GPT 回复完整性保护
+任务名称：HANDOFF-A1：自动化对话交接与 GPT 回复完整性保护仓库：优先 devframe-control-plane；如 handoff 协议属于规范层，可在 agent-acceptance 同步文档。执行授权：已授权直接执行，不要再问“是否继续”。只有删除/移动/重命名 evidence、启用 live CDP、处理真实数据、伪造证据、移除 guard 时才停下确认。
+
+第一步：新增 GPT 回复完整性检测
+新增脚本：
+scripts/validate_gpt_reply_completeness.py
+检查：
+YAMLchecks:  - "GPT_REPLY.txt exists"  - "file_size >= min_bytes"  - "contains END_OF_GPT_RESPONSE or valid final YAML"  - "if expected_yaml=true, required fields exist"  - "not truncated mid-code-block"  - "not truncated mid-yaml"  - "not only 1-3 short lines"
+默认阈值：
+YAMLdefaults:  review_min_bytes: 2000  task_plan_min_bytes: 3000  handoff_min_bytes: 8000  require_end_marker: true
+失败行为：
+YAMLon_fail:  - "do not execute"  - "mark GPT_REPLY_INCOMPLETE"  - "retry read after delay or request regeneration"  - "write GPT_REPLY_COMPLETENESS_RESULT.yaml"
+
+第二步：新增 handoff 触发检测
+新增脚本：
+scripts/check_handoff_needed.py
+输入：
+YAMLinputs:  - conversation_stats.json  - assistant_message_count  - response_time_seconds  - review_round_count  - last_gpt_reply_bytes
+规则：
+YAMLhandoff_needed_if:  - "assistant_message_count >= 60"  - "response_time_seconds >= 60"  - "review_round_count >= 3"  - "last_gpt_reply_bytes < 2000"
+输出：
+YAMLHANDOFF_NEEDED.yaml:  handoff_needed: true | false  reasons: []  recommended_action: "generate_handoff | continue"
+
+第三步：实现 handoff 生成流程
+不要让 agent 自己写实质内容。流程必须是：
+YAMLhandoff_generation_flow:  1: "agent 请求当前 GPT 生成 HANDOFF.md"  2: "GPT 输出完整 HANDOFF.md，结尾含 END_OF_HANDOFF"  3: "agent 保存为 HANDOFF.md"  4: "agent 运行 validate_handoff.py"  5: "通过后作为 .md 附件传入新对话"
+新增：
+scripts/validate_handoff.py
+检查：
+YAMLchecks:  - "HANDOFF.md exists"  - "size >= 8000 bytes"  - "contains END_OF_HANDOFF"  - "contains project identity"  - "contains completed phases"  - "contains current status"  - "contains safety boundaries"  - "contains next task"  - "contains new conversation prompt"
+
+第四步：新对话自动启动协议
+新对话第一条消息固定为：
+请阅读附件 HANDOFF.md，理解项目身份、架构、已完成阶段、当前状态、安全边界和推荐下一步。请使用 YAML 回复确认：overall_judgment: accepted | blocked | review_unverifiedhandoff_understood: yes | noproject_identity_understood: yes | noarchitecture_understood: yes | nocompleted_phases_understood: yes | nocurrent_state_understood: yes | nosafety_boundaries_understood: yes | nonext_steps_understood: yes | noready_for_next_authorization: yes | norationale: "<中文说明>"
+新 GPT 只有返回：
+YAMLoverall_judgment: acceptedhandoff_understood: yesready_for_next_authorization: yes
+agent 才能继续执行下一任务。
+
+第五步：写入标准协议文档
+新增或更新：
+docs/automated-handoff-protocol.mddocs/gpt-reply-completeness-guard.md
+必须写明：
+YAMLrules:  - "短 GPT_REPLY 不得执行"  - "缺 required YAML fields 不得执行"  - "长对话超过阈值必须 handoff"  - "handoff 必须由 GPT 写，agent 不得改写"  - "新对话必须确认理解后才能继续"
+
+第六步：测试
+新增测试：
+tests/test_gpt_reply_completeness.pytests/test_handoff_trigger.

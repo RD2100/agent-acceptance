@@ -1,0 +1,57 @@
+REVIEW_RUN_ID: "gpt-review-template-round6-final-review-v1"
+template_version: "gpt-review-template-v1"
+task_type: "design_review"
+review_stage: "closure"
+overall_judgment: "accepted"
+reviewer_type: "gpt"
+contract_id: null
+contract_version: null
+evidence_pack: null
+evidence_inspected:
+
+
+path: "GPT_REVIEW_PROMPT_TEMPLATE(4).md"
+sha256: "6ce27484dcd0b24876414d31a2b1ba64e1874c40b4d1660635f3c72e5d37c444"
+inspected: true
+role: "human_facing_template"
+
+
+path: "gpt_review_result.schema(3).json"
+sha256: "4bac0ea3c433179f8502f19b112ded5029d64a141d8e633b597da300c2d2c31b"
+inspected: true
+role: "machine_validation_schema"
+blocking_reasons: []
+missing_evidence: []
+scope_violation: false
+fake_green_risk: false
+safety_boundaries_respected: true
+required_next_action: "Commit and adopt GPT_REVIEW_PROMPT_TEMPLATE.md plus gpt_review_result.schema.json as the canonical GPT review prompt standard."
+allow_proceed: true
+review_unverified_reason: null
+created_at: "2026-06-06T22:00:00+09:00"
+rationale: "Round 6 resolves the remaining evidence_pack inconsistency: the template now uses evidence_pack: null as a valid canonical default and shows the full object form separately in comments, while the schema now allows evidence_pack to be either object or null. The task_type_specific limitation is documented in both the template and schema, with schema enforcement of exactly one valid task_type key and application-level enforcement of equality to task_type. The template and schema are now aligned enough for adoption as the canonical GPT review format. GPT_REVIEW_PROMPT_TEMPLATE gpt_review_result.schema"
+task_type_specific:
+design_review:
+design_completeness: "adequate"
+template_completeness: "adequate"
+schema_completeness: "adequate"
+template_schema_alignment: "yes"
+task_type_enum_present: "yes"
+task_type_specific_grouped: "schema_enforced_to_one_valid_task_type_key"
+task_type_specific_exact_key_match: "documented_for_application_code"
+overall_judgment_standardized: "yes"
+evidence_inspected_hashes_supported: "yes"
+evidence_pack_optional_handling: "fixed"
+md_and_schema_both_shipped: "yes"
+list_fields_use_arrays: "yes"
+judgment_allow_proceed_constraints_present: "yes"
+recommendations:
+
+
+"In a future hardening pass, add validator tests for accepted/blocked/review_unverified allow_proceed behavior."
+
+
+"In application code, enforce task_type_specific key equality with the task_type field, as documented."
+
+
+
