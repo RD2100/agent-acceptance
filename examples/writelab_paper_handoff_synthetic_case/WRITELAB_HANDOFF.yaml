@@ -1,0 +1,23 @@
+handoff_id: "WRITELAB-HANDOFF-SYNTH-001"
+source_project: "writelab"
+source_artifact_type: "paragraph_diagnosis"
+content_classification: "synthetic"
+privacy_mode: "synthetic_only"
+user_authorization: "synthetic"
+source_refs:
+  - "D:/writelab/backend/app/api/analysis.py"
+  - "D:/writelab/backend/app/schemas/diagnosis.py"
+target_contracts:
+  - "PAPER_TASK_OUTPUT_CONTRACT"
+  - "PAPER_REDACTED_EVIDENCE_PACK_CONTRACT"
+diagnosis_summary:
+  expected_function: "path_design"
+  actual_function: "policy_path_listing"
+  function_match_score: 64
+  ai_like_risk: "medium"
+  problem_type_count: 3
+evidence_basis: "synthetic_case"
+limitations:
+  - "Synthetic metadata-only packet."
+  - "No original paragraph text, text spans, rewrite text, citation original text, or author identity is included."
+

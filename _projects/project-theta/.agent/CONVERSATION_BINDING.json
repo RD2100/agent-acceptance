@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "awsp_version": "1.3.0",
+  "project_id": "project-theta",
+  "project_root": "D:\\agent-acceptance\\_projects\\project-theta",
+  "default_conversation_policy": "one_agent_one_conversation",
+  "bindings": [
+    {
+      "agent_id": "agent-theta-001",
+      "role": "executor",
+      "binding_status": "pending_binding",
+      "conversation_id": "pending-project-theta-001",
+      "chat_url": null,
+      "cdp_endpoint": "http://localhost:9222",
+      "allowed_task_scope": [
+        "*"
+      ],
+      "capture_policy": {
+        "must_match_run_id": true,
+        "must_match_task_id": true,
+        "must_include_end_marker": true,
+        "forbid_last_message_only_capture": true
+      }
+    }
+  ]
+}

@@ -171,6 +171,7 @@ write_set:
   - "memory/**"
   - "tasks/**"
   - "examples/**"
+  - "_smoke_project_beta/**"
   - "archive/**"
 known_dirty_worktree_excluded:
   - "HANDOFF_REPLY_V4.txt"

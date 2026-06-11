@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "awsp_version": "1.3.0",
+  "project_id": "tripmark",
+  "project_root": "D:/agent-acceptance/_projects/project-alpha",
+  "default_conversation_policy": "one_agent_one_conversation",
+  "bindings": [
+    {
+      "agent_id": "agent-tripmark-001",
+      "role": "executor",
+      "binding_status": "active",
+      "conversation_id": "6a29f71a-f248-83a5-9d1b-a093e69a207b",
+      "chat_url": "https://chatgpt.com/c/6a29f71a-f248-83a5-9d1b-a093e69a207b",
+      "cdp_endpoint": "http://localhost:9222",
+      "allowed_task_scope": [
+        "*"
+      ],
+      "capture_policy": {
+        "must_match_run_id": true,
+        "must_match_task_id": true,
+        "must_include_end_marker": true,
+        "forbid_last_message_only_capture": true
+      }
+    }
+  ]
+}

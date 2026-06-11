@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "awsp_version": "1.3.0",
+  "project_id": "project-zeta",
+  "project_root": "D:\\agent-acceptance\\_projects\\project-zeta",
+  "default_conversation_policy": "one_agent_one_conversation",
+  "bindings": [
+    {
+      "agent_id": "agent-zeta-001",
+      "role": "executor",
+      "binding_status": "pending_binding",
+      "conversation_id": "pending-project-zeta-001",
+      "chat_url": null,
+      "cdp_endpoint": "http://localhost:9222",
+      "allowed_task_scope": [
+        "*"
+      ],
+      "capture_policy": {
+        "must_match_run_id": true,
+        "must_match_task_id": true,
+        "must_include_end_marker": true,
+        "forbid_last_message_only_capture": true
+      }
+    }
+  ]
+}

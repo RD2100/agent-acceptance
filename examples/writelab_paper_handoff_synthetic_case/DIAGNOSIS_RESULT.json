@@ -1,0 +1,37 @@
+{
+  "handoff_id": "WRITELAB-HANDOFF-SYNTH-001",
+  "source_project": "writelab",
+  "privacy_redaction_status": "synthetic_only",
+  "contains_text_spans": false,
+  "contains_original_paragraph": false,
+  "contains_rewrite_text": false,
+  "expression_metrics": {
+    "sentence_count": 4,
+    "avg_sentence_length": 28.5,
+    "abstract_noun_density": 0.25,
+    "dunhao_density": 0.02,
+    "template_sentence_count": 2,
+    "normative_expression_count": 3,
+    "ai_like_risk": "medium"
+  },
+  "diagnosis": {
+    "expected_function": "path_design",
+    "actual_function": "policy_path_listing",
+    "function_match_score": 64,
+    "problem_types": [
+      "weak_mechanism",
+      "insufficient_evidence",
+      "template_expression"
+    ],
+    "severity_counts": {
+      "low": 0,
+      "medium": 3,
+      "high": 0
+    }
+  },
+  "limitations": [
+    "Synthetic case only.",
+    "Metadata-only result; no user text is present."
+  ]
+}
+
