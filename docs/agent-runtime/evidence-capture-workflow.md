@@ -378,6 +378,25 @@ If an agent manually runs `git add .` or `git add _evidence/`, the hook output f
 
 ---
 
+## 8. Hook Failure Semantics
+
+Output persistence is not merely logging — it is a structured enforcement mechanism. The pre-commit hook (v2.3.0) implements fail-closed semantics for all required governance stages:
+
+- **Blocking stages**: sadp-audit, ai-guard, test-governance. Any non-zero exit code from these stages causes `overall_result: BLOCKED` and hook exit 1, which rejects the commit.
+- **Advisory stages**: manifest-regen. Exit code is logged but does not affect the commit decision.
+
+Raw hook output should be captured when available. The files in `_evidence/hook-output/` are original captures produced at commit time, not replay output generated after the fact. Each file header includes `Source: pre-commit hook (original)` to distinguish original from replay.
+
+`latest.json` is a structured index that references the individual stage output files. It is not a replacement for full raw console logs. Evidence packs should include both `latest.json` and the raw stage outputs when submitting to GPT review.
+
+Replay-style evidence (re-running the hook after the commit to capture output) must be explicitly labeled as replay. The Evidence Pack Standard (Validation Rule 8) rejects replay evidence as a substitute for original output.
+
+For the complete failure semantics specification, see [Hook Failure Semantics](hook-failure-semantics.md).
+
+A validation script (`scripts/validate_hook_output.py`) verifies that `latest.json` conforms to the schema and that nonzero blocking-stage exit codes correspond to `overall_result: BLOCKED`.
+
+---
+
 ## Related Documents
 
 - [Evidence Pack Standard](evidence-pack-standard.md)
@@ -385,3 +404,4 @@ If an agent manually runs `git add .` or `git add _evidence/`, the hook output f
 - [Workspace Closure Standard](workspace-closure-standard.md)
 - [Universal Agent Workflow Standard](universal-agent-workflow-standard.md)
 - [Pre-GPT Review Gate](pre-gpt-review-gate.md)
+- [Hook Failure Semantics](hook-failure-semantics.md)

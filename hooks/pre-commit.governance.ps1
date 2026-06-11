@@ -9,7 +9,7 @@
 
 $ErrorActionPreference = 'Continue'
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$HookVersion = "2.2.0"
+$HookVersion = "2.3.0"
 
 Write-Host "=== Pre-Commit Governance Gate (v$HookVersion) ==="
 
@@ -95,7 +95,7 @@ if (Test-Path $auditScript) {
     }
 
     # Run ai_guard.py separately if it exists
-    # FAILURE SEMANTIC: ai_guard is NON-BLOCKING. Failure produces PASS_WITH_WARNINGS.
+    # FAILURE SEMANTIC: ai_guard is BLOCKING (v2.3.0). Failure causes BLOCKED + exit 1.
     $aiGuardScript = Join-Path $ProjectRoot "tools\ai_guard.py"
     $aiGuardTimeoutSec = 30
     if (Test-Path $aiGuardScript) {
@@ -141,14 +141,14 @@ if (Test-Path $auditScript) {
             }
 
             # Persist ai_guard output
-            $aiHeader = "# AI Guard Output - $isoTimestamp`n# Exit code: $aiGuardExit (non-blocking)`n# Timeout: ${aiGuardTimeoutSec}s`n# Source: pre-commit hook (original)`n`n"
+            $aiHeader = "# AI Guard Output - $isoTimestamp`n# Exit code: $aiGuardExit (blocking)`n# Timeout: ${aiGuardTimeoutSec}s`n# Source: pre-commit hook (original)`n`n"
             $aiHeader + $aiGuardOutput | Out-File -FilePath $aiGuardOutputFile -Encoding utf8
 
             Write-Host "[ai_guard] $aiGuardOutput"
         } catch {
             $aiGuardOutput = "ERROR: $($_.Exception.Message)"
             $aiGuardExit = 1
-            "# AI Guard Output - $isoTimestamp`n# Error during execution (non-blocking)`n`n$aiGuardOutput" | Out-File -FilePath $aiGuardOutputFile -Encoding utf8
+            "# AI Guard Output - $isoTimestamp`n# Error during execution (blocking)`n`n$aiGuardOutput" | Out-File -FilePath $aiGuardOutputFile -Encoding utf8
             Write-Host "[WARN] ai_guard execution failed: $($_.Exception.Message)"
         } finally {
             Pop-Location
@@ -193,7 +193,7 @@ if (Test-Path $auditScript) {
 Write-Host ""
 
 # ---- 3. Advisory governance scan ----
-Write-Host "[3/3] Governance advisory..."
+Write-Host "[3/3] Governance scan..."
 $governanceScript = Join-Path $ProjectRoot "scripts\Test-Governance.ps1"
 $govOutputFile = Join-Path $evidenceDir "test-governance-$timestamp.txt"
 $govElapsedMs = 0
@@ -236,24 +236,19 @@ $stages = @(
     @{ name = "test-governance";  exit_code = $govExit;      output_file = $govOutputFile;      duration_ms = $govElapsedMs }
 )
 
-# Failure semantics (v2.2.0):
-#   BLOCKING:   sadp-audit (exit 1 → hook exits 1, commit rejected)
-#   WARNING:    ai-guard (exit non-zero → PASS_WITH_WARNINGS, commit allowed)
-#   ADVISORY:   manifest-regen, test-governance (exit code logged, never blocks)
+# Failure semantics (v2.3.0):
+#   BLOCKING:   sadp-audit, ai-guard, test-governance (any non-zero → BLOCKED + exit 1)
+#   ADVISORY:   manifest-regen (exit code logged, never blocks)
+#   All required stages must fail closed — no silent pass on failure.
 $overallResult = "PASS"
 foreach ($s in $stages) {
     if ($s.exit_code -ne 0) {
-        if ($s.name -eq "sadp-audit") {
-            # Sole blocking gate — handled earlier with exit 1
+        if ($s.name -ne "manifest-regen") {
+            # sadp-audit, ai-guard, test-governance are all blocking
             $overallResult = "BLOCKED"
             break
-        } elseif ($s.name -eq "ai-guard") {
-            # Non-blocking: downgrade to PASS_WITH_WARNINGS
-            if ($overallResult -eq "PASS") {
-                $overallResult = "PASS_WITH_WARNINGS"
-            }
         }
-        # manifest-regen and test-governance: purely advisory, no effect on result
+        # manifest-regen: advisory only
     }
 }
 
@@ -272,11 +267,13 @@ $jsonSummary = @{
 $jsonSummary | Out-File -FilePath (Join-Path $evidenceDir "latest.json") -Encoding utf8
 
 Write-Host ""
-if ($overallResult -eq "PASS_WITH_WARNINGS") {
-    Write-Host "=== Pre-Commit PASS (with warnings) ==="
-    Write-Host "[WARN] Non-blocking stage(s) had issues — review _evidence/hook-output/ for details."
+if ($overallResult -eq "BLOCKED") {
+    Write-Host "=== Pre-Commit BLOCKED ==="
+    Write-Host "[BLOCKED] A required governance stage failed."
+    Write-Host "[evidence] Output captured to: $evidenceDir"
+    exit 1
 } else {
     Write-Host "=== Pre-Commit PASS ==="
+    Write-Host "[evidence] Output captured to: $evidenceDir"
+    exit 0
 }
-Write-Host "[evidence] Output captured to: $evidenceDir"
-exit 0

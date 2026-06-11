@@ -65,7 +65,7 @@
     },
     "overall_result": {
       "type": "string",
-      "enum": ["PASS", "PASS_WITH_WARNINGS", "BLOCKED"],
+      "enum": ["PASS", "BLOCKED"],
       "description": "Final gate decision"
     }
   }
