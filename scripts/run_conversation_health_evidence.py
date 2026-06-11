@@ -154,7 +154,7 @@ def main():
 
     # Scenario 9: composite force (slow + short + rounds + cdp) → FORCE (exit 1)
     data = json.loads(json.dumps(BASELINE))
-    data["last_known_metrics"]["response_time_seconds"] = 75
+    data["last_known_metrics"]["last_response_time_seconds"] = 75
     data["last_known_metrics"]["last_gpt_reply_bytes"] = 1500
     data["last_known_metrics"]["review_round_count"] = 2
     data["metrics_source"] = "cdp_dom_count"

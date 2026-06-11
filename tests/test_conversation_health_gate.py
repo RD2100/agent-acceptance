@@ -187,6 +187,32 @@ class TestCheckHandoffNeeded:
         }, composite=True)
         assert result["decision"] == "SUGGEST_HANDOFF"
 
+    def test_metrics_source_none_policy_is_warning(self):
+        """metrics_source=none should produce policy='warning', not 'info' (R4 fix)."""
+        result = check_handoff_v2({
+            "metrics_source": "none",
+            "nav_result": "ok",
+        })
+        assert result["decision"] == "UNKNOWN"
+        # Verify all reason policies are in schema enum
+        valid_policies = {"force", "suggest", "force_composite", "human", "suggest_capped", "warning"}
+        for reason in result["reasons"]:
+            assert reason["policy"] in valid_policies, \
+                f"policy '{reason['policy']}' not in schema enum"
+
+    def test_schema_compliant_last_response_time_triggers_composite(self):
+        """Schema uses last_response_time_seconds; CLI must normalize to response_time_seconds."""
+        result = check_handoff_v2({
+            "assistant_message_count": 10,
+            "last_response_time_seconds": 75,
+            "last_gpt_reply_bytes": 1500,
+            "review_round_count": 2,
+            "metrics_source": "cdp_dom_count",
+            "nav_result": "ok",
+        }, composite=True)
+        assert result["decision"] == "FORCE_HANDOFF"
+        assert any(r["code"] == "composite_degradation" for r in result["reasons"])
+
     def test_stale_metrics_suggest(self):
         result = check_handoff_v2({
             "assistant_message_count": 10,

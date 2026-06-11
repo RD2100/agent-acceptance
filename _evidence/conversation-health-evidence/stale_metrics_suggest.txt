@@ -9,13 +9,13 @@
   "reasons": [
     {
       "code": "metrics_stale",
-      "actual": 3878.6,
+      "actual": 3878.7,
       "threshold": 12,
       "policy": "suggest"
     }
   ],
   "recommended_action": "suggest_handoff",
-  "checked_at": "2026-06-11T14:37:33Z",
-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp0x7xy_yl.json"
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpvl86vdy0.json"
 }
 

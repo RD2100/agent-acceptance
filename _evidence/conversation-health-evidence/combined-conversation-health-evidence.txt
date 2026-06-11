@@ -12,7 +12,7 @@
     }
   ],
   "recommended_action": "suggest_handoff",
-  "checked_at": "2026-06-11T14:37:33Z",
+  "checked_at": "2026-06-11T14:43:47Z",
   "source": "D:\\agent-acceptance\\_evidence\\conversation-health-evidence\\nonexistent_file.json"
 }
 
@@ -25,14 +25,14 @@
   "reasons": [
     {
       "code": "metrics_stale",
-      "actual": 3878.6,
+      "actual": 3878.7,
       "threshold": 12,
       "policy": "suggest"
     }
   ],
   "recommended_action": "suggest_handoff",
-  "checked_at": "2026-06-11T14:37:33Z",
-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp0x7xy_yl.json"
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpvl86vdy0.json"
 }
 
 
@@ -50,8 +50,8 @@
     }
   ],
   "recommended_action": "generate_handoff",
-  "checked_at": "2026-06-11T14:37:33Z",
-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpj46ja8cz.json"
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpy7ybtmnv.json"
 }
 
 
@@ -69,8 +69,8 @@
     }
   ],
   "recommended_action": "generate_handoff",
-  "checked_at": "2026-06-11T14:37:33Z",
-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpq1_0tsk9.json"
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpzlatrbh5.json"
 }
 
 
@@ -88,8 +88,8 @@
     }
   ],
   "recommended_action": "generate_handoff",
-  "checked_at": "2026-06-11T14:37:33Z",
-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpimi2cspe.json"
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmprgeujgqv.json"
 }
 
 
@@ -107,8 +107,8 @@
     }
   ],
   "recommended_action": "human_review",
-  "checked_at": "2026-06-11T14:37:34Z",
-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp2vt_f7pa.json"
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmprdlw24sb.json"
 }
 
 
@@ -130,8 +130,8 @@ ERROR: Invalid JSON in metrics file: Expecting property name enclosed in double 
     }
   ],
   "recommended_action": "suggest_handoff",
-  "checked_at": "2026-06-11T14:37:34Z",
-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmposj1w7kh.json"
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp9d9707f7.json"
 }
 
 
@@ -161,7 +161,7 @@ ERROR: Invalid JSON in metrics file: Expecting property name enclosed in double 
     }
   ],
   "recommended_action": "generate_handoff",
-  "checked_at": "2026-06-11T14:37:34Z",
-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp5l_vfbxm.json"
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp5eajrtbn.json"
 }
 

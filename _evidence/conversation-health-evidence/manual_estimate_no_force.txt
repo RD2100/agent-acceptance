@@ -15,7 +15,7 @@
     }
   ],
   "recommended_action": "suggest_handoff",
-  "checked_at": "2026-06-11T14:37:34Z",
-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmposj1w7kh.json"
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp9d9707f7.json"
 }
 

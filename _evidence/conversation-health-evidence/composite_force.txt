@@ -27,7 +27,7 @@
     }
   ],
   "recommended_action": "generate_handoff",
-  "checked_at": "2026-06-11T14:37:34Z",
-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp5l_vfbxm.json"
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp5eajrtbn.json"
 }
 

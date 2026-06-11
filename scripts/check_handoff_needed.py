@@ -346,12 +346,16 @@ def check_handoff_v2(metrics, policy=None, *, mode=None, max_staleness_hours=Non
     if is_unknown_source and not force_reasons and not human_reasons:
         return _build_decision(
             "UNKNOWN", "WARNING",
-            [_reason("no_metrics_source", "none", "cdp_dom_count|wrapper_counter", "info")],
+            [_reason("no_metrics_source", "none", "cdp_dom_count|wrapper_counter", "warning")],
             "suggest_handoff",
             source_label,
         )
 
     # --- Standard threshold checks ---
+    # Normalize schema field names to decision engine field names
+    if "last_response_time_seconds" in metrics and "response_time_seconds" not in metrics:
+        metrics["response_time_seconds"] = metrics["last_response_time_seconds"]
+
     msg_count = metrics.get("assistant_message_count", 0)
     resp_time = metrics.get("response_time_seconds", 0)
     rounds = metrics.get("review_round_count", 0)
@@ -668,6 +672,14 @@ def main():
             metrics = dict(lkm)  # start with nested metrics
         else:
             metrics = {}
+        # Normalize schema field names to decision engine field names
+        _field_map = {
+            "last_response_time_seconds": "response_time_seconds",
+            "last_gpt_reply_bytes": "last_gpt_reply_bytes",
+        }
+        for schema_key, engine_key in _field_map.items():
+            if schema_key in metrics and engine_key not in metrics:
+                metrics[engine_key] = metrics[schema_key]
         # Top-level fields from current.json override / supplement
         for key in ("metrics_source", "last_checked_at"):
             if key in loaded:
