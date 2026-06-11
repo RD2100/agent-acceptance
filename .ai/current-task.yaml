@@ -1,5 +1,5 @@
-task_id: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
-title: Universal Agent Workflow Standard — governance specification
+task_id: EVIDENCE-CAPTURE-STANDARD-A1
+title: Evidence capture standardization — reusable builder + hook output persistence
 priority: P1
 status: in_progress
 mode: "@go edit"

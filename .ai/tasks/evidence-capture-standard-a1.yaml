@@ -1,0 +1,61 @@
+task_id: EVIDENCE-CAPTURE-STANDARD-A1
+title: Evidence capture standardization — reusable builder + hook output persistence
+priority: P1
+status: in_progress
+mode: "@go edit"
+whole_dirty_worktree_allowed: false
+external_upload_allowed: false
+raw_transcript_allowed: false
+real_paper_text_allowed: false
+description: >
+  Standardize evidence capture across the SADP workflow. Replace 39 one-off
+  build scripts with a single reusable parameterized builder. Add hook output
+  persistence to capture original (not replay) audit evidence. Document the
+  standard capture format and workflow.
+
+goal:
+  user_visible_success: >
+    A reusable scripts/build_evidence_pack.py that produces all required evidence
+    files from parameters, and hook output persistence for original audit capture.
+  in_scope:
+    - Create scripts/build_evidence_pack.py (reusable parameterized builder)
+    - Add hook output persistence (stages 2+3 write to _evidence hook log)
+    - Create schemas/agent-runtime/evidence-capture.schema.json
+    - Create docs/agent-runtime/evidence-capture-workflow.md
+    - Build evidence pack and submit to GPT
+  out_of_scope:
+    - Modifying SADP enforcement logic
+    - Modifying ai_guard.py scan rules
+    - Modifying Test-Governance.ps1
+    - Live dispatch
+    - Committing NEG-009 fixtures
+
+gate_0:
+  triggered: true
+  inventory_evidence:
+    queried_sources:
+      - scripts/sadp-audit.ps1
+      - tools/ai_guard.py
+      - hooks/pre-commit.governance.ps1
+      - 39 existing _build_*.py scripts (pattern analysis)
+      - docs/agent-runtime/evidence-pack-standard.md
+      - docs/agent-runtime/evidence-generation-hygiene.md
+    matched_capabilities:
+      - evidence_pack_builder
+      - hook_output_persistence
+      - governance_standard_design
+    compared_against_request:
+      - "standardize raw hook log capture, ai_guard output, evidence pack generation"
+  sufficiency_decision: new_delta_required
+  decision: build_delta
+
+write_set:
+  - ".ai/tasks/evidence-capture-standard-a1.yaml"
+  - ".ai/current-task.yaml"
+  - "scripts/build_evidence_pack.py"
+  - "hooks/pre-commit.governance.ps1"
+  - "schemas/agent-runtime/evidence-capture.schema.json"
+  - "docs/agent-runtime/evidence-capture-workflow.md"
+  - "_evidence/EVIDENCE-CAPTURE-STANDARD-A1/**"
+  - "_evidence/EVIDENCE_PACK_EVIDENCE_CAPTURE_STANDARD_A1.zip"
+  - "hooks/sealed-files-manifest.json"
