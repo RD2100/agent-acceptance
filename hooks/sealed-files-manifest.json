@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-11T16:32:25.6909308+08:00",
+    "generated":  "2026-06-11T16:51:59.3095035+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
@@ -186,6 +186,10 @@
                          {
                              "sha256":  "9A4D978D646647C17446E1741C13A19EE4DC8A814D7A8FAD85F2AEE648436123",
                              "path":  "docs/agent-runtime/historical-evidence-policy.md"
+                         },
+                         {
+                             "sha256":  "F227450006F5B642E90B2B6835AA6B69523CFBD62FBA3F60E48A5EE4A70A5494",
+                             "path":  "docs/agent-runtime/hook-failure-semantics.md"
                          },
                          {
                              "sha256":  "45AD5284DD53F2338330F44FC2BF313291EA90316868CB81ACE8AC4C1F97B1DF",
@@ -484,7 +488,7 @@
                              "path":  "governance/manifest-ignore.txt"
                          },
                          {
-                             "sha256":  "7CBCA651115C71CCAAA4A0D3120C2806FD6864AC925A03D4FA33DE458E24ECD9",
+                             "sha256":  "653438EB1B1C247FC84497AC8EE10B3BBF69968F9CB317EC29652EE94F2747F9",
                              "path":  "hooks/pre-commit.governance.ps1"
                          },
                          {
@@ -540,7 +544,7 @@
                              "path":  "schemas/agent-runtime/chain-evidence.schema.json"
                          },
                          {
-                             "sha256":  "AC99188633A343070D2F1D3A76F4B39C4EE33EDD2BCD33269514CA944DC2D255",
+                             "sha256":  "B0AE902FE0FDABB30DCDD583451CE17513E6D95B960D535EBFF4D0B2CCCB7E44",
                              "path":  "schemas/agent-runtime/evidence-capture.schema.json"
                          },
                          {

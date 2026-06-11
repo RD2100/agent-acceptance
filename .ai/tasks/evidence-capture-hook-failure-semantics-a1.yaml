@@ -1,0 +1,63 @@
+task_id: EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1
+priority: P0
+status: in_progress
+created: "2026-06-11T00:00:00Z"
+mode: "@go edit"
+whole_dirty_worktree_allowed: false
+external_upload_allowed: false
+raw_transcript_allowed: false
+real_paper_text_allowed: false
+
+gate_0:
+  triggered: true
+  inventory_evidence:
+    queried_sources:
+      - hooks/pre-commit.governance.ps1 (v2.1.0 analysis)
+      - schemas/agent-runtime/evidence-capture.schema.json
+      - docs/agent-runtime/evidence-capture-workflow.md
+      - docs/agent-runtime/universal-agent-workflow-standard.md
+    matched_capabilities:
+      - hook_output_persistence
+      - governance_standard_design
+      - failure_semantics_documentation
+    compared_against_request:
+      - "verify and tighten hook failure behavior for ai_guard/test-governance output persistence"
+  sufficiency_decision: new_delta_required
+  decision: build_delta
+
+goal: >
+  Verify and tighten hook failure behavior for ai_guard/test-governance
+  output persistence without changing SADP audit semantics.
+  
+  Specific issues:
+  1. Schema maxItems=3 and enum missing "ai-guard" — latest.json violates schema
+  2. overall_result=BLOCKED when ai-guard fails, but hook exits 0 and prints "PASS"
+  3. No timeout on ai_guard subprocess — can hang commit indefinitely
+  4. Failure semantics not formally documented
+
+scope:
+  - hooks/pre-commit.governance.ps1 (tighten failure propagation + timeout)
+  - schemas/agent-runtime/evidence-capture.schema.json (fix maxItems, add ai-guard)
+  - docs/agent-runtime/hook-failure-semantics.md (new — formal documentation)
+
+write_set:
+  - ".ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml"
+  - "hooks/pre-commit.governance.ps1"
+  - "schemas/agent-runtime/evidence-capture.schema.json"
+  - "docs/agent-runtime/hook-failure-semantics.md"
+  - "tests/test_hook_failure_semantics.py"
+
+constraints:
+  - Do NOT change sadp-audit as the sole blocking gate
+  - Do NOT make ai-guard or test-governance blocking
+  - Keep ai_guard output persistence working
+  - Bump hook version to 2.2.0
+
+acceptance_criteria:
+  - latest.json validates against updated schema
+  - overall_result uses PASS_WITH_WARNINGS for non-blocking failures
+  - Console message matches overall_result
+  - ai_guard subprocess has 30s timeout
+  - Failure semantics documented
+
+depends_on: EVIDENCE-CAPTURE-STANDARD-A1
