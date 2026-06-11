@@ -1,0 +1,10 @@
+task_id: R18-WORKSPACE-CLEANUP-A1
+verdict: PASS
+commits: [104ac8b1, f06ce965]
+total_files: 62
+tests_passed: 1038
+scope_violations: 0
+deny_violations: 0
+post_commit_untracked: 21
+non_deferred_remaining: 0
+deferred_registered: 19

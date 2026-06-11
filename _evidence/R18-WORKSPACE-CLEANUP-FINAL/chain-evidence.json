@@ -1,0 +1,38 @@
+{
+  "chain_id": "R18-WORKSPACE-CLEANUP-FINAL",
+  "date": "2026-06-11",
+  "task_id": "R18-WORKSPACE-CLEANUP-A1",
+  "commits_in_scope": [
+    "bc974d2f",
+    "104ac8b1",
+    "f06ce965"
+  ],
+  "evidence_files": [
+    "deferred-files-register.yaml",
+    "diff-104ac8b1.patch",
+    "diff-combined.patch",
+    "diff-f06ce965.patch",
+    "git-show-104ac8b1.txt",
+    "git-show-f06ce965.txt",
+    "git-status-after.txt",
+    "safety-report.json",
+    "secret-scan-output.txt"
+  ],
+  "post_commit_state": {
+    "untracked_total": 21,
+    "neg_009_deferred": 17,
+    "secret_scan_denied": 2,
+    "non_deferred_remaining": 0
+  },
+  "items_resolved": [
+    "PROJECT_REGISTRY.json reconciliation (104ac8b1)",
+    "Session artifact scripts committed (104ac8b1 + f06ce965)",
+    "NEG-009 files: 17 preserved, formally registered in deferred-files-register.yaml",
+    "NUL artifact removed (104ac8b1)",
+    "final-report.md naming fix (104ac8b1)",
+    "Evidence packs committed (104ac8b1 + f06ce965)",
+    "Builder/generator scripts committed (f06ce965)",
+    "deferred-files-register.yaml created and committed (f06ce965)",
+    "secret-scan-output.txt generated covering all untracked files"
+  ]
+}
