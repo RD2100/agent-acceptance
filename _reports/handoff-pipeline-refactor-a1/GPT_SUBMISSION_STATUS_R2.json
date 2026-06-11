@@ -1,0 +1,11 @@
+{
+  "message_chars": 1571,
+  "sent": true,
+  "captured": true,
+  "valid_end_marker": true,
+  "sent_at": "2026-06-08T21:02:59",
+  "reply_chars": 1362,
+  "reply_sha256": "7786412b0c7231320bddd54300f2fcbf37852240789a6f7f7da0381e5ef4dc03",
+  "result_path": "D:\\agent-acceptance\\evidence_packs\\handoff-pipeline-refactor-a1\\GPT_REVIEW_RESULT_R2.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\handoff-pipeline-refactor-a1\\GPT_REVIEW_RESULT_R2.txt"
+}

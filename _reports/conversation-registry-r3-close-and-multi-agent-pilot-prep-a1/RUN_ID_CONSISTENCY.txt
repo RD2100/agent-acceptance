@@ -1,0 +1,18 @@
+﻿{
+  "consistent": true,
+  "errors": [],
+  "details": {
+    "run_id_from_file": "CONVERSATION_REGISTRY_R3_CLOSE_AND_MULTI_AGENT_PILOT_PREP_A1_20260609T191900_RD",
+    "r1_run_id": "CONVERSATION_REGISTRY_R3_CLOSE_AND_MULTI_AGENT_PILOT_PREP_A1_20260609T191900_RD",
+    "evidence_pack_dir_source": "config",
+    "pack_filename": "CONVERSATION_REGISTRY_R3_CLOSE_AND_MULTI_AGENT_PILOT_PREP_A1_20260609T191900_RD",
+    "prompt_has_run_id_var": true,
+    "prompt_has_task_id_var": true,
+    "prompt_has_end_marker": true,
+    "prompt_has_overall_judgment": true,
+    "prompt_has_bare_verdict": false,
+    "manifest_run_id": "CONVERSATION_REGISTRY_R3_CLOSE_AND_MULTI_AGENT_PILOT_PREP_A1_20260609T191900_RD"
+  }
+}
+
+RUN-ID CONSISTENT: All artifacts use the same run_id

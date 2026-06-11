@@ -1,0 +1,79 @@
+{
+  "task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1",
+  "run_id": "HANDOFF_WORKFLOW_HARDENING_PLAN_A1_REVIEW_20260609_012328_RD",
+  "verdict": {
+    "overall_judgment": "blocked",
+    "evidence_pack_reviewed": true,
+    "attachment_reviewed": true,
+    "task_id_matches": true,
+    "has_end_marker": true,
+    "has_next_task_auth": true
+  },
+  "verifier": {
+    "valid": true,
+    "closure_ready": false,
+    "closure_reason": "GPT blocked — fix required before closure",
+    "exit_code": 1,
+    "output_path": "_reports/handoff-workflow-hardening-plan-a1/VERIFY_GPT_REPLY_OUTPUT.txt"
+  },
+  "submission": {
+    "sent": true,
+    "upload_confirmed": true,
+    "upload_method": "input[0]",
+    "send_button": "button[data-testid=\"send-button\"]",
+    "send_confirmed": true,
+    "send_confirm_reason": "user_message_bubble_appeared",
+    "sent_at": "2026-06-09T09:59:18",
+    "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+    "status_path": "_reports/handoff-workflow-hardening-plan-a1/GPT_REVIEW_SUBMISSION_STATUS.json"
+  },
+  "evidence_pack": {
+    "zip_path": "evidence_packs/handoff-workflow-hardening-plan-a1/HANDOFF_WORKFLOW_HARDENING_PLAN_A1_20260609T013519.zip",
+    "zip_size": 33469,
+    "zip_sha256": "19bd1010edd5ed5f66e6adeb7566abbdc9197a9d56ed9a929b830cf08e321d56"
+  },
+  "captured_reply": {
+    "result_path": "_reports/handoff-workflow-hardening-plan-a1/GPT_REVIEW_RESULT.txt",
+    "reply_chars": 2161,
+    "reply_sha256": "e8de1c7c6807cd6f5162cbd14181525d348dc1aa63c85640b3549f6d1b244752",
+    "run_id_in_reply": true,
+    "has_end_marker": true,
+    "has_overall_judgment": true,
+    "parsed_overall_judgment": "blocked",
+    "capture_method": "corrected_via_page_scan",
+    "target_reply_index": 4,
+    "capture_note": "Initial capture grabbed assistant[3] (Qwen prompt template). Corrected by scanning all assistant messages for run_id match. Correct reply at assistant[4]."
+  },
+  "blocking_issues": [
+    "HANDOFF_WORKFLOW_HARDENING_PLAN.md 中的 source-of-truth 层级表述错误，将 P0 写成 core.md/rules/AGENTS.md、P1 写成 TaskSpec/ExecutionReport/evidence pack，不符合 HANDOFF_SOURCE_OF_TRUTH.md 定义",
+    "HANDOFF_WORKFLOW_HARDENING_PLAN.md 对 gpt_new_chat_attachment_submit.py 的能力描述与 HARDENING_GAP_ANALYSIS.json 不一致",
+    "证据包声称 startup proof 已生成，但附件 ZIP 与 PACK_MANIFEST.md 中未包含 startup proof 文件",
+    "HANDOFF_REPLY_V4.txt 表述需明确其仍为 tracked_deleted_human_required"
+  ],
+  "required_fixes": [
+    "修正 source-of-truth 层级：P0=verified GPT verdicts/evidence packs/TEST_OUTPUT/manifests，P1=GPT-approved handoff/paste/approval record，P2=memory/recall layer，P3=legacy audit/reference",
+    "统一 gpt_new_chat_attachment_submit.py 能力描述：当前 pointer_only 未参数化，主计划不得声称其已完整支持自动化",
+    "将 startup proof 实际纳入 evidence pack 和 PACK_MANIFEST.md，或删除相关声明",
+    "明确 HANDOFF_REPLY_V4.txt 仍为 tracked_deleted_human_required",
+    "重新生成所有修正后的文件并重新打包提交"
+  ],
+  "limitations": [
+    "证据包整体方向正确，确实尝试复用既有 workflow 结构",
+    "识别出的状态机、changed-files proof、capture reconciliation 等缺口具有合理性",
+    "TARGETED_TEST_OUTPUT.txt 显示 10/10 checks pass",
+    "未声称 production promotion 已批准，未将 296 PASS 提升为 verified"
+  ],
+  "next_task_authorization": {
+    "task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1-R2",
+    "authorized": "已授权",
+    "execute_immediately": "是",
+    "ask_before_starting": "否"
+  },
+  "created_at": "2026-06-09T02:02:00Z",
+  "method": "playwright_cdp_9222",
+  "scripts": {
+    "submit": "_reports/handoff-workflow-hardening-plan-a1/_submit_gpt_review.py",
+    "observe": "_reports/handoff-workflow-hardening-plan-a1/_observe_gpt_page.py",
+    "capture": "_reports/handoff-workflow-hardening-plan-a1/_capture_latest_target_reply.py"
+  }
+}

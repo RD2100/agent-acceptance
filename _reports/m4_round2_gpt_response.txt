@@ -1,75 +1,75 @@
-severity_issues:
+severity_issues: []
 
-id: M4-P1-01
-severity: P1
-status: partially_resolved
-issue: "“协同推进”的内涵已有具体化，但偏向治理方案，弱化了‘必然之势’论证"
-detail: >
-Round 2 已把协同推进具体化为政策协同、资源协同、评价协同，这是进步。
-但 M4 的核心任务不是提前展开治理进路，而是收束第一部分，证明为什么在教育强国应然要求与提质扩容实然统一性的基础上，
-协同推进成为刻不容缓的必然趋势。当前方案更像治理路径预演，而不是“必然性”论证。
-
-id: M4-P1-02
-severity: P1
-status: partially_resolved
-issue: "缺少‘M2 应然 + M3 实然 → M4 必然’的显性论证链"
-detail: >
-现有四个单元直接进入政策、资源、评价三个维度，但没有把 M2 的教育强国双重内涵和 M3 的提质扩容内在统一性综合起来。
-M4 应先说明：既然提质扩容在应然上必要、在实然上统一，那么现实推进就不能割裂进行，必须转向协同推进。
-
-id: M4-P1-03
-severity: P1
-status: unresolved
-issue: "过渡方向错误或至少不够贴合当前位置"
-detail: >
-Unit 4 写的是“向第四节治理进路过渡”，但 M4 位于第一部分末尾，直接承接的应是第二部分“高等教育提质扩容的内在张力”。
-这里应当过渡到公平与效率、普惠与卓越、统一与分类等张力，而不是直接跳到治理进路。
-否则第一部分与第二部分之间仍然断裂。
+remaining_nonblocking_issues:
 
 id: M4-P2-01
 severity: P2
-status: open
-issue: "协同维度可能过度展开"
+status: accepted_limitation
+issue: "证据需求已明确，但具体材料仍需人工补充"
 detail: >
-政策协同、资源协同、评价协同可以作为 M4 的概念提示，但不宜在第一部分充分展开。
-否则会与后文治理进路或政策建议部分发生重复。M4 应以“提出协同推进的必要性”为主，而不是展开完整治理框架。
+“政策碎片化证据、规模天花板数据、国际案例、协同治理理论”已经足以支撑结构关闭，
+但不能视为已完成真实文献配置。后续需要补入真实、可检索、与论点直接匹配的政策材料、统计数据和研究文献。
 
 id: M4-P2-02
 severity: P2
-status: open
-issue: "资源协同中的‘社会资本+国际资源’需要谨慎"
+status: accepted_limitation
+issue: "Unit 2 的表述需要避免过度绝对化"
 detail: >
-这一表述容易扩展过宽，且需要较强的政策和事实依据。若保留，应作为资源保障多元化的提示，而不是在 M4 中展开为独立治理方案。
+“单纯规模扩张已触达质量天花板”“单纯质量提升缺乏规模基础”判断较强，
+正文写作时应避免无证据支撑的绝对化表达。建议改为“容易遭遇质量承载约束”
+“可能缺少规模基础与资源支撑”等更稳妥表述。
 
-verdict: blocked
+id: M4-P2-03
+severity: P2
+status: accepted_limitation
+issue: "‘如何协同’不宜在 M4 展开为治理方案"
+detail: >
+Unit 1 中“问题的关键不再是要不要协同，而是如何协同”可以保留，
+但 M4 只需提出协同推进的必然性，不应在此展开完整治理架构，
+否则会与后文治理进路重复。
 
-close_module: false
+verdict: pass_with_limitation
 
+close_module: true
+
+p1_resolution:
+M4-P1-01:
+status: resolved
 reason: >
-Round 2 已解决了“协同推进过于抽象”的一部分问题，但还没有完成 M4 的核心功能：
-从 M2 的应然要求和 M3 的实然统一性推出“协同推进的必然之势”，并自然引出第二部分的内在张力。
-当前方案过早转向治理维度，且过渡方向写成“第四节治理进路”，不适合关闭模块。
+已将 M4 从治理方案预演改为“必然性论证”，能够回到第一部分“必然逻辑”的功能定位。
 
-required_round_3_focus:
+M4-P1-02:
+status: resolved
+reason: >
+已明确建立 M2 应然逻辑、M3 实然统一性、M4 协同推进必然性的递进链条，
+解决了上一轮缺少显性论证链的问题。
 
-"先补出总论证链：M2 应然要求 + M3 实然统一性 → M4 协同推进的必然性。"
+M4-P1-03:
+status: resolved
+reason: >
+Unit 3 已把过渡方向改为第二部分“内在张力”，而不是跳到治理进路；
+这修正了第一部分与第二部分之间的衔接问题。
 
-"保留政策、资源、评价三类协同，但把它们作为协同推进的维度提示，而不是治理方案展开。"
+module_closure_decision:
+module_id: M4
+status: closed_as_pass_with_limitation
+reason: >
+Round 3 已直接回应 M4 的关键 P1：功能定位、递进链条和过渡方向均已修正。
+现在的三单元结构能够完成第一部分的收束，并为第二部分“内在张力”提供入口。
+因此 M4 可以关闭，不需要 human_required。
 
-"把 Unit 4 改为向第二部分‘内在张力’过渡，而不是向第四节治理进路过渡。"
+approved_revision_structure:
+unit_1: "从 M2 应然要求与 M3 实然统一性推出协同推进的必然性基础。"
+unit_2: "用政策碎片化、质量承载约束、规模基础不足等证据说明协同推进不可回避。"
+unit_3: "转入第二部分：协同推进在现实中会表现为价值、资源、制度层面的结构性张力。"
 
-"说明协同推进为什么仍会在现实中引发公平与效率、普惠与卓越、统一与分类等张力。"
-
-" citation map 保留政策协同、资源配置、评价改革三类即可，但不要虚构具体文献。"
-
-suggested_round_3_structure:
-unit_1: "综合前文：教育强国的应然要求与提质扩容的实然统一性共同指向协同推进。"
-unit_2: "协同内涵：提质与扩容的协同至少体现在政策、资源和评价三个维度，但本节只作概念界定。"
-unit_3: "必然性说明：如果提质与扩容割裂推进，就会造成规模扩张缺乏质量支撑、质量提升缺少资源承载。"
-unit_4: "过渡张力：协同推进具有必要性，但现实展开中会转化为公平与效率、普惠与卓越、统一与分类等结构性张力。"
-
-round_budget_note: >
-当前是 Round 2/3。下一轮必须修正过渡方向，并把协同维度服务于“必然之势”论证。
-如果 Round 3 仍直接跳到治理进路，应标记 human_required。
+next_action:
+recommended: "同步 M4 closure 到 Project Index，然后启动 Section 1 coherence review。"
+next_task_id: "PAPER-SECTION1-COHERENCE-CLOSURE-A1"
+constraints:
+- "不得生成整节代写稿。"
+- "不得虚构具体案例、数据或文献。"
+- "M4 的证据需求应进入 citation workspace。"
+- "正文中避免把 M4 写成治理方案提前展开。"
 
 END_OF_GPT_RESPONSE

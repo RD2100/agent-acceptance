@@ -1,0 +1,15 @@
+overall_judgment: accepted_with_limitation
+run_id: MULTI_AGENT_MULTI_GPT_PILOT_A1_20260610T102443_RD
+findings:
+
+Pilot-A1 已完成受控试运行的第一阶段：CONVERSATION_BINDING.json 中声明 2 个 agent，其中 agent-local-001 已绑定真实 chat_url / conversation_id / browser_profile_id / cdp_endpoint，agent-pilot-beta 保持 pending_manual_binding，未伪造成 active。
+
+ACTIVATION_RECORD.json 显示 binding_valid=true、schema_validated=true、active=1、pending=1、cdp_session_verified=true，说明至少一个 GPT conversation 已完成 CDP-backed 绑定验证。
+
+GATE0_PREFLIGHT_R2.json 返回 HUMAN_REQUIRED，而不是 PASS；7/9 checks passed，2/9 human_required，说明试运行准备有进展，但尚未进入完整多 agent / 多 GPT 自动执行状态。
+
+安全边界保持良好：executed_external_runtime=false，未执行 dev-frame-opencode dispatch，未执行 paper-workflow 真实探测，CAP-029 execution 仍保持 proposed / human_required。
+
+scripts/pilot_activation_record.py 的设计边界清晰：只读取和验证既有状态，构建 activation record，不修改文件，不执行外部 runtime，符合受控 pilot 的安全要求。
+
+tests/test_pilot_activation.py 新增 24 个测试，覆盖

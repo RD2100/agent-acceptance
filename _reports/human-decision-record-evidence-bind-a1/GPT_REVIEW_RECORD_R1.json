@@ -1,0 +1,31 @@
+{
+  "task_id": "HUMAN-DECISION-RECORD-EVIDENCE-BIND-A1",
+  "run_id": "HUMAN_DECISION_RECORD_EVIDENCE_BIND_A1_20260609T130901_RD",
+  "round": "R1",
+  "verdict": "accepted_with_limitation",
+  "overall_judgment": "accepted_with_limitation",
+  "valid": true,
+  "closure_ready": true,
+  "verified_at": "2026-06-09T13:12:37.134620+08:00",
+  "source": "manual_recapture",
+  "gpt_reply_size": 1432,
+  "checks": {
+    "has_end_marker": true,
+    "has_next_task_auth": true,
+    "verdict_allowed": true
+  },
+  "findings": [
+    "validate_record() enhanced with repo_root parameter for evidence file existence verification",
+    "evidence_binding field provides checked, all_exist, missing, found structure",
+    "Missing evidence files produce explicit errors and fail validation",
+    "Backward compatibility maintained: without repo_root, binding check skipped",
+    "6 new tests cover all evidence binding scenarios"
+  ],
+  "limitations": [
+    "validate_record does not formally reject when exit_conditions says decision_evidence_attached=true but evidence_files is empty",
+    "create_record does not formally reject empty task_id",
+    "Evidence pack manifest run_id differs from prompt run_id; should unify"
+  ],
+  "next_task_authorization": "HUMAN-DECISION-RECORD-HASH-MANIFEST-BIND-A1",
+  "reply_path": "_reports/human-decision-record-evidence-bind-a1/GPT_REVIEW_RESULT_R1.txt"
+}

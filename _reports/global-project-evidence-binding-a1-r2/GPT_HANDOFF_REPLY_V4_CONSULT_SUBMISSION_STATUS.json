@@ -1,0 +1,26 @@
+{
+  "run_id": "HANDOFF_REPLY_V4_RESTORE_SCOPE_CONSULT_20260609_083700_RD",
+  "task_id": "HANDOFF-REPLY-V4-RESTORE-SCOPE-CONSULT-A1",
+  "target_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "sent": true,
+  "captured": true,
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "send_confirm": {
+    "ok": true,
+    "user_count": 7,
+    "assistant_count": 4
+  },
+  "sent_at": "2026-06-09T08:50:52",
+  "reply_chars": 2010,
+  "reply_sha256": "f02a5768bd7f4c8c2a6f333caa2fb866a3298854a4f5018f2b79e57cdaa2c3f4",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\global-project-evidence-binding-a1-r2\\GPT_HANDOFF_REPLY_V4_CONSULT_RESULT.txt"
+}

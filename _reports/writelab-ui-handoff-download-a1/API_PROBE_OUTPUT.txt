@@ -1,0 +1,11 @@
+﻿{
+  "project_id": "3073a6da-d653-4cc3-930f-95480745df7b",
+  "report_id": "522e35ef-c45a-43f8-94cf-1aea34d6d625",
+  "status_code": 200,
+  "content_type": "application/zip",
+  "content_disposition": "attachment; filename=\"writelab-handoff-522e35ef-c45a-43f8-94cf-1aea34d6d625.zip\"",
+  "zip_path": "D:\\agent-acceptance\\_reports\\writelab-ui-handoff-download-a1\\writelab-handoff.zip",
+  "zip_size": 1946,
+  "database_scope": "temporary_sqlite_disposed_after_probe",
+  "frontend_target_endpoint": "/api/reports/diagnosis/522e35ef-c45a-43f8-94cf-1aea34d6d625/writelab-handoff.zip"
+}

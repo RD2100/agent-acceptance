@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "source": "examples\\paper_a2_synthetic_case",
+  "source_type": "directory",
+  "validated_files": [
+    "PAPER_TASK_INPUT.yaml",
+    "PAPER_TASK_OUTPUT.yaml",
+    "PRIVACY_ATTESTATION.yaml",
+    "REDACTION_REPORT.yaml"
+  ],
+  "checks": {
+    "required_files_present": true,
+    "schemas_valid": true,
+    "privacy_boundaries_valid": true,
+    "task_consistency_valid": true
+  },
+  "blocking_issues": []
+}

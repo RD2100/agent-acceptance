@@ -1,0 +1,21 @@
+﻿{
+  "root": "_reports\\writelab-ui-handoff-download-a1",
+  "excluded_self_reference_reports": [
+    "DIRECTORY_MARKER_SCAN_OUTPUT.txt",
+    "MARKER_SCAN_OUTPUT.txt"
+  ],
+  "files_checked": [
+    "_reports\\writelab-ui-handoff-download-a1\\API_PROBE_OUTPUT.txt",
+    "_reports\\writelab-ui-handoff-download-a1\\EXECUTION_REPORT.md",
+    "_reports\\writelab-ui-handoff-download-a1\\HANDOFF_SAFETY_SCAN.json",
+    "_reports\\writelab-ui-handoff-download-a1\\HANDOFF_SAFETY_SCAN.md",
+    "_reports\\writelab-ui-handoff-download-a1\\HASHES.txt",
+    "_reports\\writelab-ui-handoff-download-a1\\PAPER_SAFETY_TEST_OUTPUT.txt",
+    "_reports\\writelab-ui-handoff-download-a1\\VALIDATION_OUTPUT.json",
+    "_reports\\writelab-ui-handoff-download-a1\\VALIDATION_STDOUT.txt",
+    "_reports\\writelab-ui-handoff-download-a1\\writelab-handoff.zip",
+    "_reports\\writelab-ui-handoff-download-a1\\WRITELAB_UI_TEST_OUTPUT.txt"
+  ],
+  "hits": [],
+  "pass": true
+}

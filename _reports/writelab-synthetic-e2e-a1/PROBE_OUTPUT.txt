@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "output_dir": "D:\\agent-acceptance\\_reports\\writelab-synthetic-e2e-a1",
+  "artifacts": {
+    "probe_output": "D:\\agent-acceptance\\_reports\\writelab-synthetic-e2e-a1\\PROBE_OUTPUT.txt",
+    "api_probe": "D:\\agent-acceptance\\_reports\\writelab-synthetic-e2e-a1\\API_PROBE_OUTPUT.json",
+    "handoff_zip": "D:\\agent-acceptance\\_reports\\writelab-synthetic-e2e-a1\\writelab-handoff.zip",
+    "validation": "D:\\agent-acceptance\\_reports\\writelab-synthetic-e2e-a1\\VALIDATION_OUTPUT.json",
+    "marker_scan": "D:\\agent-acceptance\\_reports\\writelab-synthetic-e2e-a1\\MARKER_SCAN_OUTPUT.json",
+    "temporary_database_cleanup": "D:\\agent-acceptance\\_reports\\writelab-synthetic-e2e-a1\\TEMP_DB_CLEANUP_CHECK.txt",
+    "removed_temporary_database_files": [
+      "D:\\agent-acceptance\\_reports\\writelab-synthetic-e2e-a1\\writelab_synthetic_e2e.sqlite"
+    ]
+  },
+  "summary": {
+    "project_status": 201,
+    "report_status": 201,
+    "download_status": 200,
+    "validation_result": "pass",
+    "marker_scan_pass": true
+  }
+}

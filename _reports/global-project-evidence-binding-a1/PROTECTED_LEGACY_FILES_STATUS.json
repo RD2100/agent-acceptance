@@ -1,0 +1,177 @@
+{
+  "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1",
+  "run_id": "GLOBAL_EVIDENCE_BINDING_A1_20260608_233124",
+  "generated_at": "2026-06-08T15:31:24.187531+00:00",
+  "purpose": "Independently verify protected legacy PROJECT_HISTORY / HANDOFF / PASTE_BLOCK files were not deleted, moved, renamed, or rewritten in the current worktree/index. Tracked files are checked by git clean status; known untracked approved artifacts are checked by current existence plus prior manifest hash match.",
+  "expected_hash_sources": [
+    "HANDOFF_MANIFEST.sha256"
+  ],
+  "files": [
+    {
+      "path": "HANDOFF.md",
+      "exists": true,
+      "tracked": true,
+      "sha256": "e2e21abbd75f17ba310be05b1a0903fcd3edb5b5c7cb330051924504052dd17a",
+      "expected_sha256_from_manifest": null,
+      "hash_matches_manifest": false,
+      "git_status_porcelain": [],
+      "git_diff_name_status": [],
+      "git_diff_cached_name_status": [],
+      "git_ls_files_stage": [
+        "100644 29d66687525a24e3e5afb01ba2786d3cedf5bf88 0\tHANDOFF.md"
+      ],
+      "tracked_clean_in_worktree_and_index": true,
+      "untracked_existing_hash_bound": false,
+      "protected_verified_in_current_worktree": true,
+      "conclusion": "tracked_clean_not_deleted_moved_renamed_or_rewritten_in_current_worktree"
+    },
+    {
+      "path": "HANDOFF_V5.md",
+      "exists": true,
+      "tracked": true,
+      "sha256": "09fac8bea1aa1e34af147525623a9d27690e5e75b2a15257a191e461ee2d80a9",
+      "expected_sha256_from_manifest": null,
+      "hash_matches_manifest": false,
+      "git_status_porcelain": [],
+      "git_diff_name_status": [],
+      "git_diff_cached_name_status": [],
+      "git_ls_files_stage": [
+        "100644 09efbeb8c146a5ee00840de458b90b485ddc0bb6 0\tHANDOFF_V5.md"
+      ],
+      "tracked_clean_in_worktree_and_index": true,
+      "untracked_existing_hash_bound": false,
+      "protected_verified_in_current_worktree": true,
+      "conclusion": "tracked_clean_not_deleted_moved_renamed_or_rewritten_in_current_worktree"
+    },
+    {
+      "path": "HANDOFF_V6.md",
+      "exists": true,
+      "tracked": false,
+      "sha256": "eab8088998908ccbcc6254729138a8ef804ce953510073a5eb135217020e0347",
+      "expected_sha256_from_manifest": null,
+      "hash_matches_manifest": false,
+      "git_status_porcelain": [
+        "?? HANDOFF_V6.md"
+      ],
+      "git_diff_name_status": [],
+      "git_diff_cached_name_status": [],
+      "git_ls_files_stage": [],
+      "tracked_clean_in_worktree_and_index": false,
+      "untracked_existing_hash_bound": false,
+      "protected_verified_in_current_worktree": false,
+      "conclusion": "needs_human_review"
+    },
+    {
+      "path": "PROJECT_HISTORY.md",
+      "exists": true,
+      "tracked": true,
+      "sha256": "7cfaaa1f04227d1d5d8b961c8429e9c9e249d1cc64ef49d118ffb9e07bf92210",
+      "expected_sha256_from_manifest": null,
+      "hash_matches_manifest": false,
+      "git_status_porcelain": [],
+      "git_diff_name_status": [],
+      "git_diff_cached_name_status": [],
+      "git_ls_files_stage": [
+        "100644 bfe1eb92de4231e1c5b61ecba21f2000692b6ef8 0\tPROJECT_HISTORY.md"
+      ],
+      "tracked_clean_in_worktree_and_index": true,
+      "untracked_existing_hash_bound": false,
+      "protected_verified_in_current_worktree": true,
+      "conclusion": "tracked_clean_not_deleted_moved_renamed_or_rewritten_in_current_worktree"
+    },
+    {
+      "path": "PROJECT_HISTORY_FINAL.md",
+      "exists": true,
+      "tracked": false,
+      "sha256": "7a85fe5e3dac07617c570ec8c684bdf68c57556204157465883b696010d92d41",
+      "expected_sha256_from_manifest": null,
+      "hash_matches_manifest": false,
+      "git_status_porcelain": [
+        "?? PROJECT_HISTORY_FINAL.md"
+      ],
+      "git_diff_name_status": [],
+      "git_diff_cached_name_status": [],
+      "git_ls_files_stage": [],
+      "tracked_clean_in_worktree_and_index": false,
+      "untracked_existing_hash_bound": false,
+      "protected_verified_in_current_worktree": false,
+      "conclusion": "needs_human_review"
+    },
+    {
+      "path": "HISTORY_ANALYSIS.md",
+      "exists": true,
+      "tracked": false,
+      "sha256": "fd6d119e1ebcfae64b72616cf88d1ea6d00c108342ced4dc8bfa7d948ba7a420",
+      "expected_sha256_from_manifest": null,
+      "hash_matches_manifest": false,
+      "git_status_porcelain": [
+        "?? HISTORY_ANALYSIS.md"
+      ],
+      "git_diff_name_status": [],
+      "git_diff_cached_name_status": [],
+      "git_ls_files_stage": [],
+      "tracked_clean_in_worktree_and_index": false,
+      "untracked_existing_hash_bound": false,
+      "protected_verified_in_current_worktree": false,
+      "conclusion": "needs_human_review"
+    },
+    {
+      "path": "BOOT_CONTEXT.md",
+      "exists": true,
+      "tracked": true,
+      "sha256": "b2c772f6bc4d5bb0c990394598a294e1fbf54b569ceb667605649975d998141c",
+      "expected_sha256_from_manifest": null,
+      "hash_matches_manifest": false,
+      "git_status_porcelain": [],
+      "git_diff_name_status": [],
+      "git_diff_cached_name_status": [],
+      "git_ls_files_stage": [
+        "100644 5f8b716793ee5a39bd814c73a4ccaeff0f4f3177 0\tBOOT_CONTEXT.md"
+      ],
+      "tracked_clean_in_worktree_and_index": true,
+      "untracked_existing_hash_bound": false,
+      "protected_verified_in_current_worktree": true,
+      "conclusion": "tracked_clean_not_deleted_moved_renamed_or_rewritten_in_current_worktree"
+    },
+    {
+      "path": "PASTE_BLOCK_APPROVED_FOR_NEW_GPT.txt",
+      "exists": true,
+      "tracked": false,
+      "sha256": "bf3cfe48e98240785d0f6c17616bb4ded48666b52c03f0aa19445f38f31db2c7",
+      "expected_sha256_from_manifest": "bf3cfe48e98240785d0f6c17616bb4ded48666b52c03f0aa19445f38f31db2c7",
+      "hash_matches_manifest": true,
+      "git_status_porcelain": [
+        "?? PASTE_BLOCK_APPROVED_FOR_NEW_GPT.txt"
+      ],
+      "git_diff_name_status": [],
+      "git_diff_cached_name_status": [],
+      "git_ls_files_stage": [],
+      "tracked_clean_in_worktree_and_index": false,
+      "untracked_existing_hash_bound": true,
+      "protected_verified_in_current_worktree": true,
+      "conclusion": "untracked_existing_file_hash_matches_prior_manifest_not_deleted_or_moved_in_current_worktree"
+    },
+    {
+      "path": "HANDOFF_APPROVED_FOR_NEW_GPT.md",
+      "exists": true,
+      "tracked": false,
+      "sha256": "f63f43b3f886de1cc5d6226f146150b9498c062f161bb75061a18746705e156d",
+      "expected_sha256_from_manifest": "f63f43b3f886de1cc5d6226f146150b9498c062f161bb75061a18746705e156d",
+      "hash_matches_manifest": true,
+      "git_status_porcelain": [
+        "?? HANDOFF_APPROVED_FOR_NEW_GPT.md"
+      ],
+      "git_diff_name_status": [],
+      "git_diff_cached_name_status": [],
+      "git_ls_files_stage": [],
+      "tracked_clean_in_worktree_and_index": false,
+      "untracked_existing_hash_bound": true,
+      "protected_verified_in_current_worktree": true,
+      "conclusion": "untracked_existing_file_hash_matches_prior_manifest_not_deleted_or_moved_in_current_worktree"
+    }
+  ],
+  "all_protected_verified": false,
+  "core_tracked_files_clean": true,
+  "untracked_legacy_existing": true,
+  "conclusion": "pass_with_limitation"
+}

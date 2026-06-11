@@ -1,0 +1,31 @@
+{
+  "test_file": "tests/test_multi_project_isolation.py",
+  "total_new_tests": 43,
+  "full_suite_passed": 805,
+  "full_suite_failed": 0,
+  "platform": "Windows 10",
+  "python": "3.10.11",
+  "pytest": "9.0.3",
+  "test_classes": [
+    "TestMultiCdpLauncherModule",
+    "TestRegistryManagement",
+    "TestPortAndInstanceChecks",
+    "TestLaunchChrome",
+    "TestMultiProjectRouterModule",
+    "TestResolveTarget",
+    "TestResolveAll",
+    "TestBuildDispatchPacket",
+    "TestVerifyIsolation",
+    "TestExistingProjectInfrastructure",
+    "TestMultiProjectArchitecture"
+  ],
+  "isolation_guarantees_tested": [
+    "port_uniqueness",
+    "conversation_uniqueness",
+    "profile_uniqueness",
+    "collision_detection",
+    "unresolved_target_skip",
+    "scaling_to_10_projects"
+  ],
+  "captured_at": "2026-06-10T12:00:00Z"
+}

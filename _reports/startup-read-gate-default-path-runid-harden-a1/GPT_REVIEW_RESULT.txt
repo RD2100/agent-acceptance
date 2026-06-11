@@ -1,0 +1,42 @@
+overall_judgment: accepted_with_limitation
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+none
+required_fixes:
+
+none
+limitations:
+
+resolve_required_reads_path 已将 NEXT_AGENT_REQUIRED_READS.json 从单一路径硬编码改为自动探测，搜索顺序为显式路径、repo root、_reports/next-agent-workflow-bootstrap-a1/、再到 _reports/*/NEXT_AGENT_REQUIRED_READS.json 的最新修改文件，整体合理。
+
+缺失 required reads 文件时，pre_gpt_review_gate.py 会给出明确错误并阻断 gate，避免静默跳过 startup read gate。
+
+_extract_task_id_from_manifest 已覆盖当前 PACK_MANIFEST.md 的标准表格格式和 backtick-wrapped 值，较上一轮简单行解析更稳健。
+
+原有 20 个测试与新增 9 个测试均通过，EXECUTION_REPORT 报告 tests/test_pre_gpt_review_gate.py 为 29 passed，向后兼容性基本成立。
+
+task_id 提取仍主要面向 Markdown 表格中的 task_id 行，尚未支持 YAML front matter、JSON manifest 或多 task_id 复杂 manifest；后续如 manifest 格式扩展，应进一步结构化解析。
+
+required reads 自动探测 fallback 使用最新修改的 _reports/*/NEXT_AGENT_REQUIRED_READS.json；在存在多个候选文件时可能误选非目标文件，后续可增加 task_id / run_id 绑定或显式优先级。
+
+startup gate 仍为 opt-in，只有提供 --startup-proof-path 时才启用；尚未强制所有 GPT 提交都必须经过 startup proof。
+
+本 evidence pack 未包含 scripts/startup_read_gate.py，pre_gpt_review_gate.py 的运行依赖仍假定仓库中已有该脚本；当前不阻塞本任务，因为本轮目标是 pre_gpt_review_gate 默认路径与 task_id 提取硬化。
+
+EXECUTION_REPORT 声称 full suite 380 passed，但 pack 内未附完整 full suite 原始输出；当前不阻塞本轮审查，后续若继续引用 full suite，应附完整测试日志或降级为本地声明。
+
+PACK_MANIFEST.md 存在并列出主要文件，但未将 PACK_MANIFEST.md 自身列为 manifest row；当前不阻塞本轮审查。
+
+pack 内 PACK_MANIFEST run_id 为 STARTUP_READ_GATE_DEFAULT_PATH_RUNID_HARDEN_A1_REVIEW_20260609T123133_RD，与本次审查 prompt run_id STARTUP_READ_GATE_DEFAULT_PATH_RUNID_HARDEN_A1_20260609T123300_RD 不完全一致；未影响核心代码审查，但后续应统一 pack run_id、review run_id 与文件名元数据。
+next_task_authorization:
+task_id: STATE-MACHINE-RUNTIME-INTEGRATE-A1
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+
+run_id: STARTUP_READ_GATE_DEFAULT_PATH_RUNID_HARDEN_A1_20260609T123300_RD
+task_id: STARTUP-READ-GATE-DEFAULT-PATH-RUNID-HARDEN-A1
+
+END_OF_GPT_RESPONSE_

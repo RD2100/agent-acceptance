@@ -1,0 +1,29 @@
+{
+  "task_id": "SYNTHETIC-C4-001",
+  "input_privacy_mode": "synthetic_only",
+  "safety_status": "PASS",
+  "review_allowed": true,
+  "target_section_name": "Literature Review — AI Fairness",
+  "diagnosis": "Section argument structure is too thin. Add at least 3 logical steps.",
+  "revision_priorities": [
+    "Address known problems first",
+    "Expand argument structure to 3+ steps",
+    "Add supporting citations for each claim",
+    "Review transitions between subsections"
+  ],
+  "suggested_structure": "Literature Review — AI Fairness\n1. Opening context (2-3 paragraphs)\n2. Core argument (3-5 paragraphs)\n3. Evidence and examples\n4. Counter-arguments addressed\n5. Transition to next section",
+  "argument_continuity_notes": "Argument has 1 steps. Check logical flow between each step.",
+  "citation_or_evidence_needs": [
+    "Each factual claim needs a citation",
+    "Methodology choices need justification references",
+    "Contrasting viewpoints should be cited"
+  ],
+  "privacy_limitations": [
+    "No real paper content was reviewed",
+    "All data is synthetic",
+    "Review is bounded to structural diagnosis only"
+  ],
+  "blocked_reasons": [],
+  "next_recommended_human_action": "Replace synthetic data with real section metadata (not full text) for actual review",
+  "generated_at": "2026-06-08T03:56:20.015476+00:00"
+}

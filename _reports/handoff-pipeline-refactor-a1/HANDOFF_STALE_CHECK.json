@@ -1,0 +1,35 @@
+{
+  "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+  "generated_at": "2026-06-08T12:47:13.494683+00:00",
+  "repo_root": "D:\\agent-acceptance",
+  "findings": [
+    {
+      "id": "BOOT_CONTEXT_TEST_COUNT_CONFLICT",
+      "severity": "HIGH",
+      "message": "BOOT_CONTEXT.md contains conflicting test counts: [65, 232, 247]",
+      "stale_reference": true
+    },
+    {
+      "id": "TEST_COUNT_WITHOUT_FRESH_P0",
+      "severity": "MEDIUM",
+      "message": "Test count claims exist in handoff/memory/history but no fresh P0 test output was found.",
+      "stale_reference": true
+    },
+    {
+      "id": "MEMORY_FROZEN_REPO_ACTIVE",
+      "severity": "MEDIUM",
+      "message": "Memory describes paper workflow as frozen, while repo has active paper index/evidence. Treat memory as stale reference.",
+      "stale_reference": true
+    },
+    {
+      "id": "UNVERIFIED_CONVERSATIONAL_CLAIM",
+      "severity": "INFO",
+      "message": "'296 PASS' is an unverified conversational claim; no local source-of-truth text matched it.",
+      "stale_reference": true
+    }
+  ],
+  "summary": {
+    "finding_count": 4,
+    "has_high": true
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "run_id": "GLOBAL_EVIDENCE_BINDING_A1_R2_REVIEW_20260609_085500_RD",
+  "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+  "target_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\global-project-evidence-binding-a1-r2\\GLOBAL_PROJECT_EVIDENCE_BINDING_A1_R2_20260609_085323.zip",
+  "pack_exists": true,
+  "pack_sha256": "9e8a50c56a8dff8e10fb74303e6912ab4f1d2f1d92aff4f813146e5dc170bd6e",
+  "sent": true,
+  "captured": true,
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "upload_confirmed": true,
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "send_confirm": {
+    "ok": true,
+    "user_count": 8,
+    "assistant_count": 5
+  },
+  "sent_at": "2026-06-09T08:54:42",
+  "reply_chars": 1474,
+  "reply_sha256": "9d6a995eac63b6001fa21550618dd02778a259724e9ecba77f2bc0a76ff26469",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "blocked",
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\global-project-evidence-binding-a1-r2\\GPT_REVIEW_RESULT.txt"
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "project": "project-beta",
+    "success": true,
+    "conversation_id": "6a294113-e154-83a9-9080-2226af363a07",
+    "chat_url": "https://chatgpt.com/c/6a294113-e154-83a9-9080-2226af363a07",
+    "binding_file": "D:\\agent-acceptance\\_projects\\project-beta\\.agent\\CONVERSATION_BINDING.json"
+  },
+  {
+    "project": "project-gamma",
+    "success": true,
+    "conversation_id": "6a294122-6304-83a5-87a6-69d84ee034e2",
+    "chat_url": "https://chatgpt.com/c/6a294122-6304-83a5-87a6-69d84ee034e2",
+    "binding_file": "D:\\agent-acceptance\\_projects\\project-gamma\\.agent\\CONVERSATION_BINDING.json"
+  },
+  {
+    "project": "project-delta",
+    "success": true,
+    "conversation_id": "6a294130-81c8-83a7-8a81-1a04ac589233",
+    "chat_url": "https://chatgpt.com/c/6a294130-81c8-83a7-8a81-1a04ac589233",
+    "binding_file": "D:\\agent-acceptance\\_projects\\project-delta\\.agent\\CONVERSATION_BINDING.json"
+  },
+  {
+    "project": "project-epsilon",
+    "success": true,
+    "conversation_id": "6a29413f-d040-83a4-bcf4-0a5cc908c083",
+    "chat_url": "https://chatgpt.com/c/6a29413f-d040-83a4-bcf4-0a5cc908c083",
+    "binding_file": "D:\\agent-acceptance\\_projects\\project-epsilon\\.agent\\CONVERSATION_BINDING.json"
+  },
+  {
+    "project": "project-zeta",
+    "success": true,
+    "conversation_id": "6a29414e-91b8-83a6-a5f5-aacd08bf1187",
+    "chat_url": "https://chatgpt.com/c/6a29414e-91b8-83a6-a5f5-aacd08bf1187",
+    "binding_file": "D:\\agent-acceptance\\_projects\\project-zeta\\.agent\\CONVERSATION_BINDING.json"
+  },
+  {
+    "project": "project-eta",
+    "success": true,
+    "conversation_id": "6a29415d-597c-83a4-bd31-3a98022199a2",
+    "chat_url": "https://chatgpt.com/c/6a29415d-597c-83a4-bd31-3a98022199a2",
+    "binding_file": "D:\\agent-acceptance\\_projects\\project-eta\\.agent\\CONVERSATION_BINDING.json"
+  },
+  {
+    "project": "project-theta",
+    "success": true,
+    "conversation_id": "6a29416b-79c8-83a5-b70d-fcccd6543413",
+    "chat_url": "https://chatgpt.com/c/6a29416b-79c8-83a5-b70d-fcccd6543413",
+    "binding_file": "D:\\agent-acceptance\\_projects\\project-theta\\.agent\\CONVERSATION_BINDING.json"
+  },
+  {
+    "project": "project-iota",
+    "success": true,
+    "conversation_id": "6a294179-fb40-83a7-befa-0ce350039d83",
+    "chat_url": "https://chatgpt.com/c/6a294179-fb40-83a7-befa-0ce350039d83",
+    "binding_file": "D:\\agent-acceptance\\_projects\\project-iota\\.agent\\CONVERSATION_BINDING.json"
+  }
+]

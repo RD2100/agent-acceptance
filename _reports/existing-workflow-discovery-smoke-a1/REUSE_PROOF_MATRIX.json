@@ -1,0 +1,200 @@
+[
+  {
+    "component_name": "source_of_truth_hierarchy",
+    "path": "HANDOFF_SOURCE_OF_TRUTH.md",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P1",
+    "notes": "定义 P0/P1/P2/P3 权威层级、approval rule、coding-agent 禁止自批准。"
+  },
+  {
+    "component_name": "handoff_approval_record",
+    "path": "HANDOFF_APPROVAL_RECORD.json",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": false,
+    "evidence_level": "P1",
+    "notes": "记录 HANDOFF-PIPELINE-REFACTOR-A1 的 verified GPT verdict、run_id、限制和 hash。"
+  },
+  {
+    "component_name": "attachment_review_runbook",
+    "path": "_reports/handoff-pipeline-refactor-a1/ATTACHMENT_BACKED_GPT_REVIEW_RUNBOOK.md",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P1",
+    "notes": "附件版 GPT 审查 SOP：fresh shell、run_id、新对话、附件可见、点击提交、确认 user bubble、捕获并 verifier。"
+  },
+  {
+    "component_name": "gpt_reply_verifier",
+    "path": "scripts/verify_gpt_reply.py",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "fail-closed 校验 captured GPT reply：END marker、overall_judgment、task_id、next_task_authorization。"
+  },
+  {
+    "component_name": "attachment_submit_entrypoint",
+    "path": "scripts/gpt_new_chat_attachment_submit.py",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "附件提交入口，指向已验证 strict submitter；后续需参数化复用。"
+  },
+  {
+    "component_name": "pre_gpt_review_gate",
+    "path": "scripts/pre_gpt_review_gate.py",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "提交 GPT 前 gate：复用 evidence_pack_linter 并检查 actual_deliverables 与 manifest。"
+  },
+  {
+    "component_name": "evidence_pack_linter",
+    "path": "scripts/evidence_pack_linter.py",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "检查 evidence pack 必备文件、目录、summary-only 风险和 stale/failing output。"
+  },
+  {
+    "component_name": "global_repair_gpt_record",
+    "path": "_reports/global-project-handoff-repair-a1/GPT_REVIEW_RECORD.json",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "GLOBAL-PROJECT-HANDOFF-REPAIR-A1 的 GPT 审查记录与 required fix。"
+  },
+  {
+    "component_name": "global_repair_verify_output",
+    "path": "_reports/global-project-handoff-repair-a1/VERIFY_GPT_REPLY_OUTPUT.txt",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "GLOBAL-PROJECT-HANDOFF-REPAIR-A1 verifier 通过证据。"
+  },
+  {
+    "component_name": "global_repair_pre_gpt_gate",
+    "path": "_reports/global-project-handoff-repair-a1/PRE_GPT_GATE_OUTPUT.txt",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "GLOBAL-PROJECT-HANDOFF-REPAIR-A1 linter/gate 通过证据。"
+  },
+  {
+    "component_name": "global_repair_execution_report",
+    "path": "_reports/global-project-handoff-repair-a1/EXECUTION_REPORT.md",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": false,
+    "evidence_level": "P0",
+    "notes": "GLOBAL-PROJECT-HANDOFF-REPAIR-A1 执行报告、限制、next task。"
+  },
+  {
+    "component_name": "global_repair_pack_manifest",
+    "path": "_reports/global-project-handoff-repair-a1/PACK_MANIFEST.md",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": false,
+    "evidence_level": "P0",
+    "notes": "GLOBAL-PROJECT-HANDOFF-REPAIR-A1 evidence pack manifest。"
+  },
+  {
+    "component_name": "whole_project_source_map",
+    "path": "_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_SOURCE_OF_TRUTH_MAP.json",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "whole-project claims 到 P0/P1/P3/unverified evidence 的映射。"
+  },
+  {
+    "component_name": "whole_project_stale_claims",
+    "path": "_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_STALE_CLAIMS_REGISTER.json",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "stale/unverified claims register，保护 296 PASS、production promotion 等限制。"
+  },
+  {
+    "component_name": "whole_project_test_ledger",
+    "path": "_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_TEST_LEDGER.json",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": false,
+    "evidence_level": "P0",
+    "notes": "测试 ledger，明确 13 passed 与 12/13 mismatch，296 PASS 不验证。"
+  },
+  {
+    "component_name": "evidence_binding_gpt_result",
+    "path": "_reports/global-project-evidence-binding-a1/GPT_REVIEW_RESULT.txt",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "最近 GLOBAL-PROJECT-EVIDENCE-BINDING-A1 GPT blocked verdict。"
+  },
+  {
+    "component_name": "evidence_binding_verify_output",
+    "path": "_reports/global-project-evidence-binding-a1/VERIFY_GPT_REPLY_OUTPUT.txt",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": false,
+    "evidence_level": "P0",
+    "notes": "最近 blocked verdict 的 verifier 输出。"
+  },
+  {
+    "component_name": "evidence_binding_pack_manifest",
+    "path": "_reports/global-project-evidence-binding-a1/PACK_MANIFEST.md",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": false,
+    "evidence_level": "P0",
+    "notes": "最近 evidence-binding pack manifest。"
+  },
+  {
+    "component_name": "evidence_binding_execution_report",
+    "path": "_reports/global-project-evidence-binding-a1/EXECUTION_REPORT.md",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": false,
+    "evidence_level": "P0",
+    "notes": "最近 evidence-binding 执行报告。"
+  },
+  {
+    "component_name": "evidence_binding_changed_files",
+    "path": "_reports/global-project-evidence-binding-a1/CHANGED_FILES_EVIDENCE.json",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "changed-files evidence，含 HANDOFF_REPLY_V4.txt deletion conflict。"
+  },
+  {
+    "component_name": "evidence_binding_protected_status",
+    "path": "_reports/global-project-evidence-binding-a1/PROTECTED_LEGACY_FILES_STATUS.json",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "protected legacy files status。"
+  },
+  {
+    "component_name": "evidence_binding_source_appendix",
+    "path": "_reports/global-project-evidence-binding-a1/SOURCE_MAP_EVIDENCE_BINDING_APPENDIX.json",
+    "exists": true,
+    "reviewed": true,
+    "reused_for_future_task": true,
+    "evidence_level": "P0",
+    "notes": "source map evidence binding appendix，含旧 ZIP 嵌入声明。"
+  }
+]

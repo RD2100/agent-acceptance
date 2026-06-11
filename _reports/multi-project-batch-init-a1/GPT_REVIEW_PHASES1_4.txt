@@ -1,0 +1,56 @@
+verdict: accepted_with_limitation
+
+run_id: AWSP_10_PROJECT_EXPANSION_PHASES_1_4_20260610
+
+findings:
+
+category: batch_registry
+severity: info
+description: Phase 1 is accepted. The evidence shows 10 projects registered, ports 9222-9231 allocated uniquely, profile directories created, 10 conversation binding scaffolds generated, and all non-bound projects correctly marked pending_manual_binding rather than fake active.
+
+category: resource_policy
+severity: info
+description: Resource policy is directionally correct: max_warm=4, max_active=2, lazy_launch=true. This matches the recommended strategy for 10 projects and avoids immediately launching 10 Chrome instances.
+
+category: lazy_launch
+severity: info
+description: Phase 2 is accepted at design/test level. lazy_launch_manager.py defines registered → warm → active → stale states, enforces max_warm, supports stale detection, and has 24 passing tests. However, real 10-port launch remains pending manual login.
+
+category: router_stress
+severity: info
+description: Phase 3 is accepted. The router stress tests cover 10-project registry loading, unique ports/profiles, active vs pending classification, collision detection, unresolved handling, and dispatchability classification.
+
+category: real_gpt_binding
+severity: major
+description: Phase 4 is only partially accepted. project-alpha has a real GPT conversation binding, but it shares port 9222 / Chrome instance with agent-acceptance. The system correctly detects the profile collision, but this means project-alpha is not yet independently isolated at the CDP/profile layer.
+
+category: isolation
+severity: major
+description: Current active state is 2 active projects but not 2 isolated CDP instances. Both active projects rely on port 9222, while 8 projects remain pending_manual_binding. Therefore the evidence proves registry-scale readiness and routing logic, but not full 10-project or even 2-project independent live isolation.
+
+category: tests
+severity: info
+description: Test adequacy is strong for current scope: 848 passed, 0 failed, with new tests covering multi-project isolation, lazy launch, and 10-project router stress. The limitation is that much of lazy-launch and router stress remains mock/synthetic rather than full live 10-port execution.
+
+category: limitation_handling
+severity: info
+description: Limitations are honestly reported: 8 projects pending manual binding, project-alpha profile collision, no real multi-CDP concurrent execution yet, and lazy-launch real 10-port launch pending manual logins. This avoids overclaiming.
+
+assessment:
+phase_1_batch_registry_init: accepted
+phase_2_lazy_launch_manager: accepted_with_limitation
+phase_3_router_10_project_stress: accepted
+phase_4_real_gpt_binding_project_alpha: accepted_with_limitation
+full_10_project_readiness: not_yet
+live_multi_project_dispatch_readiness: not_authorized
+
+summary: >
+Phases 1-4 successfully move the system from a 2-port smoke architecture toward a 10-project registry-first expansion. The registry, port allocation, binding scaffolds, resource policy, lazy-launch design, and router stress coverage are all credible. However, the system has not yet reached independent multi-project live GPT operation because project-alpha is currently active through the same Chrome/CDP instance as agent-acceptance, and 8 projects remain pending manual binding. The correct status is accepted_with_limitation: proceed to classification and dry-run phases, but do not authorize live dispatch.
+
+next_task_authorization:
+
+MULTI-PROJECT-GATE0-PREFLIGHT-10-A1: authorized. Classify all 10 projects as active / pending_manual_binding / stale / blocked / human_required. Gate0 must explicitly report the current project-alpha profile collision and must not return full PASS until active projects are isolated.
+
+MULTI-PROJECT-GPT-REVIEW-DRY-RUN-10-A1: conditionally authorized after Gate0 evidence. Build dispatch packets for all 10 projects, but do not send messages. Packets for pending or collision-affected projects must be marked non-dispatchable or human_required.
+
+MULTI-PROJECT-GPT-REVIEW-LIVE-2-A1: not authorized yet. Requires at least 2 active projects on distinct CDP ports, distinct profiles, distinct real GPT conversations, and Gate0 PASS for those 2 projects.

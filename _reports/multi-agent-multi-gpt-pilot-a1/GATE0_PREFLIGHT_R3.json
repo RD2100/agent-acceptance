@@ -1,0 +1,56 @@
+{
+  "overall": "PASS",
+  "executed_external_runtime": false,
+  "human_gate_required": false,
+  "agent_count": 2,
+  "checks": [
+    {
+      "name": "binding_0_valid",
+      "status": "passed",
+      "detail": "conversation binding validates",
+      "evidence": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json"
+    },
+    {
+      "name": "binding_0_runtime_scope",
+      "status": "passed",
+      "detail": "all governed external runtimes are declared",
+      "evidence": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json"
+    },
+    {
+      "name": "unique_agent_ids",
+      "status": "passed",
+      "detail": "2 unique agent id(s)",
+      "evidence": null
+    },
+    {
+      "name": "pilot_agent_count",
+      "status": "passed",
+      "detail": "2 agent(s) declared",
+      "evidence": null
+    },
+    {
+      "name": "cap_029_registered",
+      "status": "passed",
+      "detail": "CAP-029 section exists",
+      "evidence": "D:\\agent-acceptance\\docs\\agent-runtime\\capability-inventory.md"
+    },
+    {
+      "name": "cap_029_gate0",
+      "status": "passed",
+      "detail": "usable_for_gate0=true",
+      "evidence": "D:\\agent-acceptance\\docs\\agent-runtime\\capability-inventory.md"
+    },
+    {
+      "name": "cap_029_execution",
+      "status": "passed",
+      "detail": "opencode dispatch executable",
+      "evidence": "D:\\agent-acceptance\\docs\\agent-runtime\\capability-inventory.md"
+    },
+    {
+      "name": "tool_policy_runtime_gates",
+      "status": "passed",
+      "detail": "opencode, cross-repo, paper, and authorization gates documented",
+      "evidence": "D:\\agent-acceptance\\docs\\agent-runtime\\tool-policy.md"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+verdict: accepted_with_limitation
+
+run_id: SMOKE_CDP_A1_20260610
+
+findings:
+
+category: cdp_instances
+severity: info
+description: Evidence supports that two distinct CDP endpoints were active: Project A on port 9222 and Project B on port 9223. Both were checked through live /json/version, and the page counts differ, supporting that they are separate Chrome instances rather than one reused session.
+
+category: port_isolation
+severity: info
+description: Port isolation is sufficiently demonstrated for this smoke stage. Project A uses 9222 and Project B uses 9223; the isolation verification reports two unique ports and zero port collisions.
+
+category: profile_isolation
+severity: info
+description: Project B uses _cdp_profiles/smoke-project-beta, distinct from Project A. The evidence supports separate browser profile allocation, though deeper filesystem-level profile hash/provenance evidence is not shown.
+
+category: registry_binding
+severity: info
+description: Registry and binding integration is demonstrated: .agent/PROJECT_REGISTRY.json maps two projects to separate CDP endpoints, and _smoke_project_beta/.agent/CONVERSATION_BINDING.json provides a Project B binding consumed by the router.
+
+category: router_resolution
+severity: info
+description: Router resolution is demonstrated against live registry and live CDP health checks. Both projects resolved with distinct endpoints, distinct agent IDs, and distinct conversation IDs.
+
+category: isolation_verification
+severity: info
+description: The isolation check reports unique ports, unique conversations, unique profiles, and zero issues. This satisfies the core architecture-level smoke objective.
+
+category: gated_dispatch
+severity: info
+description: Dispatch packets were built for both projects but not sent. This correctly preserves the gated dry-run boundary and avoids unauthorized GPT message delivery.
+
+category: safety
+severity: info
+description: No message dispatch or external runtime execution occurred. This is appropriate for a controlled smoke test before full multi-agent/multi-GPT execution.
+
+category: limitation
+severity: major
+description: Project B does not yet have a real ChatGPT conversation open on port 9223. Its conversation_id is synthetic (smoke-conv-beta-001), while the port 9223 page list shows zero ChatGPT pages. Therefore this proves two live CDP instances and routing isolation, but not yet two real active GPT conversations.
+
+category: limitation
+severity: major
+description: The smoke test does not prove concurrent GPT review traffic or message delivery. It only proves registry resolution, CDP health, isolation checks, and dry-run packet construction.
+
+category: limitation
+severity: minor
+description: The evidence is inline and summary-level. It references SMOKE_TEST_RESULTS.json and script files, but does not include full raw JSON/page-list output or the full script content in this prompt. The review therefore accepts the smoke result with evidence-level limitation.
+
+category: limitation
+severity: minor
+description: Project A has two ChatGPT pages open on port 9222, but the evidence does not show that the router selected the intended page by exact conversation_id from the page list. This should be enforced before real capture or dispatch.
+
+assessment:
+both_cdp_instances_active: accepted
+port_isolation_confirmed: accepted
+registry_binding_integration: accepted
+router_resolution_accuracy: accepted_with_limitation
+gated_dispatch_boundary: accepted
+test_completeness: accepted_with_limitation
+real_two_gpt_conversation_readiness: needs_revision
+
+summary: >
+MULTI-PROJECT-ISOLATION-REAL-CDP-SMOKE-A1 successfully demonstrates a controlled
+two-project CDP isolation smoke test: two live Chrome/CDP endpoints, distinct ports,
+distinct profiles, registry-based routing, live CDP health checks, isolation verification,
+and gated dry-run dispatch packets. It is a valid step beyond the synthetic architecture
+tests. However, it does not yet prove two real GPT conversations because Project B has no
+ChatGPT page open and uses a synthetic conversation ID. It should therefore be accepted
+as a real CDP isolation smoke test, but not as full multi-project GPT execution readiness.
+
+next_task_authorization: MULTI-PROJECT-REAL-GPT-CONVERSATION-BINDING-A1 — open or manually bind a real ChatGPT conversation for Project B on port 9223, verify the page list contains the exact Project B conversation URL, update the Project B binding from synthetic to real conversation_id/chat_url, rerun router resolution and isolation verification, and keep dispatch gated unless separately authorized.

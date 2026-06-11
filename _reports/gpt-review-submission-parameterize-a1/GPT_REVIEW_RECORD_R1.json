@@ -1,0 +1,76 @@
+{
+  "task_id": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1",
+  "run_id": "GPT_REVIEW_SUBMISSION_PARAMETERIZE_A1_REVIEW_20260609T023631_RD",
+  "round": "R1 (R2 followup for truncated reply)",
+  "verdict": {
+    "overall_judgment": "accepted_with_limitation",
+    "evidence_pack_reviewed": true,
+    "attachment_reviewed": true,
+    "task_id_matches": true,
+    "has_end_marker": true,
+    "has_next_task_auth": true,
+    "blocking_issues": "none",
+    "required_fixes": "none"
+  },
+  "verifier": {
+    "valid": true,
+    "closure_ready": true,
+    "exit_code": 0,
+    "output_path": "_reports/gpt-review-submission-parameterize-a1/VERIFY_GPT_REPLY_OUTPUT_R2.txt"
+  },
+  "submission": {
+    "sent": true,
+    "upload_confirmed": true,
+    "upload_method": "input[0]",
+    "send_button": "button[data-testid=\"send-button\"]",
+    "send_confirmed": true,
+    "send_confirm_reason": "user_message_bubble_appeared",
+    "sent_at": "2026-06-09T10:37:55",
+    "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+    "status_path": "_reports/gpt-review-submission-parameterize-a1/GPT_REVIEW_SUBMISSION_STATUS_R1.json"
+  },
+  "capture_reconciliation": {
+    "R1_truncated": true,
+    "R1_issue": "Reply captured at intermediate state, missing next_task_authorization and END_OF_GPT_RESPONSE",
+    "R2_followup": "Sent follow-up requesting complete verdict",
+    "R2_before_user_count": 15,
+    "R2_before_assistant_count": 9,
+    "R2_after_user_count": 16,
+    "R2_after_assistant_count": 10,
+    "R2_selected_index": 9,
+    "R2_last_index": 9,
+    "R2_capture_mismatch": false,
+    "R2_decision": "selected_and_last_match"
+  },
+  "evidence_pack": {
+    "zip_path": "evidence_packs/gpt-review-submission-parameterize-a1/GPT_REVIEW_SUBMISSION_PARAMETERIZE_A1_20260609T023631.zip",
+    "zip_size": 32764,
+    "zip_sha256": "db3cf38db01e009fc0bf009a56406777dcfaa978313941c02e130f0bff3180a5"
+  },
+  "captured_reply": {
+    "result_path": "_reports/gpt-review-submission-parameterize-a1/GPT_REVIEW_RESULT_R2.txt",
+    "reply_chars": 1426,
+    "reply_sha256": "5f6b728a00c20ab596df833b0de2993c44a86c182a964e6e9e76b6e033c36541",
+    "run_id_in_reply": true,
+    "has_end_marker": true,
+    "has_overall_judgment": true,
+    "parsed_overall_judgment": "accepted_with_limitation"
+  },
+  "limitations_from_gpt": [
+    "模板变量仅支持双大括号形式，单大括号不兼容",
+    "真实 UI 提交依赖已登录 Chrome CDP 环境与页面结构稳定性",
+    "capture 候选选择尚未强制同时校验 task_id",
+    "dry-run 验证通过，但真实端到端提交流程未在本次 evidence pack 中证明",
+    "错误处理的真实提交失败场景仍需后续回归测试验证",
+    "PACK_MANIFEST.md 自列规则待统一"
+  ],
+  "next_task_authorization": {
+    "task_id": "GPT-CAPTURE-RECONCILIATION-HARDEN-A1",
+    "authorized": "已授权",
+    "execute_immediately": "是",
+    "ask_before_starting": "否"
+  },
+  "created_at": "2026-06-09T10:41:30+08:00",
+  "method": "playwright_cdp_9222",
+  "script": "_reports/gpt-review-submission-parameterize-a1/_submit_gpt_review_r1.py + _followup_complete_verdict.py"
+}

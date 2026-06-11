@@ -1,0 +1,40 @@
+overall_judgment: blocked
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+VRT-003 missing run_id 被测试为可通过，这与 GPT 审查流程必须绑定 run_id 的核心约束冲突；该测试不应把缺失 run_id 固化为可接受行为。
+
+VRT-004 wrong_run_id 只有 fixture，但未形成实际测试用例，未覆盖 run_id mismatch 的失败路径。
+
+回归测试套件声称覆盖 VRT-001 through VRT-012，但 VRT-004 未执行，VRT-008 仅作为未实现 limitation 记录，覆盖声明过强。
+required_fixes:
+
+增加或修正 run_id 相关回归测试：缺失 run_id 必须 FAIL，run_id mismatch 必须 FAIL，旧 run_id / stale run_id 必须 FAIL 或标记 capture_failed / stale_match。
+
+若当前 verify_gpt_reply.py 暂不支持 expected_run_id 参数，应在本任务中将该缺口明确标为 blocker 或新增测试标记为 expected failure，不得把缺失 run_id 测试为 PASS。
+
+更新 EXECUTION_REPORT.md 的 coverage matrix，准确区分已测试、未实现、部分覆盖、expected failure，避免声称完整覆盖 VRT-001 through VRT-012。
+
+重新运行 pytest，并重新生成 evidence pack 后提交 GPT 复核。
+limitations:
+
+tests/conftest.py、tests/test_verify_gpt_reply.py、tests/test_pre_gpt_review_gate.py 结构清晰，fixture 使用 tmp_path，整体 pytest 写法较规范。
+
+本地复跑结果为 33/33 passed，说明当前测试代码可执行，但通过结果部分固化了错误或不完整的 run_id 约束。
+
+PGT-001、PGT-002、PGT-004、PGT-006、SD-01 及 gate 基础路径覆盖较好。
+
+VRT-008、PGT-003、PGT-005 已被列为 known limitations，但后续仍需实现或转化为明确 expected failure/regression backlog。
+
+task_id regex first-match workaround 已记录，但这说明 verify_gpt_reply.py 本身仍存在解析脆弱性，后续应改为结构化提取或限定 top-level task_id。
+next_task_authorization:
+task_id: GPT-REVIEW-FLOW-REGRESSION-TEST-A1-R2
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+
+run_id: GPT_REVIEW_FLOW_REGRESSION_TEST_A1_REVIEW_20260609T115500_RD
+task_id: GPT-REVIEW-FLOW-REGRESSION-TEST-A1
+
+END_OF_GPT_RESPONSE

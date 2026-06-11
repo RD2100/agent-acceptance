@@ -1,0 +1,12 @@
+# SHA256 Artifact Manifest
+
+`HASHES.txt` is intentionally excluded to avoid self-hash churn.
+
+BB8F4F5FFC96A7DB4D20B7EFF8B83DD01AABE43279C5C6EAA7C7ED82EEC195EA  D:\agent-acceptance\_reports\paper-controller-takeover-synthetic-e2e-a1\EXECUTION_REPORT.md
+61787FDBA6F2733F6AE5A56E9B2ADFB207148F057CADAD2C2D8C8138A354C2C5  D:\agent-acceptance\_reports\paper-controller-takeover-synthetic-e2e-a1\GO_NOGO_EXIT.txt
+1B3DBD473751A10A24B744DC990A34078A11C43813073AC7D30E2F3683533552  D:\agent-acceptance\_reports\paper-controller-takeover-synthetic-e2e-a1\GO_NOGO_OUTPUT.txt
+BEB199AD015DBC1A3FB102997B2EB83AA3060E44706682381D4F99B1682E99E2  D:\agent-acceptance\_reports\paper-controller-takeover-synthetic-e2e-a1\PAPER_TASK_VALIDATION.json
+20C56D9DCBFF2F2E50287E4921C826AEE5571F89D44F24F98EFDCC3268BEDD9E  D:\agent-acceptance\_reports\paper-controller-takeover-synthetic-e2e-a1\PREFLIGHT_OUTPUT.txt
+812DE21E58DF18F6CD2D224E666221FF51B80F8FF5EEBE35849E18D15BA9B3FD  D:\agent-acceptance\_reports\paper-controller-takeover-synthetic-e2e-a1\REVISION_BLUEPRINT.md
+EBC78D418295ADAB8293324D26298B2E7FC390EE3A5E5C03C5C18BB43C7013DC  D:\agent-acceptance\_reports\paper-controller-takeover-synthetic-e2e-a1\SECTION_REVIEW_REPORT.md
+FC6578BC86A4BF8514CF7B3086EADDD5A53800019DF9F9CC5B39B7E8ED69509C  D:\agent-acceptance\_reports\paper-controller-takeover-synthetic-e2e-a1\SECTION_REVIEW_RESULT.json

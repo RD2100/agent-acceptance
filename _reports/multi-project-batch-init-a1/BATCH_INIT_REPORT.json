@@ -1,0 +1,128 @@
+{
+  "acceptance_id": "MULTI-PROJECT-REGISTRY-BATCH-INIT-A1",
+  "awsp_version": "1.3.0",
+  "started_at": "2026-06-10T06:17:53Z",
+  "steps": [
+    {
+      "step": "build_registry",
+      "total_projects": 10,
+      "ports": [
+        9222,
+        9223,
+        9224,
+        9225,
+        9226,
+        9227,
+        9228,
+        9229,
+        9230,
+        9231
+      ],
+      "validation_issues": [],
+      "pass": true
+    },
+    {
+      "step": "create_profiles",
+      "profiles_created": 10,
+      "profiles_dir": "D:\\agent-acceptance\\_cdp_profiles",
+      "pass": true
+    },
+    {
+      "step": "create_bindings",
+      "bindings_created": 10,
+      "existing_preserved": [
+        "agent-acceptance"
+      ],
+      "pass": true
+    },
+    {
+      "step": "save_registry",
+      "path": "D:\\agent-acceptance\\.agent\\PROJECT_REGISTRY.json",
+      "pass": true
+    },
+    {
+      "step": "create_resource_policy",
+      "path": "D:\\agent-acceptance\\.agent\\MULTI_PROJECT_RESOURCE_POLICY.json",
+      "max_warm": 4,
+      "max_active": 2,
+      "lazy_launch": true,
+      "pass": true
+    },
+    {
+      "step": "validate_bindings",
+      "issues": [],
+      "pass": true
+    },
+    {
+      "step": "port_allocation",
+      "allocations": [
+        {
+          "project_id": "agent-acceptance",
+          "port": 9222,
+          "profile": "D:\\agent-acceptance\\_cdp_profiles\\agent-acceptance",
+          "binding_status": "active"
+        },
+        {
+          "project_id": "project-alpha",
+          "port": 9223,
+          "profile": "D:\\agent-acceptance\\_cdp_profiles\\project-alpha",
+          "binding_status": "pending_manual_binding"
+        },
+        {
+          "project_id": "project-beta",
+          "port": 9224,
+          "profile": "D:\\agent-acceptance\\_cdp_profiles\\project-beta",
+          "binding_status": "pending_manual_binding"
+        },
+        {
+          "project_id": "project-gamma",
+          "port": 9225,
+          "profile": "D:\\agent-acceptance\\_cdp_profiles\\project-gamma",
+          "binding_status": "pending_manual_binding"
+        },
+        {
+          "project_id": "project-delta",
+          "port": 9226,
+          "profile": "D:\\agent-acceptance\\_cdp_profiles\\project-delta",
+          "binding_status": "pending_manual_binding"
+        },
+        {
+          "project_id": "project-epsilon",
+          "port": 9227,
+          "profile": "D:\\agent-acceptance\\_cdp_profiles\\project-epsilon",
+          "binding_status": "pending_manual_binding"
+        },
+        {
+          "project_id": "project-zeta",
+          "port": 9228,
+          "profile": "D:\\agent-acceptance\\_cdp_profiles\\project-zeta",
+          "binding_status": "pending_manual_binding"
+        },
+        {
+          "project_id": "project-eta",
+          "port": 9229,
+          "profile": "D:\\agent-acceptance\\_cdp_profiles\\project-eta",
+          "binding_status": "pending_manual_binding"
+        },
+        {
+          "project_id": "project-theta",
+          "port": 9230,
+          "profile": "D:\\agent-acceptance\\_cdp_profiles\\project-theta",
+          "binding_status": "pending_manual_binding"
+        },
+        {
+          "project_id": "project-iota",
+          "port": 9231,
+          "profile": "D:\\agent-acceptance\\_cdp_profiles\\project-iota",
+          "binding_status": "pending_manual_binding"
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "completed_at": "2026-06-10T06:17:53Z",
+  "overall": "PASS",
+  "total_steps": 7,
+  "passed_steps": 7,
+  "failed_steps": 0
+}

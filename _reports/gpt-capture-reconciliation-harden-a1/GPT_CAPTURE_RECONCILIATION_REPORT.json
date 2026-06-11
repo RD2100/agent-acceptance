@@ -1,0 +1,903 @@
+{
+  "report_id": "RECON-20260609-001",
+  "task_id": "GPT-CAPTURE-RECONCILIATION-HARDEN-A1",
+  "generated_at": "2026-06-09T11:09:01.084737+08:00",
+  "generator": "scripts/generate_reconciliation_report.py",
+  "hardening_plan_ref": "HANDOFF_WORKFLOW_HARDENING_PLAN.md section 5.4",
+  "summary": {
+    "total_submissions": 25,
+    "total_captures": 25,
+    "total_verified": 13,
+    "total_verdicts": 20,
+    "orphan_submissions": 0,
+    "orphan_captures": 0,
+    "unverified_captures": 3
+  },
+  "reconciliation": [
+    {
+      "seq": 1,
+      "task_id": "AA-FLOW-CONTRACT-CONTEXT-PACK",
+      "round": "R1",
+      "report_dir": "_reports\\aa-flow-contract-context-pack",
+      "evidence_pack_dir": null,
+      "submitted_at": null,
+      "captured_at": "2026-06-02T12:58:23.667263+08:00",
+      "verified_at": null,
+      "verdict": null,
+      "run_id": null,
+      "has_end_marker": false,
+      "has_next_task_auth": false,
+      "next_task_authorized_id": null,
+      "verify_passed": null,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.md",
+      "result_size_bytes": 4483,
+      "record_file": null,
+      "status": "pre_standardization",
+      "anomalies": [
+        {
+          "type": "pre_standardization",
+          "severity": "low",
+          "description": "Pre-standardization format (.md): no RECORD, no RUN_ID, no structured END_OF_GPT_RESPONSE. Cannot be fully verified by current verify_gpt_reply.py."
+        }
+      ]
+    },
+    {
+      "seq": 2,
+      "task_id": "AA-FLOW-CONTRACT-INTEGRATION",
+      "round": "R1",
+      "report_dir": "_reports\\aa-flow-contract-integration",
+      "evidence_pack_dir": null,
+      "submitted_at": null,
+      "captured_at": "2026-06-02T13:08:25.496058+08:00",
+      "verified_at": null,
+      "verdict": null,
+      "run_id": null,
+      "has_end_marker": false,
+      "has_next_task_auth": false,
+      "next_task_authorized_id": null,
+      "verify_passed": null,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.md",
+      "result_size_bytes": 1635,
+      "record_file": null,
+      "status": "pre_standardization",
+      "anomalies": [
+        {
+          "type": "pre_standardization",
+          "severity": "low",
+          "description": "Pre-standardization format (.md): no RECORD, no RUN_ID, no structured END_OF_GPT_RESPONSE. Cannot be fully verified by current verify_gpt_reply.py."
+        }
+      ]
+    },
+    {
+      "seq": 3,
+      "task_id": "AA-RUNNER-CONTRACT-CONTEXT-PACK",
+      "round": "R1",
+      "report_dir": "_reports\\aa-runner-contract-context-pack",
+      "evidence_pack_dir": null,
+      "submitted_at": null,
+      "captured_at": "2026-06-02T14:43:04.543837+08:00",
+      "verified_at": null,
+      "verdict": null,
+      "run_id": null,
+      "has_end_marker": false,
+      "has_next_task_auth": false,
+      "next_task_authorized_id": null,
+      "verify_passed": null,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.md",
+      "result_size_bytes": 5471,
+      "record_file": null,
+      "status": "pre_standardization",
+      "anomalies": [
+        {
+          "type": "pre_standardization",
+          "severity": "low",
+          "description": "Pre-standardization format (.md): no RECORD, no RUN_ID, no structured END_OF_GPT_RESPONSE. Cannot be fully verified by current verify_gpt_reply.py."
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "task_id": "AA-RUNNER-CONTRACT-INTEGRATION",
+      "round": "R1",
+      "report_dir": "_reports\\aa-runner-contract-integration",
+      "evidence_pack_dir": null,
+      "submitted_at": null,
+      "captured_at": "2026-06-02T14:51:09.768390+08:00",
+      "verified_at": null,
+      "verdict": null,
+      "run_id": null,
+      "has_end_marker": false,
+      "has_next_task_auth": false,
+      "next_task_authorized_id": null,
+      "verify_passed": null,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.md",
+      "result_size_bytes": 1444,
+      "record_file": null,
+      "status": "pre_standardization",
+      "anomalies": [
+        {
+          "type": "pre_standardization",
+          "severity": "low",
+          "description": "Pre-standardization format (.md): no RECORD, no RUN_ID, no structured END_OF_GPT_RESPONSE. Cannot be fully verified by current verify_gpt_reply.py."
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "ATTACHCHAT",
+      "report_dir": "_reports\\handoff-pipeline-refactor-a1",
+      "evidence_pack_dir": "evidence_packs\\handoff-pipeline-refactor-a1",
+      "submitted_at": null,
+      "captured_at": "2026-06-08T22:07:11.391292+08:00",
+      "verified_at": "2026-06-08T22:07:27.082239+08:00",
+      "verdict": "accepted_with_limitation",
+      "run_id": null,
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "GENERATE-APPROVED-HANDOFF-A1",
+      "verify_passed": true,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT_ATTACHCHAT.txt",
+      "result_size_bytes": 1332,
+      "record_file": null,
+      "status": "pre_standardization",
+      "anomalies": [
+        {
+          "type": "pre_standardization",
+          "severity": "medium",
+          "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "NEWCHAT",
+      "report_dir": "_reports\\handoff-pipeline-refactor-a1",
+      "evidence_pack_dir": "evidence_packs\\handoff-pipeline-refactor-a1",
+      "submitted_at": null,
+      "captured_at": "2026-06-08T21:43:51.116161+08:00",
+      "verified_at": "2026-06-08T21:43:51.222719+08:00",
+      "verdict": "accepted_with_limitation",
+      "run_id": null,
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "GENERATE-APPROVED-HANDOFF-A1",
+      "verify_passed": true,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT_NEWCHAT.txt",
+      "result_size_bytes": 1217,
+      "record_file": null,
+      "status": "pre_standardization",
+      "anomalies": [
+        {
+          "type": "pre_standardization",
+          "severity": "medium",
+          "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "NEWCHAT_INITIAL",
+      "report_dir": "_reports\\handoff-pipeline-refactor-a1",
+      "evidence_pack_dir": "evidence_packs\\handoff-pipeline-refactor-a1",
+      "submitted_at": null,
+      "captured_at": "2026-06-08T21:43:51.029161+08:00",
+      "verified_at": null,
+      "verdict": "accepted_with_limitation",
+      "run_id": null,
+      "has_end_marker": true,
+      "has_next_task_auth": false,
+      "next_task_authorized_id": null,
+      "verify_passed": null,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT_NEWCHAT_INITIAL.txt",
+      "result_size_bytes": 1378,
+      "record_file": null,
+      "status": "pre_standardization",
+      "anomalies": [
+        {
+          "type": "pre_standardization",
+          "severity": "medium",
+          "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "NEWCHAT_VERIFIED",
+      "report_dir": "_reports\\handoff-pipeline-refactor-a1",
+      "evidence_pack_dir": "evidence_packs\\handoff-pipeline-refactor-a1",
+      "submitted_at": null,
+      "captured_at": "2026-06-08T21:43:31.546789+08:00",
+      "verified_at": null,
+      "verdict": "accepted_with_limitation",
+      "run_id": null,
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "GENERATE-APPROVED-HANDOFF-A1",
+      "verify_passed": null,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT_NEWCHAT_VERIFIED.txt",
+      "result_size_bytes": 1217,
+      "record_file": null,
+      "status": "pre_standardization",
+      "anomalies": [
+        {
+          "type": "pre_standardization",
+          "severity": "medium",
+          "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "R1",
+      "report_dir": "_reports\\handoff-pipeline-refactor-a1",
+      "evidence_pack_dir": "evidence_packs\\handoff-pipeline-refactor-a1",
+      "submitted_at": null,
+      "captured_at": "2026-06-08T20:56:10.379983+08:00",
+      "verified_at": "2026-06-08T20:56:26.807699+08:00",
+      "verdict": null,
+      "run_id": "HANDOFF_A1_ATTACHCHAT_20260608_220428_CHL0ZX",
+      "has_end_marker": false,
+      "has_next_task_auth": false,
+      "next_task_authorized_id": null,
+      "verify_passed": false,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.txt",
+      "result_size_bytes": 9307,
+      "record_file": null,
+      "status": "pre_standardization",
+      "anomalies": [
+        {
+          "type": "pre_standardization",
+          "severity": "medium",
+          "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "R2",
+      "report_dir": "_reports\\handoff-pipeline-refactor-a1",
+      "evidence_pack_dir": "evidence_packs\\handoff-pipeline-refactor-a1",
+      "submitted_at": null,
+      "captured_at": "2026-06-08T21:03:40.072659+08:00",
+      "verified_at": "2026-06-08T21:03:46.850987+08:00",
+      "verdict": "review_unverified",
+      "run_id": null,
+      "has_end_marker": true,
+      "has_next_task_auth": false,
+      "next_task_authorized_id": null,
+      "verify_passed": null,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT_R2.txt",
+      "result_size_bytes": 1386,
+      "record_file": null,
+      "status": "pre_standardization",
+      "anomalies": [
+        {
+          "type": "pre_standardization",
+          "severity": "medium",
+          "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "R3",
+      "report_dir": "_reports\\handoff-pipeline-refactor-a1",
+      "evidence_pack_dir": "evidence_packs\\handoff-pipeline-refactor-a1",
+      "submitted_at": null,
+      "captured_at": "2026-06-08T21:05:04.884523+08:00",
+      "verified_at": "2026-06-08T21:05:11.992726+08:00",
+      "verdict": "review_unverified",
+      "run_id": null,
+      "has_end_marker": true,
+      "has_next_task_auth": false,
+      "next_task_authorized_id": null,
+      "verify_passed": null,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT_R3.txt",
+      "result_size_bytes": 1385,
+      "record_file": null,
+      "status": "pre_standardization",
+      "anomalies": [
+        {
+          "type": "pre_standardization",
+          "severity": "medium",
+          "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "R4",
+      "report_dir": "_reports\\handoff-pipeline-refactor-a1",
+      "evidence_pack_dir": "evidence_packs\\handoff-pipeline-refactor-a1",
+      "submitted_at": null,
+      "captured_at": "2026-06-08T21:06:50.804742+08:00",
+      "verified_at": "2026-06-08T21:06:59.011993+08:00",
+      "verdict": "review_unverified",
+      "run_id": null,
+      "has_end_marker": true,
+      "has_next_task_auth": false,
+      "next_task_authorized_id": null,
+      "verify_passed": null,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT_R4.txt",
+      "result_size_bytes": 1385,
+      "record_file": null,
+      "status": "pre_standardization",
+      "anomalies": [
+        {
+          "type": "pre_standardization",
+          "severity": "medium",
+          "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+        }
+      ]
+    },
+    {
+      "seq": 6,
+      "task_id": "GLOBAL-PROJECT-HANDOFF-REPAIR-A1",
+      "round": "R1",
+      "report_dir": "_reports\\global-project-handoff-repair-a1",
+      "evidence_pack_dir": "evidence_packs\\global-project-handoff-repair-a1",
+      "submitted_at": null,
+      "captured_at": "2026-06-08T22:56:58.005076+08:00",
+      "verified_at": "2026-06-08T23:04:22.598224+08:00",
+      "verdict": "accepted_with_limitation",
+      "run_id": "GLOBAL_HANDOFF_REPAIR_REVIEW_20260608_225353_EEUAEQ",
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1",
+      "verify_passed": true,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.txt",
+      "result_size_bytes": 1771,
+      "record_file": "GPT_REVIEW_RECORD.json",
+      "status": "complete",
+      "anomalies": []
+    },
+    {
+      "seq": 7,
+      "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1",
+      "round": "R1",
+      "report_dir": "_reports\\global-project-evidence-binding-a1",
+      "evidence_pack_dir": "evidence_packs\\global-project-evidence-binding-a1-r3",
+      "submitted_at": null,
+      "captured_at": "2026-06-08T23:36:38.412497+08:00",
+      "verified_at": "2026-06-08T23:36:38.526525+08:00",
+      "verdict": "blocked",
+      "run_id": "GLOBAL_EVIDENCE_BINDING_REVIEW_20260608_233200_RD",
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+      "verify_passed": null,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.txt",
+      "result_size_bytes": 2422,
+      "record_file": null,
+      "status": "unverified_capture",
+      "anomalies": [
+        {
+          "type": "unverified_capture",
+          "severity": "high",
+          "description": "Capture exists but verify_gpt_reply.py was not run (no VERIFY_GPT_REPLY_OUTPUT file found)."
+        }
+      ]
+    },
+    {
+      "seq": 8,
+      "task_id": "EXISTING-WORKFLOW-DISCOVERY-SMOKE-A1",
+      "round": "R1",
+      "report_dir": "_reports\\existing-workflow-discovery-smoke-a1",
+      "evidence_pack_dir": "evidence_packs\\existing-workflow-discovery-smoke-a1",
+      "submitted_at": null,
+      "captured_at": "2026-06-08T23:48:47.601345+08:00",
+      "verified_at": "2026-06-08T23:49:00.628232+08:00",
+      "verdict": "accepted_with_limitation",
+      "run_id": "EXISTING_WORKFLOW_DISCOVERY_SMOKE_REVIEW_20260608_234600_RD",
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+      "verify_passed": true,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.txt",
+      "result_size_bytes": 1484,
+      "record_file": "GPT_REVIEW_RECORD.json",
+      "status": "complete",
+      "anomalies": []
+    },
+    {
+      "seq": 9,
+      "task_id": "NEXT-AGENT-WORKFLOW-BOOTSTRAP-IMPLEMENT-A1",
+      "round": "R1",
+      "report_dir": "_reports\\next-agent-workflow-bootstrap-a1",
+      "evidence_pack_dir": null,
+      "submitted_at": null,
+      "captured_at": "2026-06-08T23:58:34.987593+08:00",
+      "verified_at": "2026-06-08T23:58:49.847376+08:00",
+      "verdict": "accepted_with_limitation",
+      "run_id": "NEXT_AGENT_WORKFLOW_BOOTSTRAP_IMPLEMENT_REVIEW_20260608_235700_RD",
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+      "verify_passed": true,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.txt",
+      "result_size_bytes": 1324,
+      "record_file": "GPT_REVIEW_RECORD.json",
+      "status": "complete",
+      "anomalies": []
+    },
+    {
+      "seq": 10,
+      "task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1",
+      "round": "R1",
+      "report_dir": "_reports\\handoff-workflow-hardening-plan-a1",
+      "evidence_pack_dir": "evidence_packs\\handoff-workflow-hardening-plan-a1",
+      "submitted_at": "2026-06-09T09:59:18",
+      "captured_at": "2026-06-09T02:02:00Z",
+      "verified_at": "2026-06-09T10:03:05.559812+08:00",
+      "verdict": "blocked",
+      "run_id": "HANDOFF_WORKFLOW_HARDENING_PLAN_A1_REVIEW_20260609_012328_RD",
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1-R2",
+      "verify_passed": true,
+      "closure_ready": false,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.txt",
+      "result_size_bytes": 2962,
+      "record_file": "GPT_REVIEW_RECORD.json",
+      "status": "blocked_chain_continuation",
+      "anomalies": []
+    },
+    {
+      "seq": 10,
+      "task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1",
+      "round": "R2",
+      "report_dir": "_reports\\handoff-workflow-hardening-plan-a1",
+      "evidence_pack_dir": "evidence_packs\\handoff-workflow-hardening-plan-a1",
+      "submitted_at": null,
+      "captured_at": "2026-06-09T10:12:25.041621+08:00",
+      "verified_at": "2026-06-09T10:12:51.774430+08:00",
+      "verdict": "accepted_with_limitation",
+      "run_id": "HANDOFF_WORKFLOW_HARDENING_PLAN_A1_R2_REVIEW_20260609T021002_RD",
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "PROCESS-STATE-MACHINE-DEFINE-A1",
+      "verify_passed": true,
+      "closure_ready": null,
+      "capture_mismatch": false,
+      "result_file": "GPT_REVIEW_RESULT_R2.txt",
+      "result_size_bytes": 1677,
+      "record_file": null,
+      "status": "complete",
+      "anomalies": []
+    },
+    {
+      "seq": 11,
+      "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+      "round": "R1",
+      "report_dir": "_reports\\global-project-evidence-binding-a1-r2",
+      "evidence_pack_dir": null,
+      "submitted_at": null,
+      "captured_at": "2026-06-09T08:55:37.619962+08:00",
+      "verified_at": "2026-06-09T08:55:49.615244+08:00",
+      "verdict": "blocked",
+      "run_id": "HANDOFF_REPLY_V4_RESTORE_SCOPE_CONSULT_20260609_083700_RD",
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R3",
+      "verify_passed": null,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.txt",
+      "result_size_bytes": 1869,
+      "record_file": null,
+      "status": "unverified_capture",
+      "anomalies": [
+        {
+          "type": "unverified_capture",
+          "severity": "high",
+          "description": "Capture exists but verify_gpt_reply.py was not run (no VERIFY_GPT_REPLY_OUTPUT file found)."
+        }
+      ]
+    },
+    {
+      "seq": 12,
+      "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R3",
+      "round": "R1",
+      "report_dir": "_reports\\global-project-evidence-binding-a1-r3",
+      "evidence_pack_dir": null,
+      "submitted_at": null,
+      "captured_at": "2026-06-09T08:58:29.576979+08:00",
+      "verified_at": "2026-06-09T08:58:41.512065+08:00",
+      "verdict": "blocked",
+      "run_id": "GLOBAL_EVIDENCE_BINDING_A1_R3_REVIEW_20260609_085800_RD",
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R4",
+      "verify_passed": null,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.txt",
+      "result_size_bytes": 2170,
+      "record_file": null,
+      "status": "unverified_capture",
+      "anomalies": [
+        {
+          "type": "unverified_capture",
+          "severity": "high",
+          "description": "Capture exists but verify_gpt_reply.py was not run (no VERIFY_GPT_REPLY_OUTPUT file found)."
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R4",
+      "round": "R1",
+      "report_dir": "_reports\\global-project-evidence-binding-a1-r4",
+      "evidence_pack_dir": "evidence_packs\\global-project-evidence-binding-a1-r4",
+      "submitted_at": null,
+      "captured_at": "2026-06-09T09:01:08.394474+08:00",
+      "verified_at": "2026-06-09T09:01:20.280743+08:00",
+      "verdict": "accepted_with_limitation",
+      "run_id": "GLOBAL_EVIDENCE_BINDING_A1_R4_REVIEW_20260609_090100_RD",
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "none",
+      "verify_passed": true,
+      "closure_ready": null,
+      "capture_mismatch": null,
+      "result_file": "GPT_REVIEW_RESULT.txt",
+      "result_size_bytes": 1417,
+      "record_file": "GPT_REVIEW_RECORD.json",
+      "status": "complete",
+      "anomalies": []
+    },
+    {
+      "seq": 14,
+      "task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1-R2",
+      "round": "R2",
+      "report_dir": "_reports\\handoff-workflow-hardening-plan-a1",
+      "evidence_pack_dir": null,
+      "submitted_at": "2026-06-09T10:11:34",
+      "captured_at": "2026-06-09T10:12:30+08:00",
+      "verified_at": null,
+      "verdict": "accepted_with_limitation",
+      "run_id": "HANDOFF_WORKFLOW_HARDENING_PLAN_A1_R2_REVIEW_20260609T021002_RD",
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "PROCESS-STATE-MACHINE-DEFINE-A1",
+      "verify_passed": true,
+      "closure_ready": true,
+      "capture_mismatch": false,
+      "result_file": "GPT_REVIEW_RESULT_R2.txt",
+      "result_size_bytes": null,
+      "record_file": "GPT_REVIEW_RECORD_R2.json",
+      "status": "complete",
+      "anomalies": []
+    },
+    {
+      "seq": 15,
+      "task_id": "PROCESS-STATE-MACHINE-DEFINE-A1",
+      "round": "R1",
+      "report_dir": "_reports\\process-state-machine-define-a1",
+      "evidence_pack_dir": "evidence_packs\\process-state-machine-define-a1",
+      "submitted_at": "2026-06-09T10:26:15",
+      "captured_at": "2026-06-09T10:29:30+08:00",
+      "verified_at": "2026-06-09T10:29:18.827792+08:00",
+      "verdict": "accepted_with_limitation",
+      "run_id": "PROCESS_STATE_MACHINE_DEFINE_A1_REVIEW_20260609T022432_RD",
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1",
+      "verify_passed": true,
+      "closure_ready": true,
+      "capture_mismatch": false,
+      "result_file": "GPT_REVIEW_RESULT_R1.txt",
+      "result_size_bytes": 2208,
+      "record_file": "GPT_REVIEW_RECORD_R1.json",
+      "status": "complete",
+      "anomalies": []
+    },
+    {
+      "seq": 16,
+      "task_id": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1",
+      "round": "R1",
+      "report_dir": "_reports\\gpt-review-submission-parameterize-a1",
+      "evidence_pack_dir": "evidence_packs\\gpt-review-submission-parameterize-a1",
+      "submitted_at": null,
+      "captured_at": "2026-06-09T10:39:10.567014+08:00",
+      "verified_at": "2026-06-09T10:39:20.961088+08:00",
+      "verdict": "accepted_with_limitation",
+      "run_id": "GPT_REVIEW_SUBMISSION_PARAMETERIZE_A1_REVIEW_20260609T023631_RD",
+      "has_end_marker": true,
+      "has_next_task_auth": false,
+      "next_task_authorized_id": null,
+      "verify_passed": false,
+      "closure_ready": null,
+      "capture_mismatch": false,
+      "result_file": "GPT_REVIEW_RESULT_R1.txt",
+      "result_size_bytes": 1225,
+      "record_file": null,
+      "status": "verdict_mismatch",
+      "anomalies": [
+        {
+          "type": "verdict_mismatch",
+          "severity": "medium",
+          "description": "Verifier failed (exit≠0) but GPT verdict was accepted_with_limitation."
+        }
+      ]
+    },
+    {
+      "seq": 16,
+      "task_id": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1",
+      "round": "R2",
+      "report_dir": "_reports\\gpt-review-submission-parameterize-a1",
+      "evidence_pack_dir": "evidence_packs\\gpt-review-submission-parameterize-a1",
+      "submitted_at": "2026-06-09T10:37:55",
+      "captured_at": "2026-06-09T10:41:30+08:00",
+      "verified_at": "2026-06-09T10:41:18.330033+08:00",
+      "verdict": "accepted_with_limitation",
+      "run_id": "GPT_REVIEW_SUBMISSION_PARAMETERIZE_A1_REVIEW_20260609T023631_RD",
+      "has_end_marker": true,
+      "has_next_task_auth": true,
+      "next_task_authorized_id": "GPT-CAPTURE-RECONCILIATION-HARDEN-A1",
+      "verify_passed": true,
+      "closure_ready": true,
+      "capture_mismatch": false,
+      "result_file": "GPT_REVIEW_RESULT_R2.txt",
+      "result_size_bytes": 2163,
+      "record_file": "GPT_REVIEW_RECORD_R1.json",
+      "status": "complete",
+      "anomalies": []
+    }
+  ],
+  "authorization_chain": [
+    {
+      "source_task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "source_round": "ATTACHCHAT",
+      "source_verdict": "accepted_with_limitation",
+      "authorized_task_id": "GENERATE-APPROVED-HANDOFF-A1",
+      "authorized_exists": false
+    },
+    {
+      "source_task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "source_round": "NEWCHAT",
+      "source_verdict": "accepted_with_limitation",
+      "authorized_task_id": "GENERATE-APPROVED-HANDOFF-A1",
+      "authorized_exists": false
+    },
+    {
+      "source_task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "source_round": "NEWCHAT_VERIFIED",
+      "source_verdict": "accepted_with_limitation",
+      "authorized_task_id": "GENERATE-APPROVED-HANDOFF-A1",
+      "authorized_exists": false
+    },
+    {
+      "source_task_id": "GLOBAL-PROJECT-HANDOFF-REPAIR-A1",
+      "source_round": "R1",
+      "source_verdict": "accepted_with_limitation",
+      "authorized_task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1",
+      "authorized_exists": true
+    },
+    {
+      "source_task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1",
+      "source_round": "R1",
+      "source_verdict": "blocked",
+      "authorized_task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+      "authorized_exists": true
+    },
+    {
+      "source_task_id": "EXISTING-WORKFLOW-DISCOVERY-SMOKE-A1",
+      "source_round": "R1",
+      "source_verdict": "accepted_with_limitation",
+      "authorized_task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+      "authorized_exists": true
+    },
+    {
+      "source_task_id": "NEXT-AGENT-WORKFLOW-BOOTSTRAP-IMPLEMENT-A1",
+      "source_round": "R1",
+      "source_verdict": "accepted_with_limitation",
+      "authorized_task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+      "authorized_exists": true
+    },
+    {
+      "source_task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1",
+      "source_round": "R1",
+      "source_verdict": "blocked",
+      "authorized_task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1-R2",
+      "authorized_exists": true
+    },
+    {
+      "source_task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1",
+      "source_round": "R2",
+      "source_verdict": "accepted_with_limitation",
+      "authorized_task_id": "PROCESS-STATE-MACHINE-DEFINE-A1",
+      "authorized_exists": true
+    },
+    {
+      "source_task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+      "source_round": "R1",
+      "source_verdict": "blocked",
+      "authorized_task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R3",
+      "authorized_exists": true
+    },
+    {
+      "source_task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R3",
+      "source_round": "R1",
+      "source_verdict": "blocked",
+      "authorized_task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R4",
+      "authorized_exists": true
+    },
+    {
+      "source_task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1-R2",
+      "source_round": "R2",
+      "source_verdict": "accepted_with_limitation",
+      "authorized_task_id": "PROCESS-STATE-MACHINE-DEFINE-A1",
+      "authorized_exists": true
+    },
+    {
+      "source_task_id": "PROCESS-STATE-MACHINE-DEFINE-A1",
+      "source_round": "R1",
+      "source_verdict": "accepted_with_limitation",
+      "authorized_task_id": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1",
+      "authorized_exists": true
+    },
+    {
+      "source_task_id": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1",
+      "source_round": "R2",
+      "source_verdict": "accepted_with_limitation",
+      "authorized_task_id": "GPT-CAPTURE-RECONCILIATION-HARDEN-A1",
+      "authorized_exists": false
+    }
+  ],
+  "anomalies": [
+    {
+      "task_id": "AA-FLOW-CONTRACT-CONTEXT-PACK",
+      "round": "R1",
+      "type": "pre_standardization",
+      "severity": "low",
+      "description": "Pre-standardization format (.md): no RECORD, no RUN_ID, no structured END_OF_GPT_RESPONSE. Cannot be fully verified by current verify_gpt_reply.py."
+    },
+    {
+      "task_id": "AA-FLOW-CONTRACT-INTEGRATION",
+      "round": "R1",
+      "type": "pre_standardization",
+      "severity": "low",
+      "description": "Pre-standardization format (.md): no RECORD, no RUN_ID, no structured END_OF_GPT_RESPONSE. Cannot be fully verified by current verify_gpt_reply.py."
+    },
+    {
+      "task_id": "AA-RUNNER-CONTRACT-CONTEXT-PACK",
+      "round": "R1",
+      "type": "pre_standardization",
+      "severity": "low",
+      "description": "Pre-standardization format (.md): no RECORD, no RUN_ID, no structured END_OF_GPT_RESPONSE. Cannot be fully verified by current verify_gpt_reply.py."
+    },
+    {
+      "task_id": "AA-RUNNER-CONTRACT-INTEGRATION",
+      "round": "R1",
+      "type": "pre_standardization",
+      "severity": "low",
+      "description": "Pre-standardization format (.md): no RECORD, no RUN_ID, no structured END_OF_GPT_RESPONSE. Cannot be fully verified by current verify_gpt_reply.py."
+    },
+    {
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "ATTACHCHAT",
+      "type": "pre_standardization",
+      "severity": "medium",
+      "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+    },
+    {
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "NEWCHAT",
+      "type": "pre_standardization",
+      "severity": "medium",
+      "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+    },
+    {
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "NEWCHAT_INITIAL",
+      "type": "pre_standardization",
+      "severity": "medium",
+      "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+    },
+    {
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "NEWCHAT_VERIFIED",
+      "type": "pre_standardization",
+      "severity": "medium",
+      "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+    },
+    {
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "R1",
+      "type": "pre_standardization",
+      "severity": "medium",
+      "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+    },
+    {
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "R2",
+      "type": "pre_standardization",
+      "severity": "medium",
+      "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+    },
+    {
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "R3",
+      "type": "pre_standardization",
+      "severity": "medium",
+      "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+    },
+    {
+      "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "round": "R4",
+      "type": "pre_standardization",
+      "severity": "medium",
+      "description": "Pre-RECORD era: no GPT_REVIEW_RECORD.json. Multiple iterative sub-rounds (R1-R4, NEWCHAT_INITIAL, NEWCHAT_VERIFIED, ATTACHCHAT). Formal verify_gpt_reply.py was not standardized yet."
+    },
+    {
+      "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1",
+      "round": "R1",
+      "type": "unverified_capture",
+      "severity": "high",
+      "description": "Capture exists but verify_gpt_reply.py was not run (no VERIFY_GPT_REPLY_OUTPUT file found)."
+    },
+    {
+      "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+      "round": "R1",
+      "type": "unverified_capture",
+      "severity": "high",
+      "description": "Capture exists but verify_gpt_reply.py was not run (no VERIFY_GPT_REPLY_OUTPUT file found)."
+    },
+    {
+      "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R3",
+      "round": "R1",
+      "type": "unverified_capture",
+      "severity": "high",
+      "description": "Capture exists but verify_gpt_reply.py was not run (no VERIFY_GPT_REPLY_OUTPUT file found)."
+    },
+    {
+      "task_id": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1",
+      "round": "R1",
+      "type": "verdict_mismatch",
+      "severity": "medium",
+      "description": "Verifier failed (exit≠0) but GPT verdict was accepted_with_limitation."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+overall_judgment: accepted_with_limitation
+run_id: UNIVERSAL_AGENT_WORKFLOW_STANDARD_CROSS_PROJECT_SCAFFOLD_A1_20260609T145817_RD
+findings:
+
+
+validate_run_id_consistency.py 已从原先较固定的 agent-acceptance 布局，扩展为支持 config["evidence_pack_dir"] 与 CLI --evidence-pack-dir 的跨项目参数化，非标准 report / pack 目录布局可通过显式 evidence_pack_dir 完成验证。
+
+
+prompt-template validation 已新增 END_OF_GPT_RESPONSE marker 与 overall_judgment: 字段检查；缺 END marker、缺 overall_judgment、verdict-only prompt 均会 fail-closed。
+
+
+awsp_scaffold.py 已提供 create_scaffold() 与 validate_scaffold()，能为新项目生成 evidence_packs/、_reports/、docs/、scripts/、tests/、.awsp.json 和 AGENT_WORKFLOW_STANDARD.md，具备跨项目初始化雏形。
+
+
+15 个新增 cross-project/scaffold/prompt-template 测试可通过；连同既有 validate_run_id_consistency 测试，本轮目标测试共 29 passed，覆盖显式 evidence_pack_dir、非标准目录布局、prompt marker/overall_judgment 检查、scaffold create/validate/dry-run/force 等主要路径。
+
+
+AGENT_WORKFLOW_STANDARD.md 已升级到 AWSP v1.1.0，新增 cross-project support、parameterized validator、scaffold tool 和 version history，较 R4 更接近跨项目通用规范。
+
+
+limitation: prompt-template validator 当前只在缺少 overall_judgment 时拦截 verdict-only prompt；如果 prompt 同时包含 overall_judgment: 和裸 verdict:，当前不会 fail，但 AWSP 文档表述为 “not verdict”，后续应补充禁止裸 verdict 字段的严格检查。
+
+
+limitation: awsp_scaffold.py 目前生成的是基础目录与配置骨架，还没有生成 .agent/REQUIRED_READS.json、PROJECT_AGENT_CONFIG.json、startup read proof template、pre-task gate、pre-GPT gate、state machine runtime、human_required decision record 等完整跨项目治理组件。
+
+
+limitation: validate_scaffold() 主要检查目录、.awsp.json 与标准文档是否存在，尚未验证 .awsp.json 内容完整性、版本一致性、脚本是否存在或 evidence pack gate 是否可运行。
+
+
+limitation: EXECUTION_REPORT 声称 full suite 520 passed，但附件未包含完整 full suite 原始测试输出；当前只能独立复核本轮新增测试与现有相关目标测试。
+
+
+limitation: AWSP v1.1.0 已迈出跨项目 scaffold 第一步，但仍不是完整 Universal Agent Workflow Standard；后续需要把 .agent 配置、启动读取门禁、执行前门禁、GPT 审查门禁、状态机与 human_required 机制正式纳入跨项目标准。
+next_task_authorization: UNIVERSAL-AGENT-WORKFLOW-STANDARD-CROSS-PROJECT-SCAFFOLD-A1-R2
+---END_OF_GPT_RESPONSE---
+

@@ -1,0 +1,16 @@
+{
+  "target_run_id": "UNIVERSAL_AGENT_WORKFLOW_STANDARD_AGENT_CONFIG_GOVERNANCE_SCRIPTS_A1_20260609T163257_RD",
+  "target_task_id": "UNIVERSAL-AGENT-WORKFLOW-STANDARD-AGENT-CONFIG-GOVERNANCE-SCRIPTS-A1",
+  "before_user_count": 54,
+  "before_assistant_count": 61,
+  "after_user_count": 55,
+  "after_assistant_count": 63,
+  "candidate_indices": [],
+  "selected_index": null,
+  "last_index": 62,
+  "last_text_contains_run_id": false,
+  "selected_text_contains_run_id": false,
+  "selected_text_contains_end_marker": false,
+  "capture_mismatch": false,
+  "decision": "capture_failed_no_run_id_match"
+}

@@ -1,0 +1,875 @@
+{
+  "url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "links": [
+    {
+      "text": "跳至内容",
+      "href": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959#main",
+      "aria": null
+    },
+    {
+      "text": "新聊天",
+      "href": "https://chatgpt.com/",
+      "aria": null
+    },
+    {
+      "text": "ChatGPT Plus",
+      "href": "https://chatgpt.com/",
+      "aria": "主页"
+    },
+    {
+      "text": "新聊天",
+      "href": "https://chatgpt.com/",
+      "aria": null
+    },
+    {
+      "text": "库",
+      "href": "https://chatgpt.com/library",
+      "aria": null
+    },
+    {
+      "text": "应用",
+      "href": "https://chatgpt.com/apps",
+      "aria": null
+    },
+    {
+      "text": "Codex",
+      "href": "https://chatgpt.com/codex",
+      "aria": null
+    },
+    {
+      "text": "审稿建议与点评",
+      "href": "https://chatgpt.com/c/6a0d707d-5d54-83a2-b7b0-92417b8bd24d",
+      "aria": "审稿建议与点评，已置顶对话"
+    },
+    {
+      "text": "博士论文中期考核保密",
+      "href": "https://chatgpt.com/c/6a222e07-ac54-83a3-b991-be7c94961271",
+      "aria": "博士论文中期考核保密，已置顶对话"
+    },
+    {
+      "text": "教师仁爱论文结构",
+      "href": "https://chatgpt.com/c/6a260f64-f96c-83aa-84fe-7f069283af0c",
+      "aria": "教师仁爱论文结构，已置顶对话"
+    },
+    {
+      "text": "GPT编码计划与执行8",
+      "href": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+      "aria": "GPT编码计划与执行8"
+    },
+    {
+      "text": "GPT编码计划与执行7",
+      "href": "https://chatgpt.com/c/6a23dd8c-4550-83a8-bdee-76ca5a982edb",
+      "aria": "GPT编码计划与执行7"
+    },
+    {
+      "text": "学术研究角度",
+      "href": "https://chatgpt.com/c/6a25906c-7080-83a5-8fa5-25eb060f7468",
+      "aria": "学术研究角度"
+    },
+    {
+      "text": "测试确认",
+      "href": "https://chatgpt.com/c/6a257a0a-9fdc-83a5-86f9-d8903b664262",
+      "aria": "测试确认"
+    },
+    {
+      "text": "回复群里安排事项",
+      "href": "https://chatgpt.com/c/6a2564d0-a8f0-83ab-acaa-d758ad6e5caf",
+      "aria": "回复群里安排事项"
+    },
+    {
+      "text": "教师仁爱研究框架",
+      "href": "https://chatgpt.com/c/6a255604-c3f8-83a9-a5e2-122f254f7106",
+      "aria": "教师仁爱研究框架"
+    },
+    {
+      "text": "家庭点菜图标",
+      "href": "https://chatgpt.com/c/6a254d94-e294-83aa-adba-29bf57874de6",
+      "aria": "家庭点菜图标"
+    },
+    {
+      "text": "生成任务描述提示词",
+      "href": "https://chatgpt.com/c/6a25397f-7474-83aa-94eb-916b4fff359c",
+      "aria": "生成任务描述提示词"
+    },
+    {
+      "text": "GPT编码计划与执行6",
+      "href": "https://chatgpt.com/c/6a22dc07-18a4-83a3-a922-7c9ab770db3d",
+      "aria": "GPT编码计划与执行6"
+    },
+    {
+      "text": "GPT编码计划与执行5",
+      "href": "https://chatgpt.com/c/6a223019-a910-83a4-8c96-4e2f5cfec5d0",
+      "aria": "GPT编码计划与执行5"
+    },
+    {
+      "text": "GPT编码计划与执行4",
+      "href": "https://chatgpt.com/c/6a2191fb-00f0-83a2-96e5-fa94b0ced387",
+      "aria": "GPT编码计划与执行4"
+    },
+    {
+      "text": "GPT编码计划与执行3",
+      "href": "https://chatgpt.com/c/6a212fda-6c04-83a8-82fa-0fa036f762f9",
+      "aria": "GPT编码计划与执行3"
+    },
+    {
+      "text": "GPT编码计划与执行2",
+      "href": "https://chatgpt.com/c/6a1ec646-e758-83a2-92b1-eff24811873a",
+      "aria": "GPT编码计划与执行2"
+    },
+    {
+      "text": "GPT编码计划与执行",
+      "href": "https://chatgpt.com/c/6a1d4a71-0064-83a2-b762-0987baccba8f",
+      "aria": "GPT编码计划与执行"
+    },
+    {
+      "text": "学习安排与任务优先级",
+      "href": "https://chatgpt.com/c/6a1c303d-32d0-83a3-abf1-94eb6e108e95",
+      "aria": "学习安排与任务优先级"
+    },
+    {
+      "text": "ClaudeCode 命令大全",
+      "href": "https://chatgpt.com/c/6a218e93-8238-83a7-a4af-856313510f80",
+      "aria": "ClaudeCode 命令大全"
+    },
+    {
+      "text": "硕士论文选题分析",
+      "href": "https://chatgpt.com/c/6a20ea76-b400-83a9-92b2-89f6fe481fc6",
+      "aria": "硕士论文选题分析"
+    },
+    {
+      "text": "文章评价与改进建议",
+      "href": "https://chatgpt.com/c/6a1e65cc-7b90-83a6-b94d-a7d6fd270ac5",
+      "aria": "文章评价与改进建议"
+    },
+    {
+      "text": "找错误并修正",
+      "href": "https://chatgpt.com/c/6a1d41c3-3500-83a4-9c61-5e7ffd28cf81",
+      "aria": "找错误并修正"
+    },
+    {
+      "text": "计划审查与改进",
+      "href": "https://chatgpt.com/c/6a1bfbee-6de8-83a9-8631-f14c006ed0e3",
+      "aria": "计划审查与改进"
+    },
+    {
+      "text": "保密处理要求",
+      "href": "https://chatgpt.com/c/6a1aa638-0060-83a4-9881-dc62d0c337d9",
+      "aria": "保密处理要求"
+    },
+    {
+      "text": "润色句子建议",
+      "href": "https://chatgpt.com/c/6a18efe3-0df8-83a3-8111-f10adc49a13c",
+      "aria": "润色句子建议"
+    },
+    {
+      "text": "期刊投稿建议",
+      "href": "https://chatgpt.com/c/6a17f73d-eb70-83a2-9075-78b26ed12bcf",
+      "aria": "期刊投稿建议"
+    },
+    {
+      "text": "CSSCI摘要修改建议",
+      "href": "https://chatgpt.com/c/6a17e26c-bdc4-83a8-a4f7-ad33d523bb64",
+      "aria": "CSSCI摘要修改建议"
+    },
+    {
+      "text": "审稿建议与修改意见",
+      "href": "https://chatgpt.com/c/6a17e5d4-b12c-83a9-a09d-42bf8104f312",
+      "aria": "审稿建议与修改意见"
+    },
+    {
+      "text": "病句分析与修正",
+      "href": "https://chatgpt.com/c/6a17a8a6-4f7c-83a3-bf86-332609968819",
+      "aria": "病句分析与修正"
+    },
+    {
+      "text": "项目推荐与AI测试平台",
+      "href": "https://chatgpt.com/c/6a147ba7-b56c-83a8-aa83-403df09a20df",
+      "aria": "项目推荐与AI测试平台"
+    },
+    {
+      "text": "CSSCI期刊审稿点评",
+      "href": "https://chatgpt.com/c/6a0d4777-2c5c-83ab-80b9-4f57f066e8ac",
+      "aria": "CSSCI期刊审稿点评"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "",
+      "aria": "打开边栏",
+      "testid": null,
+      "cls": "text-token-text-primary contrast-high:not-dark:keyboard-focused:focus-ring no-draggable hover:bg-token-surface-hover keyboard-focused:bg-token-surface-hover touch:h-10 touch:w-10 flex h-9 w-9 items-center justify-center rounded-lg outline-none disabled:opacity-50 mx-2 cursor-e-resize rtl:cursor-w-resize"
+    },
+    {
+      "text": "搜索聊天",
+      "aria": null,
+      "testid": null,
+      "cls": "group __menu-item hoverable gap-1.5 w-full"
+    },
+    {
+      "text": "最近聊天",
+      "aria": null,
+      "testid": null,
+      "cls": "group __menu-item hoverable gap-1.5 w-full"
+    },
+    {
+      "text": "",
+      "aria": "关闭边栏",
+      "testid": "close-sidebar-button",
+      "cls": "text-token-text-tertiary contrast-high:not-dark:keyboard-focused:focus-ring no-draggable hover:bg-token-surface-hover keyboard-focused:bg-token-surface-hover touch:h-10 touch:w-10 flex h-9 w-9 items-center justify-center rounded-lg outline-none disabled:opacity-50 no-draggable cursor-w-resize rtl:cursor-e-resize"
+    },
+    {
+      "text": "搜索聊天",
+      "aria": null,
+      "testid": null,
+      "cls": "group __menu-item hoverable w-full"
+    },
+    {
+      "text": "项目",
+      "aria": null,
+      "testid": null,
+      "cls": "group __menu-item hoverable gap-1.5 w-full"
+    },
+    {
+      "text": "最近",
+      "aria": null,
+      "testid": null,
+      "cls": "text-token-text-tertiary flex w-full items-center justify-start gap-0.5 px-4 py-1.5"
+    },
+    {
+      "text": "",
+      "aria": "打开“审稿建议与点评”的对话选项",
+      "testid": "undefined-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“博士论文中期考核保密”的对话选项",
+      "testid": "undefined-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“教师仁爱论文结构”的对话选项",
+      "testid": "undefined-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“GPT编码计划与执行8”的对话选项",
+      "testid": "history-item-0-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“GPT编码计划与执行7”的对话选项",
+      "testid": "history-item-1-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“学术研究角度”的对话选项",
+      "testid": "history-item-2-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“测试确认”的对话选项",
+      "testid": "history-item-3-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“回复群里安排事项”的对话选项",
+      "testid": "history-item-4-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“教师仁爱研究框架”的对话选项",
+      "testid": "history-item-5-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“家庭点菜图标”的对话选项",
+      "testid": "history-item-6-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“生成任务描述提示词”的对话选项",
+      "testid": "history-item-7-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“GPT编码计划与执行6”的对话选项",
+      "testid": "history-item-8-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“GPT编码计划与执行5”的对话选项",
+      "testid": "history-item-9-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“GPT编码计划与执行4”的对话选项",
+      "testid": "history-item-10-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“GPT编码计划与执行3”的对话选项",
+      "testid": "history-item-11-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“GPT编码计划与执行2”的对话选项",
+      "testid": "history-item-12-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“GPT编码计划与执行”的对话选项",
+      "testid": "history-item-13-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“学习安排与任务优先级”的对话选项",
+      "testid": "history-item-14-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“ClaudeCode 命令大全”的对话选项",
+      "testid": "history-item-15-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“硕士论文选题分析”的对话选项",
+      "testid": "history-item-16-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“文章评价与改进建议”的对话选项",
+      "testid": "history-item-17-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“找错误并修正”的对话选项",
+      "testid": "history-item-18-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“计划审查与改进”的对话选项",
+      "testid": "history-item-19-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“保密处理要求”的对话选项",
+      "testid": "history-item-20-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“润色句子建议”的对话选项",
+      "testid": "history-item-21-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“期刊投稿建议”的对话选项",
+      "testid": "history-item-22-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“CSSCI摘要修改建议”的对话选项",
+      "testid": "history-item-23-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“审稿建议与修改意见”的对话选项",
+      "testid": "history-item-24-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“病句分析与修正”的对话选项",
+      "testid": "history-item-25-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“项目推荐与AI测试平台”的对话选项",
+      "testid": "history-item-26-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "打开“CSSCI期刊审稿点评”的对话选项",
+      "testid": "history-item-27-options",
+      "cls": "__menu-item-trailing-btn"
+    },
+    {
+      "text": "",
+      "aria": "下载应用",
+      "testid": null,
+      "cls": "__menu-item-trailing-btn no-draggable hover:*:bg-token-interactive-bg-secondary-hover keyboard-focused:*:bg-token-interactive-bg-secondary-hover touch:h-10! touch:min-h-10! touch:w-10! my-0! ms-0! me-0.5! h-9! min-h-9! w-9! self-center! rounded-lg! p-0! [&>div]:h-full [&>div]:w-full [&>div]:rounded-lg [&>div]:p-0!"
+    },
+    {
+      "text": "分享",
+      "aria": "分享",
+      "testid": "share-chat-button",
+      "cls": "btn relative group-focus-within/dialog:focus-visible:[outline-width:1.5px] group-focus-within/dialog:focus-visible:[outline-offset:2.5px] group-focus-within/dialog:focus-visible:[outline-style:solid] group-focus-within/dialog:focus-visible:[outline-color:var(--text-primary)] btn-ghost keyboard-focused:bg-token-surface-hover text-token-text-primary hover:bg-token-surface-hover rounded-lg max-sm:hidden"
+    },
+    {
+      "text": "",
+      "aria": "打开对话选项",
+      "testid": "conversation-options-button",
+      "cls": "text-token-text-primary contrast-high:not-dark:keyboard-focused:focus-ring no-draggable hover:bg-token-surface-hover keyboard-focused:bg-token-surface-hover touch:h-10 touch:w-10 flex h-9 w-9 items-center justify-center rounded-lg outline-none disabled:opacity-50"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 1",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 2",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 3",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 4",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 5",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 6",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 7",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 8",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 9",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 10",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 11",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 12",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 13",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 14",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 15",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 16",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 17",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 18",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 19",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 20",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 21",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 22",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 23",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-tertiary/60 hover:bg-token-text-secondary"
+    },
+    {
+      "text": "",
+      "aria": "Prompt 24",
+      "testid": null,
+      "cls": "h-0.5 w-4.5 shrink-0 rounded-full transition-all bg-token-text-primary"
+    },
+    {
+      "text": "",
+      "aria": "closure-pack(45).zip",
+      "testid": null,
+      "cls": "interactive-bg-secondary border-token-interactive-border-secondary-default corner-superellipse/1.1 keyboard-focused:focus-ring grid rounded-xl border"
+    },
+    {
+      "text": "",
+      "aria": "复制消息",
+      "testid": "copy-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "编辑消息",
+      "testid": null,
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "GLOBAL_PROJECT_HANDOFF_REPAIR_A1_20260608_223800(1).zip",
+      "testid": null,
+      "cls": "interactive-bg-secondary border-token-interactive-border-secondary-default corner-superellipse/1.1 keyboard-focused:focus-ring grid rounded-xl border"
+    },
+    {
+      "text": "",
+      "aria": "复制消息",
+      "testid": "copy-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "编辑消息",
+      "testid": null,
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1_20260608_233125.zip",
+      "testid": null,
+      "cls": "interactive-bg-secondary border-token-interactive-border-secondary-default corner-superellipse/1.1 keyboard-focused:focus-ring grid rounded-xl border"
+    },
+    {
+      "text": "",
+      "aria": "复制消息",
+      "testid": "copy-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "编辑消息",
+      "testid": null,
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "EXISTING_WORKFLOW_DISCOVERY_SMOKE_A1_20260608_234421.zip",
+      "testid": null,
+      "cls": "interactive-bg-secondary border-token-interactive-border-secondary-default corner-superellipse/1.1 keyboard-focused:focus-ring grid rounded-xl border"
+    },
+    {
+      "text": "",
+      "aria": "复制消息",
+      "testid": "copy-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "编辑消息",
+      "testid": null,
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "已思考 1 秒",
+      "aria": null,
+      "testid": null,
+      "cls": "text-token-text-tertiary hover:text-token-text-primary dark:hover:text-token-text-primary flex items-center gap-0.5 text-start dark:text-(--interactive-label-tertiary-default)"
+    },
+    {
+      "text": "",
+      "aria": "复制",
+      "testid": null,
+      "cls": "flex gap-1 items-center select-none pointer-events-auto py-2 text-sm font-medium hover:bg-black/5 dark:hover:bg-white/10 size-9 rounded-full px-2"
+    },
+    {
+      "text": "",
+      "aria": "复制",
+      "testid": null,
+      "cls": "flex gap-1 items-center select-none pointer-events-auto py-2 text-sm font-medium hover:bg-black/5 dark:hover:bg-white/10 size-9 rounded-full px-2"
+    },
+    {
+      "text": "",
+      "aria": "复制",
+      "testid": null,
+      "cls": "flex gap-1 items-center select-none pointer-events-auto py-2 text-sm font-medium hover:bg-black/5 dark:hover:bg-white/10 size-9 rounded-full px-2"
+    },
+    {
+      "text": "",
+      "aria": "复制回复",
+      "testid": "copy-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "喜欢",
+      "testid": "good-response-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "不喜欢",
+      "testid": "bad-response-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "分享",
+      "testid": null,
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "切换模型",
+      "testid": null,
+      "cls": "cursor-pointer touch:px-2.5 text-token-text-secondary hover:bg-token-bg-secondary h-[30px] rounded-md px-1.5"
+    },
+    {
+      "text": "",
+      "aria": "更多操作",
+      "testid": null,
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary touch:w-10 flex h-8 w-8 items-center justify-center rounded-lg"
+    },
+    {
+      "text": "来源",
+      "aria": "来源",
+      "testid": null,
+      "cls": "group/footnote bg-token-bg-primary hover:bg-token-bg-tertiary dark:bg-transparent! dark:hover:bg-token-bg-tertiary! flex w-fit items-center gap-1.5 rounded-3xl py-1.5 ps-3 pe-3"
+    },
+    {
+      "text": "",
+      "aria": "复制消息",
+      "testid": "copy-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "分享提示",
+      "testid": "share-prompt-link-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "编辑消息",
+      "testid": null,
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "已思考 8s",
+      "aria": null,
+      "testid": null,
+      "cls": "text-token-text-tertiary hover:text-token-text-primary dark:hover:text-token-text-primary flex items-center gap-0.5 text-start dark:text-(--interactive-label-tertiary-default)"
+    },
+    {
+      "text": "",
+      "aria": "复制回复",
+      "testid": "copy-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "喜欢",
+      "testid": "good-response-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "不喜欢",
+      "testid": "bad-response-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "分享",
+      "testid": null,
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "切换模型",
+      "testid": null,
+      "cls": "cursor-pointer touch:px-2.5 text-token-text-secondary hover:bg-token-bg-secondary h-[30px] rounded-md px-1.5"
+    },
+    {
+      "text": "",
+      "aria": "更多操作",
+      "testid": null,
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary touch:w-10 flex h-8 w-8 items-center justify-center rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "NEXT_AGENT_WORKFLOW_BOOTSTRAP_IMPLEMENT_A1_20260608_235642.zip",
+      "testid": null,
+      "cls": "interactive-bg-secondary border-token-interactive-border-secondary-default corner-superellipse/1.1 keyboard-focused:focus-ring grid rounded-xl border"
+    },
+    {
+      "text": "",
+      "aria": "复制消息",
+      "testid": "copy-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "编辑消息",
+      "testid": null,
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "已思考 38s",
+      "aria": null,
+      "testid": null,
+      "cls": "text-token-text-tertiary hover:text-token-text-primary dark:hover:text-token-text-primary flex items-center gap-0.5 text-start dark:text-(--interactive-label-tertiary-default)"
+    },
+    {
+      "text": "",
+      "aria": "复制回复",
+      "testid": "copy-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "喜欢",
+      "testid": "good-response-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "不喜欢",
+      "testid": "bad-response-turn-action-button",
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "分享",
+      "testid": null,
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": "切换模型",
+      "testid": null,
+      "cls": "cursor-pointer touch:px-2.5 text-token-text-secondary hover:bg-token-bg-secondary h-[30px] rounded-md px-1.5"
+    },
+    {
+      "text": "",
+      "aria": "更多操作",
+      "testid": null,
+      "cls": "text-token-text-secondary hover:bg-token-bg-secondary touch:w-10 flex h-8 w-8 items-center justify-center rounded-lg"
+    },
+    {
+      "text": "",
+      "aria": null,
+      "testid": null,
+      "cls": "relative flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded-full outline-hidden select-none btn-secondary bg-token-bg-primary/65! hover:bg-token-main-surface-secondary/75! shadow-short box-content backdrop-blur-[2px] backdrop-filter sm:shadow-md dark:shadow-none! group-data-stream-active/scroll-root:squircle *:absolute *:inset-0 *:m-auto group-data-stream-active/scroll-root:w-10 motion-safe:transition-[width] motion-safe:duration-120 motion-safe:ease-out *:motion-safe:transition-opacity *:motion-safe:duration-120 *:motion-safe:ease-out absolute start-1/2 z-10 -translate-x-1/2 bottom-[calc(100%+3*var(--spacing)+var(--thread-scroll-to-bottom-banner-offset,0px))]"
+    },
+    {
+      "text": "",
+      "aria": "添加文件等",
+      "testid": "composer-plus-btn",
+      "cls": "composer-btn"
+    },
+    {
+      "text": "进阶",
+      "aria": null,
+      "testid": null,
+      "cls": "__composer-pill __composer-pill--neutral group/pill"
+    },
+    {
+      "text": "",
+      "aria": "开始听写",
+      "testid": null,
+      "cls": "composer-btn h-9 min-h-9 w-9 min-w-9"
+    },
+    {
+      "text": "",
+      "aria": "启动语音功能",
+      "testid": null,
+      "cls": "composer-submit-button-color text-submit-btn-text keyboard-focused:focus-ring relative flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:opacity-70 disabled:text-[#f4f4f4] disabled:opacity-30"
+    }
+  ]
+}

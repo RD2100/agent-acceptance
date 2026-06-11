@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-06-08T14:37:46.596410+00:00",
+  "pass": true,
+  "files_checked": 6,
+  "issues": [],
+  "results": [
+    {
+      "file": "_reports\\global-project-handoff-repair-a1\\WHOLE_PROJECT_STATUS_HANDOFF.md",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 2804,
+      "hash": "610b72602831dbd1b22a4ac4337312b3def87460cef6f6c9b1aeb01495b2db5e"
+    },
+    {
+      "file": "_reports\\global-project-handoff-repair-a1\\WHOLE_PROJECT_STALE_CLAIMS_REGISTER.md",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 862,
+      "hash": "435fe75f96882095284b61b0f55b89c75511d55a9eeda48cc229c96d2119e17a"
+    },
+    {
+      "file": "_reports\\global-project-handoff-repair-a1\\WHOLE_PROJECT_MODULE_STATUS.md",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 10288,
+      "hash": "a43de7cf9687e873f5c9b256b7e1d3b1bae1c1008a88886301745259560451f7"
+    },
+    {
+      "file": "_reports\\global-project-handoff-repair-a1\\WHOLE_PROJECT_TEST_LEDGER.md",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 536,
+      "hash": "a48ee393d8fa20a0fa4309aa103ad5e48a8193b3a1da3644ea56d9ec516d3ae0"
+    },
+    {
+      "file": "_reports\\global-project-handoff-repair-a1\\EXECUTION_REPORT.md",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 1030,
+      "hash": "7dc29dcb2194a60e08effcce5026e75c5b21a87cf80a008b9f231b7ab021a07f"
+    },
+    {
+      "file": "_reports\\global-project-handoff-repair-a1\\SAFETY_ATTESTATION.md",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 246,
+      "hash": "e455ff4176e7dd37d47d7004efba24b195e5902aeed03ae917adb94aa5cbdd89"
+    }
+  ],
+  "scanner": "validate_context_memory.validate_file"
+}

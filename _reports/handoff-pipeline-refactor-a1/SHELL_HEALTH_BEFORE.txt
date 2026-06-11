@@ -1,0 +1,66 @@
+SHELL HEALTH CHECK — HANDOFF-PIPELINE-REFACTOR-A1 Phase 0
+==========================================================
+
+Captured at: 2026-06-08 20:34:02 (Mon)
+Captured by: minimax-m3 coding agent (Claude Code harness)
+
+Command executed:
+    cd "D:/agent-acceptance" && pwd && date && echo FRESH_SHELL_OK && git rev-parse --is-inside-work-tree && git status --short
+
+Raw output (verbatim, head):
+----------------------------------------
+/d/agent-acceptance
+Mon Jun  8 20:34:02     2026
+FRESH_SHELL_OK
+true
+ M .ai/current-task.yaml
+ M .ai/paper_authorization.json
+ D HANDOFF_REPLY_V4.txt
+ M _reports/m2_round1_gpt_response.txt
+ M _reports/m4_round1.json
+ M _reports/m4_round2_gpt_response.txt
+ M archive/draft-hooks/pre-final.audit.ps1
+ M archive/draft-hooks/pre-task.audit.ps1
+ M archive/draft-hooks/pre-tool.audit.ps1
+ M evidence_packs/paper-c3-dry-run/DRY_RUN_REPORT.md
+ M evidence_packs/paper-c3-dry-run/PILOT_RESULT.json
+ M evidence_packs/paper-c3-dry-run/SYNTHETIC_FIXTURES.md
+ M runs/project-history-gaps-v1/POST_REVIEW_ROUTE.json
+ M runs/repo-routing-a1-v1/POST_REVIEW_ROUTE.json
+ M scripts/cross_repo_verify.py
+ M scripts/paper_c4_section_packet_validator.py
+ M tests/test_paper_c4_section_review.py
+?? .ai/module_ledger/
+?? .ai/tasks/m4-m1-s1-status-semantics-unification.yaml
+?? (… many ?? GPT_*.txt files at repo root …)
+----------------------------------------
+
+Health verdict: FRESH_SHELL_OK
+- pwd returned synchronously (< 1s)
+- date returned synchronously (< 1s)
+- echo FRESH_SHELL_OK marker present
+- git repo confirmed (inside_work_tree = true)
+- git status reachable
+
+Working tree state: DIRTY (uncommitted modifications + many untracked files)
+- 17 modified files (incl. paper c3/c4 evidence and a few scripts)
+- 1 deleted file (HANDOFF_REPLY_V4.txt — already in git history; do not restore)
+- Many untracked GPT_*.txt files at root (captured GPT replies, not committed)
+- These are pre-existing dirty baseline, NOT created by this Phase 0 run.
+
+Phase 0 scope reminder (enforced):
+- Allowed writes (only):
+    _reports/handoff-pipeline-refactor-a1/SHELL_HEALTH_BEFORE.txt
+    _reports/handoff-pipeline-refactor-a1/GATE0_REUSE_CHECK.md
+    _reports/handoff-pipeline-refactor-a1/GATE0_REUSE_CHECK.json
+- No scripts, schemas, tests, BOOT_CONTEXT, memory, PROJECT_HISTORY, HANDOFF,
+  PASTE_BLOCK, legacy notice, or evidence pack will be created in Phase 0.
+
+Environment quirk noted (for honest reporting):
+- Each Bash tool call starts in cwd = D:\dev-frame-opencode and is reset back
+  after the call ("Shell cwd was reset to ..."). Persistent `cd` does not survive
+  between calls. Workaround: every Phase 0 command used absolute paths or
+  prefixed with `cd "D:/agent-acceptance" && ...`. This is environment behavior,
+  not a shell saturation issue.
+
+END_OF_SHELL_HEALTH_BEFORE

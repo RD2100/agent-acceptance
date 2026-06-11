@@ -1,0 +1,7 @@
+{
+  "found": true,
+  "raw_passport_excerpt": "roposal rejected; capability must not be used |\n\n\n---\n\n\n## Capability Passport Summary (2026-05-28)\n\nEvidence-based verification status. **27 of 27 classified** (updated 2026-05-31, CAP-009 removed).\nCAP-029 is approved on 2026-06-10 and is included in approved execution totals.\n\n| Status | Count | IDs |\n|--------|:-----:|-----|\n| verified | 26 | CAP-001~008, CAP-010~013, CAP-015~016, CAP-018~029 (CAP-009 removed) |\n| degraded | 0 | �� | |\n| broken | 0 | (none) |\n| stale | 1 | CAP-017 (Phase 6 SourceLock: not yet active) |\n| unknown | 0 | �� |\n\n| Type | Count | Expiry |\n|------|:-----:|--------|\n| local_static | 20 | 90 days |\n| external_dependency | 8 | 30 days |\n\n**Rule**: unknown/stale/broken must NOT be sole basis to reject new construction in Gate 0.\n\n**Verification evidence**:\n- Local static (20): 12 Test-Path confirmed 2026-05-28, 5 session-usage confirmed, 2 reference-only (docs exist), 1 stale (Phase 6 not yet active)\n- External dependency (7): 7 codex plugin list confirmed 20",
+  "file_path": "D:\\agent-acceptance\\docs\\agent-runtime\\capability-inventory.md",
+  "file_size": 33525,
+  "collected_at": "2026-06-10T04:56:09Z"
+}

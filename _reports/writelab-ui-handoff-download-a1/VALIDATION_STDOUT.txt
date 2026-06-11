@@ -1,0 +1,19 @@
+﻿{
+  "result": "pass",
+  "source": "_reports\\writelab-ui-handoff-download-a1\\writelab-handoff.zip",
+  "source_type": "zip",
+  "validated_files": [
+    "WRITELAB_HANDOFF.yaml",
+    "DIAGNOSIS_RESULT.json",
+    "PRIVACY_ATTESTATION.yaml",
+    "PACK_MANIFEST.md"
+  ],
+  "checks": {
+    "required_files_present": true,
+    "schemas_valid": true,
+    "privacy_boundaries_valid": true,
+    "handoff_consistency_valid": true,
+    "target_contracts_valid": true
+  },
+  "blocking_issues": []
+}

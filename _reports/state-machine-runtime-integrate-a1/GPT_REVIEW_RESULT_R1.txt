@@ -1,0 +1,55 @@
+overall_judgment: blocked
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+
+draft → gate_passing 的 guard 实现不是 fail-closed：当不提供 evidence_pack_dir 和 startup_proof_path 时，check_draft_to_gate_passing() 会把所有 guard 标为 None 并允许 transition_allowed=true，这与 PROCESS_STATE_MACHINE.json 中 T01 要求 evidence_pack_linter_pass AND evidence_pack_complete AND startup_read_gate_pass 的强约束冲突。
+
+
+startup_read_gate 仍是可选检查：只有提供 --startup-proof-path 时才运行；如果未提供 proof，startup_read_gate_pass 被跳过而不是阻断，未真正实现 draft → gate_passing 的三项 guard 强制集成。
+
+
+evidence_pack_linter 也被可选化：未提供 evidence_pack_dir 时不会阻断 draft → gate_passing，导致状态机运行时可以在没有 evidence pack linter 证据的情况下进入 gate_passing。
+
+
+测试中 test_no_guards_skipped 明确把“无 guard 输入也允许转换”固化为通过行为，这与本任务目标和状态机 T01 guard 定义不一致。
+required_fixes:
+
+
+将 draft → gate_passing 改为 fail-closed：缺少 evidence_pack_dir、startup_proof_path 或 required reads 证据时必须 transition_allowed=false。
+
+
+将 evidence_pack_linter_pass、evidence_pack_complete、startup_read_gate_pass 作为 T01 的必需 guard，而不是可选 guard。
+
+
+修正 test_no_guards_skipped，将其改为“缺少 guard inputs 必须 blocked”的负向测试。
+
+
+增加测试覆盖：缺少 evidence_pack_dir、缺少 startup_proof_path、缺少 required_reads_path、startup_read_gate import 失败、evidence_pack_linter import 失败均必须阻断 draft → gate_passing。
+
+
+重新运行测试并重新生成 evidence pack 后提交 R2 审查。
+limitations:
+
+
+8 个状态和 10 个转换的静态定义与 PROCESS_STATE_MACHINE.json 基本对齐，closed 无出边、blocked → draft、human_required → gate_passing 等主要转换已覆盖。
+
+
+当前实现只对 draft → gate_passing 做 guard 检查，其他转换仍为 validity-only；这可作为后续 limitation，但不能掩盖 T01 guard 当前未 fail-closed 的 blocking 问题。
+
+
+附件 pack 未包含 scripts/startup_read_gate.py 和 scripts/evidence_pack_linter.py，导致 pack 脱离仓库环境时无法独立复现全部测试；后续 pack 应嵌入依赖脚本或在 manifest/execution report 中明确说明依赖外部仓库文件。
+
+
+EXECUTION_REPORT 声称 tests/test_state_machine_runtime.py 22 passed、full suite 402 passed，但本附件本身没有提供完整原始测试输出，也未包含完整依赖，审查时只能将其视为本地声明。
+next_task_authorization:
+task_id: STATE-MACHINE-RUNTIME-INTEGRATE-A1-R2
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+
+
+run_id: STATE_MACHINE_RUNTIME_INTEGRATE_A1_20260609T124000_RD
+task_id: STATE-MACHINE-RUNTIME-INTEGRATE-A1
+END_OF_GPT_RESPONSE_

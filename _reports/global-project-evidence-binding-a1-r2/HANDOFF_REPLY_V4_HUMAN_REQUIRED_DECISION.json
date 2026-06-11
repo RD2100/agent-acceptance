@@ -1,0 +1,30 @@
+{
+  "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+  "run_id": "GLOBAL_EVIDENCE_BINDING_A1_R2_20260609_085323",
+  "generated_at": "2026-06-09T00:53:23.302760+00:00",
+  "file": "HANDOFF_REPLY_V4.txt",
+  "current_status": "tracked_deleted_human_required",
+  "git_status_short": [
+    " D HANDOFF_REPLY_V4.txt"
+  ],
+  "git_ls_files_stage": [
+    "100644 a524f7ff5673733b3c09ac9dfcf3bce79570537c 0\tHANDOFF_REPLY_V4.txt"
+  ],
+  "git_log_oneline": [
+    "de457217 docs: HANDOFF-A1 — v4 Chinese bootstrap reply from new conversation 6a23dd8c"
+  ],
+  "consultation_result_path": "_reports/global-project-evidence-binding-a1-r2/GPT_HANDOFF_REPLY_V4_CONSULT_RESULT.txt",
+  "consultation_verdict": "restore_requires_human_confirmation",
+  "restore_executed": false,
+  "scope_out_supported_by_current_evidence": false,
+  "resolution_status": "human_required_not_resolved",
+  "human_required_steps": [
+    "用户明确确认是否允许恢复 HANDOFF_REPLY_V4.txt。",
+    "若不允许恢复，用户需确认是否接受将其排除在 protected legacy scope 外并提供/接受 P0/P1 证据。"
+  ],
+  "risk_controls": [
+    "未执行 git restore / checkout / reset / clean。",
+    "未删除、移动、重命名、覆盖 HANDOFF_REPLY_V4.txt。",
+    "不将 tracked deletion conflict 包装成 pass。"
+  ]
+}

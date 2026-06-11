@@ -1,0 +1,9 @@
+{
+  "task_id": "STARTUP-READ-GATE-INTEGRATE-PRE-GPT-A1",
+  "run_id": "STARTUP_READ_GATE_INTEGRATE_PRE_GPT_A1_REVIEW_20260609T122658_RD",
+  "zip_path": "evidence_packs\\startup-read-gate-integrate-pre-gpt-a1\\STARTUP_READ_GATE_INTEGRATE_PRE_GPT_A1_20260609T122658_RD.zip",
+  "zip_sha256": "59e560804621a9ed5d0ace2d137bdf83288d3db117c05b6b5bb4e36490a5171d",
+  "zip_size": 19212,
+  "file_count": 9,
+  "generated_at": "2026-06-09T12:26:58.721587+08:00"
+}

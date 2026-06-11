@@ -1,0 +1,40 @@
+run_id: PROCESS_STATE_MACHINE_DEFINE_A1_REVIEW_20260609T022432_RD
+task_id: PROCESS-STATE-MACHINE-DEFINE-A1
+evidence_pack_reviewed: true
+attachment_reviewed: true
+
+overall_judgment: accepted_with_limitation
+
+blocking_issues:
+
+none
+
+required_fixes:
+
+none
+
+limitations:
+
+状态机已定义 8 个状态和 T01-T10 共 10 个转换，INV-01 至 INV-08 覆盖 closed 终态、verify_gpt_reply.py 强制验证、blocked 回退路径、审查轮次限制和 next_task_authorization 传递等关键约束。
+
+forbidden_transitions 已覆盖主要高风险非法路径，但它更像显式禁止清单而非所有非法转换的穷尽枚举；后续实现校验器时应以 transitions 白名单为准，未列入 transitions 的路径默认 forbidden。
+
+CHANGED_FILES_SCHEMA.json 符合 JSON Schema draft 2020-12，added / deleted / renamed 的 if/then 条件验证基本正确；但 permission_changed 相关 null 约束尚未完全通过条件规则强制，应在后续 schema hardening 中补强。
+
+changed_files_utils.py 已提供生成、验证、摘要和 CLI 功能，但当前 diff 主要检测 added / modified / deleted，尚未自动识别 rename 与 permission_changed；后续可作为工具增强项处理。
+
+_validate_deliverables.py 在附件外部复现时依赖 D:/agent-acceptance/_reports/process-state-machine-define-a1 路径；在目标仓库环境中可用，但后续建议改为参数化或相对路径以提升 evidence pack 可移植性。
+
+本任务定义了状态机与 changed-files schema，但尚未把状态机实际接入 pre-GPT gate、evidence_pack_linter、GPT capture 或运行时状态校验流程，集成仍属后续任务。
+
+HUMAN_REQUIRED_DECISION_RECORD 模板、startup_read_gate.py、GPT capture reconciliation、回归测试和 dashboard 仍未实现，当前仅在状态机中引用或作为后续硬化项保留。
+
+PACK_MANIFEST.md 列出主要交付物，但未将 PACK_MANIFEST.md 自身列为 manifest row；当前不阻塞本轮状态机定义审查。
+
+next_task_authorization:
+task_id: GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+
+END_OF_GPT_RESPONSE

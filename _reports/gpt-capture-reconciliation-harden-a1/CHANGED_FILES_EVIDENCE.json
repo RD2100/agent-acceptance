@@ -1,0 +1,70 @@
+{
+  "task_id": "GPT-CAPTURE-RECONCILIATION-HARDEN-A1",
+  "snapshot_before": "2026-06-09T10:41:30+08:00",
+  "snapshot_after": "2026-06-09T11:12:26.828274+08:00",
+  "changes": [
+    {
+      "path": "scripts/generate_reconciliation_report.py",
+      "change_type": "added",
+      "sha256_before": null,
+      "sha256_after": null,
+      "tracked": false
+    },
+    {
+      "path": "_reports/gpt-capture-reconciliation-harden-a1/GPT_CAPTURE_RECONCILIATION_REPORT.json",
+      "change_type": "added",
+      "sha256_before": null,
+      "sha256_after": null,
+      "tracked": false
+    },
+    {
+      "path": "_reports/gpt-capture-reconciliation-harden-a1/GPT_CAPTURE_RECONCILIATION_REPORT.md",
+      "change_type": "added",
+      "sha256_before": null,
+      "sha256_after": null,
+      "tracked": false
+    },
+    {
+      "path": "_reports/gpt-capture-reconciliation-harden-a1/_validate_reconciliation.py",
+      "change_type": "added",
+      "sha256_before": null,
+      "sha256_after": null,
+      "tracked": false
+    },
+    {
+      "path": "_reports/gpt-capture-reconciliation-harden-a1/_build_evidence_pack.py",
+      "change_type": "added",
+      "sha256_before": null,
+      "sha256_after": null,
+      "tracked": false
+    },
+    {
+      "path": "_reports/gpt-capture-reconciliation-harden-a1/EXECUTION_REPORT.md",
+      "change_type": "added",
+      "sha256_before": null,
+      "sha256_after": null,
+      "tracked": false
+    },
+    {
+      "path": "_reports/gpt-capture-reconciliation-harden-a1/GPT_REVIEW_PROMPT.md",
+      "change_type": "added",
+      "sha256_before": null,
+      "sha256_after": null,
+      "tracked": false
+    },
+    {
+      "path": "_reports/gpt-capture-reconciliation-harden-a1/CHANGED_FILES_EVIDENCE.json",
+      "change_type": "added",
+      "sha256_before": null,
+      "sha256_after": null,
+      "tracked": false
+    }
+  ],
+  "summary": {
+    "total_added": 8,
+    "total_modified": 0,
+    "total_deleted": 0,
+    "total_renamed": 0,
+    "total_permission_changed": 0
+  }
+}

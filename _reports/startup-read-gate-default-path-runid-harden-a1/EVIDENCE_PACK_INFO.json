@@ -1,0 +1,9 @@
+{
+  "task_id": "STARTUP-READ-GATE-DEFAULT-PATH-RUNID-HARDEN-A1",
+  "run_id": "STARTUP_READ_GATE_DEFAULT_PATH_RUNID_HARDEN_A1_REVIEW_20260609T123133_RD",
+  "zip_path": "evidence_packs\\startup-read-gate-default-path-runid-harden-a1\\STARTUP_READ_GATE_DEFAULT_PATH_RUNID_HARDEN_A1_20260609T123133_RD.zip",
+  "zip_sha256": "431891a764037a3b3eb000b1e50c3d63a0be0edba18223deefb3b7c40924d114",
+  "zip_size": 11216,
+  "file_count": 6,
+  "generated_at": "2026-06-09T12:31:33.485115+08:00"
+}

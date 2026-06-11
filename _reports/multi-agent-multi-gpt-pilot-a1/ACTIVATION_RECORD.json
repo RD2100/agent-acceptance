@@ -1,0 +1,50 @@
+{
+  "pilot_id": "multi-agent-multi-gpt-pilot-a1",
+  "activation_timestamp": "2026-06-10T02:22:43Z",
+  "binding_path": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json",
+  "binding_valid": true,
+  "schema_validated": true,
+  "agent_summary": {
+    "total": 2,
+    "active": 1,
+    "pending": 1
+  },
+  "active_agents": [
+    {
+      "agent_id": "agent-local-001",
+      "role": "reviewer",
+      "binding_status": "active",
+      "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+      "conversation_id": "6a26cc03-235c-83a2-a0fc-cd29be615959",
+      "cdp_endpoint": "http://localhost:9222",
+      "cdp_session_verified": true
+    }
+  ],
+  "pending_agents": [
+    {
+      "agent_id": "agent-pilot-beta",
+      "role": "executor",
+      "binding_status": "pending_manual_binding"
+    }
+  ],
+  "cdp_session": {
+    "active": true,
+    "browser": "Chrome/149.0.7827.54",
+    "chat_pages": 1
+  },
+  "governance_scope": {
+    "external_runtimes": [
+      "devframe-control-plane",
+      "dev-frame-opencode",
+      "paper-workflow"
+    ],
+    "default_execution_policy": "human_gated_for_external_runtime_execution"
+  },
+  "pilot_readiness": {
+    "all_agents_active": false,
+    "at_least_one_active": true,
+    "at_least_two_agents": true,
+    "schema_validated": true,
+    "cdp_verified": true
+  }
+}

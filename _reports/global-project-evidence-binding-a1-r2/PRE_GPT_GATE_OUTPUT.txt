@@ -1,0 +1,12 @@
+{
+  "gate_passed": true,
+  "errors": [],
+  "warnings": [
+    "missing expected report: TEST_OUTPUT.txt"
+  ],
+  "extra_checks": {
+    "deliverable_count": 5,
+    "has_sha256_entries": true
+  },
+  "recommendation": "READY for GPT submission"
+}

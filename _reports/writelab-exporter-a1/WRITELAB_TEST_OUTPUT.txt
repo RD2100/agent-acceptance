@@ -1,0 +1,50 @@
+﻿## backend diagnosis report tests
+cwd: D:\writelab\backend
+command: python -m pytest tests\test_diagnosis_reports.py -q
+exit_code: 0
+..............................                                           [100%]
+30 passed in 1.67s
+
+## backend compileall
+cwd: D:\writelab\backend
+command: python -m compileall app\services\writelab_handoff_exporter.py app\api\reports.py
+exit_code: 0
+
+## backend full tests
+cwd: D:\writelab\backend
+command: python -m pytest tests -q
+exit_code: 0
+........................................................................ [ 42%]
+........................................................................ [ 85%]
+.........................                                                [100%]
+============================== warnings summary ===============================
+tests/test_golden_cases.py::test_golden_case[gc_011: \u7eaf\u957f\u53e5\u68c0\u6d4b \u2014 \u8d85\u957f\u5355\u53e5\u65e0\u6a21\u677f\u4f46\u53e5\u5b50\u5f88\u957f]
+  D:\writelab\backend\tests\test_golden_cases.py:129: UserWarning: gc_011 expected zero risks but got: ��������ܶȸ�
+    warnings.warn(msg)
+
+tests/test_golden_cases.py::test_golden_case[gc_012: \u6b63\u5e38\u5b66\u672f\u8bba\u8bc1 \u2014 \u6709\u8bba\u636e\u6709\u65b9\u6cd5\u7684\u81ea\u7136\u5199\u4f5c]
+  D:\writelab\backend\tests\test_golden_cases.py:129: UserWarning: gc_012 expected zero risks but got: ��ʽģ��
+    warnings.warn(msg)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+169 passed, 2 warnings in 2.05s
+
+## frontend typecheck
+cwd: D:\writelab\frontend
+command: node_modules\.bin\tsc.cmd --noEmit
+exit_code: 0
+
+## frontend vitest
+cwd: D:\writelab\frontend
+command: node_modules\.bin\vitest.cmd run --config vitest.config.ts
+exit_code: 0
+
+ RUN  v4.1.7 D:/writelab/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  27 passed (27)
+   Start at  22:43:05
+   Duration  1.61s (transform 285ms, setup 0ms, import 1.14s, tests 599ms, environment 3.59s)
+
+

@@ -1,0 +1,733 @@
+{
+  "plan_id": "multi-agent-dispatch-plan-a1",
+  "generated_at": "2026-06-10T03:25:09.268012Z",
+  "status": "READY",
+  "executed_external_runtime": false,
+  "source_preflight": {
+    "path": "_reports\\multi-agent-multi-gpt-pilot-a1\\GATE0_PREFLIGHT_R4.json",
+    "overall": "PASS",
+    "human_gate_required": false,
+    "executed_external_runtime": false,
+    "detail": "Loaded Gate 0 preflight artifact."
+  },
+  "conflict_summary": {
+    "has_write_conflicts": false,
+    "has_errors": false,
+    "errors": [],
+    "parallel_group_count": 1,
+    "compared_write_pairs": [
+      [
+        "_reports/multi-agent-architecture-review-a1/ARCHITECTURE_REVIEW.md",
+        "_reports/multi-agent-verifier-a1/VERIFY_REPORT.md"
+      ],
+      [
+        "_reports/multi-agent-architecture-review-a1/ARCHITECTURE_REVIEW.md",
+        "_reports/multi-agent-quality-review-a1/QUALITY_REVIEW.md"
+      ],
+      [
+        "_reports/multi-agent-verifier-a1/VERIFY_REPORT.md",
+        "_reports/multi-agent-quality-review-a1/QUALITY_REVIEW.md"
+      ]
+    ]
+  },
+  "assignments": [
+    {
+      "worker_role": "Architecture-Reviewer",
+      "parallel_group_id": "local-readiness",
+      "parallel_safe": true,
+      "project_module": "multi-agent pilot architecture",
+      "target": "Confirm dispatch boundaries and runtime scope before any execution.",
+      "why_big_module": "Architecture gating prevents parallel work from crossing runtime, paper, or governance boundaries.",
+      "allowed_modify_range": [
+        "_reports/multi-agent-architecture-review-a1/"
+      ],
+      "forbidden_modify_range": [
+        "scripts/",
+        ".agent/",
+        "docs/agent-runtime/",
+        "paper workflow code"
+      ],
+      "depends_on_interface_contracts": [
+        "schemas/agent-runtime/task-spec.schema.json",
+        "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
+      ],
+      "provides_interface_contracts": [
+        "Worker final report format from active objective",
+        "TaskSpec conflict_registry write_set/read_set"
+      ],
+      "main_flow_to_connect": "Gate 0 preflight -> dispatch plan -> reviewer-safe task pool.",
+      "real_functionality_required": "Produce real local evidence, not mock completion or verbal readiness.",
+      "tests_or_probes_required": [
+        "read-only report plus cited file/line evidence"
+      ],
+      "required_verification_commands": [
+        "read-only report plus cited file/line evidence"
+      ],
+      "quality_standard": "P0/P1 zero; P2 documented with evidence; no external runtime execution.",
+      "completion_standard": "Report includes verdict, changed files, tests run, artifacts, known gaps, and suggested review focus.",
+      "blocking_conditions": [
+        "Finds P0/P1 architecture issue",
+        "Needs external runtime execution"
+      ],
+      "governance_record_requirements": [
+        "Report path must be referenced by Integrator before governance docs change."
+      ],
+      "task_spec": {
+        "task_id": "ma-architecture-review-a1",
+        "title": "Review multi-agent architecture boundaries",
+        "priority": "P2",
+        "status": "ready",
+        "description": "Check module boundaries, interface contracts, and forbidden cross-runtime execution paths before dispatch.",
+        "depends_on": [],
+        "assumptions": [
+          "Current Gate 0 preflight may remain HUMAN_REQUIRED.",
+          "Worker must not execute opencode, live CDP, cross-repo smoke, or paper workflow without separate human authorization."
+        ],
+        "risk_notes": "No external runtime execution is authorized by this TaskSpec.",
+        "estimated_tools": [
+          "rg",
+          "python",
+          "pytest"
+        ],
+        "gate_0": {
+          "triggered": true,
+          "trigger_reason": "Multi-agent dispatch plan introduces executable worker boundaries.",
+          "inventory_evidence": {
+            "queried_sources": [
+              "docs/agent-runtime/sub-agent-dispatch-protocol.md",
+              "docs/agent-runtime/capability-inventory.md",
+              "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md",
+              "schemas/agent-runtime/task-spec.schema.json"
+            ],
+            "matched_capabilities": [
+              "CAP-029 dev-frame-opencode Dispatch",
+              "SADP TaskSpec conflict_registry",
+              "multi-agent-gate0-preflight"
+            ],
+            "compared_against_request": [
+              "parallel worker dispatch",
+              "exclusive write boundaries",
+              "human-gated external runtime execution"
+            ]
+          },
+          "rules_checked": [
+            "core-001",
+            "core-005",
+            "core-007",
+            "review-001"
+          ],
+          "lessons_checked": [
+            "LL-structured-task-spec",
+            "LL-independent-review-evidence"
+          ],
+          "sufficiency_decision": "existing_partial",
+          "decision": "build_delta",
+          "delta_justification": "Existing TaskSpec covers per-task boundaries, but the pilot needs a batch-level assignment packet and conflict check before human-gated dispatch."
+        },
+        "conflict_registry": {
+          "read_set": [
+            "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md",
+            "docs/governance/HANDOFF.md",
+            "docs/governance/RISK_REGISTER.md"
+          ],
+          "write_set": [
+            "_reports/multi-agent-architecture-review-a1/ARCHITECTURE_REVIEW.md"
+          ],
+          "protected_files_touched": false,
+          "conflict_level": "none"
+        },
+        "security_report": {
+          "new_external_api": false,
+          "env_example_placeholders_only": true,
+          "real_key_patterns_found": false,
+          "staged_diff_secret_scan_run": false,
+          "key_rotation_needed": false
+        }
+      }
+    },
+    {
+      "worker_role": "Verifier",
+      "parallel_group_id": "local-readiness",
+      "parallel_safe": true,
+      "project_module": "multi-agent local verification",
+      "target": "Run the narrow local checks that prove current readiness state.",
+      "why_big_module": "Verification is the evidence source for deciding whether HUMAN_REQUIRED is the only remaining gate.",
+      "allowed_modify_range": [
+        "_reports/multi-agent-verifier-a1/"
+      ],
+      "forbidden_modify_range": [
+        "scripts/",
+        "tests/",
+        ".agent/",
+        "docs/"
+      ],
+      "depends_on_interface_contracts": [
+        "schemas/agent-runtime/task-spec.schema.json",
+        "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
+      ],
+      "provides_interface_contracts": [
+        "Worker final report format from active objective",
+        "TaskSpec conflict_registry write_set/read_set"
+      ],
+      "main_flow_to_connect": "Registry validation -> Gate 0 preflight -> execution guard tests.",
+      "real_functionality_required": "Produce real local evidence, not mock completion or verbal readiness.",
+      "tests_or_probes_required": [
+        "python -m pytest tests\\test_multi_agent_gate0_preflight.py tests\\test_conversation_registry.py tests\\test_cross_repo_execution_guards.py tests\\test_smoke_suite.py -q",
+        "python scripts\\multi_agent_gate0_preflight.py --output _reports\\multi-agent-gate0-preflight-a1\\GATE0_PREFLIGHT.json"
+      ],
+      "required_verification_commands": [
+        "python -m pytest tests\\test_multi_agent_gate0_preflight.py tests\\test_conversation_registry.py tests\\test_cross_repo_execution_guards.py tests\\test_smoke_suite.py -q",
+        "python scripts\\multi_agent_gate0_preflight.py --output _reports\\multi-agent-gate0-preflight-a1\\GATE0_PREFLIGHT.json"
+      ],
+      "quality_standard": "P0/P1 zero; P2 documented with evidence; no external runtime execution.",
+      "completion_standard": "Report includes verdict, changed files, tests run, artifacts, known gaps, and suggested review focus.",
+      "blocking_conditions": [
+        "Local tests fail",
+        "CLI executes an external runtime",
+        "Output omits HUMAN_REQUIRED details"
+      ],
+      "governance_record_requirements": [
+        "Verifier report must include command, exit code, and output summary."
+      ],
+      "task_spec": {
+        "task_id": "ma-verifier-a1",
+        "title": "Run local multi-agent governance verification",
+        "priority": "P2",
+        "status": "ready",
+        "description": "Independently run local-only tests and CLI probes for Gate 0, registry, and execution guards.",
+        "depends_on": [],
+        "assumptions": [
+          "Current Gate 0 preflight may remain HUMAN_REQUIRED.",
+          "Worker must not execute opencode, live CDP, cross-repo smoke, or paper workflow without separate human authorization."
+        ],
+        "risk_notes": "No external runtime execution is authorized by this TaskSpec.",
+        "estimated_tools": [
+          "rg",
+          "python",
+          "pytest"
+        ],
+        "gate_0": {
+          "triggered": true,
+          "trigger_reason": "Multi-agent dispatch plan introduces executable worker boundaries.",
+          "inventory_evidence": {
+            "queried_sources": [
+              "docs/agent-runtime/sub-agent-dispatch-protocol.md",
+              "docs/agent-runtime/capability-inventory.md",
+              "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md",
+              "schemas/agent-runtime/task-spec.schema.json"
+            ],
+            "matched_capabilities": [
+              "CAP-029 dev-frame-opencode Dispatch",
+              "SADP TaskSpec conflict_registry",
+              "multi-agent-gate0-preflight"
+            ],
+            "compared_against_request": [
+              "parallel worker dispatch",
+              "exclusive write boundaries",
+              "human-gated external runtime execution"
+            ]
+          },
+          "rules_checked": [
+            "core-001",
+            "core-005",
+            "core-007",
+            "review-001"
+          ],
+          "lessons_checked": [
+            "LL-structured-task-spec",
+            "LL-independent-review-evidence"
+          ],
+          "sufficiency_decision": "existing_partial",
+          "decision": "build_delta",
+          "delta_justification": "Existing TaskSpec covers per-task boundaries, but the pilot needs a batch-level assignment packet and conflict check before human-gated dispatch."
+        },
+        "conflict_registry": {
+          "read_set": [
+            "scripts/multi_agent_gate0_preflight.py",
+            "tests/test_multi_agent_gate0_preflight.py",
+            "tests/test_conversation_registry.py",
+            "tests/test_cross_repo_execution_guards.py",
+            "tests/test_smoke_suite.py"
+          ],
+          "write_set": [
+            "_reports/multi-agent-verifier-a1/VERIFY_REPORT.md"
+          ],
+          "protected_files_touched": false,
+          "conflict_level": "none"
+        },
+        "security_report": {
+          "new_external_api": false,
+          "env_example_placeholders_only": true,
+          "real_key_patterns_found": false,
+          "staged_diff_secret_scan_run": false,
+          "key_rotation_needed": false
+        }
+      }
+    },
+    {
+      "worker_role": "Quality-Reviewer",
+      "parallel_group_id": "local-readiness",
+      "parallel_safe": true,
+      "project_module": "multi-agent quality review",
+      "target": "Review safety, error handling, and fake-green resistance in readiness scripts.",
+      "why_big_module": "Quality review protects the project from claiming readiness based on weak or misleading probes.",
+      "allowed_modify_range": [
+        "_reports/multi-agent-quality-review-a1/"
+      ],
+      "forbidden_modify_range": [
+        "scripts/",
+        "tests/",
+        ".agent/",
+        "docs/"
+      ],
+      "depends_on_interface_contracts": [
+        "schemas/agent-runtime/task-spec.schema.json",
+        "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
+      ],
+      "provides_interface_contracts": [
+        "Worker final report format from active objective",
+        "TaskSpec conflict_registry write_set/read_set"
+      ],
+      "main_flow_to_connect": "Execution guard behavior -> review findings -> serial Integrator handoff.",
+      "real_functionality_required": "Produce real local evidence, not mock completion or verbal readiness.",
+      "tests_or_probes_required": [
+        "read-only code review with P0/P1/P2 findings"
+      ],
+      "required_verification_commands": [
+        "read-only code review with P0/P1/P2 findings"
+      ],
+      "quality_standard": "P0/P1 zero; P2 documented with evidence; no external runtime execution.",
+      "completion_standard": "Report includes verdict, changed files, tests run, artifacts, known gaps, and suggested review focus.",
+      "blocking_conditions": [
+        "Open P0/P1 finding",
+        "Reviewer needs to modify implementation"
+      ],
+      "governance_record_requirements": [
+        "Quality report must list review focus and residual risk."
+      ],
+      "task_spec": {
+        "task_id": "ma-quality-review-a1",
+        "title": "Review multi-agent readiness changes",
+        "priority": "P2",
+        "status": "ready",
+        "description": "Audit safety, regression, error handling, tests, and evidence quality for the local readiness layer.",
+        "depends_on": [],
+        "assumptions": [
+          "Current Gate 0 preflight may remain HUMAN_REQUIRED.",
+          "Worker must not execute opencode, live CDP, cross-repo smoke, or paper workflow without separate human authorization."
+        ],
+        "risk_notes": "No external runtime execution is authorized by this TaskSpec.",
+        "estimated_tools": [
+          "rg",
+          "python",
+          "pytest"
+        ],
+        "gate_0": {
+          "triggered": true,
+          "trigger_reason": "Multi-agent dispatch plan introduces executable worker boundaries.",
+          "inventory_evidence": {
+            "queried_sources": [
+              "docs/agent-runtime/sub-agent-dispatch-protocol.md",
+              "docs/agent-runtime/capability-inventory.md",
+              "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md",
+              "schemas/agent-runtime/task-spec.schema.json"
+            ],
+            "matched_capabilities": [
+              "CAP-029 dev-frame-opencode Dispatch",
+              "SADP TaskSpec conflict_registry",
+              "multi-agent-gate0-preflight"
+            ],
+            "compared_against_request": [
+              "parallel worker dispatch",
+              "exclusive write boundaries",
+              "human-gated external runtime execution"
+            ]
+          },
+          "rules_checked": [
+            "core-001",
+            "core-005",
+            "core-007",
+            "review-001"
+          ],
+          "lessons_checked": [
+            "LL-structured-task-spec",
+            "LL-independent-review-evidence"
+          ],
+          "sufficiency_decision": "existing_partial",
+          "decision": "build_delta",
+          "delta_justification": "Existing TaskSpec covers per-task boundaries, but the pilot needs a batch-level assignment packet and conflict check before human-gated dispatch."
+        },
+        "conflict_registry": {
+          "read_set": [
+            "scripts/multi_agent_gate0_preflight.py",
+            "scripts/cross_repo_authorization.py",
+            "scripts/cross_repo_verify.py",
+            "scripts/multi_repo_smoke.py",
+            "tests/test_multi_agent_gate0_preflight.py",
+            "tests/test_cross_repo_execution_guards.py"
+          ],
+          "write_set": [
+            "_reports/multi-agent-quality-review-a1/QUALITY_REVIEW.md"
+          ],
+          "protected_files_touched": false,
+          "conflict_level": "none"
+        },
+        "security_report": {
+          "new_external_api": false,
+          "env_example_placeholders_only": true,
+          "real_key_patterns_found": false,
+          "staged_diff_secret_scan_run": false,
+          "key_rotation_needed": false
+        }
+      }
+    },
+    {
+      "worker_role": "Integrator",
+      "parallel_group_id": "serial-integration",
+      "parallel_safe": false,
+      "project_module": "multi-agent governance integration",
+      "target": "Serially fold accepted first-wave reports into governance docs.",
+      "why_big_module": "Integrator is the controlled write point for shared governance docs.",
+      "allowed_modify_range": [
+        "docs/governance/"
+      ],
+      "forbidden_modify_range": [
+        "scripts/",
+        "tests/",
+        ".agent/",
+        "docs/agent-runtime/"
+      ],
+      "depends_on_interface_contracts": [
+        "schemas/agent-runtime/task-spec.schema.json",
+        "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
+      ],
+      "provides_interface_contracts": [
+        "Worker final report format from active objective",
+        "TaskSpec conflict_registry write_set/read_set"
+      ],
+      "main_flow_to_connect": "Reviewer/verifier reports -> governance logs -> next dispatch wave.",
+      "real_functionality_required": "Produce real local evidence, not mock completion or verbal readiness.",
+      "tests_or_probes_required": [
+        "git diff --check -- docs\\governance\\PROGRESS_LOG.md docs\\governance\\VERIFY_MATRIX.md docs\\governance\\HANDOFF.md"
+      ],
+      "required_verification_commands": [
+        "git diff --check -- docs\\governance\\PROGRESS_LOG.md docs\\governance\\VERIFY_MATRIX.md docs\\governance\\HANDOFF.md"
+      ],
+      "quality_standard": "P0/P1 zero; P2 documented with evidence; no external runtime execution.",
+      "completion_standard": "Report includes verdict, changed files, tests run, artifacts, known gaps, and suggested review focus.",
+      "blocking_conditions": [
+        "Any required first-wave report missing",
+        "Shared governance docs changed by another active worker"
+      ],
+      "governance_record_requirements": [
+        "Update progress, verify matrix, risk/debt if and only if backed by report evidence."
+      ],
+      "task_spec": {
+        "task_id": "ma-integrator-a1",
+        "title": "Integrate first-wave reports into governance docs",
+        "priority": "P2",
+        "status": "deferred",
+        "description": "Serially reconcile reviewer/verifier outputs and update governance state after first-wave local reports exist.",
+        "depends_on": [
+          "ma-architecture-review-a1",
+          "ma-verifier-a1",
+          "ma-quality-review-a1"
+        ],
+        "assumptions": [
+          "Current Gate 0 preflight may remain HUMAN_REQUIRED.",
+          "Worker must not execute opencode, live CDP, cross-repo smoke, or paper workflow without separate human authorization."
+        ],
+        "risk_notes": "Integrator writes shared governance docs and must run serially after report tasks finish.",
+        "estimated_tools": [
+          "rg",
+          "python",
+          "pytest"
+        ],
+        "gate_0": {
+          "triggered": true,
+          "trigger_reason": "Multi-agent dispatch plan introduces executable worker boundaries.",
+          "inventory_evidence": {
+            "queried_sources": [
+              "docs/agent-runtime/sub-agent-dispatch-protocol.md",
+              "docs/agent-runtime/capability-inventory.md",
+              "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md",
+              "schemas/agent-runtime/task-spec.schema.json"
+            ],
+            "matched_capabilities": [
+              "CAP-029 dev-frame-opencode Dispatch",
+              "SADP TaskSpec conflict_registry",
+              "multi-agent-gate0-preflight"
+            ],
+            "compared_against_request": [
+              "parallel worker dispatch",
+              "exclusive write boundaries",
+              "human-gated external runtime execution"
+            ]
+          },
+          "rules_checked": [
+            "core-001",
+            "core-005",
+            "core-007",
+            "review-001"
+          ],
+          "lessons_checked": [
+            "LL-structured-task-spec",
+            "LL-independent-review-evidence"
+          ],
+          "sufficiency_decision": "existing_partial",
+          "decision": "build_delta",
+          "delta_justification": "Existing TaskSpec covers per-task boundaries, but the pilot needs a batch-level assignment packet and conflict check before human-gated dispatch."
+        },
+        "conflict_registry": {
+          "read_set": [
+            "_reports/multi-agent-architecture-review-a1/ARCHITECTURE_REVIEW.md",
+            "_reports/multi-agent-verifier-a1/VERIFY_REPORT.md",
+            "_reports/multi-agent-quality-review-a1/QUALITY_REVIEW.md",
+            "docs/governance/PROGRESS_LOG.md",
+            "docs/governance/VERIFY_MATRIX.md",
+            "docs/governance/HANDOFF.md"
+          ],
+          "write_set": [
+            "docs/governance/PROGRESS_LOG.md",
+            "docs/governance/VERIFY_MATRIX.md",
+            "docs/governance/HANDOFF.md"
+          ],
+          "protected_files_touched": false,
+          "conflict_level": "none"
+        },
+        "security_report": {
+          "new_external_api": false,
+          "env_example_placeholders_only": true,
+          "real_key_patterns_found": false,
+          "staged_diff_secret_scan_run": false,
+          "key_rotation_needed": false
+        }
+      }
+    },
+    {
+      "worker_role": "Human Gate",
+      "parallel_group_id": "human-gated-activation",
+      "parallel_safe": false,
+      "project_module": "conversation binding activation",
+      "target": "Provide real independent agent/conversation binding evidence.",
+      "why_big_module": "The pilot cannot be real multi-agent without independent conversation bindings.",
+      "allowed_modify_range": [
+        ".agent/CONVERSATION_BINDING.json"
+      ],
+      "forbidden_modify_range": [
+        "fabricated chat_url",
+        "fabricated conversation_id",
+        "last-message-only capture"
+      ],
+      "depends_on_interface_contracts": [
+        "schemas/agent-runtime/task-spec.schema.json",
+        "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
+      ],
+      "provides_interface_contracts": [
+        "Worker final report format from active objective",
+        "TaskSpec conflict_registry write_set/read_set"
+      ],
+      "main_flow_to_connect": "Manual binding evidence -> Gate 0 PASS candidate.",
+      "real_functionality_required": "Produce real local evidence, not mock completion or verbal readiness.",
+      "tests_or_probes_required": [
+        "python scripts\\validate_conversation_registry.py .agent\\CONVERSATION_BINDING.json --project-root D:\\agent-acceptance"
+      ],
+      "required_verification_commands": [
+        "python scripts\\validate_conversation_registry.py .agent\\CONVERSATION_BINDING.json --project-root D:\\agent-acceptance"
+      ],
+      "quality_standard": "P0/P1 zero; P2 documented with evidence; no external runtime execution.",
+      "completion_standard": "Report includes verdict, changed files, tests run, artifacts, known gaps, and suggested review focus.",
+      "blocking_conditions": [
+        "No independent binding evidence",
+        "Binding source cannot be verified"
+      ],
+      "governance_record_requirements": [
+        "Decision log must record source of binding evidence without secrets."
+      ],
+      "task_spec": {
+        "task_id": "ma-manual-binding-a1",
+        "title": "Record independent conversation binding evidence",
+        "priority": "P1",
+        "status": "deferred",
+        "description": "Human-gated activation task for replacing pending manual bindings with verified independent conversation evidence.",
+        "depends_on": [],
+        "assumptions": [
+          "Current Gate 0 preflight may remain HUMAN_REQUIRED.",
+          "Worker must not execute opencode, live CDP, cross-repo smoke, or paper workflow without separate human authorization."
+        ],
+        "risk_notes": "Requires human-provided independent binding evidence; do not fabricate chat_url or conversation_id.",
+        "estimated_tools": [
+          "rg",
+          "python",
+          "pytest"
+        ],
+        "gate_0": {
+          "triggered": true,
+          "trigger_reason": "Multi-agent dispatch plan introduces executable worker boundaries.",
+          "inventory_evidence": {
+            "queried_sources": [
+              "docs/agent-runtime/sub-agent-dispatch-protocol.md",
+              "docs/agent-runtime/capability-inventory.md",
+              "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md",
+              "schemas/agent-runtime/task-spec.schema.json"
+            ],
+            "matched_capabilities": [
+              "CAP-029 dev-frame-opencode Dispatch",
+              "SADP TaskSpec conflict_registry",
+              "multi-agent-gate0-preflight"
+            ],
+            "compared_against_request": [
+              "parallel worker dispatch",
+              "exclusive write boundaries",
+              "human-gated external runtime execution"
+            ]
+          },
+          "rules_checked": [
+            "core-001",
+            "core-005",
+            "core-007",
+            "review-001"
+          ],
+          "lessons_checked": [
+            "LL-structured-task-spec",
+            "LL-independent-review-evidence"
+          ],
+          "sufficiency_decision": "existing_partial",
+          "decision": "build_delta",
+          "delta_justification": "Existing TaskSpec covers per-task boundaries, but the pilot needs a batch-level assignment packet and conflict check before human-gated dispatch."
+        },
+        "conflict_registry": {
+          "read_set": [
+            ".agent/CONVERSATION_BINDING.json"
+          ],
+          "write_set": [
+            ".agent/CONVERSATION_BINDING.json"
+          ],
+          "protected_files_touched": false,
+          "conflict_level": "none"
+        },
+        "security_report": {
+          "new_external_api": false,
+          "env_example_placeholders_only": true,
+          "real_key_patterns_found": false,
+          "staged_diff_secret_scan_run": false,
+          "key_rotation_needed": false
+        }
+      }
+    },
+    {
+      "worker_role": "Human Reviewer",
+      "parallel_group_id": "human-gated-activation",
+      "parallel_safe": false,
+      "project_module": "CAP-029 execution approval",
+      "target": "Decide whether dev-frame-opencode dispatch can become executable.",
+      "why_big_module": "Execution approval changes the runtime authority boundary for real dispatch.",
+      "allowed_modify_range": [
+        "docs/agent-runtime/capability-inventory.md"
+      ],
+      "forbidden_modify_range": [
+        "opencode run",
+        "cross-repo smoke",
+        "tool-policy weakening without review"
+      ],
+      "depends_on_interface_contracts": [
+        "schemas/agent-runtime/task-spec.schema.json",
+        "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
+      ],
+      "provides_interface_contracts": [
+        "Worker final report format from active objective",
+        "TaskSpec conflict_registry write_set/read_set"
+      ],
+      "main_flow_to_connect": "Capability approval -> Gate 0 PASS candidate -> real dispatch.",
+      "real_functionality_required": "Produce real local evidence, not mock completion or verbal readiness.",
+      "tests_or_probes_required": [
+        "python scripts\\multi_agent_gate0_preflight.py --output _reports\\multi-agent-gate0-preflight-a1\\GATE0_PREFLIGHT.json"
+      ],
+      "required_verification_commands": [
+        "python scripts\\multi_agent_gate0_preflight.py --output _reports\\multi-agent-gate0-preflight-a1\\GATE0_PREFLIGHT.json"
+      ],
+      "quality_standard": "P0/P1 zero; P2 documented with evidence; no external runtime execution.",
+      "completion_standard": "Report includes verdict, changed files, tests run, artifacts, known gaps, and suggested review focus.",
+      "blocking_conditions": [
+        "No human/reviewer approval",
+        "CAP-029 remains proposed",
+        "tool policy still blocks execution"
+      ],
+      "governance_record_requirements": [
+        "Decision log and risk register must record approval basis and limits."
+      ],
+      "task_spec": {
+        "task_id": "ma-cap029-approval-a1",
+        "title": "Review CAP-029 execution approval",
+        "priority": "P1",
+        "status": "deferred",
+        "description": "Human/reviewer-gated task for deciding whether dev-frame-opencode dispatch may become execution-usable.",
+        "depends_on": [],
+        "assumptions": [
+          "Current Gate 0 preflight may remain HUMAN_REQUIRED.",
+          "Worker must not execute opencode, live CDP, cross-repo smoke, or paper workflow without separate human authorization."
+        ],
+        "risk_notes": "Requires human/reviewer approval before usable_for_execution can change.",
+        "estimated_tools": [
+          "rg",
+          "python",
+          "pytest"
+        ],
+        "gate_0": {
+          "triggered": true,
+          "trigger_reason": "Multi-agent dispatch plan introduces executable worker boundaries.",
+          "inventory_evidence": {
+            "queried_sources": [
+              "docs/agent-runtime/sub-agent-dispatch-protocol.md",
+              "docs/agent-runtime/capability-inventory.md",
+              "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md",
+              "schemas/agent-runtime/task-spec.schema.json"
+            ],
+            "matched_capabilities": [
+              "CAP-029 dev-frame-opencode Dispatch",
+              "SADP TaskSpec conflict_registry",
+              "multi-agent-gate0-preflight"
+            ],
+            "compared_against_request": [
+              "parallel worker dispatch",
+              "exclusive write boundaries",
+              "human-gated external runtime execution"
+            ]
+          },
+          "rules_checked": [
+            "core-001",
+            "core-005",
+            "core-007",
+            "review-001"
+          ],
+          "lessons_checked": [
+            "LL-structured-task-spec",
+            "LL-independent-review-evidence"
+          ],
+          "sufficiency_decision": "existing_partial",
+          "decision": "build_delta",
+          "delta_justification": "Existing TaskSpec covers per-task boundaries, but the pilot needs a batch-level assignment packet and conflict check before human-gated dispatch."
+        },
+        "conflict_registry": {
+          "read_set": [
+            "docs/agent-runtime/capability-inventory.md",
+            "docs/agent-runtime/tool-policy.md",
+            "docs/agent-runtime/sub-agent-dispatch-protocol.md"
+          ],
+          "write_set": [
+            "docs/agent-runtime/capability-inventory.md"
+          ],
+          "protected_files_touched": true,
+          "conflict_level": "high"
+        },
+        "security_report": {
+          "new_external_api": false,
+          "env_example_placeholders_only": true,
+          "real_key_patterns_found": false,
+          "staged_diff_secret_scan_run": false,
+          "key_rotation_needed": false
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,630 @@
+﻿
+=================================== ERRORS ====================================
+_ ERROR collecting evidence_packs/dirty-worktree-review-20260607/TEST_OUTPUT.txt _
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\pathlib.py:1135: in read_text
+    return f.read()
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\codecs.py:322: in decode
+    (result, consumed) = self._buffer_decode(data, self.errors, final)
+E   UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+_ ERROR collecting evidence_packs/group-01-contract-backfill/TEST_OUTPUT.txt __
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\pathlib.py:1135: in read_text
+    return f.read()
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\codecs.py:322: in decode
+    (result, consumed) = self._buffer_decode(data, self.errors, final)
+E   UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+_ ERROR collecting evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_dispatch_result_schema.py _
+import file mismatch:
+imported module 'test_dispatch_result_schema' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_dispatch_result_schema.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-01-contract-backfill\actual_deliverables\tests\test_dispatch_result_schema.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_dispatcher_policy.py _
+import file mismatch:
+imported module 'test_dispatcher_policy' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_dispatcher_policy.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-01-contract-backfill\actual_deliverables\tests\test_dispatcher_policy.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_flow_outcome_schema.py _
+import file mismatch:
+imported module 'test_flow_outcome_schema' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_flow_outcome_schema.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-01-contract-backfill\actual_deliverables\tests\test_flow_outcome_schema.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_next_taskspec_consumption_policy.py _
+import file mismatch:
+imported module 'test_next_taskspec_consumption_policy' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_next_taskspec_consumption_policy.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-01-contract-backfill\actual_deliverables\tests\test_next_taskspec_consumption_policy.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_run_until_terminal_policy.py _
+import file mismatch:
+imported module 'test_run_until_terminal_policy' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_run_until_terminal_policy.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-01-contract-backfill\actual_deliverables\tests\test_run_until_terminal_policy.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_runner_contract_schema.py _
+import file mismatch:
+imported module 'test_runner_contract_schema' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_runner_contract_schema.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-01-contract-backfill\actual_deliverables\tests\test_runner_contract_schema.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_runner_state_schema.py _
+import file mismatch:
+imported module 'test_runner_state_schema' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_runner_state_schema.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-01-contract-backfill\actual_deliverables\tests\test_runner_state_schema.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_runner_step_result_schema.py _
+import file mismatch:
+imported module 'test_runner_step_result_schema' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_runner_step_result_schema.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-01-contract-backfill\actual_deliverables\tests\test_runner_step_result_schema.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_taskspec_schema.py _
+import file mismatch:
+imported module 'test_taskspec_schema' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_taskspec_schema.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-01-contract-backfill\actual_deliverables\tests\test_taskspec_schema.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_terminal_state_policy.py _
+import file mismatch:
+imported module 'test_terminal_state_policy' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_terminal_state_policy.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-01-contract-backfill\actual_deliverables\tests\test_terminal_state_policy.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/group-02-paper-a3-validator-residual/TEST_OUTPUT.txt _
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\pathlib.py:1135: in read_text
+    return f.read()
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\codecs.py:322: in decode
+    (result, consumed) = self._buffer_decode(data, self.errors, final)
+E   UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+_ ERROR collecting evidence_packs/group-02-paper-a3-validator-residual/actual_deliverables/tests/test_paper_task_validator.py _
+import file mismatch:
+imported module 'test_paper_task_validator' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_paper_task_validator.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-02-paper-a3-validator-residual\actual_deliverables\tests\test_paper_task_validator.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/group-05-chain-evidence-hardening/TEST_OUTPUT.txt _
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\pathlib.py:1135: in read_text
+    return f.read()
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\codecs.py:322: in decode
+    (result, consumed) = self._buffer_decode(data, self.errors, final)
+E   UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+_ ERROR collecting evidence_packs/group-05-chain-evidence-hardening/tests/test_chain_evidence_hardening.py _
+import file mismatch:
+imported module 'test_chain_evidence_hardening' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\group-05-chain-evidence-hardening\actual_deliverables\test_chain_evidence_hardening.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-05-chain-evidence-hardening\tests\test_chain_evidence_hardening.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/group-06-workflow-closure-control-plane-pattern/TEST_OUTPUT.txt _
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\pathlib.py:1135: in read_text
+    return f.read()
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\codecs.py:322: in decode
+    (result, consumed) = self._buffer_decode(data, self.errors, final)
+E   UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+_ ERROR collecting evidence_packs/group-06-workflow-closure-control-plane-pattern/tests/test_workflow_closure_validation.py _
+import file mismatch:
+imported module 'test_workflow_closure_validation' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\group-06-workflow-closure-control-plane-pattern\actual_deliverables\test_workflow_closure_validation.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\group-06-workflow-closure-control-plane-pattern\tests\test_workflow_closure_validation.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-decision-record-evidence-bind-a1/actual_deliverables/test_human_decision_record.py _
+import file mismatch:
+imported module 'test_human_decision_record' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_human_decision_record.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-decision-record-evidence-bind-a1\actual_deliverables\test_human_decision_record.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-decision-record-hash-extra-entry-harden-a1/actual_deliverables/test_human_decision_record.py _
+import file mismatch:
+imported module 'test_human_decision_record' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_human_decision_record.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-decision-record-hash-extra-entry-harden-a1\actual_deliverables\test_human_decision_record.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-decision-record-hash-extra-entry-harden-a1/actual_deliverables/test_state_machine_runtime.py _
+import file mismatch:
+imported module 'test_state_machine_runtime' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_state_machine_runtime.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-decision-record-hash-extra-entry-harden-a1\actual_deliverables\test_state_machine_runtime.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-decision-record-hash-manifest-bind-a1/actual_deliverables/test_human_decision_record.py _
+import file mismatch:
+imported module 'test_human_decision_record' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_human_decision_record.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-decision-record-hash-manifest-bind-a1\actual_deliverables\test_human_decision_record.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-decision-record-integrate-t10-a1/actual_deliverables/test_human_decision_record.py _
+import file mismatch:
+imported module 'test_human_decision_record' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_human_decision_record.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-decision-record-integrate-t10-a1\actual_deliverables\test_human_decision_record.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-decision-record-integrate-t10-a1/actual_deliverables/test_state_machine_runtime.py _
+import file mismatch:
+imported module 'test_state_machine_runtime' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_state_machine_runtime.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-decision-record-integrate-t10-a1\actual_deliverables\test_state_machine_runtime.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-decision-record-manifest-bind-a1/actual_deliverables/test_human_decision_record.py _
+import file mismatch:
+imported module 'test_human_decision_record' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_human_decision_record.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-decision-record-manifest-bind-a1\actual_deliverables\test_human_decision_record.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-decision-record-manifest-bind-a1/actual_deliverables/test_state_machine_runtime.py _
+import file mismatch:
+imported module 'test_state_machine_runtime' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_state_machine_runtime.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-decision-record-manifest-bind-a1\actual_deliverables\test_state_machine_runtime.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-decision-record-manifest-content-crosscheck-a1/actual_deliverables/test_human_decision_record.py _
+import file mismatch:
+imported module 'test_human_decision_record' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_human_decision_record.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-decision-record-manifest-content-crosscheck-a1\actual_deliverables\test_human_decision_record.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-decision-record-manifest-content-crosscheck-a1/actual_deliverables/test_state_machine_runtime.py _
+import file mismatch:
+imported module 'test_state_machine_runtime' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_state_machine_runtime.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-decision-record-manifest-content-crosscheck-a1\actual_deliverables\test_state_machine_runtime.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-decision-record-manifest-strict-bind-a1/actual_deliverables/test_human_decision_record.py _
+import file mismatch:
+imported module 'test_human_decision_record' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_human_decision_record.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-decision-record-manifest-strict-bind-a1\actual_deliverables\test_human_decision_record.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-decision-record-manifest-strict-bind-a1/actual_deliverables/test_state_machine_runtime.py _
+import file mismatch:
+imported module 'test_state_machine_runtime' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_state_machine_runtime.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-decision-record-manifest-strict-bind-a1\actual_deliverables\test_state_machine_runtime.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/human-required-decision-record-template-a1/actual_deliverables/test_human_decision_record.py _
+import file mismatch:
+imported module 'test_human_decision_record' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_human_decision_record.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\human-required-decision-record-template-a1\actual_deliverables\test_human_decision_record.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/paper-a3-closure/actual_deliverables/tests/test_paper_task_validator.py _
+import file mismatch:
+imported module 'test_paper_task_validator' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_paper_task_validator.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\paper-a3-closure\actual_deliverables\tests\test_paper_task_validator.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/paper-a3-r2-closure/actual_deliverables/tests/test_paper_task_validator.py _
+import file mismatch:
+imported module 'test_paper_task_validator' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_paper_task_validator.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\paper-a3-r2-closure\actual_deliverables\tests\test_paper_task_validator.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+______ ERROR collecting evidence_packs/paper-c1-closure/TEST_OUTPUT.txt _______
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\pathlib.py:1135: in read_text
+    return f.read()
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\codecs.py:322: in decode
+    (result, consumed) = self._buffer_decode(data, self.errors, final)
+E   UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+______ ERROR collecting evidence_packs/paper-c2-closure/TEST_OUTPUT.txt _______
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\pathlib.py:1135: in read_text
+    return f.read()
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\codecs.py:322: in decode
+    (result, consumed) = self._buffer_decode(data, self.errors, final)
+E   UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+_ ERROR collecting evidence_packs/universal-agent-workflow-standard-a1/actual_deliverables/test_human_decision_record.py _
+import file mismatch:
+imported module 'test_human_decision_record' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_human_decision_record.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-a1\actual_deliverables\test_human_decision_record.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/universal-agent-workflow-standard-a1/actual_deliverables/test_state_machine_runtime.py _
+import file mismatch:
+imported module 'test_state_machine_runtime' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_state_machine_runtime.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-a1\actual_deliverables\test_state_machine_runtime.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/universal-agent-workflow-standard-agent-config-scaffold-a1/actual_deliverables/test_cross_project_scaffold.py _
+import file mismatch:
+imported module 'test_cross_project_scaffold' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-agent-config-governance-scripts-a1\actual_deliverables\test_cross_project_scaffold.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-agent-config-scaffold-a1\actual_deliverables\test_cross_project_scaffold.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/universal-agent-workflow-standard-agent-config-scaffold-a1/actual_deliverables/test_validate_run_id_consistency.py _
+import file mismatch:
+imported module 'test_validate_run_id_consistency' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-a1\actual_deliverables\test_validate_run_id_consistency.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-agent-config-scaffold-a1\actual_deliverables\test_validate_run_id_consistency.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/universal-agent-workflow-standard-agent-config-strict-validation-a1/actual_deliverables/test_cross_project_scaffold.py _
+import file mismatch:
+imported module 'test_cross_project_scaffold' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-agent-config-governance-scripts-a1\actual_deliverables\test_cross_project_scaffold.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-agent-config-strict-validation-a1\actual_deliverables\test_cross_project_scaffold.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/universal-agent-workflow-standard-conversation-registry-a1/actual_deliverables/test_cross_project_scaffold.py _
+import file mismatch:
+imported module 'test_cross_project_scaffold' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-agent-config-governance-scripts-a1\actual_deliverables\test_cross_project_scaffold.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-conversation-registry-a1\actual_deliverables\test_cross_project_scaffold.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/universal-agent-workflow-standard-cross-project-scaffold-a1/actual_deliverables/test_cross_project_scaffold.py _
+import file mismatch:
+imported module 'test_cross_project_scaffold' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-agent-config-governance-scripts-a1\actual_deliverables\test_cross_project_scaffold.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-cross-project-scaffold-a1\actual_deliverables\test_cross_project_scaffold.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting evidence_packs/universal-agent-workflow-standard-cross-project-scaffold-a1/actual_deliverables/test_validate_run_id_consistency.py _
+import file mismatch:
+imported module 'test_validate_run_id_consistency' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-a1\actual_deliverables\test_validate_run_id_consistency.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-cross-project-scaffold-a1\actual_deliverables\test_validate_run_id_consistency.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_________________ ERROR collecting scripts/test_impact_map.py _________________
+import file mismatch:
+imported module 'test_impact_map' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\batch-final-20260608\actual_deliverables\test_impact_map.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\scripts\test_impact_map.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+____________ ERROR collecting tests/test_ai_guard_staged_scope.py _____________
+import file mismatch:
+imported module 'test_ai_guard_staged_scope' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\ai-guard-staged-scope-a1\actual_deliverables\test_ai_guard_staged_scope.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_ai_guard_staged_scope.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_____________ ERROR collecting tests/test_boot_context_builder.py _____________
+import file mismatch:
+imported module 'test_boot_context_builder' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\context-compression-a1\actual_deliverables\tests\test_boot_context_builder.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_boot_context_builder.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+________________ ERROR collecting tests/test_bypass_checker.py ________________
+import file mismatch:
+imported module 'test_bypass_checker' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\batch-final-20260608\actual_deliverables\test_bypass_checker.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_bypass_checker.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+___________ ERROR collecting tests/test_chain_evidence_hardening.py ___________
+import file mismatch:
+imported module 'test_chain_evidence_hardening' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\group-05-chain-evidence-hardening\actual_deliverables\test_chain_evidence_hardening.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_chain_evidence_hardening.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_____________ ERROR collecting tests/test_context_compression.py ______________
+import file mismatch:
+imported module 'test_context_compression' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\context-compression-a1\actual_deliverables\tests\test_context_compression.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_context_compression.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+____________ ERROR collecting tests/test_context_memory_privacy.py ____________
+import file mismatch:
+imported module 'test_context_memory_privacy' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\context-compression-a1\actual_deliverables\tests\test_context_memory_privacy.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_context_memory_privacy.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+____________ ERROR collecting tests/test_conversation_registry.py _____________
+import file mismatch:
+imported module 'test_conversation_registry' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-conversation-registry-a1\actual_deliverables\test_conversation_registry.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_conversation_registry.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+____________ ERROR collecting tests/test_cross_project_scaffold.py ____________
+import file mismatch:
+imported module 'test_cross_project_scaffold' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-agent-config-governance-scripts-a1\actual_deliverables\test_cross_project_scaffold.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_cross_project_scaffold.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+____________ ERROR collecting tests/test_dispatch_result_schema.py ____________
+import file mismatch:
+imported module 'test_dispatch_result_schema' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_dispatch_result_schema.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_dispatch_result_schema.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+______________ ERROR collecting tests/test_dispatcher_policy.py _______________
+import file mismatch:
+imported module 'test_dispatcher_policy' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_dispatcher_policy.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_dispatcher_policy.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_____________ ERROR collecting tests/test_flow_outcome_schema.py ______________
+import file mismatch:
+imported module 'test_flow_outcome_schema' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_flow_outcome_schema.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_flow_outcome_schema.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_________ ERROR collecting tests/test_gpt_review_response_binding.py __________
+import file mismatch:
+imported module 'test_gpt_review_response_binding' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\guard-20260608\actual_deliverables\test_gpt_review_response_binding.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_gpt_review_response_binding.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_______________ ERROR collecting tests/test_handoff_compiler.py _______________
+import file mismatch:
+imported module 'test_handoff_compiler' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\handoff-pipeline-refactor-a1\actual_deliverables\tests\test_handoff_compiler.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_handoff_compiler.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_____________ ERROR collecting tests/test_handoff_safety_scan.py ______________
+import file mismatch:
+imported module 'test_handoff_safety_scan' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\handoff-pipeline-refactor-a1\actual_deliverables\tests\test_handoff_safety_scan.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_handoff_safety_scan.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+______________ ERROR collecting tests/test_handoff_source_map.py ______________
+import file mismatch:
+imported module 'test_handoff_source_map' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\handoff-pipeline-refactor-a1\actual_deliverables\tests\test_handoff_source_map.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_handoff_source_map.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_____________ ERROR collecting tests/test_handoff_stale_check.py ______________
+import file mismatch:
+imported module 'test_handoff_stale_check' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\handoff-pipeline-refactor-a1\actual_deliverables\tests\test_handoff_stale_check.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_handoff_stale_check.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+____________ ERROR collecting tests/test_human_decision_record.py _____________
+import file mismatch:
+imported module 'test_human_decision_record' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_human_decision_record.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_human_decision_record.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_______ ERROR collecting tests/test_next_taskspec_consumption_policy.py _______
+import file mismatch:
+imported module 'test_next_taskspec_consumption_policy' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_next_taskspec_consumption_policy.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_next_taskspec_consumption_policy.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_______________ ERROR collecting tests/test_paper_auth_gate.py ________________
+import file mismatch:
+imported module 'test_paper_auth_gate' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\batch-final-20260608\actual_deliverables\test_paper_auth_gate.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_paper_auth_gate.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_____ ERROR collecting tests/test_paper_c1_real_paper_safety_protocol.py ______
+import file mismatch:
+imported module 'test_paper_c1_real_paper_safety_protocol' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\paper-c1-closure\actual_deliverables\tests\test_paper_c1_real_paper_safety_protocol.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_paper_c1_real_paper_safety_protocol.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+____ ERROR collecting tests/test_paper_c2_authorization_redaction_gate.py _____
+import file mismatch:
+imported module 'test_paper_c2_authorization_redaction_gate' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\paper-c2-closure\tests\test_paper_c2_authorization_redaction_gate.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_paper_c2_authorization_redaction_gate.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+___________ ERROR collecting tests/test_paper_c4_section_review.py ____________
+import file mismatch:
+imported module 'test_paper_c4_section_review' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\paper-c4-section-review\actual_deliverables\test_paper_c4_section_review.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_paper_c4_section_review.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+___________ ERROR collecting tests/test_paper_privacy_boundaries.py ___________
+import file mismatch:
+imported module 'test_paper_privacy_boundaries' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\paper-a3-r2-closure\actual_deliverables\tests\test_paper_privacy_boundaries.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_paper_privacy_boundaries.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_____________ ERROR collecting tests/test_paper_task_validator.py _____________
+import file mismatch:
+imported module 'test_paper_task_validator' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_paper_task_validator.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_paper_task_validator.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_________________ ERROR collecting tests/test_repo_routing.py _________________
+import file mismatch:
+imported module 'test_repo_routing' has this __file__ attribute:
+  D:\agent-acceptance\runs\repo-routing-a1-v1\test_repo_routing.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_repo_routing.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_________________ ERROR collecting tests/test_review_queue.py _________________
+import file mismatch:
+imported module 'test_review_queue' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\gpt-review-queue-a1\actual_deliverables\tests\test_review_queue.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_review_queue.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+__________ ERROR collecting tests/test_run_until_terminal_policy.py ___________
+import file mismatch:
+imported module 'test_run_until_terminal_policy' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_run_until_terminal_policy.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_run_until_terminal_policy.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+____________ ERROR collecting tests/test_runner_contract_schema.py ____________
+import file mismatch:
+imported module 'test_runner_contract_schema' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_runner_contract_schema.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_runner_contract_schema.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_____________ ERROR collecting tests/test_runner_state_schema.py ______________
+import file mismatch:
+imported module 'test_runner_state_schema' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_runner_state_schema.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_runner_state_schema.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+__________ ERROR collecting tests/test_runner_step_result_schema.py ___________
+import file mismatch:
+imported module 'test_runner_step_result_schema' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_runner_step_result_schema.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_runner_step_result_schema.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+____________ ERROR collecting tests/test_state_machine_runtime.py _____________
+import file mismatch:
+imported module 'test_state_machine_runtime' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\human-decision-record-cli-t10-hash-integrate-a1\actual_deliverables\test_state_machine_runtime.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_state_machine_runtime.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_______________ ERROR collecting tests/test_taskspec_schema.py ________________
+import file mismatch:
+imported module 'test_taskspec_schema' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_taskspec_schema.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_taskspec_schema.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+____________ ERROR collecting tests/test_terminal_state_policy.py _____________
+import file mismatch:
+imported module 'test_terminal_state_policy' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\dirty-worktree-review-20260607\untracked_selected\tests\test_terminal_state_policy.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_terminal_state_policy.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_________ ERROR collecting tests/test_validate_run_id_consistency.py __________
+import file mismatch:
+imported module 'test_validate_run_id_consistency' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\universal-agent-workflow-standard-a1\actual_deliverables\test_validate_run_id_consistency.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_validate_run_id_consistency.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_________ ERROR collecting tests/test_workflow_closure_validation.py __________
+import file mismatch:
+imported module 'test_workflow_closure_validation' has this __file__ attribute:
+  D:\agent-acceptance\evidence_packs\group-06-workflow-closure-control-plane-pattern\actual_deliverables\test_workflow_closure_validation.py
+which is not the same as the test file we want to collect:
+  D:\agent-acceptance\tests\test_workflow_closure_validation.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+=========================== short test summary info ===========================
+ERROR evidence_packs/dirty-worktree-review-20260607/TEST_OUTPUT.txt - Unicode...
+ERROR evidence_packs/group-01-contract-backfill/TEST_OUTPUT.txt - UnicodeDeco...
+ERROR evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_dispatch_result_schema.py
+ERROR evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_dispatcher_policy.py
+ERROR evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_flow_outcome_schema.py
+ERROR evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_next_taskspec_consumption_policy.py
+ERROR evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_run_until_terminal_policy.py
+ERROR evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_runner_contract_schema.py
+ERROR evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_runner_state_schema.py
+ERROR evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_runner_step_result_schema.py
+ERROR evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_taskspec_schema.py
+ERROR evidence_packs/group-01-contract-backfill/actual_deliverables/tests/test_terminal_state_policy.py
+ERROR evidence_packs/group-02-paper-a3-validator-residual/TEST_OUTPUT.txt - U...
+ERROR evidence_packs/group-02-paper-a3-validator-residual/actual_deliverables/tests/test_paper_task_validator.py
+ERROR evidence_packs/group-05-chain-evidence-hardening/TEST_OUTPUT.txt - Unic...
+ERROR evidence_packs/group-05-chain-evidence-hardening/tests/test_chain_evidence_hardening.py
+ERROR evidence_packs/group-06-workflow-closure-control-plane-pattern/TEST_OUTPUT.txt
+ERROR evidence_packs/group-06-workflow-closure-control-plane-pattern/tests/test_workflow_closure_validation.py
+ERROR evidence_packs/human-decision-record-evidence-bind-a1/actual_deliverables/test_human_decision_record.py
+ERROR evidence_packs/human-decision-record-hash-extra-entry-harden-a1/actual_deliverables/test_human_decision_record.py
+ERROR evidence_packs/human-decision-record-hash-extra-entry-harden-a1/actual_deliverables/test_state_machine_runtime.py
+ERROR evidence_packs/human-decision-record-hash-manifest-bind-a1/actual_deliverables/test_human_decision_record.py
+ERROR evidence_packs/human-decision-record-integrate-t10-a1/actual_deliverables/test_human_decision_record.py
+ERROR evidence_packs/human-decision-record-integrate-t10-a1/actual_deliverables/test_state_machine_runtime.py
+ERROR evidence_packs/human-decision-record-manifest-bind-a1/actual_deliverables/test_human_decision_record.py
+ERROR evidence_packs/human-decision-record-manifest-bind-a1/actual_deliverables/test_state_machine_runtime.py
+ERROR evidence_packs/human-decision-record-manifest-content-crosscheck-a1/actual_deliverables/test_human_decision_record.py
+ERROR evidence_packs/human-decision-record-manifest-content-crosscheck-a1/actual_deliverables/test_state_machine_runtime.py
+ERROR evidence_packs/human-decision-record-manifest-strict-bind-a1/actual_deliverables/test_human_decision_record.py
+ERROR evidence_packs/human-decision-record-manifest-strict-bind-a1/actual_deliverables/test_state_machine_runtime.py
+ERROR evidence_packs/human-required-decision-record-template-a1/actual_deliverables/test_human_decision_record.py
+ERROR evidence_packs/paper-a3-closure/actual_deliverables/tests/test_paper_task_validator.py
+ERROR evidence_packs/paper-a3-r2-closure/actual_deliverables/tests/test_paper_task_validator.py
+ERROR evidence_packs/paper-c1-closure/TEST_OUTPUT.txt - UnicodeDecodeError: '...
+ERROR evidence_packs/paper-c2-closure/TEST_OUTPUT.txt - UnicodeDecodeError: '...
+ERROR evidence_packs/universal-agent-workflow-standard-a1/actual_deliverables/test_human_decision_record.py
+ERROR evidence_packs/universal-agent-workflow-standard-a1/actual_deliverables/test_state_machine_runtime.py
+ERROR evidence_packs/universal-agent-workflow-standard-agent-config-scaffold-a1/actual_deliverables/test_cross_project_scaffold.py
+ERROR evidence_packs/universal-agent-workflow-standard-agent-config-scaffold-a1/actual_deliverables/test_validate_run_id_consistency.py
+ERROR evidence_packs/universal-agent-workflow-standard-agent-config-strict-validation-a1/actual_deliverables/test_cross_project_scaffold.py
+ERROR evidence_packs/universal-agent-workflow-standard-conversation-registry-a1/actual_deliverables/test_cross_project_scaffold.py
+ERROR evidence_packs/universal-agent-workflow-standard-cross-project-scaffold-a1/actual_deliverables/test_cross_project_scaffold.py
+ERROR evidence_packs/universal-agent-workflow-standard-cross-project-scaffold-a1/actual_deliverables/test_validate_run_id_consistency.py
+ERROR scripts/test_impact_map.py
+ERROR tests/test_ai_guard_staged_scope.py
+ERROR tests/test_boot_context_builder.py
+ERROR tests/test_bypass_checker.py
+ERROR tests/test_chain_evidence_hardening.py
+ERROR tests/test_context_compression.py
+ERROR tests/test_context_memory_privacy.py
+ERROR tests/test_conversation_registry.py
+ERROR tests/test_cross_project_scaffold.py
+ERROR tests/test_dispatch_result_schema.py
+ERROR tests/test_dispatcher_policy.py
+ERROR tests/test_flow_outcome_schema.py
+ERROR tests/test_gpt_review_response_binding.py
+ERROR tests/test_handoff_compiler.py
+ERROR tests/test_handoff_safety_scan.py
+ERROR tests/test_handoff_source_map.py
+ERROR tests/test_handoff_stale_check.py
+ERROR tests/test_human_decision_record.py
+ERROR tests/test_next_taskspec_consumption_policy.py
+ERROR tests/test_paper_auth_gate.py
+ERROR tests/test_paper_c1_real_paper_safety_protocol.py
+ERROR tests/test_paper_c2_authorization_redaction_gate.py
+ERROR tests/test_paper_c4_section_review.py
+ERROR tests/test_paper_privacy_boundaries.py
+ERROR tests/test_paper_task_validator.py
+ERROR tests/test_repo_routing.py
+ERROR tests/test_review_queue.py
+ERROR tests/test_run_until_terminal_policy.py
+ERROR tests/test_runner_contract_schema.py
+ERROR tests/test_runner_state_schema.py
+ERROR tests/test_runner_step_result_schema.py
+ERROR tests/test_state_machine_runtime.py
+ERROR tests/test_taskspec_schema.py
+ERROR tests/test_terminal_state_policy.py
+ERROR tests/test_validate_run_id_consistency.py
+ERROR tests/test_workflow_closure_validation.py
+!!!!!!!!!!!!!!!!!! Interrupted: 79 errors during collection !!!!!!!!!!!!!!!!!!!
+79 errors in 2.84s

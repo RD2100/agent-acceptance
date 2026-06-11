@@ -1,0 +1,16 @@
+{
+  "target_run_id": "HUMAN_DECISION_RECORD_MANIFEST_STRICT_BIND_A1_20260609T133925_RD",
+  "target_task_id": "HUMAN-DECISION-RECORD-MANIFEST-STRICT-BIND-A1",
+  "before_user_count": 33,
+  "before_assistant_count": 27,
+  "after_user_count": 34,
+  "after_assistant_count": 28,
+  "candidate_indices": [],
+  "selected_index": null,
+  "last_index": 27,
+  "last_text_contains_run_id": false,
+  "selected_text_contains_run_id": false,
+  "selected_text_contains_end_marker": false,
+  "capture_mismatch": false,
+  "decision": "capture_failed_no_run_id_match"
+}

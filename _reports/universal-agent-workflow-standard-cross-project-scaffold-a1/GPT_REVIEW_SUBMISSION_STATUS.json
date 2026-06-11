@@ -1,0 +1,56 @@
+{
+  "run_id": "UNIVERSAL_AGENT_WORKFLOW_STANDARD_CROSS_PROJECT_SCAFFOLD_A1_20260609T153423_RD",
+  "task_id": "UNIVERSAL-AGENT-WORKFLOW-STANDARD-CROSS-PROJECT-SCAFFOLD-A1",
+  "scenario": "A",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\universal-agent-workflow-standard-cross-project-scaffold-a1\\UNIVERSAL_AGENT_WORKFLOW_STANDARD_CROSS_PROJECT_SCAFFOLD_A1_20260609T153423_RD.zip",
+  "pack_exists": true,
+  "pack_size": 76887,
+  "pack_sha256": "8cea6636e8cd8459a1e92bef8a8f42334a106e37176dc3df51ef2d04c967ebd8",
+  "prompt_chars": 2610,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T15:38:19",
+  "reply_chars": 1632,
+  "reply_sha256": "b3d0d7f35000bba17ff041167a3feb861bb1417c7befb851dc8d38e7ed39df59",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "capture_reconciliation": {
+    "target_run_id": "UNIVERSAL_AGENT_WORKFLOW_STANDARD_CROSS_PROJECT_SCAFFOLD_A1_20260609T153423_RD",
+    "target_task_id": "UNIVERSAL-AGENT-WORKFLOW-STANDARD-CROSS-PROJECT-SCAFFOLD-A1",
+    "before_user_count": 47,
+    "before_assistant_count": 48,
+    "after_user_count": 48,
+    "after_assistant_count": 50,
+    "candidate_indices": [
+      49
+    ],
+    "selected_index": 49,
+    "last_index": 49,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\universal-agent-workflow-standard-cross-project-scaffold-a1\\GPT_REVIEW_RESULT_R3.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\universal-agent-workflow-standard-cross-project-scaffold-a1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "D:\\agent-acceptance\\_reports\\universal-agent-workflow-standard-cross-project-scaffold-a1\\GPT_CAPTURE_RECONCILIATION.json"
+}

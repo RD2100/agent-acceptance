@@ -1,0 +1,32 @@
+{
+  "run_id": "NEXT_AGENT_WORKFLOW_BOOTSTRAP_IMPLEMENT_REVIEW_20260608_235700_RD",
+  "task_id": "NEXT-AGENT-WORKFLOW-BOOTSTRAP-IMPLEMENT-A1",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\next-agent-workflow-bootstrap-a1\\NEXT_AGENT_WORKFLOW_BOOTSTRAP_IMPLEMENT_A1_20260608_235642.zip",
+  "pack_exists": true,
+  "pack_sha256": "8c8d87b5ae49d6d1d4f9b6209db13acc71180861b34e7a6aa3cde2362ac85229",
+  "sent": true,
+  "captured": true,
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "upload_confirmed": true,
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "send_confirm": {
+    "ok": true,
+    "user_count": 16,
+    "assistant_count": 15
+  },
+  "sent_at": "2026-06-08T23:57:49",
+  "reply_chars": 1287,
+  "reply_sha256": "41f2d1f63e3d3c3a2166a4aa5d35d082afcc0432eefc6339a4844c16f4281cb1",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959"
+}

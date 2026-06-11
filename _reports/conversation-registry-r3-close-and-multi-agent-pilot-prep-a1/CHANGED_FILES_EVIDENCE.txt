@@ -1,0 +1,18 @@
+﻿?? .agent/CONVERSATION_BINDING.json
+?? .agent/CONVERSATION_REGISTRY.schema.json
+?? _reports/conversation-registry-r3-close-and-multi-agent-pilot-prep-a1/
+?? docs/AGENT_WORKFLOW_STANDARD.md
+?? docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md
+ M docs/agent-runtime/capability-inventory.md
+ M docs/agent-runtime/sub-agent-dispatch-protocol.md
+ M docs/agent-runtime/tool-policy.md
+?? docs/governance/DECISION_LOG.md
+?? docs/governance/HANDOFF.md
+?? docs/governance/PROGRESS_LOG.md
+?? docs/governance/RISK_REGISTER.md
+?? docs/governance/TECH_DEBT.md
+?? docs/governance/VERIFY_MATRIX.md
+?? scripts/awsp_scaffold.py
+?? scripts/validate_conversation_registry.py
+?? tests/test_conversation_registry.py
+?? tests/test_cross_project_scaffold.py

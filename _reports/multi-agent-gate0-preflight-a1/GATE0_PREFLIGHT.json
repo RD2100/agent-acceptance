@@ -1,0 +1,62 @@
+{
+  "overall": "HUMAN_REQUIRED",
+  "executed_external_runtime": false,
+  "human_gate_required": true,
+  "agent_count": 1,
+  "checks": [
+    {
+      "name": "binding_0_valid",
+      "status": "passed",
+      "detail": "conversation binding validates",
+      "evidence": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json"
+    },
+    {
+      "name": "binding_0_runtime_scope",
+      "status": "passed",
+      "detail": "all governed external runtimes are declared",
+      "evidence": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json"
+    },
+    {
+      "name": "agent_agent-local-001_manual_binding",
+      "status": "human_required",
+      "detail": "agent remains pending_manual_binding",
+      "evidence": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json"
+    },
+    {
+      "name": "unique_agent_ids",
+      "status": "passed",
+      "detail": "1 unique agent id(s)",
+      "evidence": null
+    },
+    {
+      "name": "pilot_agent_count",
+      "status": "human_required",
+      "detail": "pilot requires at least two independently bound agents",
+      "evidence": null
+    },
+    {
+      "name": "cap_029_registered",
+      "status": "passed",
+      "detail": "CAP-029 section exists",
+      "evidence": "D:\\agent-acceptance\\docs\\agent-runtime\\capability-inventory.md"
+    },
+    {
+      "name": "cap_029_gate0",
+      "status": "passed",
+      "detail": "usable_for_gate0=true",
+      "evidence": "D:\\agent-acceptance\\docs\\agent-runtime\\capability-inventory.md"
+    },
+    {
+      "name": "cap_029_execution",
+      "status": "human_required",
+      "detail": "opencode dispatch not executable (status=proposed, usable_for_execution=false)",
+      "evidence": "D:\\agent-acceptance\\docs\\agent-runtime\\capability-inventory.md"
+    },
+    {
+      "name": "tool_policy_runtime_gates",
+      "status": "passed",
+      "detail": "opencode, cross-repo, paper, and authorization gates documented",
+      "evidence": "D:\\agent-acceptance\\docs\\agent-runtime\\tool-policy.md"
+    }
+  ]
+}

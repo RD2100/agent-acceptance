@@ -1,0 +1,38 @@
+overall_judgment: accepted_with_limitation
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+none
+required_fixes:
+
+none
+limitations:
+
+scripts/startup_read_gate.py 已实现 startup read gate 的核心检查：proof 文件存在性、required reads 定义存在性、must_read_at_startup 覆盖率、proof gate_status、SHA-256 前缀处理、P0 required reads 单独 critical 检查，并以非零退出码 fail-closed。
+
+12 个回归测试覆盖了 pass、缺失 proof、缺失 required reads、proof 不完整、gate_status 非 pass、hash mismatch、P0 missing、invalid JSON、coverage ratio、task_id mismatch warning、optional reads 等主要路径，测试结构清晰。
+
+SHA-256 校验目前依赖 proof 中的 summary_hash；如果 reads_completed 中缺少 summary_hash，脚本不会强制与 NEXT_AGENT_REQUIRED_READS.json 中的 sha256 字段比对，后续应考虑将 P0 / must_read 文件的 hash 缺失提升为 error。
+
+当 proof 中提供 summary_hash 但对应文件在当前 repo 中不存在时，脚本当前记录 warning 而非 fail；这符合 execution report 中的 best-effort 限制，但从强门禁角度后续应考虑对 P0 / fail_closed_if_missing 文件改为 error。
+
+task_id mismatch 当前仅产生 warning，不阻塞 gate；这有利于兼容，但也可能允许旧 startup proof 被复用到新任务，后续应考虑在 strict 模式下将 task_id mismatch 设为 fail。
+
+coverage_ratio 当前按 reads_completed 数量 / must_read_count 计算，若 proof 包含非 required 额外文件，理论上可能出现大于 1 或掩盖实际 required coverage；后续应按 matched required reads / must_read_count 计算更稳妥。
+
+EXECUTION_REPORT 声称 full suite 359 tests pass，但 evidence pack 中只包含 startup_read_gate 相关测试与报告，没有嵌入完整 359 tests 的原始输出；当前不阻塞本任务，但该声明应在后续包中附带完整测试输出或降级表述。
+
+PACK_MANIFEST.md 存在并列出主要文件，但未将 PACK_MANIFEST.md 自身列为 manifest row；当前不阻塞本轮审查。
+
+本任务实现的是独立 startup read gate 脚本，尚未强制接入所有正式任务入口、pre-GPT gate 或状态机运行时，因此当前属于可执行门禁组件，非全链路强制执行完成态。
+next_task_authorization:
+task_id: STARTUP-READ-GATE-STRICT-HASH-TASKID-A1
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+
+run_id: STARTUP_READ_GATE_ENFORCE_A1_REVIEW_20260609T121329_RD
+task_id: STARTUP-READ-GATE-ENFORCE-A1
+
+END_OF_GPT_RESPONSE_

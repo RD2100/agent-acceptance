@@ -1,0 +1,7 @@
+{
+  "valid": true,
+  "errors": [],
+  "warnings": [],
+  "summary_only_risk": "none",
+  "recommendation": "ready for GPT submission"
+}

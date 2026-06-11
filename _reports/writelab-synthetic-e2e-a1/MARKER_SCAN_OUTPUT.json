@@ -1,0 +1,11 @@
+{
+  "zip_path": "D:\\agent-acceptance\\_reports\\writelab-synthetic-e2e-a1\\writelab-handoff.zip",
+  "pass": true,
+  "marker_count": 4,
+  "hits_by_label": {
+    "marker_1": false,
+    "marker_2": false,
+    "marker_3": false,
+    "marker_4": false
+  }
+}

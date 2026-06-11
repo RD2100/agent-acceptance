@@ -1,0 +1,9 @@
+{
+  "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+  "run_id": "GLOBAL_EVIDENCE_BINDING_A1_R2_20260609_085323",
+  "zip_path": "evidence_packs/global-project-evidence-binding-a1-r2/GLOBAL_PROJECT_EVIDENCE_BINDING_A1_R2_20260609_085323.zip",
+  "zip_sha256": "9e8a50c56a8dff8e10fb74303e6912ab4f1d2f1d92aff4f813146e5dc170bd6e",
+  "generated_at": "2026-06-09T00:53:23.302760+00:00",
+  "safety_pass": true,
+  "handoff_reply_v4_status": "tracked_deleted_human_required"
+}

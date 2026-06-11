@@ -1,0 +1,9 @@
+{
+  "task_id": "STARTUP-READ-GATE-ENFORCE-A1",
+  "run_id": "STARTUP_READ_GATE_ENFORCE_A1_REVIEW_20260609T121329_RD",
+  "zip_path": "evidence_packs\\startup-read-gate-enforce-a1\\STARTUP_READ_GATE_ENFORCE_A1_20260609T121329_RD.zip",
+  "zip_sha256": "d3e7d35bb68f4fb7c0e3c43bacada441e1e09f8d1cc4e388a6b917b58160e481",
+  "zip_size": 14073,
+  "file_count": 7,
+  "generated_at": "2026-06-09T12:13:29.843833+08:00"
+}

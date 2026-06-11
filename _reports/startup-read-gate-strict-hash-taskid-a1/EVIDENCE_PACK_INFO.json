@@ -1,0 +1,9 @@
+{
+  "task_id": "STARTUP-READ-GATE-STRICT-HASH-TASKID-A1",
+  "run_id": "STARTUP_READ_GATE_STRICT_HASH_TASKID_A1_REVIEW_20260609T122058_RD",
+  "zip_path": "evidence_packs\\startup-read-gate-strict-hash-taskid-a1\\STARTUP_READ_GATE_STRICT_HASH_TASKID_A1_20260609T122058_RD.zip",
+  "zip_sha256": "11b9178f5fec2cd31814cc949e11d9b420d9844c6d28b8b38271374850e92f9a",
+  "zip_size": 17575,
+  "file_count": 8,
+  "generated_at": "2026-06-09T12:20:58.489558+08:00"
+}

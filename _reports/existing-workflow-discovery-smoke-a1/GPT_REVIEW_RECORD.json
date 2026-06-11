@@ -1,0 +1,15 @@
+{
+  "task_id": "EXISTING-WORKFLOW-DISCOVERY-SMOKE-A1",
+  "run_id": "EXISTING_WORKFLOW_DISCOVERY_SMOKE_REVIEW_20260608_234600_RD",
+  "gpt_review_result_path": "D:/agent-acceptance/_reports/existing-workflow-discovery-smoke-a1/GPT_REVIEW_RESULT.txt",
+  "verify_output_path": "D:/agent-acceptance/_reports/existing-workflow-discovery-smoke-a1/VERIFY_GPT_REPLY_OUTPUT.txt",
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "approval_basis": "captured_and_verified_attachment_backed_gpt_reply",
+  "attachment_reviewed": true,
+  "evidence_pack_reviewed": true,
+  "closure_ready": true,
+  "limitations": [
+    "GPT returned accepted_with_limitation, not accepted.",
+    "This was a workflow discovery smoke test, not formal GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2 repair."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "go": false,
+  "checks": {
+    "auth": {
+      "authorized": false,
+      "reason": "authorization expired"
+    },
+    "preflight": true,
+    "pilot_runner": true,
+    "dry_run_packet": true
+  },
+  "timestamp": "2026-06-09T13:55:34.824349+00:00"
+}
+
+NOGO: real-paper pilot is BLOCKED

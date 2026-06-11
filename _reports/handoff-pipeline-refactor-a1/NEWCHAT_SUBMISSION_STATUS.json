@@ -1,0 +1,16 @@
+{
+  "run_id": "HANDOFF_A1_NEWCHAT_20260608_214045_2D942N",
+  "message_chars": 5081,
+  "sent": true,
+  "captured": true,
+  "run_id_match": true,
+  "new_chat_url_initial": "https://chatgpt.com/",
+  "sent_at": "2026-06-08T21:41:41",
+  "new_chat_url_final": "https://chatgpt.com/c/6a26c694-89ac-83aa-a47a-b34311b6c079",
+  "reply_chars": 1345,
+  "reply_sha256": "5f5733ede439895e7c823bb3e7df6ba039759ba6ec4664d9ea19c70d6b5e8cc3",
+  "has_end_marker": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "result_path": "D:\\agent-acceptance\\evidence_packs\\handoff-pipeline-refactor-a1\\GPT_REVIEW_RESULT_NEWCHAT.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\handoff-pipeline-refactor-a1\\GPT_REVIEW_RESULT_NEWCHAT.txt"
+}

@@ -1,0 +1,33 @@
+﻿{
+  "generated_at": "2026-06-09T14:48:57.908259+00:00",
+  "pass": true,
+  "files_checked": 3,
+  "issues": [],
+  "results": [
+    {
+      "file": "docs\\governance\\PAPER_WORKFLOW_HANDOFF.md",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 9291,
+      "hash": "14f59268a03ba0d99b6ca93c4241bd1326b4f65b29913c67d81ff1a5e6c8a17b"
+    },
+    {
+      "file": "docs\\governance\\HANDOFF.md",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 12243,
+      "hash": "6b41c00a23176409179171ce2b25107b5aaa016ceb4925ed1cd0561963f9e562"
+    },
+    {
+      "file": "_reports\\writelab-exporter-a1\\EXECUTION_REPORT.md",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 5031,
+      "hash": "b626df02f01959a6d231c375e3638daa4cf53ea7720fb959f965a74e5306b411"
+    }
+  ],
+  "scanner": "validate_context_memory.validate_file"
+}

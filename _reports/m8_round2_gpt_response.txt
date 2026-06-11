@@ -1,0 +1,104 @@
+severity_issues:
+
+id: M8-P1-02
+severity: P1
+status: accepted_with_limitation
+issue: "分类评价制度供给数据需要后续核验"
+detail: >
+“全国有多少省份出台分类评价标准、覆盖多少高校”是非常有价值的数据接口，
+能够把制度张力落到现实层面。但这些数据必须进入 citation/evidence QA，
+核验统计口径、时间范围、政策文本来源和覆盖对象。当前可作为待核验数据位，不可直接当作已证事实。
+
+id: M8-P1-05
+severity: P1
+status: accepted_with_limitation
+issue: "分类评价成功案例方向正确，但不能未经核验写入正文"
+detail: >
+增加省级或高校类型评价改革案例，有助于提升实证性。但案例必须有明确出处，
+且要说明它如何缓解统一评价带来的同质化、特色消解或质量信号失真问题。
+不能只作为“成功案例”标签化使用。
+
+id: M8-P2-01
+severity: P2
+status: accepted_limitation
+issue: "统一评价的弊端不能写成单向否定"
+detail: >
+“同质化诱导、特色消解、质量信号失真”能够揭示统一评价的风险，
+但正文中仍需保留统一评价对于质量底线、公共责任和国家战略目标的必要性。
+否则会从“两难分析”滑向单方面批判统一评价。
+
+id: M8-P2-02
+severity: P2
+status: accepted_limitation
+issue: "马太效应链条需要避免过度决定论"
+detail: >
+“统一评价→资源集中→优者更优→评价更好→弱者更弱”的链条有解释力，
+但不能写成必然循环。建议表述为“在评价指标单一、资源分配与评价结果高度绑定时，容易形成累积优势机制”。
+
+verdict: pass_with_limitation
+
+close_module: true
+
+p1_resolution:
+M8-P1-01:
+status: resolved
+reason: >
+已将“统一评价”的问题具体化为同质化诱导、特色消解和质量信号失真，
+这比抽象谈统一与分类更能支撑制度两难分析。
+
+M8-P1-02:
+status: accepted_with_limitation
+reason: >
+已提出分类评价制度供给不足的数据化方向，能够回应“分类评价是否真正落地”的问题。
+但具体省份数量、覆盖高校数量和政策文本来源仍需后续核验。
+
+M8-P1-03:
+status: resolved
+reason: >
+已建立马太效应传导机制，将统一评价、资源集中、绩效反馈和弱势高校处境联系起来，
+能够解释统一评价为何可能加剧分类发展困境。
+
+M8-P1-04:
+status: resolved
+reason: >
+已明确第二部分的递进链条：M6 是价值维度，M7 是资源维度，M8 是评价维度。
+这解决了三重张力并列化的问题。
+
+M8-P1-05:
+status: accepted_with_limitation
+reason: >
+分类评价案例方向合理，能够增强实证性；但具体案例必须进入 citation/evidence QA，
+确认可检索、可引用、与论点直接匹配。
+
+module_closure_decision:
+module_id: M8
+status: closed_as_pass_with_limitation
+reason: >
+Round 2 已经实质性解决 M8 的主要 P1：统一评价的风险被具体化，
+分类评价制度供给不足有了数据接口，马太效应机制被显性化，
+并且完成了 M6—M7—M8 的递进收束与向第三部分的过渡。
+因此 M8 可以关闭，但必须保留数据和案例待核验的限制。
+
+approved_revision_structure:
+unit_1: "统一评价的三大弊端：同质化诱导、特色消解、质量信号失真，并各配一个可核验案例。"
+unit_2: "分类评价的制度供给现状：以省级分类评价标准和高校覆盖情况说明分类评价是否真正制度化。"
+unit_3: "马太效应传导机制：评价结果与资源分配绑定时，可能形成资源—绩效—评价的累积优势循环。"
+unit_4: "第二部分收束：价值、资源、评价三重张力共同说明提质扩容需要进入第三部分的平衡之道。"
+
+required_follow_up:
+
+"核验分类评价省份数量、政策文本和覆盖高校数据。"
+
+"核验统一评价三大弊端对应案例，避免泛化或虚构。"
+
+"正文中保留统一评价的必要性，避免单向否定。"
+
+"弱化马太效应链条中的决定论表达。"
+
+"将 M8 的数据与案例全部纳入 citation/evidence QA。"
+
+next_action:
+recommended: "同步 M8 closure 到 Project Index，然后执行 Section 2 coherence review。"
+next_task_id: "PAPER-SECTION2-COHERENCE-CLOSURE-A1"
+
+END_OF_GPT_RESPONSE

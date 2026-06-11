@@ -1,0 +1,18 @@
+{
+  "target_run_id": "UNIVERSAL_AGENT_WORKFLOW_STANDARD_CONVERSATION_REGISTRY_A1_20260609T172643_RD",
+  "target_task_id": "UNIVERSAL-AGENT-WORKFLOW-STANDARD-CONVERSATION-REGISTRY-A1",
+  "before_user_count": 58,
+  "before_assistant_count": 67,
+  "after_user_count": 59,
+  "after_assistant_count": 69,
+  "candidate_indices": [
+    68
+  ],
+  "selected_index": 68,
+  "last_index": 68,
+  "last_text_contains_run_id": true,
+  "selected_text_contains_run_id": true,
+  "selected_text_contains_end_marker": true,
+  "capture_mismatch": false,
+  "decision": "selected_and_last_match"
+}

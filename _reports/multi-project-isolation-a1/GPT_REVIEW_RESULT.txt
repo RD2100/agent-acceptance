@@ -1,0 +1,64 @@
+verdict: accepted_with_limitation
+
+run_id: MULTI_PROJECT_ISOLATION_A1_20260610
+
+findings:
+
+category: architecture
+severity: info
+description: Multi-project isolation architecture is directionally sound. The split between multi_cdp_launcher.py and multi_project_router.py is reasonable: launcher manages per-project Chrome/CDP instances, router resolves project targets and verifies isolation before dispatch.
+
+category: isolation
+severity: info
+description: The three core isolation dimensions are covered: unique CDP port, unique browser profile, and unique GPT conversation_id. Collision detection for port, conversation, and profile is explicitly tested, including multi-collision cases.
+
+category: registry
+severity: minor
+description: The project registry schema is simple and usable for local orchestration, but it is still weaker than the earlier Conversation Registry schema-backed design. It should eventually gain JSON Schema validation, required-field checking, and fail-closed handling for malformed registry entries.
+
+category: binding
+severity: info
+description: Router integration with existing per-project CONVERSATION_BINDING.json preserves backward compatibility and does not require changes to the existing binding format. This is a strong design choice.
+
+category: dispatch
+severity: info
+description: Router builds dispatch packets but intentionally does not send messages. This is appropriate for the current stage because message delivery through CDP should remain gated until isolation and binding are fully verified.
+
+category: tests
+severity: info
+description: Test coverage is strong for architecture-level behavior: 43 new tests cover module import, registry load/save, CDP checks, launch behavior, target resolution, dispatch packet construction, isolation verification, existing infrastructure, and 10-project stress.
+
+category: safety
+severity: info
+description: No external runtime was executed. The evidence describes synthetic/local validation only, which is appropriate for this architecture task.
+
+category: limitation
+severity: major
+description: The implementation does not yet prove real simultaneous multi-project execution. It proves routing and isolation logic with synthetic data, but not actual concurrent Chrome/CDP instances delivering GPT review traffic across multiple projects.
+
+category: limitation
+severity: minor
+description: Chrome instance lifecycle management remains basic. There is no auto-restart, distributed coordination, stale registry cleanup, or lock management for concurrent launcher invocations.
+
+category: limitation
+severity: minor
+description: Unresolved targets are skipped during isolation checks. This is reasonable for routing, but pilot reports must clearly distinguish “isolated active targets” from “declared but unresolved projects.”
+
+assessment:
+isolation_guarantees_completeness: accepted_with_limitation
+registry_binding_integration: accepted_with_limitation
+collision_detection_coverage: accepted
+test_adequacy: accepted_with_limitation
+backward_compatibility: accepted
+architectural_soundness: accepted_with_limitation
+
+summary: >
+MULTI-PROJECT-ISOLATION-A1 successfully establishes the architecture needed to move from
+one-project/multi-agent binding toward multi-project concurrent operation. It defines the right
+isolation boundaries, adds a launcher/router split, preserves existing binding compatibility,
+and provides strong synthetic test coverage. However, it should not yet be described as completed
+real multi-project execution, because the evidence does not show multiple live Chrome/CDP instances
+running simultaneous GPT workflows. This is an accepted architecture layer with clear execution-stage
+limitations.
+
+next_task_authorization: MULTI-PROJECT-ISOLATION-REAL-CDP-SMOKE-A1 — run a controlled two-project smoke test with two distinct CDP ports, two distinct browser profiles, two distinct GPT conversations, registry validation, router resolution, isolation verification, and no message dispatch beyond a gated dry-run capture path.

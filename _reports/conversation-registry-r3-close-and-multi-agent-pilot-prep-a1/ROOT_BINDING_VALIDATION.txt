@@ -1,0 +1,31 @@
+﻿{
+  "valid": true,
+  "schema_validated": true,
+  "errors": [],
+  "warnings": [],
+  "summary": {
+    "binding_count": 1,
+    "active_count": 0,
+    "pending_count": 1
+  },
+  "details": {
+    "awsp_version": "1.3.0",
+    "binding_path": ".agent\\CONVERSATION_BINDING.json",
+    "parsed": true,
+    "schema_version": "1.0.0",
+    "project_root_checked": true,
+    "governance_runtime_count": 3,
+    "governance_runtime_ids": [
+      "dev-frame-opencode",
+      "devframe-control-plane",
+      "paper-workflow"
+    ],
+    "binding_count": 1,
+    "active_binding_count": 0,
+    "pending_binding_count": 1,
+    "schema_file_loaded": true,
+    "schema_path": ".agent\\CONVERSATION_REGISTRY.schema.json",
+    "schema_validation_errors": 0,
+    "schema_validation": "passed"
+  }
+}

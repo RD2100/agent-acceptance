@@ -1,0 +1,14 @@
+{
+  "pack": "D:\\agent-acceptance\\evidence_packs\\handoff-pipeline-refactor-a1\\closure-pack.zip",
+  "pack_exists": true,
+  "message_chars": 23614,
+  "uploaded": true,
+  "sent": true,
+  "captured": true,
+  "sent_at": "2026-06-08T21:04:59",
+  "reply_chars": 1361,
+  "reply_sha256": "46184673a4cca8e0c4b763bceb528450c48a9f436c2f4e90a1bc8761108dff8b",
+  "valid_end_marker": true,
+  "result_path": "D:\\agent-acceptance\\evidence_packs\\handoff-pipeline-refactor-a1\\GPT_REVIEW_RESULT_R3.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\handoff-pipeline-refactor-a1\\GPT_REVIEW_RESULT_R3.txt"
+}

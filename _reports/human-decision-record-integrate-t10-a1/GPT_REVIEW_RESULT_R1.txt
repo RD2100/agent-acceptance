@@ -1,0 +1,33 @@
+verdict: accepted_with_limitation
+run_id: HUMAN_DECISION_RECORD_INTEGRATE_T10_A1_20260609T211000_RD
+findings:
+
+
+state_machine_runtime.py 已新增 check_human_required_to_gate_passing(decision_record_path)，并在 human_required → gate_passing 转换中调用 human_decision_record.validate_record()，实现了 T10 guard 的运行时集成。
+
+
+T10 的两个核心条件 human_decision_recorded 与 decision_evidence_attached 已被显式提取并同时要求为 true；缺少 record、record 不存在、JSON 非法、缺少 evidence、exit_conditions 被篡改等情况均会 fail-closed，阻断转换。
+
+
+check_transition() 已正确 dispatch 到 T10 guard，并新增 decision_record_path 参数；CLI 也增加了 --decision-record-path，支持运行时检查。
+
+
+8 个新增 TestHumanRequiredToGatePassing 测试覆盖无记录阻断、有效记录通过、无 evidence 阻断、文件不存在阻断、非法 JSON 阻断、exit_conditions 篡改阻断、T10 dispatch 与无记录 dispatch 阻断，主要路径充分。
+
+
+PROCESS_STATE_MACHINE.json 中的 T10 guard: human_decision_recorded AND decision_evidence_attached 已在当前运行时得到基本落实；结合前序 T01 guard，状态机运行时正在从 validity-only 向 guard-enforced runtime 推进。
+
+
+limitation: validate_record() 当前只检查 evidence_files 非空，并未验证 evidence 文件真实存在、是否 hash-bound、是否属于当前 evidence pack；对高风险 human_required 决策而言，后续应继续补强 evidence existence/hash binding。
+
+
+limitation: decision_maker 仍是普通字符串，尚未绑定用户确认来源、签名、截图或确认记录 hash；如果用于 restore/checkout/legacy 文件操作等高风险场景，仍需额外人类确认记录。
+
+
+limitation: 当前状态机运行时只对 T01 和 T10 实现了 guard；其他转换如 gpt_reviewing → accepted / accepted_with_limitation / blocked、accepted_with_limitation → draft、accepted → closed 等仍主要是 validity-only，后续需要继续补齐运行时 guard。
+
+
+limitation: 附件中包含 human_decision_record.py、state_machine_runtime.py 和测试，整体可审查；但 PACK_MANIFEST 未将自身列为 manifest row，且 pack run_id 与审查 prompt run_id 存在时间戳差异，后续应继续统一元数据。
+next_task_authorization: HUMAN-DECISION-RECORD-EVIDENCE-BIND-A1
+---END_OF_GPT_RESPONSE---
+

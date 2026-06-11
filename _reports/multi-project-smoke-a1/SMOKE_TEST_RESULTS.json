@@ -1,0 +1,191 @@
+{
+  "run_id": "SMOKE_CDP_A1_20260610",
+  "awsp_version": "1.3.0",
+  "started_at": "2026-06-10T05:50:35Z",
+  "steps": [
+    {
+      "step": "check_cdp_9222",
+      "result": {
+        "port": 9222,
+        "active": true,
+        "browser": "Chrome/149.0.7827.54",
+        "protocol_version": "1.3",
+        "total_pages": 4,
+        "chatgpt_pages": 2,
+        "pages": [
+          {
+            "url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+            "title": "GPT编码计划与执行8"
+          },
+          {
+            "url": "https://chatgpt.com/c/6a28eef3-fd10-83a9-a86d-91c7e5f49953",
+            "title": "B1 Bounded Execution Evidence"
+          },
+          {
+            "url": "chrome://omnibox-popup.top-chrome/",
+            "title": "Omnibox Popup"
+          },
+          {
+            "url": "chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js",
+            "title": "Service Worker chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js"
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "step": "check_cdp_9223",
+      "result": {
+        "port": 9223,
+        "active": true,
+        "browser": "Chrome/149.0.7827.54",
+        "protocol_version": "1.3",
+        "total_pages": 2,
+        "chatgpt_pages": 0,
+        "pages": [
+          {
+            "url": "chrome://newtab/",
+            "title": "新标签页"
+          },
+          {
+            "url": "chrome-untrusted://new-tab-page/one-google-bar?paramsencoded=",
+            "title": "chrome-untrusted://new-tab-page/one-google-bar?paramsencoded="
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "step": "register_projects",
+      "registered": [
+        "agent-acceptance",
+        "smoke-project-beta"
+      ],
+      "pass": true
+    },
+    {
+      "step": "setup_project_b_binding",
+      "path": "D:\\agent-acceptance\\_smoke_project_beta\\.agent\\CONVERSATION_BINDING.json",
+      "pass": true
+    },
+    {
+      "step": "resolve_targets",
+      "project_a": {
+        "project_id": "agent-acceptance",
+        "resolved": true,
+        "cdp_endpoint": "http://localhost:9222",
+        "cdp_active": true,
+        "conversation_id": "6a26cc03-235c-83a2-a0fc-cd29be615959",
+        "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+        "agent_id": "agent-local-001",
+        "agent_role": "reviewer",
+        "binding_status": "active",
+        "browser_profile_id": "cdp-profile-pilot-a1",
+        "capture_policy": {
+          "must_match_run_id": true,
+          "must_match_task_id": true,
+          "must_include_end_marker": true,
+          "forbid_last_message_only_capture": true
+        },
+        "resolved_at": "2026-06-10T05:50:46Z"
+      },
+      "project_b": {
+        "project_id": "smoke-project-beta",
+        "resolved": true,
+        "cdp_endpoint": "http://localhost:9223",
+        "cdp_active": true,
+        "conversation_id": "smoke-conv-beta-001",
+        "chat_url": "https://chatgpt.com/c/smoke-conv-beta-001",
+        "agent_id": "agent-smoke-beta",
+        "agent_role": "executor",
+        "binding_status": "active",
+        "browser_profile_id": "cdp-profile-smoke-beta",
+        "capture_policy": {
+          "must_match_run_id": true,
+          "must_match_task_id": true,
+          "must_include_end_marker": true,
+          "forbid_last_message_only_capture": true
+        },
+        "resolved_at": "2026-06-10T05:50:48Z"
+      },
+      "pass": true
+    },
+    {
+      "step": "verify_isolation",
+      "result": {
+        "isolated": true,
+        "total_projects": 2,
+        "unique_ports": 2,
+        "unique_conversations": 2,
+        "unique_profiles": 2,
+        "issues": [],
+        "checked_at": "2026-06-10T05:50:48Z"
+      },
+      "pass": true
+    },
+    {
+      "step": "build_dispatch_packets",
+      "packet_a_dispatchable": true,
+      "packet_b_dispatchable": true,
+      "packet_a_cdp_endpoint": "http://localhost:9222",
+      "packet_b_cdp_endpoint": "http://localhost:9223",
+      "packets_sent": false,
+      "pass": true
+    },
+    {
+      "step": "cdp_cross_verify",
+      "cdp_a": {
+        "port": 9222,
+        "active": true,
+        "browser": "Chrome/149.0.7827.54",
+        "protocol_version": "1.3",
+        "total_pages": 4,
+        "chatgpt_pages": 2,
+        "pages": [
+          {
+            "url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+            "title": "GPT编码计划与执行8"
+          },
+          {
+            "url": "https://chatgpt.com/c/6a28eef3-fd10-83a9-a86d-91c7e5f49953",
+            "title": "B1 Bounded Execution Evidence"
+          },
+          {
+            "url": "chrome://omnibox-popup.top-chrome/",
+            "title": "Omnibox Popup"
+          },
+          {
+            "url": "chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js",
+            "title": "Service Worker chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js"
+          }
+        ]
+      },
+      "cdp_b": {
+        "port": 9223,
+        "active": true,
+        "browser": "Chrome/149.0.7827.54",
+        "protocol_version": "1.3",
+        "total_pages": 2,
+        "chatgpt_pages": 0,
+        "pages": [
+          {
+            "url": "chrome://newtab/",
+            "title": "新标签页"
+          },
+          {
+            "url": "chrome-untrusted://new-tab-page/one-google-bar?paramsencoded=",
+            "title": "chrome-untrusted://new-tab-page/one-google-bar?paramsencoded="
+          }
+        ]
+      },
+      "ports_distinct": true,
+      "both_active": true,
+      "pass": true
+    }
+  ],
+  "completed_at": "2026-06-10T05:50:56Z",
+  "overall": "PASS",
+  "total_steps": 8,
+  "passed_steps": 8,
+  "failed_steps": 0
+}

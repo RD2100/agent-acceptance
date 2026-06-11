@@ -1,0 +1,53 @@
+{
+  "run_id": "HANDOFF_WORKFLOW_HARDENING_PLAN_A1_R2_REVIEW_20260609T021002_RD",
+  "task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1-R2",
+  "round": "R2",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\handoff-workflow-hardening-plan-a1\\HANDOFF_WORKFLOW_HARDENING_PLAN_A1_R2_20260609T021002.zip",
+  "pack_exists": true,
+  "pack_size": 49780,
+  "pack_sha256": "539b477e4d647ebd950a639a3548b8c235ff511c0af27461f5d0fb62538d34f0",
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T10:11:34",
+  "reply_chars": 1225,
+  "reply_sha256": "66e082d26fd748a10d11a40134c4da90da1a77decc7f3a6d1031f8cacf7cf837",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "capture_reconciliation": {
+    "target_run_id": "HANDOFF_WORKFLOW_HARDENING_PLAN_A1_R2_REVIEW_20260609T021002_RD",
+    "target_task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1-R2",
+    "before_user_count": 12,
+    "before_assistant_count": 6,
+    "after_user_count": 13,
+    "after_assistant_count": 7,
+    "candidate_indices": [
+      6
+    ],
+    "selected_index": 6,
+    "last_index": 6,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\evidence_packs\\handoff-workflow-hardening-plan-a1\\GPT_REVIEW_RESULT_R2.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\handoff-workflow-hardening-plan-a1\\GPT_REVIEW_RESULT_R2.txt"
+}

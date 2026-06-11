@@ -1,0 +1,16 @@
+{
+  "target_run_id": "STATE_MACHINE_RUNTIME_INTEGRATE_A1_REVIEW_20260609T125017_RD",
+  "target_task_id": "STATE-MACHINE-RUNTIME-INTEGRATE-A1",
+  "before_user_count": 25,
+  "before_assistant_count": 19,
+  "after_user_count": 26,
+  "after_assistant_count": 20,
+  "candidate_indices": [],
+  "selected_index": null,
+  "last_index": 19,
+  "last_text_contains_run_id": false,
+  "selected_text_contains_run_id": false,
+  "selected_text_contains_end_marker": false,
+  "capture_mismatch": false,
+  "decision": "capture_failed_no_run_id_match"
+}

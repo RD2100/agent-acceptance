@@ -1,0 +1,45 @@
+{
+  "verify": {
+    "valid": true,
+    "overall_judgment": "accepted_with_limitation",
+    "errors": [],
+    "checks": {
+      "has_end_marker": true,
+      "overall_judgment": "accepted_with_limitation",
+      "evidence_pack_reviewed": true,
+      "task_id_in_reply": "HANDOFF-PIPELINE-REFACTOR-A1",
+      "task_id_matches": true,
+      "has_next_task_auth": true
+    },
+    "sha256": "c141a878b1d8d55bac2692581a6d9d9e...",
+    "size": 1175,
+    "verdict_allowed": true,
+    "source": "captured_gpt_response",
+    "task_id": "HANDOFF-PIPELINE-REFACTOR-A1"
+  },
+  "closure_ready": {
+    "closure_ready": true,
+    "reason": "GPT accepted_with_limitation",
+    "verdict": {
+      "valid": true,
+      "overall_judgment": "accepted_with_limitation",
+      "errors": [],
+      "checks": {
+        "has_end_marker": true,
+        "overall_judgment": "accepted_with_limitation",
+        "evidence_pack_reviewed": true,
+        "task_id_in_reply": "HANDOFF-PIPELINE-REFACTOR-A1",
+        "task_id_matches": true,
+        "has_next_task_auth": true
+      },
+      "sha256": "c141a878b1d8d55bac2692581a6d9d9e...",
+      "size": 1175,
+      "verdict_allowed": true,
+      "source": "captured_gpt_response"
+    }
+  }
+}
+
+GUARD OK: GPT reply for HANDOFF-PIPELINE-REFACTOR-A1 is valid.
+Verdict: accepted_with_limitation
+Closure ready: True

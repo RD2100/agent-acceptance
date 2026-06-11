@@ -1,0 +1,547 @@
+下面给出一个10 项目规模的分阶段推进计划。核心原则是：不要一上来直接 10 个项目全量并发，而是先把 10 项目的注册、隔离、资源、路由、人工门禁跑通，再逐步扩展真实 GPT 绑定和并发执行。
+
+AWSP 10 项目多 Agent / 多 GPT 扩展路线图
+总体判断
+
+当前已经可以进入 10 项目扩展准备阶段，但不建议马上进入 10 个项目同时真实执行。
+
+更稳妥的路径是：
+
+阶段 0：冻结当前双端口 smoke 结论
+阶段 1：10 项目 registry / scaffold 批量初始化
+阶段 2：10 端口 CDP lazy-launch 能力验证
+阶段 3：逐个绑定真实 GPT conversation
+阶段 4：2 → 4 → 6 → 10 项目递增式并发 smoke
+阶段 5：受控真实 GPT review dispatch
+阶段 6：正式进入多项目并行开发模式
+一、哪些 acceptance 先做，哪些可以后做
+必须优先做的 acceptance
+A1. MULTI-PROJECT-REGISTRY-BATCH-INIT-A1
+
+目标：一次性为 10 个项目生成 registry、端口、profile、binding scaffold。
+
+需要验证：
+
+10 个 project_id 唯一
+10 个 agent_id 唯一
+10 个 CDP port 唯一：9222-9231
+10 个 profile_dir 唯一
+10 个 CONVERSATION_BINDING.json 存在
+所有项目 binding schema validation 通过
+所有 pending_manual_binding 不伪装 active
+
+意义：
+先把 10 项目的“身份证”和“隔离槽位”建立起来。
+
+A2. MULTI-CDP-LAZY-LAUNCH-A1
+
+目标：不要一次性启动 10 个 Chrome，而是实现按需启动和健康检查。
+
+需要验证：
+
+未使用项目不启动 Chrome
+请求某项目时才启动对应端口
+端口被占用时 fail-closed
+profile 已存在时复用
+Chrome 崩溃时标记 stale，不自动伪装 active
+
+意义：
+避免一开始就消耗大量内存和 CPU。
+
+A3. MULTI-PROJECT-ROUTER-10-PROJECT-A1
+
+目标：router 能解析 10 个项目，并检测端口、profile、conversation 冲突。
+
+需要验证：
+
+resolve-all 能处理 10 个项目
+verify-isolation 能检测 port collision
+verify-isolation 能检测 profile collision
+verify-isolation 能检测 conversation collision
+unresolved project 不计入 active isolation
+
+意义：
+保证规模上来后不会串项目。
+
+A4. MULTI-PROJECT-REAL-GPT-BINDING-INCREMENTAL-A1
+
+目标：不要一次性绑定 10 个 GPT 对话，而是逐个绑定真实 conversation。
+
+推荐顺序：
+
+先 2 个真实 GPT conversation
+再 4 个
+再 6 个
+最后 10 个
+
+意义：
+真实 GPT conversation 绑定涉及浏览器、登录态、页面、CDP、capture，风险最高，必须逐步做。
+
+A5. MULTI-PROJECT-GATE0-PREFLIGHT-10-A1
+
+目标：为 10 项目生成统一 Gate0 preflight。
+
+Gate0 不要求所有项目都 active，但必须如实分类：
+
+active
+pending_manual_binding
+stale
+blocked
+human_required
+
+意义：
+让系统知道哪些项目能跑，哪些项目还不能跑。
+
+可以后做的 acceptance
+B1. 自动消息发送 / 自动 GPT dispatch
+
+这个必须后做。当前阶段只应支持：
+
+dry-run dispatch packet
+capture dry-run
+manual submit
+human-gated send
+
+不应马上允许自动向 GPT 发消息。
+
+B2. Chrome crash auto-restart
+
+可以后做。早期只需要：
+
+detect stale
+mark unhealthy
+require relaunch
+
+不要自动重启，避免误操作。
+
+B3. 分布式 registry sync
+
+可以后做。当前本地 10 项目只需要 local registry。
+
+B4. 大规模并行执行调度器
+
+后做。先完成 2、4、6、10 的 smoke 和门禁。
+
+二、资源管理策略：10 个 Chrome 实例
+
+10 个 Chrome 实例会有明显资源压力。粗略估计：
+
+单个 Chrome CDP 实例：约 300MB-1.5GB 内存，视页面数量和扩展而定
+10 个实例：可能 3GB-15GB+
+CPU：空闲较低，但页面加载、GPT 响应、capture 时会有突增
+磁盘：每个 profile 会逐渐膨胀，需要定期清理
+
+因此不建议默认全开。
+
+推荐策略：Lazy Launch + Active Pool
+
+采用三层状态：
+
+registered：项目已注册，但 Chrome 未启动
+warm：Chrome 已启动，但未进入 GPT review
+active：正在执行 GPT review / capture
+
+推荐限制：
+
+最大同时 active：2-3 个
+最大 warm：4 个
+其余 registered
+
+这样 10 个项目可以都注册，但不同时吃满资源。
+
+三、lazy-launch 还是全部预启动？
+
+建议：默认 lazy-launch，不要全部预启动。
+
+不建议全部预启动的原因
+1. 10 个 Chrome 实例资源消耗大；
+2. 登录态、页面状态、CDP 连接容易 stale；
+3. 多个 ChatGPT 页面同时打开容易增加 capture 混乱；
+4. 崩溃和超时排查成本高；
+5. 当前还没有自动重启和健康恢复机制。
+推荐 lazy-launch 策略
+
+当项目进入任务时：
+
+1. router resolve project_id
+2. 如果 cdp inactive，则 launcher 启动该项目 Chrome
+3. 等待 /json/version 可用
+4. 检查 profile_dir
+5. 检查 ChatGPT conversation 是否存在
+6. 生成 health record
+7. 允许进入 pre-GPT gate
+
+如果项目长时间空闲：
+
+可以先不自动关闭；
+后续再做 idle shutdown；
+当前阶段只做 stale detection。
+四、批量初始化 vs 逐个接入 GPT 对话
+
+优先级应该是：
+
+先批量初始化 10 个项目
+再逐个接入 GPT 对话
+
+原因是：
+
+批量初始化风险低，主要是文件、registry、schema、端口、profile 规划。
+逐个接入 GPT 对话风险高，涉及真实浏览器状态和人工确认。
+
+推荐流程
+第一步：批量初始化
+生成 10 个 project entries
+生成 10 个 agent entries
+分配端口 9222-9231
+分配 profile_dir
+生成 CONVERSATION_BINDING.json
+全部标记 pending_manual_binding
+运行 schema validation
+运行 isolation dry-run
+第二步：逐个接入 GPT 对话
+
+每个项目单独做：
+
+打开对应 CDP Chrome
+人工创建或打开 ChatGPT conversation
+写入真实 chat_url / conversation_id
+验证 /json 页面列表包含该 URL
+binding_status 从 pending_manual_binding 改为 active
+重新运行 router resolve
+重新运行 verify-isolation
+五、哪些步骤可以自动化，哪些必须 human-gated
+可以自动化的步骤
+生成 PROJECT_REGISTRY.json
+生成每个项目 .agent/CONVERSATION_BINDING.json
+分配端口 9222-9231
+创建 profile_dir
+启动 Chrome CDP 实例
+检查 /json/version
+检查端口唯一性
+检查 profile 唯一性
+检查 conversation_id 唯一性
+生成 dispatch packet
+运行 router resolve-all
+运行 verify-isolation
+生成 Gate0 preflight
+生成 evidence pack
+运行本地测试
+必须 human-gated 的步骤
+创建真实 GPT conversation
+确认 chat_url 对应正确项目
+把 pending_manual_binding 改成 active
+允许真实 GPT message dispatch
+允许跨项目同时发送 GPT review prompt
+允许 external runtime 执行
+允许 opencode dispatch 从 proposed 变 executable
+允许 paper-workflow 真实探测
+关闭或清理 Chrome profile
+删除 registry entry
+绝不能自动做的步骤
+伪造 conversation_id
+伪造 chat_url
+把没有 GPT 页面验证的 binding 标成 active
+用最后一个 ChatGPT 页面当目标 conversation
+多个项目共享同一个 conversation
+绕过 Gate0 直接 dispatch
+六、建议 acceptance 路线图
+Phase 0：冻结当前成果
+MULTI-PROJECT-ISOLATION-BASELINE-FREEZE-A1
+
+目标：冻结当前已通过成果。
+
+依赖：
+
+MULTI-PROJECT-ISOLATION-A1 accepted_with_limitation
+MULTI-PROJECT-ISOLATION-REAL-CDP-SMOKE-A1 accepted_with_limitation
+
+交付：
+
+BASELINE_REPORT.md
+CURRENT_LIMITATIONS.md
+NEXT_ACCEPTANCE_PLAN.md
+
+通过标准：
+
+明确当前只证明双端口 CDP 隔离；
+不声称已完成 10 项目真实 GPT 执行；
+不声称 Project B 已有真实 GPT conversation。
+Phase 1：10 项目批量注册
+MULTI-PROJECT-REGISTRY-BATCH-INIT-A1
+
+目标：建立 10 项目 registry scaffold。
+
+依赖：
+
+BASELINE-FREEZE-A1
+
+交付：
+
+.agent/PROJECT_REGISTRY.json
+_reports/.../PROJECT_PORT_ALLOCATION.json
+_reports/.../PROFILE_ALLOCATION.json
+_reports/.../BATCH_INIT_REPORT.md
+
+通过标准：
+
+10 project_id unique
+10 agent_id unique
+10 ports unique: 9222-9231
+10 profile_dir unique
+all bindings pending_manual_binding
+schema validation pass
+verify-isolation dry-run pass
+
+建议 verdict：accepted_with_limitation。
+
+Phase 2：Lazy Launch 能力
+MULTI-CDP-LAZY-LAUNCH-A1
+
+目标：实现按需启动 CDP。
+
+依赖：
+
+REGISTRY-BATCH-INIT-A1
+
+交付：
+
+multi_cdp_launcher lazy-launch mode
+health check
+stale detection
+no auto-dispatch
+tests
+
+通过标准：
+
+registered project 不自动启动
+请求 project 才启动对应端口
+端口占用 fail-closed
+启动后 /json/version pass
+profile_dir 正确
+Phase 3：10 项目 router 和 isolation stress
+MULTI-PROJECT-ROUTER-10-PROJECT-STRESS-A1
+
+目标：验证 router 能处理 10 项目。
+
+依赖：
+
+REGISTRY-BATCH-INIT-A1
+MULTI-CDP-LAZY-LAUNCH-A1
+
+交付：
+
+resolve-all 10 projects
+verify-isolation 10 projects
+collision tests
+unresolved handling
+
+通过标准：
+
+10 project registry can be loaded
+active / pending / stale 分类正确
+port collision detected
+profile collision detected
+conversation collision detected
+unresolved skipped but reported
+Phase 4：真实 GPT conversation 逐步绑定
+MULTI-PROJECT-REAL-GPT-BINDING-2-A1
+
+目标：先完成 2 个真实 GPT conversation。
+
+依赖：
+
+ROUTER-10-PROJECT-STRESS-A1
+
+通过标准：
+
+2 projects active
+2 real chat_url
+2 real conversation_id
+2 CDP page lists contain exact URLs
+isolation pass
+no dispatch sent
+MULTI-PROJECT-REAL-GPT-BINDING-4-A1
+
+目标：扩展到 4 个真实 GPT conversation。
+
+依赖：
+
+REAL-GPT-BINDING-2-A1
+
+通过标准：
+
+4 active projects
+4 distinct ports
+4 distinct profiles
+4 distinct conversation_id
+verify-isolation pass
+MULTI-PROJECT-REAL-GPT-BINDING-10-A1
+
+目标：扩展到 10 个真实 GPT conversation。
+
+依赖：
+
+REAL-GPT-BINDING-4-A1
+
+通过标准：
+
+10 active projects
+10 ports 9222-9231
+10 profiles
+10 conversation_id
+all CDP page lists verified
+Gate0 active binding pass
+
+这一步可以很慢，不必一次完成。可以按 2 → 4 → 6 → 8 → 10。
+
+Phase 5：Gate0 全量预检
+MULTI-PROJECT-GATE0-PREFLIGHT-10-A1
+
+目标：10 项目进入统一 preflight。
+
+依赖：
+
+REAL-GPT-BINDING-10-A1
+
+通过标准：
+
+all project bindings valid
+all CDP endpoints active or correctly marked stale
+all active projects have real ChatGPT page
+no conversation collision
+no profile collision
+no port collision
+no active project pending manual binding
+external runtime remains human-gated
+
+如果仍有 pending 项目，也可以 accepted_with_limitation，但不能进入 full dispatch。
+
+Phase 6：受控 dry-run dispatch
+MULTI-PROJECT-GPT-REVIEW-DRY-RUN-10-A1
+
+目标：构建 10 个 dispatch packet，但不发送。
+
+依赖：
+
+GATE0-PREFLIGHT-10-A1
+
+通过标准：
+
+10 dispatch packets generated
+each packet bound to project_id / agent_id / run_id / chat_url
+no packet sent
+capture policy preserved
+pre-GPT gate pass
+Phase 7：小规模真实 GPT review dispatch
+MULTI-PROJECT-GPT-REVIEW-LIVE-2-A1
+
+目标：只对 2 个项目做真实 GPT review 发送。
+
+依赖：
+
+GPT-REVIEW-DRY-RUN-10-A1
+human approval
+
+必须 human-gated。
+
+通过标准：
+
+2 prompts sent to 2 distinct GPT conversations
+2 replies captured from correct chat_url
+run_id + task_id + END marker matched
+no cross-capture
+verify_gpt_reply pass
+Phase 8：正式多项目并行模式
+MULTI-PROJECT-GPT-REVIEW-LIVE-10-A1
+
+目标：10 项目受控并行 GPT review。
+
+依赖：
+
+LIVE-2-A1
+LIVE-4-A1
+resource monitoring pass
+human approval
+
+通过标准：
+
+10 active project conversations
+bounded concurrency
+no cross-capture
+all replies verified
+all evidence packs bound to correct project
+七、资源策略建议
+推荐默认值
+registered projects: 10
+warm Chrome instances: max 3-4
+active GPT review sessions: max 2
+ports: 9222-9231
+profile root: _cdp_profiles/<project_id>
+建议加一个资源配置文件
+JSON
+{
+  "schema_version": "1.0.0",
+  "max_registered_projects": 10,
+  "max_warm_cdp_instances": 4,
+  "max_active_gpt_reviews": 2,
+  "base_port": 9222,
+  "port_range": [9222, 9231],
+  "lazy_launch": true,
+  "auto_restart": false,
+  "idle_shutdown_enabled": false,
+  "require_human_for_live_dispatch": true
+}
+
+文件建议：
+
+.agent/MULTI_PROJECT_RESOURCE_POLICY.json
+八、当前最建议的下一步任务
+
+最应该马上发布的是：
+
+MULTI-PROJECT-REGISTRY-BATCH-INIT-A1
+
+原因：
+
+1. 它风险最低；
+2. 不需要真实 GPT dispatch；
+3. 不需要一次性开 10 个 Chrome；
+4. 可以先把 10 项目的身份、端口、profile、binding 全部规划好；
+5. 是后续 lazy-launch、router stress、real GPT binding 的基础。
+
+推荐任务目标：
+
+为 10 个项目生成 PROJECT_REGISTRY、端口分配、profile 分配、CONVERSATION_BINDING scaffold；
+全部初始为 pending_manual_binding；
+运行 schema validation 和 isolation dry-run；
+不启动 10 个 Chrome；
+不发送 GPT 消息。
+九、整体结论
+
+现在不应该直接进入：
+
+10 个项目全 active
+10 个 Chrome 全开
+10 个 GPT conversation 同时发消息
+
+而应该进入：
+
+10 项目 registry-first 扩展
+lazy-launch
+逐个 GPT conversation 绑定
+2→4→10 递增式并发验证
+
+最稳妥路线是：
+
+MULTI-PROJECT-REGISTRY-BATCH-INIT-A1
+→ MULTI-CDP-LAZY-LAUNCH-A1
+→ MULTI-PROJECT-ROUTER-10-PROJECT-STRESS-A1
+→ MULTI-PROJECT-REAL-GPT-BINDING-2-A1
+→ MULTI-PROJECT-REAL-GPT-BINDING-4-A1
+→ MULTI-PROJECT-REAL-GPT-BINDING-10-A1
+→ MULTI-PROJECT-GPT-REVIEW-DRY-RUN-10-A1
+→ MULTI-PROJECT-GPT-REVIEW-LIVE-2-A1
+→ MULTI-PROJECT-GPT-REVIEW-LIVE-10-A1
+
+一句话：
+可以朝 10 项目并行推进，但要先 registry-first、lazy-launch、human-gated binding，再逐步扩大真实 GPT conversation 数量。不要直接全量并发。

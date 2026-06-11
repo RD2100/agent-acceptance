@@ -1,0 +1,78 @@
+severity_issues: []
+
+remaining_nonblocking_issues:
+
+id: M11-P2-01
+severity: P2
+status: accepted_limitation
+issue: "四维定义已成立，但部分术语需进一步学术化"
+detail: >
+“研究型—应用型—技能型”作为对象维度可以保留，但在高等教育语境中建议进一步规范为
+“研究型高校、应用型高校、高等职业院校或技能型人才培养机构”，避免“技能型”表述过粗。
+
+id: M11-P2-02
+severity: P2
+status: accepted_limitation
+issue: "案例仍需后续核验"
+detail: >
+“每个维度 1 个案例”的设计合理，但当前尚未给出具体案例来源。后续需要补入真实、可检索、
+与维度直接匹配的政策、拨款模式或高校实践案例，不能保留占位。
+
+id: M11-P2-03
+severity: P2
+status: accepted_limitation
+issue: "精准供给不能被写成单纯技术治理"
+detail: >
+精准供给的四维操作化很有价值，但正文中要说明其服务于普惠与卓越的资源平衡，
+而不是把资源配置问题简化为拨款技术或绩效管理。
+
+verdict: pass_with_limitation
+
+close_module: true
+
+p1_resolution:
+M11-P1-01:
+status: resolved
+reason: >
+已将“精准供给”操作化为对象、领域、时机、方式四个维度，回应了“精准什么、
+如何精准、精准到什么程度”的核心问题。
+
+M11-P1-02:
+status: resolved
+reason: >
+已明确 M11 对 M7 的回应关系：精准供给不是放弃普惠，而是在普惠基础上针对卓越需求进行靶向支持。
+这能够把 M7 的普惠/卓越悖论转化为 M11 的资源配置方案。
+
+M11-P1-03:
+status: resolved
+reason: >
+已隐含建立基础保障与择优支持的边界：经常性、公式拨款更接近基础保障；
+竞争性、绩效拨款更接近择优支持；对象和领域维度则说明资源配置如何差异化。
+
+module_closure_decision:
+module_id: M11
+status: closed_as_pass_with_limitation
+reason: >
+Round 3 已经从“精准供给”概念占位推进到四维操作化，并且明确回应了 M7 的普惠与卓越悖论，
+同时自然过渡到 M12 的分类评价制度。核心 P1 已解决，可以关闭模块。
+但具体案例、引用和术语规范仍需后续人工补充与 citation/evidence QA。
+
+approved_revision_structure:
+unit_1: "精准供给四维定义：对象维度、领域维度、时机维度、方式维度。"
+unit_2: "资源平衡机制：在普惠底线基础上，通过精准靶向回应卓越发展需求。"
+unit_3: "过渡 M12：资源精准配置需要分类评价制度作为支撑。"
+
+required_follow_up:
+
+"为四个维度各补充一个真实可核验案例。"
+
+"补充拨款模式、资源配置、分类支持相关文献。"
+
+"规范‘技能型’等术语。"
+
+"避免把精准供给写成纯技术化资源分配。"
+
+next_action:
+recommended: "同步 M11 closure 到 Project Index；M10 标记为 human_required；继续推进 M12 Round 3 或先做 Section 3 状态汇总。"
+
+END_OF_GPT_RESPONSE

@@ -1,0 +1,56 @@
+{
+  "run_id": "UNIVERSAL_AGENT_WORKFLOW_STANDARD_CONVERSATION_REGISTRY_A1_20260609T172643_RD",
+  "task_id": "UNIVERSAL-AGENT-WORKFLOW-STANDARD-CONVERSATION-REGISTRY-A1",
+  "scenario": "A",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\universal-agent-workflow-standard-conversation-registry-a1\\UNIVERSAL_AGENT_WORKFLOW_STANDARD_CONVERSATION_REGISTRY_A1_20260609T172643_RD.zip",
+  "pack_exists": true,
+  "pack_size": 41044,
+  "pack_sha256": "69321e1bb114a5ecaf87c48f66726622094a77e47bf3b7335d83dd8b196b5946",
+  "prompt_chars": 5687,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T17:32:12",
+  "reply_chars": 4077,
+  "reply_sha256": "7fb076f3f1512df7b6318ca489291661f2bfbfe26f9954058c436ad91acc9248",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "fail",
+  "capture_reconciliation": {
+    "target_run_id": "UNIVERSAL_AGENT_WORKFLOW_STANDARD_CONVERSATION_REGISTRY_A1_20260609T172643_RD",
+    "target_task_id": "UNIVERSAL-AGENT-WORKFLOW-STANDARD-CONVERSATION-REGISTRY-A1",
+    "before_user_count": 58,
+    "before_assistant_count": 67,
+    "after_user_count": 59,
+    "after_assistant_count": 69,
+    "candidate_indices": [
+      68
+    ],
+    "selected_index": 68,
+    "last_index": 68,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\universal-agent-workflow-standard-conversation-registry-a1\\GPT_REVIEW_RESULT.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\universal-agent-workflow-standard-conversation-registry-a1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "D:\\agent-acceptance\\_reports\\universal-agent-workflow-standard-conversation-registry-a1\\GPT_CAPTURE_RECONCILIATION.json"
+}

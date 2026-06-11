@@ -1,0 +1,17 @@
+{
+  "target_run_id": "STARTUP_READ_GATE_STRICT_HASH_TASKID_A1_REVIEW_20260609T122058_RD",
+  "target_task_id": "STARTUP-READ-GATE-STRICT-HASH-TASKID-A1",
+  "before_user_count": 21,
+  "before_assistant_count": 15,
+  "after_user_count": 22,
+  "after_assistant_count": 16,
+  "candidate_indices": [15],
+  "selected_index": 15,
+  "last_index": 15,
+  "last_text_contains_run_id": true,
+  "selected_text_contains_run_id": true,
+  "selected_text_contains_end_marker": true,
+  "capture_mismatch": false,
+  "decision": "manual_recapture_after_auto_timeout",
+  "note": "Auto capture timed out waiting for run_id match (reply stable but no run_id in inner_text). Manual re-capture via text_content() succeeded. Run_id in reply uses prompt timestamp (T121957) vs pack timestamp (T122058)."
+}

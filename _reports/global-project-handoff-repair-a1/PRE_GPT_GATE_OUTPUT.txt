@@ -1,0 +1,21 @@
+=== evidence_pack_linter ===
+{
+  "valid": true,
+  "errors": [],
+  "warnings": [],
+  "summary_only_risk": "none",
+  "recommendation": "ready for GPT submission"
+}
+LINTER_EXIT=0
+=== pre_gpt_review_gate ===
+{
+  "gate_passed": true,
+  "errors": [],
+  "warnings": [],
+  "extra_checks": {
+    "deliverable_count": 13,
+    "has_sha256_entries": true
+  },
+  "recommendation": "READY for GPT submission"
+}
+GATE_EXIT=0

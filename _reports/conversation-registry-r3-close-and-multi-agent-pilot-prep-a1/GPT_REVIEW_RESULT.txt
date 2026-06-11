@@ -1,0 +1,29 @@
+overall_judgment: accepted_with_limitation
+run_id: CONVERSATION_REGISTRY_R3_CLOSE_AND_MULTI_AGENT_PILOT_PREP_A1_20260609T191900_RD
+findings:
+
+R3 已实质性修复 R2 的核心 blocker：validate_conversation_registry.py 中 AWSP_VERSION 已统一为 1.3.0，并且开始使用 Draft202012Validator.check_schema() 与 Draft202012Validator(schema).iter_errors(data) 对 CONVERSATION_BINDING.json 执行真实 JSON Schema validation，不再只是“手写字段检查 + 部分 schema 引用”。
+
+CONVERSATION_REGISTRY.schema.json 已具备标准 JSON Schema 结构，包含 $schema、type、required、properties、enum、const、if/then、items 等关键要素；schema 已覆盖顶层字段、bindings 数组、role 枚举、binding_status 枚举、capture_policy 四个 true 常量字段，以及 active binding 必须具备 chat_url 或 conversation_id 的规则。
+
+CONVERSATION_BINDING.json 模板与 schema 已基本对齐：包含 schema_version、awsp_version、project_id、project_root、default_conversation_policy、governance_scope、bindings；binding entry 已包含 agent_id、role、binding_status、capture_policy，并默认使用 pending_manual_binding，未伪造 active conversation。
+
+active / pending_manual_binding 策略已经合理化：fresh scaffold 默认 pending_manual_binding，允许无 chat_url / conversation_id；active binding 则通过 schema if/then 要求 chat_url 或 conversation_id 至少一个非空。这符合“不伪造 GPT conversation”的安全边界。
+
+validate_scaffold() 已接入 validate_conversation_registry.validate_binding()，会把 CONVERSATION_BINDING validation errors 上抛为 scaffold validation errors，说明 conversation registry 校验已经进入 scaffold 验证链路。
+
+REAL_PATH_PROBE 显示 fresh scaffold 的 validate_binding 返回 valid=true、schema_validated=true、schema_validation_errors=0、active_count=0、pending_count=1，说明 fresh scaffold 至少在清洁路径下能够通过真实 schema validation。
+
+测试覆盖显著增强：R2/R3 新增测试覆盖 missing role、invalid role、四种 valid role、schema loaded、schema required field missing、schema enum violation、missing schema fail-closed、schema corrupted、capture_policy const violation、fresh scaffold schema validation、top-level missing project_id/default_policy、bindings not array、active binding without URL、external runtime governance scope、multi-agent pilot plan 等关键路径。
+
+MULTI_AGENT_MULTI_GPT_PILOT_PLAN 已纳入测试关注点，包括禁止 last-message-only capture、要求 one_agent_one_conversation、missing chat_url 标记为 pending_manual_binding、runtime governance preflight，说明已经具备进入受控 pilot 的规划基础。
+
+limitation: 当前证据以两段粘贴的关键代码和测试摘要为主，未同时呈现完整 PACK_MANIFEST、FULL_SUITE_OUTPUT、CHANGED_FILES_EVIDENCE、SAFETY_ATTESTATION 和完整 ZIP 文件清单；因此可以判定核心 R3 修复通过，但仍保留 evidence-pack 完整性 limitation。
+
+limitation: Part 2 只明确给出 TARGET_TEST_OUTPUT.txt 为 129 passed，未提供 full suite 原始输出；因此不能独立确认 full suite 全量通过。
+
+limitation: schema 对部分字段仍可进一步收紧，例如 bindings.items 中 agent_id 若未在 properties 中定义类型/最小长度，则主要依赖额外手写校验；external_runtimes.items 也应显式声明 type: object，以避免非 object item 在 JSON Schema 层面漏过 required 检查。
+
+limitation: governance_scope 和 external runtime governance 已进入 schema，但仍属于 pilot/preflight 层，尚未证明真实多 agent / 多 GPT conversation 的 chat_url、browser profile、CDP session 已被创建和绑定。
+next_task_authorization: MULTI-AGENT-MULTI-GPT-PILOT-A1
+---END_OF_GPT_RESPONSE---

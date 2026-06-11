@@ -1,0 +1,54 @@
+{
+  "run_id": "STARTUP_READ_GATE_STRICT_HASH_TASKID_A1_REVIEW_20260609T122058_RD",
+  "task_id": "STARTUP-READ-GATE-STRICT-HASH-TASKID-A1",
+  "scenario": "A",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\startup-read-gate-strict-hash-taskid-a1\\STARTUP_READ_GATE_STRICT_HASH_TASKID_A1_20260609T122058_RD.zip",
+  "pack_exists": true,
+  "pack_size": 17575,
+  "pack_sha256": "11b9178f5fec2cd31814cc949e11d9b420d9844c6d28b8b38271374850e92f9a",
+  "prompt_chars": 1544,
+  "dry_run": false,
+  "sent": true,
+  "captured": false,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T12:21:22",
+  "reply_chars": 0,
+  "reply_sha256": null,
+  "run_id_match": false,
+  "has_end_marker": false,
+  "has_overall_judgment": false,
+  "parsed_overall_judgment": null,
+  "capture_reconciliation": {
+    "target_run_id": "STARTUP_READ_GATE_STRICT_HASH_TASKID_A1_REVIEW_20260609T122058_RD",
+    "target_task_id": "STARTUP-READ-GATE-STRICT-HASH-TASKID-A1",
+    "before_user_count": 21,
+    "before_assistant_count": 15,
+    "after_user_count": 22,
+    "after_assistant_count": 16,
+    "candidate_indices": [],
+    "selected_index": null,
+    "last_index": 15,
+    "last_text_contains_run_id": false,
+    "selected_text_contains_run_id": false,
+    "selected_text_contains_end_marker": false,
+    "capture_mismatch": false,
+    "decision": "capture_failed_no_run_id_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\startup-read-gate-strict-hash-taskid-a1\\GPT_REVIEW_RESULT_R1.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\startup-read-gate-strict-hash-taskid-a1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "D:\\agent-acceptance\\_reports\\startup-read-gate-strict-hash-taskid-a1\\GPT_CAPTURE_RECONCILIATION.json"
+}

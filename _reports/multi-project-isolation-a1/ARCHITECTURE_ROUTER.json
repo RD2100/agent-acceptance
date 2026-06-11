@@ -1,0 +1,49 @@
+{
+  "module": "multi_project_router.py",
+  "functions": [
+    {
+      "name": "load_registry",
+      "purpose": "Load global PROJECT_REGISTRY.json",
+      "tested": true
+    },
+    {
+      "name": "load_binding",
+      "purpose": "Load per-project CONVERSATION_BINDING.json",
+      "tested": true
+    },
+    {
+      "name": "resolve_target",
+      "purpose": "Resolve dispatch target for a project_id",
+      "tested": true,
+      "params": ["project_id", "project_root"],
+      "returns": "dict with cdp_endpoint, conversation_id, chat_url, agent_id, agent_role, cdp_active",
+      "error_cases": ["project_not_found", "binding_not_found", "no_active_agent"]
+    },
+    {
+      "name": "resolve_all",
+      "purpose": "Resolve targets for all registered projects",
+      "tested": true
+    },
+    {
+      "name": "build_dispatch_packet",
+      "purpose": "Package resolved target + task_spec + message for CDP delivery",
+      "tested": true,
+      "returns": "dict with dispatchable=true/false + all routing info"
+    },
+    {
+      "name": "verify_isolation",
+      "purpose": "Verify port/conversation/profile uniqueness across projects",
+      "tested": true,
+      "checks": ["port_collision", "conversation_collision", "profile_collision"],
+      "returns": "dict with isolated=true/false, unique_ports, unique_conversations, unique_profiles, issues[]"
+    }
+  ],
+  "cli_commands": ["resolve", "resolve-all", "verify-isolation"],
+  "dispatch_flow": [
+    "1. load_registry() → get all projects",
+    "2. resolve_target(project_id) → registry lookup + binding read + CDP check",
+    "3. build_dispatch_packet(target, task_spec, message) → package for delivery",
+    "4. verify_isolation(all_targets) → enforce no cross-project interference",
+    "5. Per-project submission script delivers via CDP"
+  ]
+}

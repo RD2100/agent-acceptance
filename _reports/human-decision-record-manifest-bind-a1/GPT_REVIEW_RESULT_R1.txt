@@ -1,0 +1,36 @@
+verdict: blocked
+run_id: HUMAN_DECISION_RECORD_MANIFEST_BIND_A1_20260609T215000_RD
+findings:
+
+
+create_record() 已在创建阶段拒绝空 task_id、空白 task_id 与 None task_id，相关 TestTaskIdValidation 覆盖了 3 个主要输入错误场景。
+
+
+validate_record() 已新增 manifest_binding 字段，并能检测 evidence_files 中是否包含 PACK_MANIFEST 字样，TestManifestBinding 覆盖了 included / not included 两种路径。
+
+
+repo_root 参数在 state_machine_runtime.py 的 T10 guard 链路中仍保持传递，未发现本轮破坏 T10 repo_root propagation 的问题。
+
+
+blocking: manifest_binding 当前只是报告字段，不参与 valid 判定；当 evidence_files 不包含 PACK_MANIFEST.md 时，validate_record() 仍可能返回 valid=true，这不符合本任务“manifest binding verification”和审查标准中的 fail-closed 要求。
+
+
+blocking: TestManifestBinding.test_manifest_not_included_warning 将缺少 PACK_MANIFEST 固化为 warning 行为，而不是失败行为；这会允许 human_required 决策记录缺少 PACK_MANIFEST 仍通过 T10 验证。
+
+
+required_fix: validate_record() 应在 evidence_files 不包含 PACK_MANIFEST.md 时加入错误并使 valid=false，除非显式设计了兼容模式；当前任务目标下应默认 fail-closed。
+
+
+required_fix: 将 test_manifest_not_included_warning 改为负向测试，断言 missing PACK_MANIFEST causes validation failure。
+
+
+limitation: manifest check 当前只做字符串包含 PACK_MANIFEST 的检测，尚未验证该 PACK_MANIFEST 文件真实存在、是否 hash-bound、是否与 evidence_hashes 或 evidence pack 内容一致。
+
+
+limitation: hash binding 仍未检测 evidence_hashes 中存在但 evidence_files 中缺失的多余 hash entry。
+
+
+limitation: PACK_MANIFEST 已将自身列为 manifest row，这较前几轮有所改善；但 pack run_id / 文件名时间戳与审查 prompt run_id 仍存在差异。
+next_task_authorization: HUMAN-DECISION-RECORD-MANIFEST-BIND-A1-R2
+---END_OF_GPT_RESPONSE---
+

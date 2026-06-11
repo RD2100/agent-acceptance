@@ -1,0 +1,20 @@
+{
+  "run_id": "MISREPORT_ANALYSIS_20260608_231014_HO3ZMD",
+  "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "editor_chars": 978,
+  "editor_has_run_id": true,
+  "click": {
+    "ok": true,
+    "count": 1,
+    "x": 1145,
+    "y": 1252,
+    "label": "发送提示",
+    "testid": "send-button",
+    "cls": "composer-submit-btn composer-submit-button-color h-9 w-9"
+  },
+  "sent_confirmed": false,
+  "after_user": 9,
+  "after_assistant": 13,
+  "status": "manual_required",
+  "reason": "send_not_confirmed_after_prompt_paste"
+}

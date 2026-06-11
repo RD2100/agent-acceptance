@@ -1,0 +1,86 @@
+severity_issues:
+
+id: M7-P1-02
+severity: P1
+status: accepted_with_limitation
+issue: "经费差距数据方向正确，但具体口径必须核验"
+detail: >
+Round 2 已把“普惠与卓越”的抽象悖论落到中央与地方高校经费差距，这是有效推进。
+但“2021-2024年中央1.02万亿vs地方2.76万亿”“部属高校生均经费远高于地方”
+这类数据必须进入 citation/evidence QA。当前不能把它视为已核验事实，只能作为待核验数据位。
+
+id: M7-P2-01
+severity: P2
+status: accepted_limitation
+issue: "普惠=生均拨款、卓越=竞争性经费略显简化"
+detail: >
+这个操作化定义有助于落地分析，但不能把普惠和卓越完全等同于两种经费机制。
+正文中应说明：生均拨款和竞争性经费只是二者在资源分配中的典型制度表现，
+而不是普惠/卓越的全部内涵。
+
+id: M7-P2-02
+severity: P2
+status: accepted_limitation
+issue: "结构性根源解释已成立，但需避免不可消解的绝对判断"
+detail: >
+“财政分权+分级管理+资源总量约束”能够解释张力根源。
+但“不可消解，只能动态平衡”表述偏强，建议改为“难以一次性消除，需要在制度安排中动态调适”。
+
+verdict: pass_with_limitation
+
+close_module: true
+
+p1_resolution:
+M7-P1-01:
+status: resolved
+reason: >
+已将“普惠”与“卓越”从抽象价值转化为高等教育资源配置中的制度安排：
+普惠侧重生均拨款与均等化分配，卓越侧重竞争性经费与择优支持。
+这解决了悖论机制不显性的问题。
+
+M7-P1-02:
+status: accepted_with_limitation
+reason: >
+已补充中央与地方高校经费差距作为现实表现，能够支撑资源分配悖论；
+但具体数据口径、年度范围和统计来源必须后续核验。
+
+M7-P1-03:
+status: resolved
+reason: >
+已把普惠与卓越的矛盾推进到结构性根源层面，说明财政分权、央地分级管理与资源稀缺
+如何共同造成普惠扩展和卓越建设之间的制度张力。
+
+M7-P1-04:
+status: resolved
+reason: >
+已明确从 M6 的公平/效率价值博弈过渡到 M7 的资源分配悖论，
+说明二者是同一问题在价值层面和资源配置层面的不同展开。
+
+module_closure_decision:
+module_id: M7
+status: closed_as_pass_with_limitation
+reason: >
+Round 2 已经实质性解决 M7 的主要 P1：普惠与卓越的机制被操作化，
+现实表现有了数据接口，结构性根源得到说明，并承接了 M6 的价值张力。
+因此 M7 可以关闭，但必须保留“经费数据与强判断需后续核验”的限制。
+
+approved_revision_structure:
+unit_1: "操作化界定：普惠与卓越分别通过生均拨款/均等化分配和竞争性经费/择优支持表现出来。"
+unit_2: "数据论证：以中央与地方高校经费差距说明优质资源配置中的结构性不均衡。"
+unit_3: "结构性根源：财政分权、分级管理和资源总量约束共同生成普惠与卓越张力。"
+unit_4: "过渡：资源配置张力进一步进入评价体系，转化为统一评价与分类评价的制度矛盾。"
+
+required_follow_up:
+
+"对中央与地方高校经费数据做 citation/evidence QA，核验统计来源、年度口径和可比性。"
+
+"正文中避免把普惠完全等同于生均拨款、卓越完全等同于竞争性经费。"
+
+"弱化‘不可消解’等绝对化表达。"
+
+"不得虚构经费数据或比较研究。"
+
+next_action:
+recommended: "同步 M7 closure 到 Project Index，然后继续推进 M8 Round 2。"
+
+END_OF_GPT_RESPONSE

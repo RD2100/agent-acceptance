@@ -1,0 +1,128 @@
+run_id: NEXT_AGENT_WORKFLOW_BOOTSTRAP_CONSENSUS_20260608_235000_RD
+task_id: NEXT-AGENT-WORKFLOW-BOOTSTRAP-CONSENSUS-A1
+overall_judgment: accepted_with_limitation
+consensus_reached: true
+recommended_mechanism: Repo-Backed Startup Read Gate
+reuse_components:
+
+HANDOFF_SOURCE_OF_TRUTH.md
+
+HANDOFF_APPROVAL_RECORD.json
+
+_reports/handoff-pipeline-refactor-a1/ATTACHMENT_BACKED_GPT_REVIEW_RUNBOOK.md
+
+scripts/verify_gpt_reply.py
+
+scripts/gpt_new_chat_attachment_submit.py
+
+scripts/pre_gpt_review_gate.py
+
+scripts/evidence_pack_linter.py
+
+_reports/global-project-handoff-repair-a1/GPT_REVIEW_RECORD.json
+
+_reports/global-project-handoff-repair-a1/VERIFY_GPT_REPLY_OUTPUT.txt
+
+_reports/global-project-handoff-repair-a1/PRE_GPT_GATE_OUTPUT.txt
+
+_reports/global-project-handoff-repair-a1/EXECUTION_REPORT.md
+
+_reports/global-project-handoff-repair-a1/PACK_MANIFEST.md
+
+_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_SOURCE_OF_TRUTH_MAP.json
+
+_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_STALE_CLAIMS_REGISTER.json
+
+_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_TEST_LEDGER.json
+
+_reports/global-project-evidence-binding-a1/GPT_REVIEW_RESULT.txt
+
+_reports/global-project-evidence-binding-a1/VERIFY_GPT_REPLY_OUTPUT.txt
+
+_reports/global-project-evidence-binding-a1/PACK_MANIFEST.md
+
+_reports/global-project-evidence-binding-a1/EXECUTION_REPORT.md
+
+_reports/global-project-evidence-binding-a1/CHANGED_FILES_EVIDENCE.json
+
+_reports/global-project-evidence-binding-a1/PROTECTED_LEGACY_FILES_STATUS.json
+
+_reports/global-project-evidence-binding-a1/SOURCE_MAP_EVIDENCE_BINDING_APPENDIX.json
+new_artifacts_if_any:
+
+_reports/next-agent-workflow-bootstrap-a1/NEXT_AGENT_STARTUP_READ_GATE.md
+
+_reports/next-agent-workflow-bootstrap-a1/NEXT_AGENT_REQUIRED_READS.json
+
+_reports/next-agent-workflow-bootstrap-a1/STARTUP_READ_PROOF_TEMPLATE.json
+
+_reports/next-agent-workflow-bootstrap-a1/IMPLEMENTATION_REPORT.md
+
+_reports/next-agent-workflow-bootstrap-a1/PACK_MANIFEST.md
+
+evidence_packs/next-agent-workflow-bootstrap-a1/NEXT_AGENT_WORKFLOW_BOOTSTRAP_IMPLEMENT_A1_<timestamp>.zip
+implementation_steps:
+
+Create a small repo-backed startup read gate that tells the next agent it must read the existing workflow files from D:/agent-acceptance before summarizing project status or executing tasks.
+
+Generate NEXT_AGENT_REQUIRED_READS.json listing required repo files, expected purpose, source-of-truth level, and whether each must be read at startup.
+
+Generate STARTUP_READ_PROOF_TEMPLATE.json requiring the next agent to record file path, existence, SHA256 or size, reviewed=true/false, and summary source before it may claim workflow understanding.
+
+Generate NEXT_AGENT_STARTUP_READ_GATE.md in Chinese, explicitly stating that conversation context and memory are insufficient unless reconciled with repo files.
+
+Reuse existing verifier, pre-GPT gate, evidence pack linter, runbook, GPT review records, and source-of-truth files rather than creating a new review system.
+
+Record that GLOBAL-PROJECT-EVIDENCE-BINDING-A1 is currently blocked and that R2 must fix HANDOFF_REPLY_V4.txt deletion/scope conflict, safety attestation conflict, and source ZIP embedding/manifest mismatch.
+
+Add implementation evidence only under _reports/next-agent-workflow-bootstrap-a1/ and evidence_packs/next-agent-workflow-bootstrap-a1/.
+
+Run only safe local checks, including file existence checks, SHA256/hash capture where appropriate, git status --short, and manifest validation.
+
+Package the implementation artifacts into a closure ZIP and prepare an attachment-backed GPT review request.
+
+After ready_for_gpt_review, submit GPT review with run_id binding and verify the GPT reply using scripts/verify_gpt_reply.py before reporting accepted/closed.
+human_required_steps:
+
+none
+risk_controls:
+
+Do not modify approved P1 handoff/paste/approval records unless a separate GPT-reviewed task authorizes it.
+
+Do not delete, move, rename, rewrite, restore, checkout, reset, clean, commit, or push any legacy or protected file.
+
+Treat HANDOFF_REPLY_V4.txt deletion evidence as unresolved until R2 provides P0 evidence or obtains human confirmation for any restore/scope action.
+
+Do not let conversation context, memory, or user paste override repo-backed P0/P1 evidence.
+
+Fail closed if required startup workflow files are missing or unreadable.
+
+Preserve accepted_with_limitation, blocked, partial, needs_more_evidence, and unverified semantics.
+acceptance_criteria:
+
+The implementation pack contains concrete required-read files and a startup proof template, not only generic workflow principles.
+
+The mechanism forces or strongly guides the next agent to read repo files before claiming project-state understanding.
+
+Existing workflow components are reused and cited by path.
+
+No legacy PROJECT_HISTORY / HANDOFF / PASTE_BLOCK files are deleted, moved, renamed, or rewritten.
+
+No dangerous git operations are performed.
+
+The pack includes PACK_MANIFEST, implementation report, git status evidence, required-read list, startup read gate, and closure ZIP.
+
+GPT review is submitted and verified before the mechanism is treated as accepted.
+limitations:
+
+This consensus plan does not itself implement the startup read gate; it authorizes a safe implementation task.
+
+The mechanism can strongly guide and evidence startup reading, but cannot fully prevent a future agent from ignoring instructions unless the harness or caller enforces it.
+
+Existing dirty worktree issues such as HANDOFF_REPLY_V4.txt remain out of scope for this bootstrap task and must be handled in GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2.
+next_task_authorization:
+task_id: NEXT-AGENT-WORKFLOW-BOOTSTRAP-IMPLEMENT-A1
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+END_OF_GPT_RESPONSE

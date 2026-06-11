@@ -1,12 +1,12 @@
 {
   "diagnosis": {
-    "section_name": "M4-协同推进-初轮",
+    "section_name": "一、高等教育提质扩容的必然逻辑",
     "paragraph_count": 1,
-    "total_chars": 1271,
+    "total_chars": 1246,
     "paragraph_diagnoses": [
       {
         "index": 1,
-        "char_count": 1217,
+        "char_count": 1180,
         "functions": [
           "opening",
           "overlong",
@@ -15,12 +15,12 @@
         ],
         "diagnosis": [
           "开场段落——应承担问题引入或背景铺垫功能",
-          "段落过长(1217字)——可能混合多个论点，建议拆分为2-3段",
+          "段落过长(1180字)——可能混合多个论点，建议拆分为2-3段",
           "引用密集(4处)——确认非简单堆砌",
-          "政策术语密度高(24次)——检查是否做了学理化转换"
+          "政策术语密度高(23次)——检查是否做了学理化转换"
         ],
         "citation_count": 4,
-        "policy_term_density": 24
+        "policy_term_density": 23
       }
     ],
     "function_distribution": {
@@ -32,18 +32,18 @@
     "structure_issues": [
       "段落过长问题突出：1/1段超过800字"
     ],
-    "summary": "本节共1段，总字数约1217字。结构问题：段落过长问题突出：1/1段超过800字论证功能分布：{\"opening\": 1, \"overlong\": 1, \"conclusion\": 1, \"citation_dense\": 1}。",
-    "analyzed_at": "2026-06-08T08:38:47.413178+00:00"
+    "summary": "本节共1段，总字数约1180字。结构问题：段落过长问题突出：1/1段超过800字论证功能分布：{\"opening\": 1, \"overlong\": 1, \"conclusion\": 1, \"citation_dense\": 1}。",
+    "analyzed_at": "2026-06-08T08:45:18.361033+00:00"
   },
   "strategy": {
     "task_id": "unknown",
-    "section_name": "M4-协同推进-初轮",
+    "section_name": "一、高等教育提质扩容的必然逻辑",
     "suggestions": [
       {
         "type": "compression",
         "target": "P1",
-        "current_chars": 1217,
-        "strategy": "该段1217字，建议压缩至608字以内。方法：提取1个核心论点，将支撑性论证移至脚注或附录",
+        "current_chars": 1180,
+        "strategy": "该段1180字，建议压缩至590字以内。方法：提取1个核心论点，将支撑性论证移至脚注或附录",
         "example": null
       },
       {
@@ -54,7 +54,7 @@
       }
     ],
     "suggestion_count": 2,
-    "generated_at": "2026-06-08T08:38:47.413178+00:00",
+    "generated_at": "2026-06-08T08:45:18.361033+00:00",
     "disclaimer": "仅提供修改策略和模板，不生成具体改写文本。用户需自行完成修改。"
   }
 }

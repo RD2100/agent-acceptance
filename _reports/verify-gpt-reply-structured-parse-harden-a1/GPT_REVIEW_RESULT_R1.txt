@@ -1,0 +1,36 @@
+overall_judgment: accepted_with_limitation
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+none
+required_fixes:
+
+none
+limitations:
+
+structured extraction 已修复原先 re.search(r"task_id:\s*(\S+)") first-match 脆弱性，能够跳过 next_task_authorization: block 中的嵌套 task_id:，并正确提取 footer/top-level task_id。
+
+现有 34 个回归测试继续通过，并新增 4 个 TestStructuredParse 用例，总计 38/38 passed。
+
+新增测试覆盖了 task_id 位于 auth block 前、auth block 后、仅存在于 auth block、以及真实 GPT reply 误判样例等关键场景。
+
+实际误判样例已被验证修复：原本会误取 VERIFY-GPT-REPLY-STRUCTURED-PARSE-HARDEN-A1，修复后可正确识别 GPT-REVIEW-FLOW-REGRESSION-TEST-A1。
+
+_extract_field_outside_auth_block() 实现较小且可维护，同时对 run_id 也使用同一结构化提取逻辑，增强了一致性。
+
+auth block 边界仍依赖空行或 END_OF_GPT_RESPONSE 作为启发式判断；当前符合已观察 GPT 回复格式，但未来若 GPT 输出格式变化，仍可能需要更严格的 YAML-like parser。
+
+overall_judgment 与 evidence_pack_reviewed 仍使用简单正则提取；当前没有发现嵌套歧义，但后续若出现同名字段嵌套，也应纳入结构化解析。
+
+test_task_id_only_in_auth_block 当前允许 fallback 到 auth block 内唯一 task_id；该行为对诊断有用，但在严格 verifier 模式下未来可考虑将“缺少 top-level task_id”单独标记为 warning 或 fail。
+
+PACK_MANIFEST.md 存在于附件 ZIP 中，但未将 PACK_MANIFEST.md 自身列为 manifest row；当前不阻塞本轮审查。
+next_task_authorization:
+task_id: STARTUP-READ-GATE-ENFORCE-A1
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+
+run_id: VERIFY_GPT_REPLY_STRUCTURED_PARSE_HARDEN_A1_REVIEW_20260609T120738_RD
+task_id: VERIFY-GPT-REPLY-STRUCTUR_

@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "output_dir": "_reports\\writelab-synthetic-e2e-a1",
+  "checks": {
+    "required_files_present": true,
+    "probe_output_valid": true,
+    "api_probe_valid": true,
+    "zip_valid": true,
+    "saved_validation_valid": true,
+    "marker_scans_valid": true,
+    "temporary_database_clean": true,
+    "test_outputs_valid": true,
+    "handoff_safety_valid": true,
+    "hashes_valid": true
+  },
+  "blocking_issues": []
+}

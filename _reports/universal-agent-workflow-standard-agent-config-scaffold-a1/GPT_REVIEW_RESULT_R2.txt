@@ -1,0 +1,29 @@
+overall_judgment: blocked
+run_id: UNIVERSAL_AGENT_WORKFLOW_STANDARD_AGENT_CONFIG_SCAFFOLD_A1_20260609T155511_RD
+findings:
+
+create_scaffold() 已修复 R1 的相对路径自验证问题：现在使用 root.resolve() 写入 .awsp.json 与 .agent 模板中的 project_root，新生成 scaffold 可通过自验证。
+
+AWSP_DIRECTORIES 已包含 ".agent"，create_scaffold() 会生成 .agent/REQUIRED_READS.json、.agent/PROJECT_AGENT_CONFIG.json、.agent/GATE_CONFIG.json、.agent/startup_proof_template.json 四个治理配置文件。
+
+validate_scaffold() 已检查 .awsp.json 的 awsp_version、project_root、directories、validation 配置，并能检测 project_root mismatch。
+
+validate_scaffold() 已对 .agent/ 配置做了比 R1 更深的校验：检查四个 .agent 文件存在、JSON 有效、schema_version 存在、PROJECT_AGENT_CONFIG governance flags 存在、GATE_CONFIG required gates 存在、REQUIRED_READS required_reads array 存在。
+
+目标测试输出显示 55/55 passed，FULL_SUITE_OUTPUT.txt 显示 540 passed / 21 warnings；但 R2 prompt 声称 full suite 546 passed，与附件 FULL_SUITE_OUTPUT.txt 不一致。
+
+blocking: validate_scaffold() 对 .agent/PROJECT_AGENT_CONFIG.json 的 awsp_version 校验不是 fail-closed；如果 awsp_version 字段被删除，当前逻辑不会报错，validate_scaffold() 仍可返回 valid=true。这与 R2 声明“checks awsp_version matches”和 Review Criteria #2 不一致。
+
+blocking: tests/test_cross_project_scaffold.py 只覆盖 PROJECT_AGENT_CONFIG awsp_version mismatch，没有覆盖 awsp_version missing，因此无法防止该缺口回归。
+
+required_fix: validate_scaffold() 应在 .agent/PROJECT_AGENT_CONFIG.json 缺少 awsp_version 时加入 error，并返回 valid=false。
+
+required_fix: 新增 test_project_agent_config_missing_awsp_version_fails，断言 PROJECT_AGENT_CONFIG.json 缺少 awsp_version 字段时 validate_scaffold() fail-closed。
+
+limitation: governance flags 当前只检查存在，不检查是否为 true；后续如果这些 flags 表示强制门禁，应将 false 值设为 fail-closed。
+
+limitation: GATE_CONFIG 当前只检查 required gates 存在，尚未检查 enabled、strict_mode、block_on_failure 等关键 gate 配置值。
+
+limitation: REQUIRED_READS.json 当前只检查 required_reads 是 array，尚未验证 P0/P1 entries、must_read_at_startup、fail_closed_if_missing、hash binding 等结构。
+next_task_authorization: UNIVERSAL-AGENT-WORKFLOW-STANDARD-AGENT-CONFIG-SCAFFOLD-A1-R3
+---END_OF_GPT_RESPONSE---

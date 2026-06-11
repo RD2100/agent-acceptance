@@ -1,0 +1,33 @@
+overall_judgment: PASS
+confidence: HIGH
+findings:
+
+category: governance
+severity: info
+description: Governance flags are now checked with strict is not True, so False, None, missing keys, integer 1, and string "yes" all fail-closed. Error messages identify the failing governance flag group and the specific flag names.
+
+category: gates
+severity: info
+description: GATE_CONFIG depth validation correctly requires each required gate to have enabled=True and block_on_failure=True, and additionally requires startup_read_gate.strict_mode=True. Missing fields are rejected through the same strict checks.
+
+category: reads
+severity: info
+description: REQUIRED_READS validation now covers required fields, object shape, non-empty string path, boolean types for must_read_at_startup and fail_closed_if_missing, evidence_level restricted to P0 or P1, and strict true flags for P0 entries. The previous wrong-type validation gap is closed.
+
+category: tests
+severity: minor
+description: The new type-safety tests cover the previously missing edge cases: integer path, empty path, P1 string booleans, truthy governance values, and truthy gate values. The attached target output reports 60 passed, while the prompt says 51 tests; this is a metadata mismatch rather than a logic failure.
+
+category: other
+severity: minor
+description: The uploaded pack does not include validate_run_id_consistency.py, so test_cross_project_scaffold.py cannot be fully re-run from the attachment alone without the wider repository context. The reviewed awsp_scaffold.py logic itself is minimal, focused, and contains no evident secrets, credentials, destructive operations, or unsafe git operations.
+recommendations:
+
+Keep the strict is not True checks for governance and gate fields; they correctly reject truthy non-boolean values.
+
+Preserve the REQUIRED_READS type checks as mandatory fail-closed validation, especially for P0 entries.
+
+For future evidence packs, include all imported test dependencies or clearly mark which tests require repository context, so target tests are fully reproducible from the attachment.
+
+Reconcile prompt/test-count metadata with attached outputs to avoid avoidable evidence drift.
+---END_OF_GPT_RESPONSE---

@@ -1,0 +1,74 @@
+=== Targeted Tests — HANDOFF-WORKFLOW-HARDENING-PLAN-A1 ===
+run_id: HANDOFF_WORKFLOW_HARDENING_PLAN_A1_20260609_012328
+generated_at: 2026-06-09T01:23:28+00:00
+
+--- Test 1: startup_read_gate_completed ---
+command: cd "D:/agent-acceptance" && pwd && date && echo FRESH_SHELL_OK && git rev-parse --is-inside-work-tree
+exit_code: 0
+result: PASS
+
+--- Test 2: all_required_files_exist ---
+files_checked: 29
+files_missing: 0
+result: PASS
+
+--- Test 3: startup_proof_json_valid ---
+file: _reports/qwen-startup-read-proof/STARTUP_READ_PROOF_20260609T012328Z.json
+valid_json: true
+all_entries_have_exists_true: true
+all_entries_have_reviewed_true: true
+result: PASS
+
+--- Test 4: hardening_plan_exists ---
+file: _reports/handoff-workflow-hardening-plan-a1/HANDOFF_WORKFLOW_HARDENING_PLAN.md
+exists: true
+size_nonzero: true
+result: PASS
+
+--- Test 5: gap_analysis_exists ---
+file: _reports/handoff-workflow-hardening-plan-a1/HARDENING_GAP_ANALYSIS.json
+exists: true
+valid_json: true
+result: PASS
+
+--- Test 6: next_task_candidates_exists ---
+file: _reports/handoff-workflow-hardening-plan-a1/NEXT_TASK_CANDIDATES.json
+exists: true
+valid_json: true
+result: PASS
+
+--- Test 7: no_legacy_files_touched ---
+legacy_files_checked: HANDOFF.md, HANDOFF_V5.md, HANDOFF_V6.md, PROJECT_HISTORY.md, PROJECT_HISTORY_FINAL.md, BOOT_CONTEXT.md, PASTE_BLOCK_APPROVED_FOR_NEW_GPT.txt
+modified: 0
+deleted: 0
+renamed: 0
+result: PASS
+
+--- Test 8: no_dangerous_operations ---
+git_reset_executed: false
+git_clean_executed: false
+git_checkout_executed: false
+git_restore_executed: false
+git_commit_executed: false
+git_push_executed: false
+deploy_executed: false
+result: PASS
+
+--- Test 9: semantics_preserved ---
+accepted_with_limitation_not_flattened: true
+blocked_not_packaged_as_success: true
+partial_not_packaged_as_closed: true
+296_pass_not_claimed_verified: true
+production_promotion_not_claimed_approved: true
+result: PASS
+
+--- Test 10: plan_does_not_claim_production_ready ---
+contains_production_ready: false
+contains_accepted_verdict: false
+result: PASS
+
+=== Summary ===
+total: 10
+passed: 10
+failed: 0
+exit_code: 0

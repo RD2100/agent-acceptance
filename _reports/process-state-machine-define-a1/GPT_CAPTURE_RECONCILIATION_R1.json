@@ -1,0 +1,18 @@
+{
+  "target_run_id": "PROCESS_STATE_MACHINE_DEFINE_A1_REVIEW_20260609T022432_RD",
+  "target_task_id": "PROCESS-STATE-MACHINE-DEFINE-A1",
+  "before_user_count": 13,
+  "before_assistant_count": 7,
+  "after_user_count": 14,
+  "after_assistant_count": 8,
+  "candidate_indices": [
+    7
+  ],
+  "selected_index": 7,
+  "last_index": 7,
+  "last_text_contains_run_id": true,
+  "selected_text_contains_run_id": true,
+  "selected_text_contains_end_marker": true,
+  "capture_mismatch": false,
+  "decision": "selected_and_last_match"
+}

@@ -1,0 +1,36 @@
+verdict: accepted_with_limitation
+run_id: HUMAN_DECISION_RECORD_CLI_T10_HASH_INTEGRATE_A1_20260609T214000_RD
+findings:
+
+
+human_decision_record.py 已将 --repo-root 和 --compute-hashes 接入 CLI create 子命令，能够在创建 human decision record 时为 evidence_files 写入 SHA-256 evidence_hashes。
+
+
+CLI validate 子命令已接入 --repo-root，能够在命令行层面触发 evidence existence binding 与 hash verification，不再只依赖 Python API。
+
+
+state_machine_runtime.py 已将 repo_root 传入 human_required → gate_passing 的 T10 guard，使 T10 能在运行时通过 validate_record() 执行 evidence 文件存在性与 hash 完整性校验。
+
+
+新增 CLI 与 T10 hash integration 测试覆盖 create(hash) → validate(hash) → T10(hash) 的核心链路，并包含 tampered evidence 被阻断的场景，证明 evidence 文件被修改后会导致 T10 transition blocked。
+
+
+该任务基本闭合了上一轮提出的 CLI hash 暴露与 T10 repo_root 传递缺口，使 human_required 决策记录从“有 evidence 路径”推进到“evidence 路径存在且内容 hash 可验证”。
+
+
+limitation: 当前实现仍是 evidence file hash binding，不是完整 PACK_MANIFEST binding；尚未验证 evidence_files 是否列入本轮 evidence pack 的 PACK_MANIFEST，也未交叉校验 PACK_MANIFEST 中记录的 SHA-256。
+
+
+limitation: validate_record() 仍只遍历 evidence_files 中的路径，未检测 evidence_hashes 中是否存在多余条目或与 evidence_files 不一致的 hash entry。
+
+
+limitation: create_record() 仍未在创建阶段显式拒绝空 task_id，虽然 validate_record() 会在验证阶段拒绝空 task_id。
+
+
+limitation: 附件中 tests/test_state_machine_runtime.py 包含依赖 startup_read_gate.py 与 evidence_pack_linter.py 的 T01 测试，但本 pack 未嵌入这些依赖脚本；因此该测试文件在脱离完整仓库环境时不能完全复现 EXECUTION_REPORT 中的 full suite 467 passed。
+
+
+limitation: PACK_MANIFEST 未将自身列为 manifest row，且 pack run_id / 文件名时间戳与审查 prompt run_id 存在差异；当前不影响本轮核心功能审查，但后续仍应统一元数据。
+next_task_authorization: HUMAN-DECISION-RECORD-MANIFEST-BIND-A1
+---END_OF_GPT_RESPONSE---
+

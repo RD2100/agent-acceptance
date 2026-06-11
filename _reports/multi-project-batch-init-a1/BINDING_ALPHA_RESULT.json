@@ -1,0 +1,9 @@
+{
+  "status": "bound",
+  "project": "project-alpha",
+  "conv_id": "6a2904b8-a260-83a7-8762-f77875d47dae",
+  "chat_url": "https://chatgpt.com/c/6a2904b8-a260-83a7-8762-f77875d47dae",
+  "cdp_port": 9222,
+  "cdp_verified": true,
+  "chatgpt_pages": 3
+}

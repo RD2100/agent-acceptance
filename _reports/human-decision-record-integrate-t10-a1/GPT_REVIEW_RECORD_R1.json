@@ -1,0 +1,31 @@
+{
+  "task_id": "HUMAN-DECISION-RECORD-INTEGRATE-T10-A1",
+  "run_id": "HUMAN_DECISION_RECORD_INTEGRATE_T10_A1_20260609T130424_RD",
+  "round": "R1",
+  "verdict": "accepted_with_limitation",
+  "overall_judgment": "accepted_with_limitation",
+  "valid": true,
+  "closure_ready": true,
+  "verified_at": "2026-06-09T13:07:16.694528+08:00",
+  "source": "manual_recapture",
+  "gpt_reply_size": 1669,
+  "checks": {
+    "has_end_marker": true,
+    "has_next_task_auth": true,
+    "verdict_allowed": true
+  },
+  "findings": [
+    "check_human_required_to_gate_passing correctly validates T10 guards via human_decision_record.validate_record()",
+    "T10 guards human_decision_recorded and decision_evidence_attached both formally extracted and required to be true",
+    "Fail-closed: missing record, nonexistent record, invalid JSON, missing evidence, tampered exit_conditions all block transition",
+    "check_transition() correctly dispatches to T10 guard for human_required to gate_passing",
+    "8 new tests cover fail-closed, valid record, no evidence, nonexistent, invalid JSON, tampered conditions, dispatch"
+  ],
+  "limitations": [
+    "Only T01 and T10 have guard implementations; other transitions still validity-only",
+    "evidence_files in decision record are path strings without disk existence verification",
+    "PACK_MANIFEST metadata run_id differs from prompt run_id; should unify metadata"
+  ],
+  "next_task_authorization": "HUMAN-DECISION-RECORD-EVIDENCE-BIND-A1",
+  "reply_path": "_reports/human-decision-record-integrate-t10-a1/GPT_REVIEW_RESULT_R1.txt"
+}

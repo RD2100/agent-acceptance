@@ -1,0 +1,68 @@
+============================= test session starts =============================
+platform win32 -- Python 3.10.11, pytest-9.0.3, pluggy-1.6.0 -- C:\Users\RD\AppData\Local\Programs\Python\Python310\python.exe
+cachedir: .pytest_cache
+metadata: {'Python': '3.10.11', 'Platform': 'Windows-10-10.0.19045-SP0', 'Packages': {'pytest': '9.0.3', 'pluggy': '1.6.0'}, 'Plugins': {'allure-pytest': '2.16.0', 'anyio': '4.13.0', 'langsmith': '0.8.5', 'asyncio': '1.3.0', 'cov': '7.1.0', 'json-report': '1.5.0', 'metadata': '3.1.1', 'random-order': '1.2.0'}}
+Test order randomisation NOT enabled. Enable with --random-order or --random-order-bucket=<bucket_type>
+rootdir: D:\agent-acceptance
+plugins: allure-pytest-2.16.0, anyio-4.13.0, langsmith-0.8.5, asyncio-1.3.0, cov-7.1.0, json-report-1.5.0, metadata-3.1.1, random-order-1.2.0
+asyncio: mode=strict, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 56 items
+
+tests/test_cross_project_scaffold.py::TestCrossProjectParameterization::test_explicit_evidence_pack_dir PASSED [  1%]
+tests/test_cross_project_scaffold.py::TestCrossProjectParameterization::test_explicit_evidence_pack_dir_not_found PASSED [  3%]
+tests/test_cross_project_scaffold.py::TestCrossProjectParameterization::test_cross_project_layout PASSED [  5%]
+tests/test_cross_project_scaffold.py::TestPromptTemplateValidation::test_missing_end_marker PASSED [  7%]
+tests/test_cross_project_scaffold.py::TestPromptTemplateValidation::test_missing_overall_judgment PASSED [  8%]
+tests/test_cross_project_scaffold.py::TestPromptTemplateValidation::test_verdict_instead_of_overall_judgment PASSED [ 10%]
+tests/test_cross_project_scaffold.py::TestPromptTemplateValidation::test_full_compliant_prompt PASSED [ 12%]
+tests/test_cross_project_scaffold.py::TestAWSPScaffold::test_create_scaffold PASSED [ 14%]
+tests/test_cross_project_scaffold.py::TestAWSPScaffold::test_create_scaffold_dry_run PASSED [ 16%]
+tests/test_cross_project_scaffold.py::TestAWSPScaffold::test_validate_valid_scaffold PASSED [ 17%]
+tests/test_cross_project_scaffold.py::TestAWSPScaffold::test_validate_missing_dirs PASSED [ 19%]
+tests/test_cross_project_scaffold.py::TestAWSPScaffold::test_validate_missing_config PASSED [ 21%]
+tests/test_cross_project_scaffold.py::TestAWSPScaffold::test_scaffold_config_content PASSED [ 23%]
+tests/test_cross_project_scaffold.py::TestAWSPScaffold::test_scaffold_force_overwrite PASSED [ 25%]
+tests/test_cross_project_scaffold.py::TestAWSPScaffold::test_create_scaffold_nonexistent_root PASSED [ 26%]
+tests/test_cross_project_scaffold.py::TestValidateScaffoldContent::test_valid_scaffold_passes PASSED [ 28%]
+tests/test_cross_project_scaffold.py::TestValidateScaffoldContent::test_version_mismatch_fails PASSED [ 30%]
+tests/test_cross_project_scaffold.py::TestValidateScaffoldContent::test_missing_config_fields_fails PASSED [ 32%]
+tests/test_cross_project_scaffold.py::TestValidateScaffoldContent::test_missing_validation_section_fails PASSED [ 33%]
+tests/test_cross_project_scaffold.py::TestValidateScaffoldContent::test_false_validation_values_fails PASSED [ 35%]
+tests/test_cross_project_scaffold.py::TestValidateScaffoldContent::test_directories_mismatch_fails PASSED [ 37%]
+tests/test_cross_project_scaffold.py::TestStrictVerdictCheck::test_bare_verdict_with_overall_judgment_fails PASSED [ 39%]
+tests/test_cross_project_scaffold.py::TestStrictVerdictCheck::test_overall_judgment_only_passes PASSED [ 41%]
+tests/test_cross_project_scaffold.py::TestStrictVerdictCheck::test_indented_verdict_fails PASSED [ 42%]
+tests/test_cross_project_scaffold.py::TestAgentConfigScaffold::test_agent_directory_created PASSED [ 44%]
+tests/test_cross_project_scaffold.py::TestAgentConfigScaffold::test_agent_config_files_generated PASSED [ 46%]
+tests/test_cross_project_scaffold.py::TestAgentConfigScaffold::test_agent_config_has_correct_awsp_version PASSED [ 48%]
+tests/test_cross_project_scaffold.py::TestAgentConfigScaffold::test_gate_config_has_required_gates PASSED [ 50%]
+tests/test_cross_project_scaffold.py::TestAgentConfigScaffold::test_project_agent_config_governance_flags PASSED [ 51%]
+tests/test_cross_project_scaffold.py::TestValidateAgentConfig::test_valid_scaffold_with_agent_config_passes PASSED [ 53%]
+tests/test_cross_project_scaffold.py::TestValidateAgentConfig::test_missing_agent_files_fails PASSED [ 55%]
+tests/test_cross_project_scaffold.py::TestValidateAgentConfig::test_project_root_mismatch_fails PASSED [ 57%]
+tests/test_cross_project_scaffold.py::TestValidateAgentConfig::test_agent_config_invalid_json_fails PASSED [ 58%]
+tests/test_cross_project_scaffold.py::TestValidateAgentConfig::test_agent_config_missing_schema_version_fails PASSED [ 60%]
+tests/test_cross_project_scaffold.py::TestValidateAgentConfig::test_awsp_directories_includes_agent PASSED [ 62%]
+tests/test_cross_project_scaffold.py::TestR2AgentConfigContentValidation::test_scaffold_resolves_relative_path PASSED [ 64%]
+tests/test_cross_project_scaffold.py::TestR2AgentConfigContentValidation::test_project_agent_config_version_mismatch_fails PASSED [ 66%]
+tests/test_cross_project_scaffold.py::TestR2AgentConfigContentValidation::test_project_agent_config_missing_awsp_version_fails PASSED [ 67%]
+tests/test_cross_project_scaffold.py::TestR2AgentConfigContentValidation::test_missing_governance_flags_fails PASSED [ 69%]
+tests/test_cross_project_scaffold.py::TestR2AgentConfigContentValidation::test_missing_gates_in_gate_config_fails PASSED [ 71%]
+tests/test_cross_project_scaffold.py::TestR2AgentConfigContentValidation::test_missing_required_reads_array_fails PASSED [ 73%]
+tests/test_cross_project_scaffold.py::TestR2AgentConfigContentValidation::test_self_validation_after_create_scaffold PASSED [ 75%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_consistent_artifacts PASSED [ 76%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_missing_run_id_file PASSED [ 78%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_hardcoded_run_id_in_prompt PASSED [ 80%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_r1_run_id_mismatch PASSED [ 82%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_gpt_reply_run_id_mismatch PASSED [ 83%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_gpt_reply_run_id_matches PASSED [ 85%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_missing_run_id_template_var PASSED [ 87%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_missing_task_id_template_var PASSED [ 89%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_missing_evidence_pack_zip PASSED [ 91%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_manifest_run_id_mismatch PASSED [ 92%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_pack_filename_mismatch PASSED [ 94%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_empty_run_id_file PASSED [ 96%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_missing_pack_manifest PASSED [ 98%]
+tests/test_validate_run_id_consistency.py::TestRunIdConsistency::test_manifest_run_id_field_missing PASSED [100%]
+
+============================= 56 passed in 0.47s ==============================

@@ -1,0 +1,33 @@
+{
+  "task_id": "HUMAN-DECISION-RECORD-HASH-EXTRA-ENTRY-HARDEN-A1",
+  "run_id": "HUMAN_DECISION_RECORD_HASH_EXTRA_ENTRY_HARDEN_A1_20260609T134933_RD",
+  "round": "R1",
+  "submitted_at": "2026-06-09T13:49:59+00:00",
+  "captured_at": "2026-06-09T05:56:07.416353+00:00",
+  "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "gpt_reply": {
+    "verdict": "accepted_with_limitation",
+    "overall_judgment": "accepted_with_limitation",
+    "gpt_run_id": "HUMAN_DECISION_RECORD_HASH_EXTRA_ENTRY_HARDEN_A1_20260609T215000_RD",
+    "reply_chars": 1467,
+    "capture_method": "manual_playwright_index30",
+    "auto_capture_failed": true
+  },
+  "limitations": [
+    "hash_completeness only runs when evidence_hashes non-empty and has_evidence=true",
+    "PACK_MANIFEST.md content not parsed for cross-check",
+    "Without repo_root, strict checks skipped",
+    "No full raw test output in evidence pack",
+    "Pack run_id / timestamp vs prompt run_id inconsistency"
+  ],
+  "next_task_authorization": {
+    "task_id": "HUMAN-DECISION-RECORD-MANIFEST-CONTENT-CROSSCHECK-A1",
+    "authorized": true,
+    "execute_immediately": true
+  },
+  "test_results": {
+    "total_tests": 486,
+    "passed": 486,
+    "failed": 0
+  }
+}

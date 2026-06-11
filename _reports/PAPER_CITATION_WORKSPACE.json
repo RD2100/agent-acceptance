@@ -1,0 +1,119 @@
+{
+  "generated_at": "2026-06-08T08:22:13.101701+00:00",
+  "total_citations": 76,
+  "modules_with_zero_citations": [
+    {
+      "id": "M1",
+      "section": "一、高等教育提质扩容的必然逻辑",
+      "subsection": "",
+      "chars": 174
+    },
+    {
+      "id": "M3",
+      "section": "一、高等教育提质扩容的必然逻辑",
+      "subsection": "（二）实然之境：高等教育提质与扩容之间存在内在统一性",
+      "chars": 1057
+    },
+    {
+      "id": "M5",
+      "section": "二、高等教育提质扩容的内在张力",
+      "subsection": "",
+      "chars": 104
+    }
+  ],
+  "modules_below_threshold": [
+    {
+      "id": "M1",
+      "current": 0,
+      "expected": 1,
+      "chars": 174
+    },
+    {
+      "id": "M3",
+      "current": 0,
+      "expected": 2,
+      "chars": 1057
+    },
+    {
+      "id": "M5",
+      "current": 0,
+      "expected": 1,
+      "chars": 104
+    }
+  ],
+  "citation_gap_map": [
+    {
+      "id": "M1",
+      "gap": 1,
+      "suggested_types": [
+        "theoretical",
+        "methodology"
+      ],
+      "priority": "P1"
+    },
+    {
+      "id": "M3",
+      "gap": 2,
+      "suggested_types": [
+        "policy",
+        "empirical"
+      ],
+      "priority": "P1"
+    },
+    {
+      "id": "M5",
+      "gap": 1,
+      "suggested_types": [
+        "theoretical",
+        "methodology"
+      ],
+      "priority": "P1"
+    }
+  ],
+  "recommended_citation_types": {
+    "M1": [
+      "theoretical",
+      "methodology"
+    ],
+    "M2": [
+      "policy",
+      "empirical"
+    ],
+    "M3": [
+      "policy",
+      "empirical"
+    ],
+    "M4": [
+      "theoretical",
+      "methodology"
+    ],
+    "M5": [
+      "theoretical",
+      "methodology"
+    ],
+    "M6": [
+      "policy",
+      "empirical"
+    ],
+    "M7": [
+      "theoretical",
+      "methodology"
+    ],
+    "M9": [
+      "theoretical",
+      "methodology"
+    ],
+    "M10": [
+      "policy",
+      "empirical"
+    ],
+    "M11": [
+      "policy",
+      "empirical"
+    ],
+    "M12": [
+      "policy",
+      "empirical"
+    ]
+  }
+}

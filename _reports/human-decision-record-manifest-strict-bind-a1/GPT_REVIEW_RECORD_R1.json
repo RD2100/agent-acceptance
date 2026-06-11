@@ -1,0 +1,38 @@
+{
+  "task_id": "HUMAN-DECISION-RECORD-MANIFEST-STRICT-BIND-A1",
+  "run_id": "HUMAN_DECISION_RECORD_MANIFEST_STRICT_BIND_A1_20260609T133925_RD",
+  "round": "R1",
+  "submitted_at": "2026-06-09T13:39:57+00:00",
+  "captured_at": "2026-06-09T05:46:59.246046+00:00",
+  "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "cdp_url": "http://127.0.0.1:9222",
+  "scenario": "A",
+  "pack_path": "evidence_packs/human-decision-record-manifest-strict-bind-a1/HUMAN_DECISION_RECORD_MANIFEST_STRICT_BIND_A1_20260609T133925_RD.zip",
+  "pack_sha256": "60e66a1935b03cf1d1718b56b45bd7e8734df5363e9c31b8ffb33c6b3739682d",
+  "gpt_reply": {
+    "verdict": "accepted_with_limitation",
+    "overall_judgment": "accepted_with_limitation",
+    "gpt_run_id": "HUMAN_DECISION_RECORD_MANIFEST_STRICT_BIND_A1_20260609T215000_RD",
+    "reply_chars": 1825,
+    "capture_method": "manual_playwright_index27",
+    "auto_capture_failed": true,
+    "auto_capture_reason": "long_run_id_timeout"
+  },
+  "limitations": [
+    "hash_completeness does not check extra hash entries in evidence_hashes not in evidence_files",
+    "PACK_MANIFEST.md content not parsed for cross-check evidence_files against manifest entries",
+    "Without repo_root, strict file existence and hash-bound checks skipped (compatible mode)",
+    "T10 runtime retest depends on full repo context",
+    "pack run_id / filename timestamp vs prompt run_id inconsistency"
+  ],
+  "next_task_authorization": {
+    "task_id": "HUMAN-DECISION-RECORD-HASH-EXTRA-ENTRY-HARDEN-A1",
+    "authorized": true,
+    "execute_immediately": true
+  },
+  "test_results": {
+    "total_tests": 482,
+    "passed": 482,
+    "failed": 0
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R4",
+  "run_id": "GLOBAL_EVIDENCE_BINDING_A1_R4_20260609_085945",
+  "required_embedded_zip": "source_evidence/evidence_packs/global-project-handoff-repair-a1/GLOBAL_PROJECT_HANDOFF_REPAIR_A1_20260608_223800.zip",
+  "present_in_pack_directory": true,
+  "sha256": "defe3a08596b9b48fbf01690bbf9395eceab6c04c606bd2b7e3372c5fe6c5eba",
+  "bytes": 26445
+}

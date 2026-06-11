@@ -1,0 +1,54 @@
+{
+  "run_id": "STATE_MACHINE_RUNTIME_INTEGRATE_A1_REVIEW_20260609T125017_RD",
+  "task_id": "STATE-MACHINE-RUNTIME-INTEGRATE-A1",
+  "scenario": "A",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\state-machine-runtime-integrate-a1\\STATE_MACHINE_RUNTIME_INTEGRATE_A1_20260609T125017_RD.zip",
+  "pack_exists": true,
+  "pack_size": 13401,
+  "pack_sha256": "3bb81e59e62a9534bb6be2bd4b8ecd553fd24bb34ed7efca8724d54e480a8278",
+  "prompt_chars": 1447,
+  "dry_run": false,
+  "sent": true,
+  "captured": false,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T12:50:42",
+  "reply_chars": 0,
+  "reply_sha256": null,
+  "run_id_match": false,
+  "has_end_marker": false,
+  "has_overall_judgment": false,
+  "parsed_overall_judgment": null,
+  "capture_reconciliation": {
+    "target_run_id": "STATE_MACHINE_RUNTIME_INTEGRATE_A1_REVIEW_20260609T125017_RD",
+    "target_task_id": "STATE-MACHINE-RUNTIME-INTEGRATE-A1",
+    "before_user_count": 25,
+    "before_assistant_count": 19,
+    "after_user_count": 26,
+    "after_assistant_count": 20,
+    "candidate_indices": [],
+    "selected_index": null,
+    "last_index": 19,
+    "last_text_contains_run_id": false,
+    "selected_text_contains_run_id": false,
+    "selected_text_contains_end_marker": false,
+    "capture_mismatch": false,
+    "decision": "capture_failed_no_run_id_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\state-machine-runtime-integrate-a1\\GPT_REVIEW_RESULT_R2.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\state-machine-runtime-integrate-a1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "D:\\agent-acceptance\\_reports\\state-machine-runtime-integrate-a1\\GPT_CAPTURE_RECONCILIATION.json"
+}

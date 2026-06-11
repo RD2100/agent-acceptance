@@ -1,0 +1,9 @@
+{
+  "task_id": "VERIFY-GPT-REPLY-STRUCTURED-PARSE-HARDEN-A1",
+  "run_id": "VERIFY_GPT_REPLY_STRUCTURED_PARSE_HARDEN_A1_REVIEW_20260609T120738_RD",
+  "zip_path": "evidence_packs\\verify-gpt-reply-structured-parse-harden-a1\\VERIFY_GPT_REPLY_STRUCTURED_PARSE_HARDEN_A1_20260609T120738_RD.zip",
+  "zip_sha256": "0b74d854c3a2215adac476726b87f3f4d70aaa594fec5fcd835dc4b1f977fa5e",
+  "zip_size": 17740,
+  "file_count": 10,
+  "generated_at": "2026-06-09T12:07:38.942595+08:00"
+}

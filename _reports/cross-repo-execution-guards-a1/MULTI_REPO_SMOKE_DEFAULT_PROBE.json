@@ -1,0 +1,5 @@
+﻿{
+    "command":  "python scripts\\multi_repo_smoke.py",
+    "exit_code":  2,
+    "output":  "{\r\n  \"timestamp\": \"2026-06-09T12:58:46.015650+00:00\",\r\n  \"overall\": \"HUMAN_REQUIRED\",\r\n  \"human_gate_required\": true,\r\n  \"executed\": false,\r\n  \"reason\": \"cross-repo pytest execution is blocked by default\",\r\n  \"planned_repos\": {\r\n    \"agent-acceptance\": {\r\n      \"path\": \"D:\\\\agent-acceptance\",\r\n      \"cmd\": [\r\n        \"C:\\\\Users\\\\RD\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\",\r\n        \"-m\",\r\n        \"pytest\",\r\n        \"tests/\",\r\n        \"-q\",\r\n        \"--tb=line\"\r\n      ],\r\n      \"known_failures\": 0\r\n    },\r\n    \"devframe-control-plane\": {\r\n      \"path\": \"D:\\\\devframe-control-plane\",\r\n      \"cmd\": [\r\n        \"C:\\\\Users\\\\RD\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\",\r\n        \"-m\",\r\n        \"pytest\",\r\n        \"tests/\",\r\n        \"-q\",\r\n        \"--tb=line\"\r\n      ],\r\n      \"known_failures\": 3\r\n    }\r\n  }\r\n}\r\n"
+}

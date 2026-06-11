@@ -1,0 +1,5 @@
+﻿Alias for TARGET_TEST_OUTPUT.txt. Real command:
+python -m pytest tests\test_conversation_registry.py tests\test_cross_project_scaffold.py -q
+
+Result:
+129 passed in 3.23s

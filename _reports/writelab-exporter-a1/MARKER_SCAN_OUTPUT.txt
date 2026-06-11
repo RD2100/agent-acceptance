@@ -1,0 +1,21 @@
+﻿{
+  "zip_path": "_reports\\writelab-exporter-a1\\writelab-handoff.zip",
+  "files": [
+    "DIAGNOSIS_RESULT.json",
+    "PACK_MANIFEST.md",
+    "PRIVACY_ATTESTATION.yaml",
+    "WRITELAB_HANDOFF.yaml"
+  ],
+  "marker_hits": {
+    "REAL_PAPER_TEXT": false,
+    "USER_PRIVATE_TEXT": false,
+    "AUTHOR_IDENTITY": false,
+    "RAW_TRANSCRIPT": false,
+    "\"text_span\"": false,
+    "\"paragraph\"": false,
+    "\"main_claim\"": false,
+    "\"overall_comment\"": false,
+    "\"explanation\"": false
+  },
+  "pass": true
+}

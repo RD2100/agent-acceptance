@@ -1,0 +1,45 @@
+{
+  "verify": {
+    "valid": true,
+    "overall_judgment": "accepted_with_limitation",
+    "errors": [],
+    "checks": {
+      "has_end_marker": true,
+      "overall_judgment": "accepted_with_limitation",
+      "evidence_pack_reviewed": true,
+      "task_id_in_reply": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R4",
+      "task_id_matches": true,
+      "has_next_task_auth": true
+    },
+    "sha256": "67188cf8c827eff93dc020dbadf95775...",
+    "size": 1122,
+    "verdict_allowed": true,
+    "source": "captured_gpt_response",
+    "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R4"
+  },
+  "closure_ready": {
+    "closure_ready": true,
+    "reason": "GPT accepted_with_limitation",
+    "verdict": {
+      "valid": true,
+      "overall_judgment": "accepted_with_limitation",
+      "errors": [],
+      "checks": {
+        "has_end_marker": true,
+        "overall_judgment": "accepted_with_limitation",
+        "evidence_pack_reviewed": true,
+        "task_id_in_reply": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R4",
+        "task_id_matches": true,
+        "has_next_task_auth": true
+      },
+      "sha256": "67188cf8c827eff93dc020dbadf95775...",
+      "size": 1122,
+      "verdict_allowed": true,
+      "source": "captured_gpt_response"
+    }
+  }
+}
+
+GUARD OK: GPT reply for GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R4 is valid.
+Verdict: accepted_with_limitation
+Closure ready: True

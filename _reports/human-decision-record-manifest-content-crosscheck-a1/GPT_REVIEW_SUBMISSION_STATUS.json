@@ -1,0 +1,54 @@
+{
+  "run_id": "HUMAN_DECISION_RECORD_MANIFEST_CONTENT_CROSSCHECK_A1_20260609T140149_RD",
+  "task_id": "HUMAN-DECISION-RECORD-MANIFEST-CONTENT-CROSSCHECK-A1",
+  "scenario": "A",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\human-decision-record-manifest-content-crosscheck-a1\\HUMAN_DECISION_RECORD_MANIFEST_CONTENT_CROSSCHECK_A1_20260609T140149_RD.zip",
+  "pack_exists": true,
+  "pack_size": 116402,
+  "pack_sha256": "13b112fa39c70feb34ffe2880d40763224254494faf264e98571074e12fe0dae",
+  "prompt_chars": 2056,
+  "dry_run": false,
+  "sent": true,
+  "captured": false,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T14:02:17",
+  "reply_chars": 0,
+  "reply_sha256": null,
+  "run_id_match": false,
+  "has_end_marker": false,
+  "has_overall_judgment": false,
+  "parsed_overall_judgment": null,
+  "capture_reconciliation": {
+    "target_run_id": "HUMAN_DECISION_RECORD_MANIFEST_CONTENT_CROSSCHECK_A1_20260609T140149_RD",
+    "target_task_id": "HUMAN-DECISION-RECORD-MANIFEST-CONTENT-CROSSCHECK-A1",
+    "before_user_count": 39,
+    "before_assistant_count": 34,
+    "after_user_count": 40,
+    "after_assistant_count": 36,
+    "candidate_indices": [],
+    "selected_index": null,
+    "last_index": 35,
+    "last_text_contains_run_id": false,
+    "selected_text_contains_run_id": false,
+    "selected_text_contains_end_marker": false,
+    "capture_mismatch": false,
+    "decision": "capture_failed_no_run_id_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\human-decision-record-manifest-content-crosscheck-a1\\GPT_REVIEW_RESULT_R1.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\human-decision-record-manifest-content-crosscheck-a1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "D:\\agent-acceptance\\_reports\\human-decision-record-manifest-content-crosscheck-a1\\GPT_CAPTURE_RECONCILIATION.json"
+}

@@ -1,0 +1,38 @@
+run_id: HANDOFF_WORKFLOW_HARDENING_PLAN_A1_REVIEW_20260609_012328_RD
+task_id: HANDOFF-WORKFLOW-HARDENING-PLAN-A1
+overall_judgment: blocked
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+HANDOFF_WORKFLOW_HARDENING_PLAN.md 中的 source-of-truth 层级表述错误，将 P0 写成 core.md/rules/AGENTS.md、P1 写成 TaskSpec/ExecutionReport/evidence pack，明显不符合附件中 HANDOFF_SOURCE_OF_TRUTH.md 定义的 P0/P1/P2/P3 层级，可能误导后续 agent。
+
+HANDOFF_WORKFLOW_HARDENING_PLAN.md 对 gpt_new_chat_attachment_submit.py 的能力描述与 HARDENING_GAP_ANALYSIS.json 不一致；主计划称其已支持自动附件上传、prompt 注入、响应捕获与持久化，但 gap analysis 又称其只是 pointer_only 且未参数化。
+
+证据包声称 startup proof 已生成，但附件 ZIP 与 PACK_MANIFEST.md 中未包含 _reports/qwen-startup-read-proof/STARTUP_READ_PROOF_20260609T012328Z.json 和 STARTUP_READ_SUMMARY_20260609T012328Z.md，导致 startup read gate 证据不完整。
+required_fixes:
+
+修正 HANDOFF_WORKFLOW_HARDENING_PLAN.md 中的 source-of-truth 层级，必须与 HANDOFF_SOURCE_OF_TRUTH.md 保持一致：P0 为 verified GPT verdicts、evidence packs、TEST_OUTPUT/TARGETED_TEST_OUTPUT、issue ledgers、manifests 等；P1 为 GPT-approved handoff/paste/approval record；P2 为 memory/recall layer；P3 为 legacy audit/reference。
+
+统一 gpt_new_chat_attachment_submit.py 的能力描述；如果当前只是 pointer_only 或未参数化，主计划不得声称其已完整支持自动上传、prompt 注入、响应捕获与持久化。
+
+将 startup proof 与 startup read summary 实际纳入 evidence pack 和 PACK_MANIFEST.md，或删除“已生成并作为证据”的相关声明。
+
+补充或修正对 HANDOFF_REPLY_V4.txt 的表述，明确其仍为 tracked_deleted_human_required，不得写成普通待处置 legacy 文件。
+
+重新生成 HARDENING_GAP_ANALYSIS.json、NEXT_TASK_CANDIDATES.json、PACK_MANIFEST.md、SAFETY_SCAN.md、TARGETED_TEST_OUTPUT.txt 和 closure ZIP 后重新提交 GPT 审查。
+limitations:
+
+证据包整体方向正确，确实尝试复用既有 workflow、verifier、runbook、source-of-truth 和 evidence pack 结构，而不是直接实现全部硬化机制。
+
+计划识别出的状态机、pre/post changed-files proof、GPT capture reconciliation、回归测试、human_required 决策记录、治理 dashboard 等缺口具有合理性。
+
+TARGETED_TEST_OUTPUT.txt 显示 10/10 checks pass，且报告声称未执行 git reset / clean / checkout / restore / commit / push。
+
+本轮为计划任务，未声称 production promotion 已批准，未将 296 PASS 提升为 verified，也未将 accepted_with_limitation 扁平化为 accepted。
+next_task_authorization:
+task_id: HANDOFF-WORKFLOW-HARDENING-PLAN-A1-R2
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+END_OF_GPT_RESPONSE

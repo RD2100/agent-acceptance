@@ -1,0 +1,280 @@
+{
+  "report_id": "GATE0_REUSE_CHECK",
+  "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+  "phase": "0",
+  "agent_model": "minimax-m3",
+  "agent_harness": "Claude Code",
+  "generated_at_utc": "2026-06-08T12:34:02Z",
+  "repo_root": "D:/agent-acceptance",
+  "shell_health": "FRESH_SHELL_OK",
+  "working_tree": "dirty_pre_existing",
+  "scope_enforcement": {
+    "writes_allowed": [
+      "_reports/handoff-pipeline-refactor-a1/SHELL_HEALTH_BEFORE.txt",
+      "_reports/handoff-pipeline-refactor-a1/GATE0_REUSE_CHECK.md",
+      "_reports/handoff-pipeline-refactor-a1/GATE0_REUSE_CHECK.json"
+    ],
+    "writes_performed_so_far": [
+      "_reports/handoff-pipeline-refactor-a1/SHELL_HEALTH_BEFORE.txt",
+      "_reports/handoff-pipeline-refactor-a1/GATE0_REUSE_CHECK.md (this report's md sibling)",
+      "_reports/handoff-pipeline-refactor-a1/GATE0_REUSE_CHECK.json (this file)"
+    ],
+    "out_of_scope_writes": []
+  },
+  "source_of_truth_inventory": {
+    "project_index": {
+      "found": true,
+      "primary_path": "_reports/PAPER_PROJECT_INDEX.json",
+      "gpt_view_path": "_reports/PAPER_PROJECT_INDEX_GPT_VIEW.md",
+      "builder_script": "scripts/paper_project_index.py",
+      "scope": "paper modules M1..M12 only; NOT a general project-wide index",
+      "general_project_index_found": false,
+      "note": "There is no general agent-acceptance-wide Project Index file; the only Project Index is paper-scoped. HANDOFF compiler will need to either build a synthetic project-wide view from .ai/tasks/ + ledgers + git log, or document that no general index exists."
+    },
+    "issue_ledger": {
+      "candidates": [
+        ".ai/module_ledger/ (M1.json, M2.json, M3.json) — paper module per-module ledger",
+        ".ai/tasks/ (24 task yaml files) — task spec / state per task",
+        ".ai/current-task.yaml — single current task pointer",
+        "tasks/ (root-level dir, not yet inspected)",
+        "docs/WORKFLOW_AUDIT_LEDGER.yaml (mentioned in BOOT_CONTEXT step 5, not yet verified)"
+      ],
+      "authoritative_pick": "unverified — needs Phase 1 inspection to choose canonical ledger"
+    },
+    "captured_gpt_verdicts": {
+      "primary_storage_patterns": [
+        "evidence_packs/<task>/GPT_REVIEW_RESULT*.txt — per-task captured replies",
+        "evidence_packs/GPT_REPLY_56.txt, GPT_REPLY_57.txt — numbered raw replies at evidence_packs root",
+        "GPT_*.txt at repo root (≥24 files) — older / ad-hoc captured replies, MOSTLY UNTRACKED",
+        "_reports/_c7_gpt_response_*.txt — paper review responses",
+        "_reports/m2_round1_gpt_response.txt, m4_round2_gpt_response.txt — paper round responses"
+      ],
+      "schema": "schemas/gpt_review_result.schema.json",
+      "verifier": "scripts/verify_gpt_reply.py (requires END_OF_GPT_RESPONSE marker)"
+    },
+    "evidence_packs_structure": {
+      "root": "evidence_packs/",
+      "convention_observed_subdirs": ["actual_deliverables/", "reports/"],
+      "convention_required_files_per_linter": [
+        "CLOSURE_REPORT.md",
+        "GPT_REVIEW_PROMPT.md",
+        "PACK_MANIFEST.md",
+        "SAFETY_ATTESTATION.md"
+      ],
+      "convention_expected_reports": ["TARGETED_TEST_OUTPUT.txt", "TEST_OUTPUT.txt"],
+      "linter_script": "scripts/evidence_pack_linter.py",
+      "pre_submit_gate_script": "scripts/pre_gpt_review_gate.py"
+    },
+    "gpt_review_transaction_runner": {
+      "entry_point": "scripts/gpt_review_transaction.py",
+      "pipeline": "pre-gate → linter → (CDP submit — manual) → verify reply → closure check",
+      "verify_script": "scripts/verify_gpt_reply.py",
+      "capture_script": "scripts/capture_gpt_reply.py",
+      "review_queue_manager": "scripts/review_queue.py (.ai/review_queue dir is currently empty)"
+    },
+    "handoff_files": {
+      "current_handoff_versions": ["HANDOFF.md", "HANDOFF_V5.md", "HANDOFF_V6.md"],
+      "boot_context": "BOOT_CONTEXT.md",
+      "boot_context_builder": "scripts/build_boot_context.py",
+      "history": ["PROJECT_HISTORY.md", "PROJECT_HISTORY_FINAL.md", "HISTORY_ANALYSIS.md"],
+      "handoff_validator": "scripts/validate_handoff.py (checks size, END_OF_HANDOFF, required sections)",
+      "handoff_trigger_checker": "scripts/check_handoff_needed.py (assistant_msg_count, response_time thresholds)"
+    },
+    "memory_compiler_outputs": {
+      "compiler_skill": ".claude/skills/claude-memory-compiler/",
+      "knowledge_outputs": [
+        ".claude/skills/claude-memory-compiler/knowledge/gpt-review-loop.md",
+        ".claude/skills/claude-memory-compiler/knowledge/paper-pipeline.md",
+        ".claude/skills/claude-memory-compiler/knowledge/shell-health.md"
+      ],
+      "sync_script": "scripts/sync_compiled_memory.py",
+      "memory_files": "memory/index.md, memory/knowledge/, memory/tasks/, memory/daily/",
+      "memory_compiler_script": "scripts/memory_compiler.py",
+      "memory_linter": "scripts/memory_lint.py",
+      "privacy_validator": "scripts/validate_context_memory.py"
+    }
+  },
+  "reuse_decisions": [
+    {
+      "requested_new_script": "scripts/handoff_compiler.py",
+      "decision": "REUSE_AND_THIN_WRAPPER",
+      "existing_assets": [
+        "scripts/build_boot_context.py (already produces structured handoff-like doc)",
+        "scripts/compress_project_context.py (compresses history → memory entries)",
+        "scripts/validate_handoff.py (validates output)"
+      ],
+      "delta_justification": "Only need a NEW orchestrator that: (a) calls build_boot_context as the trunk, (b) injects source-of-truth priority section, (c) emits PASTE_BLOCK_DRAFT_FOR_NEW_GPT.txt and HANDOFF_EVIDENCE_MAP.json, (d) refuses to mark output 'approved'. Do not rewrite the compression or boot-context logic.",
+      "naming_collision": "none — handoff_compiler.py does not exist yet",
+      "estimated_loc": "~150-250 lines (thin orchestrator + paste-block formatter)"
+    },
+    {
+      "requested_new_script": "scripts/handoff_stale_check.py",
+      "decision": "NEW_REQUIRED",
+      "existing_assets": [
+        "scripts/memory_lint.py (lints memory rules, not staleness)",
+        "scripts/validate_context_memory.py (privacy, not staleness)"
+      ],
+      "delta_justification": "No existing script compares Project Index / verdict timestamps / test counts across BOOT_CONTEXT vs memory/index.md vs PROJECT_HISTORY.md. This is a real gap. CONCRETE EVIDENCE for the need: BOOT_CONTEXT.md itself contains BOTH '232 PASS' (line 29) AND '247 PASS' (line 35) — an in-file contradiction that current tooling does not detect.",
+      "naming_collision": "none",
+      "estimated_loc": "~200 lines"
+    },
+    {
+      "requested_new_script": "scripts/handoff_safety_scan.py",
+      "decision": "REUSE",
+      "existing_assets": [
+        "scripts/validate_context_memory.py (FAIL_CLOSED_PATTERNS for paper text, transcripts, secrets)",
+        "scripts/memory_lint.py L-002 private text check",
+        "scripts/compress_project_context.py privacy_ok() with FORBIDDEN_PATTERNS"
+      ],
+      "delta_justification": "validate_context_memory.py already implements exactly the required FAIL_CLOSED scan (real_paper_full_text, 博士论文正文, 用户论文全文, api_key, etc.). Recommended path: write a 30-50 line WRAPPER that calls validate_context_memory.check() against the handoff draft + paste block and emits HANDOFF_SAFETY_SCAN.md. Do NOT create a parallel pattern list — that risks drift between the two safety guards.",
+      "naming_collision": "none",
+      "estimated_loc": "~40-80 lines (wrapper only)"
+    },
+    {
+      "requested_new_script": "scripts/handoff_source_map.py",
+      "decision": "NEW_REQUIRED",
+      "existing_assets": [
+        "scripts/verify_gpt_reply.py (verifies one reply file)",
+        "scripts/gpt_review_transaction.py (per-pack runner)"
+      ],
+      "delta_justification": "No existing script enumerates the P0/P1/P2/P3 source-of-truth hierarchy and maps draft handoff claims back to evidence. This is the core new artifact the task requires. Output: HANDOFF_EVIDENCE_MAP.json with claim → {source_layer, source_path, sha256, timestamp}.",
+      "naming_collision": "none",
+      "estimated_loc": "~250 lines"
+    },
+    {
+      "requested_new_schema": "schemas/handoff_compiler_result.schema.json",
+      "decision": "NEW_REQUIRED",
+      "existing_related_schemas": [
+        "schemas/boot_context.schema.json",
+        "schemas/gpt_review_result.schema.json",
+        "schemas/review_ticket.schema.json"
+      ],
+      "delta_justification": "boot_context.schema.json validates BOOT_CONTEXT structure; this new schema describes the handoff_compiler.py output envelope (draft_path, paste_block_path, stale_check_ref, safety_scan_ref, source_map_ref, approval_status='draft_only'). Recommend reusing field names from boot_context.schema.json where they overlap.",
+      "naming_collision": "none"
+    },
+    {
+      "requested_new_schema": "schemas/handoff_evidence_map.schema.json",
+      "decision": "NEW_REQUIRED",
+      "existing_related_schemas": [
+        "schemas/gpt_review_result.schema.json"
+      ],
+      "delta_justification": "Distinct shape from review_result: maps each handoff claim → source layer/path/sha256. No analog exists.",
+      "naming_collision": "none"
+    },
+    {
+      "requested_new_schema": "schemas/minimax_m3_observation.schema.json",
+      "decision": "NEW_REQUIRED",
+      "existing_related_schemas": [],
+      "delta_justification": "First-of-its-kind: model capability observation log entry. Must enforce 8 dimensions (Evidence-First, Stale identification, Safety boundary, Task planning, Repair quality, Loop control, Command discipline, Honesty) and the required fields (observation_id, date, task_id, submitted_claim, evidence_received, GPT_verdict, strengths, weaknesses, error_patterns, reliability_score_1_to_5, notes_for_future_model_assessment).",
+      "naming_collision": "none"
+    },
+    {
+      "requested_new_tests": [
+        "tests/test_handoff_compiler.py",
+        "tests/test_handoff_stale_check.py",
+        "tests/test_handoff_safety_scan.py",
+        "tests/test_handoff_source_map.py"
+      ],
+      "decision": "NEW_REQUIRED",
+      "existing_related_tests": [
+        "tests/test_boot_context_builder.py",
+        "tests/test_memory_compiler.py",
+        "tests/test_context_memory_privacy.py",
+        "tests/test_handoff_trigger.py",
+        "tests/test_gpt_reply_completeness.py"
+      ],
+      "delta_justification": "Existing tests do NOT exercise the new orchestrators. Follow TDD per global rule gsd-tdd: RED → GREEN → REGRESSION. Suggest each test file 150-300 LoC with synthetic fixtures (NOT real paper text)."
+    }
+  ],
+  "stale_findings": [
+    {
+      "id": "STALE-01",
+      "severity": "HIGH",
+      "location": "BOOT_CONTEXT.md",
+      "evidence": "Line 29 states '当前 agent-acceptance 测试 232 PASS (170 baseline + 62 new)' AND line 35 states '247 tests PASS' — same file, two different totals.",
+      "implication": "Any handoff generated from BOOT_CONTEXT inherits an internal contradiction. Stale check must surface this."
+    },
+    {
+      "id": "STALE-02",
+      "severity": "MEDIUM",
+      "location": "memory/index.md vs BOOT_CONTEXT.md vs PROJECT_HISTORY.md",
+      "evidence": "All three quote '247 PASS'. No script has been run during Phase 0 to re-collect the real current count. Memory compiler outputs were last updated 2026-06-07.",
+      "implication": "Memory layer (P2) and BOOT_CONTEXT layer (P1) agree, but neither is re-verified against a fresh pytest run (P0). Standard stale-check practice: re-run pytest --co (collect-only) or last test manifest, compare."
+    },
+    {
+      "id": "STALE-03",
+      "severity": "INFO",
+      "location": "previous session claim of '296 PASS'",
+      "evidence": "Previous coding-agent reply (this session, before Phase 0) cited '296 PASS' as a fact. Phase 0 found NO written source supporting 296. The agent (minimax-m3) likely fabricated or hallucinated this number from conversational context, NOT from any P0/P1/P2 evidence.",
+      "implication": "Strong evidence for why memory compiler / coding-agent summaries cannot be promoted to P0. This case will be the first entry in MINIMAX_M3_OBSERVATION_LOG once Phase 1 is authorized.",
+      "minimax_m3_observation_seed": true
+    },
+    {
+      "id": "STALE-04",
+      "severity": "MEDIUM",
+      "location": "BOOT_CONTEXT.md line 70 + recent git log",
+      "evidence": "BOOT_CONTEXT says 'PROJECT-HISTORY-BOOT-MEMORY-SYNC-A1 已完成' and recommends waiting for next GPT-authorized task. But git log shows the last 10 commits are ALL paper module work (M1-M12 R2/R3 reviews) committed AFTER BOOT_CONTEXT's claimed date 2026-06-08. BOOT_CONTEXT is at least a few commits stale w.r.t. real work in progress.",
+      "implication": "Stale check must compare BOOT_CONTEXT 'last updated' vs HEAD commit date."
+    },
+    {
+      "id": "STALE-05",
+      "severity": "LOW",
+      "location": "BOOT_CONTEXT.md 'paper processing frozen' claim (via memory/knowledge/paper_privacy.md)",
+      "evidence": "paper_privacy.md states '论文处理被 freeze. 不进行 PAPER-C3 / 真实论文处理'. But evidence_packs/paper-c3-dry-run/ exists, _reports/PAPER_PROJECT_INDEX.json shows 12 active paper modules with M1-M12 in_progress status, and last 10 commits are paper reviews.",
+      "implication": "Memory layer says 'frozen', repo state says 'active'. Stale check or freeze-status reconciliation needed."
+    }
+  ],
+  "conflicts_and_high_risk_operations": {
+    "naming_conflicts": "none — all proposed scripts/schemas/tests have unique names not present in repo.",
+    "schema_conflicts": "none — but RECOMMEND aligning field names with existing boot_context.schema.json and gpt_review_result.schema.json to reduce semantic drift.",
+    "old_handoff_misuse_risk": "HIGH — HANDOFF.md / HANDOFF_V5.md / HANDOFF_V6.md / PROJECT_HISTORY.md / PROJECT_HISTORY_FINAL.md all sit at repo root with no SUPERSEDED notice. A new agent reading the repo cold could pick any of them as 'current'. LEGACY_HANDOFF_INVENTORY.md (Phase 1+ deliverable) is needed.",
+    "human_required_decisions": [
+      "Phase 1 must decide: do we use a paper-scoped Project Index (existing) or build a general project-wide index? Affects HANDOFF_EVIDENCE_MAP design.",
+      "Phase 1 must decide: which is the canonical issue ledger — .ai/module_ledger/, .ai/tasks/, tasks/, or docs/WORKFLOW_AUDIT_LEDGER.yaml? They appear to track different things.",
+      "Phase 1 must decide: does 'paper processing frozen' (per memory) override the recent paper M1-M12 commits, or vice versa? This is a project-state question, not a code question — user/GPT must clarify."
+    ]
+  },
+  "phase1_recommendation": {
+    "proceed": true,
+    "blockers": [
+      "User must resolve the 'paper processing frozen vs M1-M12 active commits' contradiction (STALE-05) before HANDOFF_DRAFT can honestly describe current module status.",
+      "User must indicate canonical issue ledger choice (or accept agent's inference: prefer .ai/module_ledger/ for paper modules + .ai/tasks/ for governance tasks)."
+    ],
+    "minimal_phase1_write_set_proposal": {
+      "documents_only_first": [
+        "HANDOFF_SOURCE_OF_TRUTH.md (root)",
+        "LEGACY_HANDOFF_INVENTORY.md (root)",
+        ".ai/tasks/handoff-pipeline-refactor-a1.yaml",
+        "memory/tasks/handoff-pipeline-refactor-a1.md"
+      ],
+      "tests_then_scripts": [
+        "tests/test_handoff_safety_scan.py (RED) → scripts/handoff_safety_scan.py (~40 LoC wrapper)",
+        "tests/test_handoff_stale_check.py (RED) → scripts/handoff_stale_check.py",
+        "tests/test_handoff_source_map.py (RED) → scripts/handoff_source_map.py",
+        "tests/test_handoff_compiler.py (RED) → scripts/handoff_compiler.py",
+        "schemas/handoff_*.schema.json + schemas/minimax_m3_observation.schema.json (alongside their consumers)"
+      ],
+      "draft_outputs_last": [
+        "_reports/handoff-pipeline-refactor-a1/HANDOFF_STALE_CHECK.{md,json}",
+        "_reports/handoff-pipeline-refactor-a1/HANDOFF_SAFETY_SCAN.md",
+        "_reports/handoff-pipeline-refactor-a1/HANDOFF_EVIDENCE_MAP.json",
+        "_reports/handoff-pipeline-refactor-a1/HANDOFF_DRAFT_FOR_GPT.md",
+        "_reports/handoff-pipeline-refactor-a1/PASTE_BLOCK_DRAFT_FOR_NEW_GPT.txt",
+        "_reports/handoff-pipeline-refactor-a1/TARGETED_TEST_OUTPUT.txt",
+        "_reports/handoff-pipeline-refactor-a1/SAFETY_ATTESTATION.md",
+        "_reports/minimax-m3-observation/MINIMAX_M3_OBSERVATION_LOG.md",
+        "_reports/minimax-m3-observation/MINIMAX_M3_EVIDENCE_TABLE.json"
+      ],
+      "evidence_pack_last": [
+        "evidence_packs/handoff-pipeline-refactor-a1/{actual_deliverables/, reports/, CLOSURE_REPORT.md, GPT_REVIEW_PROMPT.md, PACK_MANIFEST.md, SAFETY_ATTESTATION.md, closure-pack.zip}"
+      ]
+    },
+    "explicitly_forbidden_in_phase1": [
+      "delete/move/rename HANDOFF.md, HANDOFF_V5.md, HANDOFF_V6.md, PROJECT_HISTORY.md, PROJECT_HISTORY_FINAL.md, any GPT_*.txt at root",
+      "rewrite content inside legacy files — only append SUPERSEDED notice if user explicitly authorizes that sub-step",
+      "promote any draft to *_APPROVED_* before a captured GPT verdict exists",
+      "include real paper full text, original paragraphs, advisor comments in any new artifact",
+      "auto-commit / auto-push"
+    ]
+  }
+}

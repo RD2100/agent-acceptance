@@ -1,0 +1,9 @@
+{
+  "run_id": "HANDOFF_A1_NEWCHAT_20260608_214045_2D942N",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "sha256": "5f5733ede439895e7c823bb3e7df6ba039759ba6ec4664d9ea19c70d6b5e8cc3",
+  "matches_old_reply_sha": false
+}

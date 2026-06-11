@@ -1,0 +1,15 @@
+{
+  "target_run_id": "GPT_REVIEW_SUBMISSION_PARAMETERIZE_A1_REVIEW_20260609T023631_RD",
+  "target_task_id": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1",
+  "before_user_count": 15,
+  "before_assistant_count": 9,
+  "after_user_count": 16,
+  "after_assistant_count": 10,
+  "candidate_indices": [
+    9
+  ],
+  "selected_index": 9,
+  "last_index": 9,
+  "capture_mismatch": false,
+  "decision": "selected_and_last_match"
+}

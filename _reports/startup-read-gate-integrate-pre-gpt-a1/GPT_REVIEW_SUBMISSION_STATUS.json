@@ -1,0 +1,56 @@
+{
+  "run_id": "STARTUP_READ_GATE_INTEGRATE_PRE_GPT_A1_REVIEW_20260609T122658_RD",
+  "task_id": "STARTUP-READ-GATE-INTEGRATE-PRE-GPT-A1",
+  "scenario": "A",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\startup-read-gate-integrate-pre-gpt-a1\\STARTUP_READ_GATE_INTEGRATE_PRE_GPT_A1_20260609T122658_RD.zip",
+  "pack_exists": true,
+  "pack_size": 19212,
+  "pack_sha256": "59e560804621a9ed5d0ace2d137bdf83288d3db117c05b6b5bb4e36490a5171d",
+  "prompt_chars": 1603,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T12:27:24",
+  "reply_chars": 1684,
+  "reply_sha256": "b707c8eaf19d5190fb876aeed12b23690e907ec7c09256490d4e1d129e3db885",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "capture_reconciliation": {
+    "target_run_id": "STARTUP_READ_GATE_INTEGRATE_PRE_GPT_A1_REVIEW_20260609T122658_RD",
+    "target_task_id": "STARTUP-READ-GATE-INTEGRATE-PRE-GPT-A1",
+    "before_user_count": 22,
+    "before_assistant_count": 16,
+    "after_user_count": 23,
+    "after_assistant_count": 17,
+    "candidate_indices": [
+      16
+    ],
+    "selected_index": 16,
+    "last_index": 16,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\startup-read-gate-integrate-pre-gpt-a1\\GPT_REVIEW_RESULT_R1.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\startup-read-gate-integrate-pre-gpt-a1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "D:\\agent-acceptance\\_reports\\startup-read-gate-integrate-pre-gpt-a1\\GPT_CAPTURE_RECONCILIATION.json"
+}

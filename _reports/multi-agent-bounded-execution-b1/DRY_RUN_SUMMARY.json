@@ -1,0 +1,12 @@
+{
+  "total_assignments": 3,
+  "completed": 3,
+  "blocked": 0,
+  "total_gates": 15,
+  "gates_passed": 15,
+  "gates_failed": 0,
+  "gates_warning": 0,
+  "cdp_active": true,
+  "tests_passed": true,
+  "cap029_found": true
+}

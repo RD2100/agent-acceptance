@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-06-08T12:46:21.224247+00:00",
+  "pass": true,
+  "files_checked": 4,
+  "issues": [],
+  "results": [
+    {
+      "file": "D:\\agent-acceptance\\_reports\\handoff-pipeline-refactor-a1\\HANDOFF_DRAFT_FOR_GPT.md",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 2277,
+      "hash": "37d84edd176b0c870b8f525b744e2d86ee64be97682149bbf5f07e374cdf6db1"
+    },
+    {
+      "file": "D:\\agent-acceptance\\_reports\\handoff-pipeline-refactor-a1\\PASTE_BLOCK_DRAFT_FOR_NEW_GPT.txt",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 2352,
+      "hash": "e40f29f4da88f89596c15b07f59dec0bb4502cbaf932d55e8234f454d71fc63f"
+    },
+    {
+      "file": "D:\\agent-acceptance\\HANDOFF_SOURCE_OF_TRUTH.md",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 3111,
+      "hash": "6fac2b229a4207a05bf45719ae3d78a252fe21e18e6285851be53b809674e3c2"
+    },
+    {
+      "file": "D:\\agent-acceptance\\LEGACY_HANDOFF_INVENTORY.md",
+      "pass": true,
+      "issues": [],
+      "paper_markers_detected": [],
+      "char_count": 2368,
+      "hash": "551f0486fc56d838fd763b6125a4c7cc80b7c6c0aa9c1a86b2476fb8e4353867"
+    }
+  ],
+  "scanner": "validate_context_memory.validate_file"
+}

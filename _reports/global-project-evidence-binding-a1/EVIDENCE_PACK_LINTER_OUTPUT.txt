@@ -1,0 +1,10 @@
+{
+  "valid": true,
+  "errors": [],
+  "warnings": [
+    "missing expected report: TARGETED_TEST_OUTPUT.txt",
+    "missing expected report: TEST_OUTPUT.txt"
+  ],
+  "summary_only_risk": "none",
+  "recommendation": "ready for GPT submission"
+}

@@ -1,0 +1,48 @@
+{
+  "verify": {
+    "valid": false,
+    "overall_judgment": "accepted_with_limitation",
+    "errors": [
+      "accepted verdict missing next_task_authorization"
+    ],
+    "checks": {
+      "has_end_marker": true,
+      "overall_judgment": "accepted_with_limitation",
+      "evidence_pack_reviewed": true,
+      "task_id_in_reply": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1",
+      "task_id_matches": true,
+      "has_next_task_auth": false
+    },
+    "sha256": "4a6853c20718432f3c81093b41e3914c...",
+    "size": 886,
+    "verdict_allowed": false,
+    "source": "captured_gpt_response",
+    "task_id": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1"
+  },
+  "closure_ready": {
+    "closure_ready": false,
+    "reason": "GPT reply not valid",
+    "verdict": {
+      "valid": false,
+      "overall_judgment": "accepted_with_limitation",
+      "errors": [
+        "accepted verdict missing next_task_authorization"
+      ],
+      "checks": {
+        "has_end_marker": true,
+        "overall_judgment": "accepted_with_limitation",
+        "evidence_pack_reviewed": true,
+        "task_id_in_reply": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1",
+        "task_id_matches": true,
+        "has_next_task_auth": false
+      },
+      "sha256": "4a6853c20718432f3c81093b41e3914c...",
+      "size": 886,
+      "verdict_allowed": false,
+      "source": "captured_gpt_response"
+    }
+  }
+}
+
+GUARD BLOCKED: GPT reply for GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1 is not valid.
+Errors: ['accepted verdict missing next_task_authorization']

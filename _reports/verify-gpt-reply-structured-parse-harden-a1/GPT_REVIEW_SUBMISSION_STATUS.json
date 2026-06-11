@@ -1,0 +1,56 @@
+{
+  "run_id": "VERIFY_GPT_REPLY_STRUCTURED_PARSE_HARDEN_A1_REVIEW_20260609T120738_RD",
+  "task_id": "VERIFY-GPT-REPLY-STRUCTURED-PARSE-HARDEN-A1",
+  "scenario": "A",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\verify-gpt-reply-structured-parse-harden-a1\\VERIFY_GPT_REPLY_STRUCTURED_PARSE_HARDEN_A1_20260609T120738_RD.zip",
+  "pack_exists": true,
+  "pack_size": 17740,
+  "pack_sha256": "0b74d854c3a2215adac476726b87f3f4d70aaa594fec5fcd835dc4b1f977fa5e",
+  "prompt_chars": 2400,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T12:08:02",
+  "reply_chars": 1319,
+  "reply_sha256": "062048659d66e1412e5cdc781487839c4fb9bb58cd7a144d4c692c1c1a27032b",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "capture_reconciliation": {
+    "target_run_id": "VERIFY_GPT_REPLY_STRUCTURED_PARSE_HARDEN_A1_REVIEW_20260609T120738_RD",
+    "target_task_id": "VERIFY-GPT-REPLY-STRUCTURED-PARSE-HARDEN-A1",
+    "before_user_count": 19,
+    "before_assistant_count": 13,
+    "after_user_count": 20,
+    "after_assistant_count": 14,
+    "candidate_indices": [
+      13
+    ],
+    "selected_index": 13,
+    "last_index": 13,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\verify-gpt-reply-structured-parse-harden-a1\\GPT_REVIEW_RESULT_R1.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\verify-gpt-reply-structured-parse-harden-a1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "D:\\agent-acceptance\\_reports\\verify-gpt-reply-structured-parse-harden-a1\\GPT_CAPTURE_RECONCILIATION.json"
+}

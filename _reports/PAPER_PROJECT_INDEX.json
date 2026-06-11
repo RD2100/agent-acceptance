@@ -1,0 +1,251 @@
+{
+  "paper_title": "基金项目：2024年国家社科基金重大项目“高质量教育体系的内涵、比较与建设路径研究”（24&ZD177）",
+  "total_modules": 12,
+  "total_chars": 17367,
+  "generated_at": "2026-06-08T08:22:13.009460+00:00",
+  "overall_status": "in_progress",
+  "modules": [
+    {
+      "id": "M1",
+      "section": "一、高等教育提质扩容的必然逻辑",
+      "subsection": "",
+      "chars": 174,
+      "citations": 0,
+      "functions": [
+        "阐述/论证"
+      ],
+      "review_status": "in_progress",
+      "rounds": 2,
+      "issue_counts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      }
+    },
+    {
+      "id": "M2",
+      "section": "一、高等教育提质扩容的必然逻辑",
+      "subsection": "（一）应然之举：教育强国的双重规定性要求高等教育提质扩容",
+      "chars": 1069,
+      "citations": 4,
+      "functions": [
+        "规范性/政策建议"
+      ],
+      "review_status": "in_progress",
+      "rounds": 2,
+      "issue_counts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      }
+    },
+    {
+      "id": "M3",
+      "section": "一、高等教育提质扩容的必然逻辑",
+      "subsection": "（二）实然之境：高等教育提质与扩容之间存在内在统一性",
+      "chars": 1057,
+      "citations": 0,
+      "functions": [
+        "规范性/政策建议"
+      ],
+      "review_status": "in_progress",
+      "rounds": 3,
+      "issue_counts": {
+        "P0": 0,
+        "P1": 3,
+        "P2": 0,
+        "P3": 0
+      }
+    },
+    {
+      "id": "M4",
+      "section": "一、高等教育提质扩容的必然逻辑",
+      "subsection": "（三）必然之势：高等教育提质扩容协同推进刻不容缓",
+      "chars": 1246,
+      "citations": 4,
+      "functions": [
+        "阐述/论证"
+      ],
+      "review_status": "new",
+      "rounds": 0,
+      "issue_counts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      }
+    },
+    {
+      "id": "M5",
+      "section": "二、高等教育提质扩容的内在张力",
+      "subsection": "",
+      "chars": 104,
+      "citations": 0,
+      "functions": [
+        "阐述/论证"
+      ],
+      "review_status": "new",
+      "rounds": 0,
+      "issue_counts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      }
+    },
+    {
+      "id": "M6",
+      "section": "二、高等教育提质扩容的内在张力",
+      "subsection": "（一）公平与效率的价值博弈",
+      "chars": 1474,
+      "citations": 10,
+      "functions": [
+        "规范性/政策建议"
+      ],
+      "review_status": "new",
+      "rounds": 0,
+      "issue_counts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      }
+    },
+    {
+      "id": "M7",
+      "section": "二、高等教育提质扩容的内在张力",
+      "subsection": "（二）普惠与卓越的二元悖论",
+      "chars": 1093,
+      "citations": 2,
+      "functions": [
+        "阐述/论证"
+      ],
+      "review_status": "new",
+      "rounds": 0,
+      "issue_counts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      }
+    },
+    {
+      "id": "M8",
+      "section": "二、高等教育提质扩容的内在张力",
+      "subsection": "（三）统一与分类的两难选择",
+      "chars": 1176,
+      "citations": 3,
+      "functions": [
+        "转折/对立论点"
+      ],
+      "review_status": "new",
+      "rounds": 0,
+      "issue_counts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      }
+    },
+    {
+      "id": "M9",
+      "section": "三、高等教育提质扩容的平衡之道",
+      "subsection": "",
+      "chars": 128,
+      "citations": 1,
+      "functions": [
+        "阐述/论证"
+      ],
+      "review_status": "new",
+      "rounds": 0,
+      "issue_counts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      }
+    },
+    {
+      "id": "M10",
+      "section": "三、高等教育提质扩容的平衡之道",
+      "subsection": "（一）坚守从优先发展到协同发力的价值平衡",
+      "chars": 1396,
+      "citations": 3,
+      "functions": [
+        "规范性/政策建议"
+      ],
+      "review_status": "new",
+      "rounds": 0,
+      "issue_counts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      }
+    },
+    {
+      "id": "M11",
+      "section": "三、高等教育提质扩容的平衡之道",
+      "subsection": "（二）实现基础保障与择优支持的资源平衡",
+      "chars": 1423,
+      "citations": 3,
+      "functions": [
+        "规范性/政策建议"
+      ],
+      "review_status": "new",
+      "rounds": 0,
+      "issue_counts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      }
+    },
+    {
+      "id": "M12",
+      "section": "三、高等教育提质扩容的平衡之道",
+      "subsection": "（三）探求统一引领与分类评价的制度平衡",
+      "chars": 7027,
+      "citations": 46,
+      "functions": [
+        "规范性/政策建议"
+      ],
+      "review_status": "new",
+      "rounds": 0,
+      "issue_counts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      }
+    }
+  ],
+  "structure_map": {
+    "一、高等教育提质扩容的必然逻辑": [
+      "M1",
+      "M2",
+      "M3",
+      "M4"
+    ],
+    "二、高等教育提质扩容的内在张力": [
+      "M5",
+      "M6",
+      "M7",
+      "M8"
+    ],
+    "三、高等教育提质扩容的平衡之道": [
+      "M9",
+      "M10",
+      "M11",
+      "M12"
+    ]
+  },
+  "issues_summary": {
+    "P0": 0,
+    "P1": 3,
+    "P2": 0,
+    "P3": 0
+  }
+}

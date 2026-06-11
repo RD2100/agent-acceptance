@@ -1,0 +1,29 @@
+{
+  "task_id": "HUMAN-DECISION-RECORD-HASH-MANIFEST-BIND-A1",
+  "run_id": "HUMAN_DECISION_RECORD_HASH_MANIFEST_BIND_A1_20260609T131515_RD",
+  "round": "R1",
+  "verdict": "accepted_with_limitation",
+  "overall_judgment": "accepted_with_limitation",
+  "valid": true,
+  "closure_ready": true,
+  "verified_at": "2026-06-09T13:18:00.923441+08:00",
+  "source": "manual_recapture",
+  "gpt_reply_size": 1711,
+  "checks": {
+    "has_end_marker": true,
+    "has_next_task_auth": true,
+    "verdict_allowed": true
+  },
+  "findings": [
+    "compute_evidence_hashes and verify_evidence_hashes implemented correctly",
+    "create_record supports repo_root + compute_hashes, schema 1.1.0",
+    "validate_record hash_verification detects tampering (mismatch fails)",
+    "Backward compatible: records without evidence_hashes skip hash check",
+    "7 new tests cover all hash scenarios"
+  ],
+  "limitations": [
+    "create_record does not formally reject empty task_id",
+    "Evidence pack run_id differs from prompt run_id; should unify"
+  ],
+  "next_task_authorization": "HUMAN-DECISION-RECORD-CLI-T10-HASH-INTEGRATE-A1"
+}

@@ -1,0 +1,189 @@
+审查结论（Overall Judgment）
+
+accepted_with_limitation
+
+B1 可以被接受为一次 bounded dry run / 受控干运行执行验证：它证明了在既定治理边界内，A1 READY dispatch plan 可以被读取、分派、门禁校验，并生成 RunSpec、ExecutionReport、ChainEvidence 等执行链路产物。
+
+但该结论必须限定为：dry_run=true 的本地受控执行闭环通过，不能表述为真实 opencode dispatch、外部 runtime 执行、跨仓库执行或真实生产路径已经验证通过。
+
+各检查项评估
+1. READY→EXECUTED 过渡是否成立？
+
+成立，但仅限 dry run。
+
+证据显示 B1 从 DISPATCH_PLAN_R3.json 读取 READY dispatch plan，并对 3 个 assignment 生成了 completed 状态的 RunSpec，同时产出 ExecutionReport 与 ChainEvidence。3 个 assignment 均为：
+
+dry_run: true
+
+status: completed
+
+exit_code: 0
+
+tier: 0
+
+因此，READY→EXECUTED 的治理状态转换链路在受控干运行中被证明可用。
+
+限制是：executed_external_runtime: false，且明确没有执行真实 opencode run。所以这里的 EXECUTED 不能等同于真实外部模型/agent 执行。
+
+2. 15/15 gates passed 是否可信？
+
+基本可信。
+
+B1 对 3 个 assignment 分别执行 5 个 gates，共 15 个门禁：
+
+TaskSpec schema validation
+
+Conflict registry boundaries
+
+No forbidden operations
+
+Gate 0 reuse-before-build evidence contract
+
+Read set files exist and are accessible
+
+全部通过，且 0 P0 failures。这个 gate 设计与 B1 的 dry run 目标是匹配的，尤其覆盖了 schema、冲突边界、禁止操作、Gate 0 复用证据和 read_set 可访问性。
+
+但需要保留一个证据限制：当前对话中没有展开每一个 gate 的逐项原始输出，只看到汇总结果。因此可以接受其为 submission-level evidence，但若进入更高等级审查，仍应抽查 gate_results 的完整 artifact。
+
+3. R2 限制项 L1-L4 是否被处理？
+
+处理充分，至少从证据清单看是完整的。
+
+L1 raw pytest output：已收集 python -m pytest tests/ -q --tb=line，结果为 762 passed, 21 warnings，并归档到 raw_test_output.json。
+
+L2 raw CDP evidence：已收集 /json/version 和 /json，归档到 cdp_raw_evidence.json。
+
+L3 real RunSpec + ExecutionReport + ChainEvidence：dry_run=true 下已生成对应 artifacts。
+
+L4 CAP-029 passport excerpt：已收集 cap029_passport.json，状态为 approved / verified / usable_for_execution=true。
+
+这里可以认为 A1 R2 的主要 evidence limitations 已在 B1 中得到补强。
+
+4. 测试覆盖是否充分？
+
+对 B1 范围而言充分。
+
+测试结果为：
+
+762 passed, 21 warnings
+44 new B1 tests + 718 existing tests
+
+新增 44 个 B1 tests 覆盖：
+
+authorization record
+
+execution report
+
+run specs
+
+chain evidence
+
+gate results
+
+supplementary evidence
+
+dry run summary
+
+script module function tests
+
+这说明 B1 不是只添加执行脚本，而是为授权、报告、证据链和 dry run 约束补了对应测试。对 bounded dry run 阶段而言，覆盖面是合理的。
+
+限制是：这仍不构成真实外部 runtime、真实 opencode dispatch、真实多 agent 任务结果质量的证明。
+
+5. Human authorization record 是否合格？
+
+合格。
+
+授权记录包含：
+
+scope: bounded_local_dry_run_only
+
+risk_acknowledged: true
+
+allowed commands
+
+forbidden commands
+
+expected write set
+
+safety boundary
+
+特别是 forbidden commands 明确禁止：
+
+opencode run
+cross-repo smoke
+git push
+git reset --hard
+
+这与 B1 的受控执行边界一致。expected_write_set 限定在 _reports/multi-agent-bounded-execution-b1/，也符合 evidence artifact 写入的合理范围。
+
+需要注意一个表述细节：报告中同时说 “all operations read-only” 和 “write operations confined to _reports/...” 。更精确的表述应是：对项目业务文件和外部 runtime 只读；仅允许写入 B1 evidence/report 目录。
+
+6. 安全边界是否完好？
+
+完好。
+
+证据显示：
+
+未执行真实外部 runtime
+
+未执行真实 opencode dispatch
+
+未做 cross-repo 操作
+
+未处理 paper workflow
+
+写入范围限制在 _reports/multi-agent-bounded-execution-b1/
+
+gate signer role 为 reviewer，不是 executor/fixer/coder
+
+human authorization 包含风险确认
+
+因此没有看到越权执行、跨仓库污染、生产路径误触发或伪装真实执行的证据。
+
+发现的问题
+L1：B1 只能证明 dry-run execution，不证明真实执行
+
+这是本轮最重要的限制。B1 的价值在于证明治理链路、门禁、证据产物和状态转换可以在 dry_run 条件下闭环，但不能升级表述为：
+
+real opencode dispatch passed
+
+external runtime execution verified
+
+multi-agent production execution proven
+
+cross-repo smoke passed
+
+建议后续所有文档统一写成：
+
+B1 accepted as bounded local dry-run execution evidence.
+It proves READY->EXECUTED transition under dry_run=true only.
+It does not prove real external runtime execution.
+L2：原始 artifact 仍是“已归档但未展开审查”
+
+当前证据说明 raw output、CDP raw、CAP passport、gate results 已归档，但对话中没有完整展开这些文件内容。对本轮 GPT 审查可以接受，但若进入发布候选或 B2 阶段，应要求抽检：
+
+_reports/multi-agent-bounded-execution-b1/raw_test_output.json
+_reports/multi-agent-bounded-execution-b1/cdp_raw_evidence.json
+_reports/multi-agent-bounded-execution-b1/cap029_passport.json
+_reports/multi-agent-bounded-execution-b1/gate_results*.json
+L3：read-only 表述需要修正
+
+当前 “all operations read-only” 与 “write operations confined to reports directory” 存在轻微表述冲突。应改为：
+
+No project/runtime/external write operations were performed.
+Only evidence/report artifacts were written under the approved B1 report directory.
+
+这不是阻塞问题，但建议修正，避免后续审查误读。
+
+最终判定
+
+accepted_with_limitation
+
+B1 可以进入项目历史记录，结论应写为：
+
+MULTI-AGENT-BOUNDED-EXECUTION-B1 is accepted_with_limitation.
+
+It successfully demonstrates a bounded local dry-run READY->EXECUTED transition using the A1 READY dispatch plan. All 3 assignments completed under dry_run=true, all 15 gates passed, RunSpec / ExecutionReport / ChainEvidence artifacts were produced, R2 L1-L4 evidence was collected, and 762 tests passed.
+
+Limitation: this is not real opencode dispatch or external runtime execution. The acceptance is limited to dry-run governance execution and evidence-chain validation.

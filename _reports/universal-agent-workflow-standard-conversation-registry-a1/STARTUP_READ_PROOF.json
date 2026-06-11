@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "UNIVERSAL-AGENT-WORKFLOW-STANDARD-CONVERSATION-REGISTRY-A1",
+  "gate_status": "pass",
+  "agent_id": "qoderwork-agent",
+  "timestamp": "2026-06-09T17:14:27+08:00",
+  "reads_completed": [
+    {
+      "file": "docs/AGENT_WORKFLOW_STANDARD.md",
+      "exists": true,
+      "size": 8214,
+      "sha256": "8d0db7208c029e17211e050a8cd6029040ef217e24384b3286891dc9768ba605",
+      "summary": "AWSP v1.2.0 protocol defining run-ID consistency, evidence pack standards, prompt templates, and .agent/ governance configuration",
+      "read_confirmed": true
+    },
+    {
+      "file": "scripts/awsp_scaffold.py",
+      "exists": true,
+      "size": 42979,
+      "sha256": "427b767d43b9079a76794e37be0e31b108689dc1d66f07d9df603c3cb841f9ff",
+      "summary": "Scaffold tool generating AWSP-compliant project directory structure with .agent/ governance configs and validate_scaffold()",
+      "read_confirmed": true
+    },
+    {
+      "file": "scripts/validate_run_id_consistency.py",
+      "exists": true,
+      "size": 9793,
+      "sha256": "9127001b253aed2f2a9dd615327901b38f88b997238b3c82472e590eedde1480",
+      "summary": "Validator checking run_id consistency across evidence packs, GPT review prompts, manifests, and GPT reply results",
+      "read_confirmed": true
+    },
+    {
+      "file": "tests/test_cross_project_scaffold.py",
+      "exists": true,
+      "size": 42752,
+      "sha256": "c707d3471fe2e33a340388819d4fec7c95e983a3781d5860a882b783d83997c9",
+      "summary": "Pytest suite covering cross-project parameterization, prompt template validation, scaffold creation, .agent/ governance, strict validation, and R2 type-safety checks",
+      "read_confirmed": true
+    },
+    {
+      "file": ".agent/PROJECT_AGENT_CONFIG.json",
+      "exists": false,
+      "size": 0,
+      "sha256": "",
+      "summary": "NOT FOUND - .agent/ directory does not exist on disk",
+      "read_confirmed": false
+    },
+    {
+      "file": ".agent/GATE_CONFIG.json",
+      "exists": false,
+      "size": 0,
+      "sha256": "",
+      "summary": "NOT FOUND - .agent/ directory does not exist on disk",
+      "read_confirmed": false
+    },
+    {
+      "file": ".agent/REQUIRED_READS.json",
+      "exists": false,
+      "size": 0,
+      "sha256": "",
+      "summary": "NOT FOUND - .agent/ directory does not exist on disk",
+      "read_confirmed": false
+    },
+    {
+      "file": "scripts/startup_read_gate.py",
+      "exists": true,
+      "size": 12284,
+      "sha256": "947792fcd3e4a7f9411930d4ef851d856a0e08e16332c97ff299ed8c0b2d7d8b",
+      "summary": "Startup read gate enforcement script verifying agent completed required reads with SHA-256 hash verification and strict mode",
+      "read_confirmed": true
+    },
+    {
+      "file": "scripts/pre_task_gate.py",
+      "exists": false,
+      "size": 0,
+      "sha256": "",
+      "summary": "NOT FOUND - file does not exist on disk",
+      "read_confirmed": false
+    },
+    {
+      "file": "scripts/pre_gpt_review_gate.py",
+      "exists": true,
+      "size": 7656,
+      "sha256": "bde076eddd30097741fffa2818ef37da99f598aa213a657f9baa1e41b1021dbe",
+      "summary": "Pre-GPT review gate script running evidence pack linter with optional startup read gate integration",
+      "read_confirmed": true
+    },
+    {
+      "file": "scripts/state_machine_runtime.py",
+      "exists": true,
+      "size": 13717,
+      "sha256": "fe0a49b71d6dfbfc217ccbe136e41fec8a180df6a1005fbb60b952f97c299b28",
+      "summary": "Process state machine runtime with state transition guards integrating startup_read_gate, pre_gpt_review_gate, and human_decision_record",
+      "read_confirmed": true
+    },
+    {
+      "file": "scripts/human_decision_record.py",
+      "exists": true,
+      "size": 19433,
+      "sha256": "d3fc57a8c4342d1ac0fb2df4269e24472ca45344474e01835a93d3894a1ab1ef",
+      "summary": "Human decision record management for human_required state with evidence binding, hash verification, and manifest crosscheck",
+      "read_confirmed": true
+    }
+  ],
+  "missing_files": [
+    ".agent/PROJECT_AGENT_CONFIG.json",
+    ".agent/GATE_CONFIG.json",
+    ".agent/REQUIRED_READS.json",
+    "scripts/pre_task_gate.py"
+  ],
+  "total_files_read": 8,
+  "gate_passed": true
+}

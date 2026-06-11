@@ -1,0 +1,144 @@
+{
+  "task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1",
+  "run_id": "HANDOFF_WORKFLOW_HARDENING_PLAN_A1_20260609_012328",
+  "generated_at": "2026-06-09T01:23:28+00:00",
+  "candidates": [
+    {
+      "batch": 1,
+      "batch_name": "core_infrastructure",
+      "requires_user_confirmation": false,
+      "eligible_for_auto_gpt_loop": true,
+      "tasks": [
+        {
+          "task_id": "PROCESS-STATE-MACHINE-DEFINE-A1",
+          "description": "创建 PROCESS_STATE_MACHINE.md 和 PROCESS_STATE_MACHINE.json，定义任务生命周期状态、转换条件和安全约束",
+          "depends_on": ["HANDOFF-WORKFLOW-HARDENING-PLAN-A1 accepted"],
+          "estimated_complexity": "medium",
+          "files_to_create": [
+            "_reports/process-state-machine-define-a1/PROCESS_STATE_MACHINE.md",
+            "_reports/process-state-machine-define-a1/PROCESS_STATE_MACHINE.json"
+          ],
+          "risk_level": "low",
+          "requires_gpt_review": true
+        },
+        {
+          "task_id": "CHANGED-FILES-SCHEMA-STANDARDIZE-A1",
+          "description": "定义统一的 CHANGED_FILES_SCHEMA.json，标准化 pre/post 文件变更证据格式",
+          "depends_on": ["HANDOFF-WORKFLOW-HARDENING-PLAN-A1 accepted"],
+          "estimated_complexity": "low",
+          "files_to_create": [
+            "schemas/CHANGED_FILES_SCHEMA.json"
+          ],
+          "risk_level": "low",
+          "requires_gpt_review": true
+        },
+        {
+          "task_id": "GPT-SUBMITTER-PARAMETERIZE-A1",
+          "description": "将 gpt_new_chat_attachment_submit.py 参数化为可复用通用入口",
+          "depends_on": ["HANDOFF-WORKFLOW-HARDENING-PLAN-A1 accepted"],
+          "estimated_complexity": "medium",
+          "files_to_modify": [
+            "scripts/gpt_new_chat_attachment_submit.py"
+          ],
+          "risk_level": "medium",
+          "requires_gpt_review": true
+        }
+      ]
+    },
+    {
+      "batch": 2,
+      "batch_name": "audit_and_testing",
+      "requires_user_confirmation": false,
+      "eligible_for_auto_gpt_loop": true,
+      "tasks": [
+        {
+          "task_id": "GPT-CAPTURE-RECONCILIATION-A1",
+          "description": "实现端到端 GPT 审查对账报告，映射所有 run_id 到提交-捕获-验证链",
+          "depends_on": ["PROCESS-STATE-MACHINE-DEFINE-A1 accepted"],
+          "estimated_complexity": "medium",
+          "files_to_create": [
+            "_reports/gpt-capture-reconciliation-a1/GPT_CAPTURE_RECONCILIATION_REPORT.json"
+          ],
+          "risk_level": "low",
+          "requires_gpt_review": true
+        },
+        {
+          "task_id": "GPT-REVIEW-REGRESSION-TESTS-A1",
+          "description": "为 verify_gpt_reply.py / pre_gpt_review_gate.py / evidence_pack_linter.py 编写回归测试",
+          "depends_on": ["PROCESS-STATE-MACHINE-DEFINE-A1 accepted"],
+          "estimated_complexity": "medium",
+          "files_to_create": [
+            "tests/test_verify_gpt_reply_regression.py",
+            "tests/test_pre_gpt_review_gate_regression.py",
+            "tests/test_evidence_pack_linter_regression.py"
+          ],
+          "risk_level": "low",
+          "requires_gpt_review": true
+        }
+      ]
+    },
+    {
+      "batch": 3,
+      "batch_name": "supplementary",
+      "requires_user_confirmation": false,
+      "eligible_for_auto_gpt_loop": true,
+      "tasks": [
+        {
+          "task_id": "HUMAN-REQUIRED-DECISION-TEMPLATE-A1",
+          "description": "创建 HUMAN_REQUIRED_DECISION_RECORD_TEMPLATE.json 模板",
+          "depends_on": ["PROCESS-STATE-MACHINE-DEFINE-A1 accepted"],
+          "estimated_complexity": "low",
+          "files_to_create": [
+            "templates/HUMAN_REQUIRED_DECISION_RECORD_TEMPLATE.json"
+          ],
+          "risk_level": "low",
+          "requires_gpt_review": true
+        },
+        {
+          "task_id": "STARTUP-READ-GATE-VERIFY-A1",
+          "description": "创建 scripts/verify_startup_read_proof.py 实现启动读门槛的机器验证",
+          "depends_on": ["PROCESS-STATE-MACHINE-DEFINE-A1 accepted"],
+          "estimated_complexity": "low",
+          "files_to_create": [
+            "scripts/verify_startup_read_proof.py"
+          ],
+          "risk_level": "low",
+          "requires_gpt_review": true
+        }
+      ]
+    },
+    {
+      "batch": "user_decision",
+      "batch_name": "requires_human_confirmation",
+      "requires_user_confirmation": true,
+      "eligible_for_auto_gpt_loop": false,
+      "tasks": [
+        {
+          "task_id": "HANDOFF-REPLY-V4-DISPOSITION",
+          "description": "决定 HANDOFF_REPLY_V4.txt 的最终处置：恢复、永久删除或保持 tracked_deleted_human_required",
+          "depends_on": ["user decision"],
+          "risk_level": "high",
+          "requires_gpt_review": true
+        },
+        {
+          "task_id": "296-PASS-VERIFICATION-DECISION",
+          "description": "决定是否投入资源重新执行测试以获取 P0 级证据，或永久标记为 unverified",
+          "depends_on": ["user decision"],
+          "risk_level": "medium",
+          "requires_gpt_review": false
+        },
+        {
+          "task_id": "WHOLE-PROJECT-EXIT-CRITERIA",
+          "description": "定义 whole-project/global 状态从 partial/needs_more_evidence 退出的条件",
+          "depends_on": ["user decision"],
+          "risk_level": "medium",
+          "requires_gpt_review": true
+        }
+      ]
+    }
+  ],
+  "recommended_first_task": {
+    "task_id": "PROCESS-STATE-MACHINE-DEFINE-A1",
+    "reason": "流程状态机是所有自动化和正确性验证的基础，优先实现可最大化后续任务的执行效率"
+  }
+}

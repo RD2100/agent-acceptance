@@ -1,0 +1,79 @@
+verdict: accepted_with_limitation
+
+run_id: AWSP_PHASE_5_6_GATE0_DRYRUN_10_PROJECTS_20260610
+
+findings:
+
+category: Gate0 preflight
+severity: info
+description: Phase 5 的 Gate0 结果可信，PARTIAL_PASS 是正确而诚实的结论。它没有把系统包装成 PASS，而是准确识别出 0 个 fully isolated active project、2 个 profile_collision、8 个 pending_manual_binding。
+
+category: collision detection
+severity: info
+description: profile collision 被正确检测并阻断 dispatchable 状态，说明 Phase 5 的门禁没有被绕过。当前 agent-acceptance 与 project-alpha 共享 cdp-profile-pilot-a1，因此不能进入 live dispatch。
+
+category: pending binding handling
+severity: info
+description: 8 个项目保持 pending_manual_binding，没有伪装为 active，也没有被错误纳入可发送队列，符合前序 Conversation Registry 和 Gate0 规则。
+
+category: dry-run dispatch
+severity: info
+description: Phase 6 建立了 10 个 dry-run dispatch packets，且 packets_sent=0。对 collision / pending 项目均标记为 non-dispatchable，符合 gated_capture_only 边界。
+
+category: isolation verification
+severity: major
+description: isolation verification 返回 isolated=false 是正确结果。unique_ports=10、unique_conversations=10、unique_profiles=9 说明端口和 conversation 分配层基本完整，但 profile 仍存在一个实质冲突。
+
+category: test evidence
+severity: info
+description: Full suite 848 passed / 0 failed，说明此前 registry、router、lazy-launch、dry-run 相关测试未回归。
+
+category: limitation
+severity: major
+description: 当前不能授权 Phase 7 live dispatch。因为 active fully isolated projects=0，且 project-alpha 与 agent-acceptance 仍存在 profile collision。
+
+category: limitation
+severity: major
+description: 当前还没有 2 个独立 Chrome profile + 2 个独立 CDP instance + 2 个真实 GPT conversation 同时满足 Gate0 PASS，因此不能进入真实多项目 GPT review 发送。
+
+category: limitation
+severity: minor
+description: Lazy launch 仍主要是设计与测试验证，尚未完成 10 个 profile 的真实登录和真实多端口运行。
+
+assessment:
+phase_1_batch_registry: accepted
+phase_2_lazy_launch_design: accepted_with_limitation
+phase_3_router_stress: accepted
+phase_4_real_gpt_binding_project_alpha: accepted_with_limitation
+phase_5_gate0_preflight_10: accepted_with_limitation
+phase_6_dry_run_dispatch_10: accepted_with_limitation
+phase_7_live_dispatch: not_authorized
+
+overall_phase_1_6_status: accepted_with_limitation
+
+summary: >
+Phase 1-6 已经完成 10 项目扩展的注册、路由、资源策略、Gate0 分类和 dry-run dispatch 骨架。系统现在已经具备“10 项目可登记、可分类、可路由、可构建 dry-run packet、可阻断不安全项目”的能力。当前最重要的积极信号是：Gate0 没有误报 PASS，dry-run 没有误发消息，profile collision 被正确识别并阻断。因此 Phase 5-6 可以接受，但只能接受为“安全门禁与 dry-run 层完成”，不能接受为“可进入 live dispatch”。
+
+remaining_manual_steps:
+
+为 project-alpha 分配独立 Chrome profile，不再共享 cdp-profile-pilot-a1。
+
+在 project-alpha 对应的独立 CDP 端口上完成 ChatGPT 人工登录。
+
+在 project-alpha 独立 profile 中打开真实 ChatGPT conversation。
+
+更新 project-alpha 的 browser_profile_id、cdp_endpoint、conversation_id、chat_url。
+
+重新运行 Gate0 preflight，要求 agent-acceptance 与 project-alpha 均为 fully isolated active。
+
+重新运行 isolation verification，要求 unique_ports=10、unique_profiles=10，且 active projects 无 collision。
+
+对 8 个 pending 项目逐个重复人工登录与 conversation binding，不得批量伪造 active。
+
+next_task_authorization:
+
+MULTI-PROJECT-PROFILE-ISOLATION-FIX-A1: authorized. 目标是修复 agent-acceptance 与 project-alpha 的 profile collision，使二者使用不同 CDP port、不同 browser_profile_id、不同 Chrome profile、不同真实 GPT conversation。
+
+MULTI-PROJECT-GATE0-PREFLIGHT-2-ACTIVE-PASS-A1: conditionally authorized after profile isolation fix. 目标是让至少 2 个项目达到 fully isolated active，并让 Gate0 对这 2 个项目返回 PASS。
+
+MULTI-PROJECT-GPT-REVIEW-LIVE-2-A1: not authorized yet. 只有在 2 个项目 fully isolated active 且 Gate0 PASS 后，才可请求 human-gated live dispatch 授权。

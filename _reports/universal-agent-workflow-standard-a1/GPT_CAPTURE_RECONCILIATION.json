@@ -1,0 +1,16 @@
+{
+  "target_run_id": "UNIVERSAL_AGENT_WORKFLOW_STANDARD_A1_20260609T143741_RD",
+  "target_task_id": "UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1",
+  "before_user_count": 43,
+  "before_assistant_count": 42,
+  "after_user_count": 44,
+  "after_assistant_count": 43,
+  "candidate_indices": [],
+  "selected_index": null,
+  "last_index": 42,
+  "last_text_contains_run_id": true,
+  "selected_text_contains_run_id": false,
+  "selected_text_contains_end_marker": false,
+  "capture_mismatch": false,
+  "decision": "capture_failed_no_run_id_match"
+}

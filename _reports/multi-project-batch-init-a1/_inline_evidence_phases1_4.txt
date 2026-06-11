@@ -1,0 +1,97 @@
+═══════════════════════════════════════════════════════════
+AWSP 10-PROJECT MULTI-AGENT EXPANSION — Phases 1-4 Evidence
+AWSP v1.3.0 | 2026-06-10
+═══════════════════════════════════════════════════════════
+
+■ PHASE 1: MULTI-PROJECT-REGISTRY-BATCH-INIT-A1 (7/7 PASS)
+- 10 projects registered: agent-acceptance + 9 scaffold projects
+- Ports: 9222-9231, all unique, all in range
+- 10 profile directories created: _cdp_profiles/<project_id>/
+- 10 CONVERSATION_BINDING.json scaffolds generated
+- All pending bindings marked pending_manual_binding (no fake active)
+- Resource policy: max_warm=4, max_active=2, lazy_launch=true
+- Schema validation: PASS
+- Files: PROJECT_REGISTRY.json, MULTI_PROJECT_RESOURCE_POLICY.json
+
+■ PHASE 2: MULTI-CDP-LAZY-LAUNCH-A1 (24 tests, 24/24 PASS)
+New module: scripts/lazy_launch_manager.py (~250 lines)
+Functions: get_project_status, lazy_launch, health_check_all, count_warm_instances, load_resource_policy, mark_stale
+States: registered → warm → active → stale
+Resource policy enforcement: fails when max_warm reached
+Stale detection: marks unresponsive CDP instances as stale
+CLI: status | launch --project <id> | health-check
+Test coverage: module import, 6 status tests, 6 launch tests, 3 health tests, 2 count tests, 2 policy tests, 2 stale tests, 2 mark tests
+
+■ PHASE 3: MULTI-PROJECT-ROUTER-10-PROJECT-STRESS-A1 (19 tests, 19/19 PASS)
+Test file: tests/test_router_10_project_stress.py
+Coverage:
+- Registry load: 10 projects, 10 unique ports, 10 unique profiles
+- Resolve: resolve_all returns 10, active resolves, pending returns resolved=False, nonexistent fails
+- Isolation: 10-project pass, port/conv/profile collision detected, mixed active/pending, unresolved skipped
+- Dispatch: active dispatchable, pending not dispatchable, unresolved not dispatchable
+- Classification: 2 active (agent-acceptance + project-alpha), 8 pending
+
+■ PHASE 4: MULTI-PROJECT-REAL-GPT-BINDING-A1 (project-alpha bound)
+- Opened real ChatGPT conversation on port 9222
+- Conversation ID: 6a2904b8-a260-83a7-8762-f77875d47dae
+- Chat URL: https://chatgpt.com/c/6a2904b8-a260-83a7-8762-f77875d47dae
+- Binding updated: _projects/project-alpha/.agent/CONVERSATION_BINDING.json
+- Router resolve: confirmed resolved=True with real conversation
+- CDP verified: 3 ChatGPT conversation pages on port 9222
+- Isolation check: correctly detects profile collision (shared Chrome, distinct conversations)
+
+NOTE: project-alpha shares Chrome instance with agent-acceptance (same port 9222)
+because the new Chrome profile on port 9223 hit Cloudflare challenge requiring manual login.
+This is a one-time bootstrap issue per project — once logged in, each project runs independently.
+The isolation system correctly flags the profile collision, which will resolve when
+project-alpha gets its own Chrome instance after manual login.
+
+■ FULL TEST SUITE: 848 passed, 0 failed
+New test files:
+- tests/test_multi_project_isolation.py (43 tests)
+- tests/test_lazy_launch.py (24 tests)
+- tests/test_router_10_project_stress.py (19 tests)
+Previous tests: 762 (all still passing)
+
+■ FILES CREATED/MODIFIED
+Phase 1:
+- scripts/batch_init_10_projects.py (CREATED, ~250 lines)
+- .agent/PROJECT_REGISTRY.json (10 projects)
+- .agent/MULTI_PROJECT_RESOURCE_POLICY.json (resource config)
+- _projects/<9-projects>/.agent/CONVERSATION_BINDING.json (scaffolds)
+- _cdp_profiles/<10-projects>/ (directories)
+
+Phase 2:
+- scripts/lazy_launch_manager.py (CREATED, ~250 lines)
+- tests/test_lazy_launch.py (CREATED, 24 tests)
+
+Phase 3:
+- tests/test_router_10_project_stress.py (CREATED, 19 tests)
+
+Phase 4:
+- scripts/bind_conversation_alpha_v2.py (CREATED)
+- _projects/project-alpha/.agent/CONVERSATION_BINDING.json (UPDATED: active)
+- _reports/multi-project-batch-init-a1/BINDING_ALPHA_RESULT.json
+
+■ CURRENT STATE
+- 10 projects registered
+- 2 active (agent-acceptance, project-alpha) — real GPT conversations
+- 8 pending_manual_binding — awaiting manual login + conversation creation
+- 848 tests passing
+- Architecture proven: registry → router → isolation → dispatch pipeline
+
+■ LIMITATIONS
+L1: 8 projects still pending manual binding (requires human login per Chrome profile)
+L2: project-alpha shares Chrome with agent-acceptance (profile collision)
+L3: No real multi-CDP-port concurrent execution yet (all active on port 9222)
+L4: Lazy-launch tested with mocks only; real 10-port launch pending manual logins
+
+■ NEXT STEPS (GPT authorized phases)
+Phase 5: Gate0 preflight for 10 projects (classify active/pending/stale)
+Phase 6: Dry-run dispatch packets for all 10 (build but don't send)
+Phase 7: Controlled live dispatch for 2 active projects
+Phase 8: Full 10-project concurrent operation
+
+═══════════════════════════════════════════════════════════
+END OF EVIDENCE — Requesting formal review of Phases 1-4
+═══════════════════════════════════════════════════════════

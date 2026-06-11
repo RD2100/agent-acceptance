@@ -1,0 +1,16 @@
+{
+  "target_run_id": "HUMAN_REQUIRED_DECISION_RECORD_TEMPLATE_A1_20260609T125734_RD",
+  "target_task_id": "HUMAN-REQUIRED-DECISION-RECORD-TEMPLATE-A1",
+  "before_user_count": 26,
+  "before_assistant_count": 20,
+  "after_user_count": 27,
+  "after_assistant_count": 21,
+  "candidate_indices": [],
+  "selected_index": null,
+  "last_index": 20,
+  "last_text_contains_run_id": false,
+  "selected_text_contains_run_id": false,
+  "selected_text_contains_end_marker": false,
+  "capture_mismatch": false,
+  "decision": "capture_failed_no_run_id_match"
+}

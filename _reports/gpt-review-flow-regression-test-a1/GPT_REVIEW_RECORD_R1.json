@@ -1,0 +1,65 @@
+{
+  "task_id": "GPT-REVIEW-FLOW-REGRESSION-TEST-A1",
+  "run_id": "GPT_REVIEW_FLOW_REGRESSION_TEST_A1_REVIEW_20260609T115500_RD",
+  "round": "R1",
+  "verdict": {
+    "overall_judgment": "blocked",
+    "evidence_pack_reviewed": true,
+    "attachment_reviewed": true,
+    "task_id_matches": true,
+    "has_end_marker": true,
+    "has_next_task_auth": true
+  },
+  "verifier": {
+    "note": "Verifier not run for R1 — verdict is blocked, handled directly"
+  },
+  "submission": {
+    "sent": true,
+    "upload_confirmed": true,
+    "upload_method": "input[0]",
+    "send_confirmed": true,
+    "sent_at": "2026-06-09T11:55:41",
+    "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959"
+  },
+  "capture_reconciliation": {
+    "before_user_count": 17,
+    "before_assistant_count": 11,
+    "after_user_count": 18,
+    "after_assistant_count": 12,
+    "selected_index": 11,
+    "last_index": 11,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "evidence_pack": {
+    "zip_path": "evidence_packs/gpt-review-flow-regression-test-a1/GPT_FLOW_REGRESSION_TEST_A1_20260609T115500_RD.zip",
+    "zip_size": 17345,
+    "zip_sha256": "365bb69e8bcb4e018a56a7da57c06e58bdc96c03036916ff02e00b38d22824e7"
+  },
+  "captured_reply": {
+    "result_path": "_reports/gpt-review-flow-regression-test-a1/GPT_REVIEW_RESULT_R1.txt",
+    "reply_chars": 1502,
+    "run_id_in_reply": true,
+    "has_end_marker": true,
+    "parsed_overall_judgment": "blocked"
+  },
+  "blocking_issues": [
+    "VRT-003 missing run_id test passes instead of failing — verify_gpt_reply.py lacks run_id validation",
+    "VRT-004 wrong_run_id has fixture but no test case — run_id mismatch failure path not covered",
+    "Coverage matrix overstates: claims VRT-001 through VRT-012 but VRT-004 not executed, VRT-008 only documented"
+  ],
+  "required_fixes": [
+    "Add run_id validation to verify_gpt_reply.py (check presence and match against expected)",
+    "Add VRT-004 test case using reply_wrong_run_id fixture",
+    "Update VRT-003 test to assert FAIL on missing run_id",
+    "Update coverage matrix to accurately reflect tested/not-implemented/partial status"
+  ],
+  "next_task_authorization": {
+    "task_id": "GPT-REVIEW-FLOW-REGRESSION-TEST-A1-R2",
+    "authorized": "已授权",
+    "execute_immediately": "是",
+    "ask_before_starting": "否"
+  },
+  "created_at": "2026-06-09T11:57:00+08:00",
+  "method": "playwright_cdp_9222"
+}

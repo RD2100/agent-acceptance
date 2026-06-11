@@ -1,0 +1,48 @@
+{
+  "verify": {
+    "valid": false,
+    "overall_judgment": "accepted_with_limitation",
+    "errors": [
+      "task_id mismatch: expected GPT-CAPTURE-RECONCILIATION-HARDEN-A1, reply has GPT-REVIEW-FLOW-REGRESSION-TEST-A1"
+    ],
+    "checks": {
+      "has_end_marker": true,
+      "overall_judgment": "accepted_with_limitation",
+      "evidence_pack_reviewed": true,
+      "task_id_in_reply": "GPT-REVIEW-FLOW-REGRESSION-TEST-A1",
+      "task_id_matches": false,
+      "has_next_task_auth": true
+    },
+    "sha256": "66c4b9e9729fd1fde9fec9b00a58311f...",
+    "size": 1554,
+    "verdict_allowed": false,
+    "source": "captured_gpt_response",
+    "task_id": "GPT-CAPTURE-RECONCILIATION-HARDEN-A1"
+  },
+  "closure_ready": {
+    "closure_ready": false,
+    "reason": "GPT reply not valid",
+    "verdict": {
+      "valid": false,
+      "overall_judgment": "accepted_with_limitation",
+      "errors": [
+        "task_id mismatch: expected GPT-CAPTURE-RECONCILIATION-HARDEN-A1, reply has GPT-REVIEW-FLOW-REGRESSION-TEST-A1"
+      ],
+      "checks": {
+        "has_end_marker": true,
+        "overall_judgment": "accepted_with_limitation",
+        "evidence_pack_reviewed": true,
+        "task_id_in_reply": "GPT-REVIEW-FLOW-REGRESSION-TEST-A1",
+        "task_id_matches": false,
+        "has_next_task_auth": true
+      },
+      "sha256": "66c4b9e9729fd1fde9fec9b00a58311f...",
+      "size": 1554,
+      "verdict_allowed": false,
+      "source": "captured_gpt_response"
+    }
+  }
+}
+
+GUARD BLOCKED: GPT reply for GPT-CAPTURE-RECONCILIATION-HARDEN-A1 is not valid.
+Errors: ['task_id mismatch: expected GPT-CAPTURE-RECONCILIATION-HARDEN-A1, reply has GPT-REVIEW-FLOW-REGRESSION-TEST-A1']

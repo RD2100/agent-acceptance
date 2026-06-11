@@ -1,0 +1,56 @@
+{
+  "run_id": "GPT_CAPTURE_RECONCILIATION_HARDEN_A1_REVIEW_20260609T111315_RD",
+  "task_id": "GPT-CAPTURE-RECONCILIATION-HARDEN-A1",
+  "scenario": "A",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\gpt-capture-reconciliation-harden-a1\\GPT_CAPTURE_RECONCILIATION_HARDEN_A1_20260609T111315_RD.zip",
+  "pack_exists": true,
+  "pack_size": 33625,
+  "pack_sha256": "e93a822e734f92f7f01dbe80647956b8e51867ccd7523529d9596559bfb6bbf2",
+  "prompt_chars": 2413,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T11:15:26",
+  "reply_chars": 1554,
+  "reply_sha256": "66c4b9e9729fd1fde9fec9b00a58311f0d374fad98c799f4fcacf22695ca0dfe",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "capture_reconciliation": {
+    "target_run_id": "GPT_CAPTURE_RECONCILIATION_HARDEN_A1_REVIEW_20260609T111315_RD",
+    "target_task_id": "GPT-CAPTURE-RECONCILIATION-HARDEN-A1",
+    "before_user_count": 16,
+    "before_assistant_count": 10,
+    "after_user_count": 17,
+    "after_assistant_count": 11,
+    "candidate_indices": [
+      10
+    ],
+    "selected_index": 10,
+    "last_index": 10,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\gpt-capture-reconciliation-harden-a1\\GPT_REVIEW_RESULT_R1.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\gpt-capture-reconciliation-harden-a1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "D:\\agent-acceptance\\_reports\\gpt-capture-reconciliation-harden-a1\\GPT_CAPTURE_RECONCILIATION.json"
+}

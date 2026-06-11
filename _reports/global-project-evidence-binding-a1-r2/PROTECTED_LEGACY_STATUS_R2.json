@@ -1,0 +1,36 @@
+{
+  "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+  "run_id": "GLOBAL_EVIDENCE_BINDING_A1_R2_20260609_085323",
+  "generated_at": "2026-06-09T00:53:23.302760+00:00",
+  "overall_conclusion": "pass_with_human_required_limitation",
+  "files": [
+    {
+      "path": "HANDOFF.md",
+      "status": "tracked_clean_based_on_prior_A1_and_current_git_status_expected",
+      "resolution": "pass"
+    },
+    {
+      "path": "HANDOFF_V5.md",
+      "status": "tracked_clean_based_on_prior_A1_and_current_git_status_expected",
+      "resolution": "pass"
+    },
+    {
+      "path": "PROJECT_HISTORY.md",
+      "status": "tracked_clean_based_on_prior_A1_and_current_git_status_expected",
+      "resolution": "pass"
+    },
+    {
+      "path": "BOOT_CONTEXT.md",
+      "status": "tracked_clean_based_on_prior_A1_and_current_git_status_expected",
+      "resolution": "pass"
+    },
+    {
+      "path": "HANDOFF_REPLY_V4.txt",
+      "status": "tracked_deleted",
+      "resolution": "human_required",
+      "restore_executed": false,
+      "scope_out_supported": false
+    }
+  ],
+  "note": "R2 不声称所有 legacy handoff 文件均未删除；HANDOFF_REPLY_V4.txt 保留 human_required。"
+}

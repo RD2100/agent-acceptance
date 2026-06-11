@@ -1,0 +1,771 @@
+﻿FFFF.................................................................... [ 11%]
+........................................................................ [ 23%]
+........................................................................ [ 35%]
+........................................................................ [ 46%]
+........................................................................ [ 58%]
+........................................................................ [ 70%]
+........................................................................ [ 81%]
+........................................................................ [ 93%]
+.........................................                                [100%]
+================================== FAILURES ===================================
+_ TestTaskModeStagedOnly.test_unstaged_forbidden_does_not_block_clean_staged_commit _
+
+self = <test_ai_guard_staged_scope.TestTaskModeStagedOnly object at 0x0000016962AD5630>
+
+    def test_unstaged_forbidden_does_not_block_clean_staged_commit(self):
+        """Unstaged file with forbidden marker must NOT block a clean staged commit."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            # Create a clean file and stage it
+            (repo / "good.txt").write_text("clean content")
+            subprocess.run(["git", "-C", str(repo), "add", "good.txt"], capture_output=True)
+            # Create a dirty file with a secret but do NOT stage it
+            (repo / "dirty.txt").write_text("api_key=__REDACTED_TEST_SECRET__")
+            # Create a task spec allowing good.txt
+            tasks_dir = repo / ".ai" / "tasks"
+            tasks_dir.mkdir(parents=True)
+            (tasks_dir / "test.yaml").write_text(
+                "task_id: test\nwrite_set:\n  - good.txt\n", encoding="utf-8")
+            # Run task mode
+            code, out = run_guard_in(repo, "task", str(tasks_dir / "test.yaml"))
+            # Must not flag the unstaged dirty.txt
+            assert "dirty.txt" not in out or "SCOPE" not in out, (
+                f"Task mode flagged unstaged file: {out}")
+            # Must pass (no staged violations)
+            assert code == 0, f"Expected pass, got exit={code}: {out}"
+        finally:
+>           subprocess.run(["rm", "-rf", d])
+
+tests\test_ai_guard_staged_scope.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\subprocess.py:503: in run
+    with Popen(*popenargs, **kwargs) as process:
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\subprocess.py:971: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: None args: ['rm', '-rf', 'C:\\Users\\RD\\AppData\\Local\...>
+args = 'rm -rf C:\\Users\\RD\\AppData\\Local\\Temp\\tmp98fkjjt5'
+executable = None, preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = None, env = None
+startupinfo = <subprocess.STARTUPINFO object at 0x0000016962E28D90>
+creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1
+c2pwrite = -1, errread = -1, errwrite = -1, unused_restore_signals = True
+unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1
+unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            if not executable:
+                # gh-101283: without a fully-qualified path, before Windows
+                # checks the system directories, it first looks in the
+                # application directory, and also the current directory if
+                # NeedCurrentDirectoryForExePathW(ExeName) is true, so try
+                # to avoid executing unqualified "cmd.exe".
+                comspec = os.environ.get('ComSpec')
+                if not comspec:
+                    system_root = os.environ.get('SystemRoot', '')
+                    comspec = os.path.join(system_root, 'System32', 'cmd.exe')
+                    if not os.path.isabs(comspec):
+                        raise FileNotFoundError('shell not found: neither %ComSpec% nor %SystemRoot% is set')
+                if os.path.isabs(comspec):
+                    executable = comspec
+            else:
+                comspec = executable
+    
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+>           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] ϵͳ�Ҳ���ָ�����ļ���
+
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1456: FileNotFoundError
+______ TestTaskModeStagedOnly.test_staged_forbidden_marker_fails_closed _______
+
+self = <test_ai_guard_staged_scope.TestTaskModeStagedOnly object at 0x0000016962AD58D0>
+
+    def test_staged_forbidden_marker_fails_closed(self):
+        """Staged file with forbidden content must BLOCK."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            # Override policy with deny_paths
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths:\n  - '*.secret'\nrestricted_paths: []\nsecret_patterns:\n  - 'sk-[a-zA-Z0-9]{10,}'\n",
+                encoding="utf-8")
+            # Create a forbidden file and STAGE it
+            (repo / "evil.secret").write_text("__REDACTED_TEST_SECRET__")
+            subprocess.run(["git", "-C", str(repo), "add", "evil.secret"], capture_output=True)
+            tasks_dir = repo / ".ai" / "tasks"
+            tasks_dir.mkdir(parents=True)
+            (tasks_dir / "test.yaml").write_text("task_id: test\nwrite_set:\n  - evil.secret\n", encoding="utf-8")
+            code, out = run_guard_in(repo, "task", str(tasks_dir / "test.yaml"))
+            assert code != 0, f"Staged forbidden file must fail closed. Got exit={code}"
+            assert "BLOCKED" in out or "error" in out.lower(), f"Must block: {out}"
+        finally:
+>           subprocess.run(["rm", "-rf", d])
+
+tests\test_ai_guard_staged_scope.py:86: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\subprocess.py:503: in run
+    with Popen(*popenargs, **kwargs) as process:
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\subprocess.py:971: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: None args: ['rm', '-rf', 'C:\\Users\\RD\\AppData\\Local\...>
+args = 'rm -rf C:\\Users\\RD\\AppData\\Local\\Temp\\tmpny3d02rc'
+executable = None, preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = None, env = None
+startupinfo = <subprocess.STARTUPINFO object at 0x000001695F687250>
+creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1
+c2pwrite = -1, errread = -1, errwrite = -1, unused_restore_signals = True
+unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1
+unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            if not executable:
+                # gh-101283: without a fully-qualified path, before Windows
+                # checks the system directories, it first looks in the
+                # application directory, and also the current directory if
+                # NeedCurrentDirectoryForExePathW(ExeName) is true, so try
+                # to avoid executing unqualified "cmd.exe".
+                comspec = os.environ.get('ComSpec')
+                if not comspec:
+                    system_root = os.environ.get('SystemRoot', '')
+                    comspec = os.path.join(system_root, 'System32', 'cmd.exe')
+                    if not os.path.isabs(comspec):
+                        raise FileNotFoundError('shell not found: neither %ComSpec% nor %SystemRoot% is set')
+                if os.path.isabs(comspec):
+                    executable = comspec
+            else:
+                comspec = executable
+    
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+>           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] ϵͳ�Ҳ���ָ�����ļ���
+
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1456: FileNotFoundError
+________ TestTaskModeStagedOnly.test_task_mode_ignores_unstaged_secret ________
+
+self = <test_ai_guard_staged_scope.TestTaskModeStagedOnly object at 0x0000016962AD5600>
+
+    def test_task_mode_ignores_unstaged_secret(self):
+        """Task mode must NOT scan unstaged files for secrets."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths: []\nrestricted_paths: []\nsecret_patterns:\n  - 'sk-[a-zA-Z0-9]{10,}'\n",
+                encoding="utf-8")
+            (repo / "good.txt").write_text("clean")
+            subprocess.run(["git", "-C", str(repo), "add", "good.txt"], capture_output=True)
+            # Unstaged secret file
+            (repo / "leak.txt").write_text("__REDACTED_TEST_SECRET__")
+            tasks_dir = repo / ".ai" / "tasks"
+            tasks_dir.mkdir(parents=True)
+            (tasks_dir / "test.yaml").write_text("task_id: test\nwrite_set:\n  - good.txt\n", encoding="utf-8")
+            code, out = run_guard_in(repo, "task", str(tasks_dir / "test.yaml"))
+            assert code == 0, f"Unstaged secret must not block in task mode. Got: {out}"
+        finally:
+>           subprocess.run(["rm", "-rf", d])
+
+tests\test_ai_guard_staged_scope.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\subprocess.py:503: in run
+    with Popen(*popenargs, **kwargs) as process:
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\subprocess.py:971: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: None args: ['rm', '-rf', 'C:\\Users\\RD\\AppData\\Local\...>
+args = 'rm -rf C:\\Users\\RD\\AppData\\Local\\Temp\\tmpi_cuiokn'
+executable = None, preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = None, env = None
+startupinfo = <subprocess.STARTUPINFO object at 0x00000169641AFB20>
+creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1
+c2pwrite = -1, errread = -1, errwrite = -1, unused_restore_signals = True
+unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1
+unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            if not executable:
+                # gh-101283: without a fully-qualified path, before Windows
+                # checks the system directories, it first looks in the
+                # application directory, and also the current directory if
+                # NeedCurrentDirectoryForExePathW(ExeName) is true, so try
+                # to avoid executing unqualified "cmd.exe".
+                comspec = os.environ.get('ComSpec')
+                if not comspec:
+                    system_root = os.environ.get('SystemRoot', '')
+                    comspec = os.path.join(system_root, 'System32', 'cmd.exe')
+                    if not os.path.isabs(comspec):
+                        raise FileNotFoundError('shell not found: neither %ComSpec% nor %SystemRoot% is set')
+                if os.path.isabs(comspec):
+                    executable = comspec
+            else:
+                comspec = executable
+    
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+>           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] ϵͳ�Ҳ���ָ�����ļ���
+
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1456: FileNotFoundError
+________ TestAuditModeFull.test_audit_mode_scans_working_tree_secrets _________
+
+self = <test_ai_guard_staged_scope.TestAuditModeFull object at 0x0000016962AD5BD0>
+
+    def test_audit_mode_scans_working_tree_secrets(self):
+        """Audit mode must detect secrets in modified tracked files (uses git diff base)."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths: []\nrestricted_paths: []\nsecret_patterns:\n  - 'sk-[a-zA-Z0-9]{10,}'\n",
+                encoding="utf-8")
+            # Create a tracked file and commit it
+            (repo / "leak.txt").write_text("clean baseline")
+            subprocess.run(["git", "-C", str(repo), "add", "leak.txt"], capture_output=True)
+            subprocess.run(["git", "-C", str(repo), "commit", "-m", "baseline"], capture_output=True)
+            # Modify the tracked file with a secret (unstaged modification)
+            (repo / "leak.txt").write_text("__REDACTED_TEST_SECRET__")
+            code, out = run_guard_in(repo, "audit")
+            # Audit mode uses git diff, which catches unstaged modifications to tracked files
+            assert code != 0 or "SECRET" in out, (
+                f"Audit must flag modified tracked secret. Got exit={code}: {out[:500]}")
+        finally:
+>           subprocess.run(["rm", "-rf", d])
+
+tests\test_ai_guard_staged_scope.py:131: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\subprocess.py:503: in run
+    with Popen(*popenargs, **kwargs) as process:
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\subprocess.py:971: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: None args: ['rm', '-rf', 'C:\\Users\\RD\\AppData\\Local\...>
+args = 'rm -rf C:\\Users\\RD\\AppData\\Local\\Temp\\tmpib6v523y'
+executable = None, preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = None, env = None
+startupinfo = <subprocess.STARTUPINFO object at 0x00000169630F0940>
+creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1
+c2pwrite = -1, errread = -1, errwrite = -1, unused_restore_signals = True
+unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1
+unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            if not executable:
+                # gh-101283: without a fully-qualified path, before Windows
+                # checks the system directories, it first looks in the
+                # application directory, and also the current directory if
+                # NeedCurrentDirectoryForExePathW(ExeName) is true, so try
+                # to avoid executing unqualified "cmd.exe".
+                comspec = os.environ.get('ComSpec')
+                if not comspec:
+                    system_root = os.environ.get('SystemRoot', '')
+                    comspec = os.path.join(system_root, 'System32', 'cmd.exe')
+                    if not os.path.isabs(comspec):
+                        raise FileNotFoundError('shell not found: neither %ComSpec% nor %SystemRoot% is set')
+                if os.path.isabs(comspec):
+                    executable = comspec
+            else:
+                comspec = executable
+    
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+>           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] ϵͳ�Ҳ���ָ�����ļ���
+
+C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1456: FileNotFoundError
+============================== warnings summary ===============================
+tests/test_framework_usage.py::test_bypass_checker_script_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_bypass_checker_script_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_bypass_checker_runs
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_bypass_checker_runs returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_allowed_file_passes
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_allowed_file_passes returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_framework_usage_contract_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_framework_usage_contract_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_framework_usage_doc_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_framework_usage_doc_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_reference_pipeline_doc_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_reference_pipeline_doc_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_framework_usage.py::test_no_bypass_in_test_itself
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_framework_usage.py::test_no_bypass_in_test_itself returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_contracts_file_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_contracts_file_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_all_required_contracts_defined
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_all_required_contracts_defined returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_each_contract_has_required_fields
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_each_contract_has_required_fields returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_each_contract_has_required_evidence
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_each_contract_has_required_evidence returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_each_contract_has_fail_closed
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_each_contract_has_fail_closed returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_confidentiality_contract_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_confidentiality_contract_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_citation_verification_contract_blocking
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_citation_verification_contract_blocking returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_evidence_pack_contract_required_fields
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_evidence_pack_contract_required_fields returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_synthetic_example_no_real_paper
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_synthetic_example_no_real_paper returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_docs_paper_workflow_acceptance_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_docs_paper_workflow_acceptance_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_schema_exists_and_valid
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_schema_exists_and_valid returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_no_real_paper_in_deliverables
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_no_real_paper_in_deliverables returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_schema_task_type_conditional_requirements
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_schema_task_type_conditional_requirements returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_synthetic_evidence_pack_validates_against_schema
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_synthetic_evidence_pack_validates_against_schema returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ai_guard_staged_scope.py::TestTaskModeStagedOnly::test_unstaged_forbidden_does_not_block_clean_staged_commit
+FAILED tests/test_ai_guard_staged_scope.py::TestTaskModeStagedOnly::test_staged_forbidden_marker_fails_closed
+FAILED tests/test_ai_guard_staged_scope.py::TestTaskModeStagedOnly::test_task_mode_ignores_unstaged_secret
+FAILED tests/test_ai_guard_staged_scope.py::TestAuditModeFull::test_audit_mode_scans_working_tree_secrets
+4 failed, 613 passed, 21 warnings in 9.78s

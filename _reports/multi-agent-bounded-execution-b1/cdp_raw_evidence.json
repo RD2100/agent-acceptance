@@ -1,0 +1,42 @@
+{
+  "cdp_active": true,
+  "raw_version_response": {
+    "Browser": "Chrome/149.0.7827.54",
+    "Protocol-Version": "1.3",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
+    "V8-Version": "14.9.207.21",
+    "WebKit-Version": "537.36 (@42ce21f112d0b2ba486bbb5cadb225f78b4ddb97)",
+    "webSocketDebuggerUrl": "ws://localhost:9222/devtools/browser/5c749f60-fc17-44e1-bc34-e15d3a6cf7be"
+  },
+  "raw_pages_response": [
+    {
+      "description": "",
+      "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@42ce21f112d0b2ba486bbb5cadb225f78b4ddb97/inspector.html?ws=localhost:9222/devtools/page/EA6616788DB30C15682326D217F58048",
+      "faviconUrl": "https://chatgpt.com/favicon.ico",
+      "id": "EA6616788DB30C15682326D217F58048",
+      "title": "ChatGPT",
+      "type": "page",
+      "url": "https://chatgpt.com/",
+      "webSocketDebuggerUrl": "ws://localhost:9222/devtools/page/EA6616788DB30C15682326D217F58048"
+    },
+    {
+      "description": "",
+      "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@42ce21f112d0b2ba486bbb5cadb225f78b4ddb97/inspector.html?ws=localhost:9222/devtools/page/3185DBAC874F31248A095AD884E3DC33",
+      "id": "3185DBAC874F31248A095AD884E3DC33",
+      "title": "Omnibox Popup",
+      "type": "browser_ui",
+      "url": "chrome://omnibox-popup.top-chrome/",
+      "webSocketDebuggerUrl": "ws://localhost:9222/devtools/page/3185DBAC874F31248A095AD884E3DC33"
+    },
+    {
+      "description": "",
+      "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@42ce21f112d0b2ba486bbb5cadb225f78b4ddb97/worker_app.html?ws=localhost:9222/devtools/page/A5E3B2071F85015BD17955BD6DA3DBD2",
+      "id": "A5E3B2071F85015BD17955BD6DA3DBD2",
+      "title": "Service Worker chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js",
+      "type": "service_worker",
+      "url": "chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js",
+      "webSocketDebuggerUrl": "ws://localhost:9222/devtools/page/A5E3B2071F85015BD17955BD6DA3DBD2"
+    }
+  ],
+  "chat_page_count": 1
+}

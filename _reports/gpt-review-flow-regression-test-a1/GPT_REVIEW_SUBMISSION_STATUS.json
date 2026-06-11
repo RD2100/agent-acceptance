@@ -1,0 +1,56 @@
+{
+  "run_id": "GPT_REVIEW_FLOW_REGRESSION_TEST_A1_REVIEW_20260609T120034_RD",
+  "task_id": "GPT-REVIEW-FLOW-REGRESSION-TEST-A1",
+  "scenario": "A",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\gpt-review-flow-regression-test-a1\\GPT_FLOW_REGRESSION_TEST_A1_20260609T120034_RD.zip",
+  "pack_exists": true,
+  "pack_size": 18139,
+  "pack_sha256": "bd5c7949ff9f7d41fb4d5b9608e952eacb05108d623991e32bce3f6a14f1877c",
+  "prompt_chars": 2606,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T12:01:32",
+  "reply_chars": 1179,
+  "reply_sha256": "42cdf19d4b982652c156cecd854dc5889d8500c3618cb584be344fa614696c98",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "capture_reconciliation": {
+    "target_run_id": "GPT_REVIEW_FLOW_REGRESSION_TEST_A1_REVIEW_20260609T120034_RD",
+    "target_task_id": "GPT-REVIEW-FLOW-REGRESSION-TEST-A1",
+    "before_user_count": 18,
+    "before_assistant_count": 12,
+    "after_user_count": 19,
+    "after_assistant_count": 13,
+    "candidate_indices": [
+      12
+    ],
+    "selected_index": 12,
+    "last_index": 12,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\gpt-review-flow-regression-test-a1\\GPT_REVIEW_RESULT_R2.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\gpt-review-flow-regression-test-a1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "D:\\agent-acceptance\\_reports\\gpt-review-flow-regression-test-a1\\GPT_CAPTURE_RECONCILIATION.json"
+}

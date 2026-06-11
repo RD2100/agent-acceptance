@@ -1,0 +1,10 @@
+{
+  "run_id": "GLOBAL_HANDOFF_REPAIR_REVIEW_20260608_225353_EEUAEQ",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "attachment_reviewed_true": true,
+  "evidence_pack_reviewed_true": true,
+  "sha256": "01bb422ff3c45fafa4191c981bdc96e0867ce73eb1da6dd42e8751f391504ed6"
+}

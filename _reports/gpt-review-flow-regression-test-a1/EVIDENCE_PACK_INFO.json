@@ -1,0 +1,9 @@
+{
+  "task_id": "GPT-REVIEW-FLOW-REGRESSION-TEST-A1",
+  "run_id": "GPT_REVIEW_FLOW_REGRESSION_TEST_A1_REVIEW_20260609T120034_RD",
+  "zip_path": "evidence_packs\\gpt-review-flow-regression-test-a1\\GPT_FLOW_REGRESSION_TEST_A1_20260609T120034_RD.zip",
+  "zip_sha256": "bd5c7949ff9f7d41fb4d5b9608e952eacb05108d623991e32bce3f6a14f1877c",
+  "zip_size": 18139,
+  "file_count": 10,
+  "generated_at": "2026-06-09T12:00:34.571559+08:00"
+}

@@ -1,0 +1,69 @@
+severity_issues:
+
+id: M10-P1-01
+severity: P1
+status: partially_resolved
+issue: "三步路径已提出，但第二、三步仍过于抽象"
+detail: >
+Round 3 已经从“应然描述”推进到“三步路径”，方向正确。
+但“建立协同的优先规则”“制度化协同机制”仍是概括性表述，没有说明优先规则具体是什么、协同机制如何运行。
+M10 需要把价值平衡转化为可操作路径，而不是只提出路径名称。
+
+id: M10-P1-02
+severity: P1
+status: unresolved
+issue: "实证支撑仍是占位"
+detail: >
+“引用某省或某高校在扩招中兼顾质量保障的具体案例”仍然是占位表达。
+它没有给出案例类型、案例来源、数据口径或论证功能，因此不能证明价值平衡的现实可行性。
+该问题在 Round 3 仍未真正解决。
+
+id: M10-P1-03
+severity: P1
+status: partially_resolved
+issue: "与 M6 的回应关系仍需具体化"
+detail: >
+“承认公平与效率的矛盾不可消除，只能动态管理”能够回应 M6，
+但还需要说明如何管理：是底线公平优先、质量阈值约束、战略领域择优支持，还是动态评估纠偏。
+当前对 M6 的回应仍偏原则化。
+
+id: M10-P2-01
+severity: P2
+status: open
+issue: "‘不可消除’表述偏绝对"
+detail: >
+建议改为“难以一次性消除，需要动态调适”，避免把公平与效率关系写成不可改变的固定矛盾。
+
+verdict: human_required
+
+close_module: false
+
+reason: >
+M10 Round 3 已有明显进步，但仍未达到可关闭标准。
+它完成了“从应然到路径”的方向调整，却没有把路径机制具体化；
+实证支撑仍停留在“某省或某高校”的占位层面。
+由于这是 Round 3/3 FINAL，按迭代规则不应继续让 Claude-GPT 循环空转，应标记为 human_required，
+由作者决定具体案例、优先规则和制度化机制。
+
+required_human_decisions:
+
+"明确三步路径中的‘协同优先规则’：例如底线公平优先、质量阈值约束、重点领域择优支持、动态评估纠偏。"
+
+"确定一个真实可核验案例，而不是保留‘某省或某高校’占位。"
+
+"说明该案例具体证明什么：公平与效率如何被同时考虑？提质和扩容如何被协同推进？"
+
+"把‘价值平衡为资源平衡提供原则框架’具体化为 M11 的资源配置原则。"
+
+suggested_human_revision_structure:
+unit_1: "价值重心校准：公平与效率的张力难以一次性消除，需要在提质扩容过程中动态调适。"
+unit_2: "协同优先规则：底线公平必须保障，质量阈值必须守住，战略领域可以择优支持，资源配置需动态纠偏。"
+unit_3: "案例支撑：选择一个真实政策或高校实践，说明扩容过程中如何同步设置质量保障条件。"
+unit_4: "过渡 M11：价值平衡最终需要落实为基础保障与择优支持之间的资源平衡。"
+
+module_closure_decision:
+module_id: M10
+status: human_required
+reason: "Final round 仍有关键占位和机制不具体问题，不能关闭为 pass_with_limitation。"
+
+END_OF_GPT_RESPONSE

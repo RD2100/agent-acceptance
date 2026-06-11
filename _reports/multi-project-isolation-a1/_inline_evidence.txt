@@ -1,0 +1,98 @@
+═══════════════════════════════════════════════════════════
+MULTI-PROJECT-ISOLATION-A1 — Inline Evidence Pack
+AWSP v1.3.0 | 2026-06-10
+═══════════════════════════════════════════════════════════
+
+■ OBJECTIVE
+Build multi-project isolation architecture: each project gets its own Chrome CDP instance (unique port + isolated profile + dedicated GPT conversation). Enables simultaneous operation of multiple AWSP-governed projects with zero cross-project interference.
+
+■ ARCHITECTURE — TWO CORE MODULES
+
+Module 1: multi_cdp_launcher.py (~310 lines)
+- Manages multiple Chrome instances, each on unique port (base_port + index)
+- Isolated browser profiles: _cdp_profiles/<project_id>/
+- Global registry: .agent/PROJECT_REGISTRY.json
+- Functions: _find_chrome, _check_port, _get_version, load_registry, save_registry, launch_chrome, verify_instance
+- CLI: launch --projects p1,p2 --base-port 9222 | status | register
+
+Module 2: multi_project_router.py (~270 lines)
+- Resolves dispatch targets: project_id → registry → binding → active agent → CDP health
+- Functions: load_registry, load_binding, resolve_target, resolve_all, build_dispatch_packet, verify_isolation
+- CLI: resolve --project <id> | resolve-all | verify-isolation
+
+■ ISOLATION GUARANTEES (verify_isolation)
+- Port uniqueness: no two projects share same CDP debugging port
+- Conversation uniqueness: no two projects share same ChatGPT conversation_id
+- Profile uniqueness: no two projects share same Chrome browser profile
+- Collision detection: all 3 types detected and reported with explicit messages
+- Unresolved targets: skipped (not counted in isolation check)
+
+■ TEST RESULTS
+Test file: tests/test_multi_project_isolation.py
+New tests: 43 (10 classes)
+Full suite: 805 passed, 0 failed, 21 warnings (all pre-existing)
+Platform: Windows 10, Python 3.10.11, pytest 9.0.3
+
+Test classes:
+1. TestMultiCdpLauncherModule (3): import, chrome_paths, base_port
+2. TestRegistryManagement (4): load_default, load_existing, save, round_trip
+3. TestPortAndInstanceChecks (4): unreachable, reachable, inactive, active_with_pages
+4. TestLaunchChrome (3): no_chrome, already_active, detached_launch
+5. TestMultiProjectRouterModule (1): import check
+6. TestResolveTarget (4): unknown, no_binding, no_active, success
+7. TestResolveAll (2): empty_registry, multi_project
+8. TestBuildDispatchPacket (2): unresolved, complete
+9. TestVerifyIsolation (9): empty, single, 2-project, port_collision, conv_collision, profile_collision, unresolved_skip, 3-project, multi_collision
+10. TestExistingProjectInfrastructure (5): binding_exists, 2_active_agents, unique_conversations, scripts_exist, importable
+11. TestMultiProjectArchitecture (6): schema_fields, binding_load, packet_keys, timestamp, 10-project_stress
+
+■ REGISTRY SCHEMA
+{
+  "schema_version": "1.0.0",
+  "awsp_version": "1.3.0",
+  "projects": {
+    "<project_id>": {
+      "cdp_port": <int>,
+      "cdp_endpoint": "http://localhost:<port>",
+      "profile_dir": "<path>",
+      "registered_at": "<ISO-8601>"
+    }
+  }
+}
+
+■ DISPATCH FLOW
+1. load_registry() → get all registered projects
+2. resolve_target(project_id) → registry lookup + binding read + CDP health check
+3. build_dispatch_packet(target, task_spec, message) → package for delivery
+4. verify_isolation(all_targets) → enforce no cross-project interference
+5. Per-project submission script delivers via CDP
+
+■ BACKWARD COMPATIBILITY
+- Existing single-project scripts unchanged
+- CONVERSATION_BINDING.json format preserved
+- Router reads existing binding files without modification
+- No breaking changes to any existing API
+
+■ RELATIONSHIP TO PRIOR ACCEPTANCES
+- PILOT-A1: Established dual-agent binding within one project → this extends to multi-project
+- B1 Bounded Execution: Proved READY→EXECUTED → multi-project provides routing layer
+- CONVERSATION-REGISTRY-A1: Foundation for conversation tracking → router reads per-project registries
+
+■ LIMITATIONS (for GPT review)
+L1: Chrome instances must be launched manually; no auto-restart on crash
+L2: Router resolves targets but does NOT send messages (by design)
+L3: Tested with synthetic data only; real multi-project execution pending
+L4: PROJECT_REGISTRY.json is local-only; no distributed sync
+
+■ FILES
+- scripts/multi_cdp_launcher.py (CREATED, ~310 lines)
+- scripts/multi_project_router.py (CREATED, ~270 lines)
+- tests/test_multi_project_isolation.py (CREATED, 43 tests, ~530 lines)
+- _reports/multi-project-isolation-a1/EXECUTION_REPORT.md
+- _reports/multi-project-isolation-a1/TEST_EVIDENCE.json
+- _reports/multi-project-isolation-a1/ARCHITECTURE_LAUNCHER.json
+- _reports/multi-project-isolation-a1/ARCHITECTURE_ROUTER.json
+
+═══════════════════════════════════════════════════════════
+END OF EVIDENCE — Requesting formal review
+═══════════════════════════════════════════════════════════

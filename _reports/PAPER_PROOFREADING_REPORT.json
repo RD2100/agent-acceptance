@@ -1,0 +1,331 @@
+[
+  {
+    "section": "一、高等教育提质扩容的必然逻辑",
+    "chars": 174,
+    "citations": 0,
+    "policy_density": 74.7,
+    "p0_issues": [],
+    "p1_issues": [
+      {
+        "type": "heading",
+        "severity": "P1",
+        "detail": "No numbered headings found"
+      }
+    ],
+    "warnings": [
+      {
+        "type": "policy_density",
+        "severity": "P2",
+        "detail": "Policy term density: 75/1000 chars (high)"
+      },
+      {
+        "type": "length",
+        "severity": "P3",
+        "detail": "Section too short: 174 chars"
+      }
+    ],
+    "pass": true,
+    "recommendation": "review",
+    "checked_at": "2026-06-08T08:23:22.791730+00:00"
+  },
+  {
+    "section": "一、高等教育提质扩容的必然逻辑",
+    "chars": 1069,
+    "citations": 4,
+    "policy_density": 50.5,
+    "p0_issues": [],
+    "p1_issues": [
+      {
+        "type": "heading",
+        "severity": "P1",
+        "detail": "No numbered headings found"
+      },
+      {
+        "type": "placeholder",
+        "severity": "P1",
+        "detail": "Found 4 reference placeholders: [']', ']', ']']"
+      }
+    ],
+    "warnings": [
+      {
+        "type": "policy_density",
+        "severity": "P2",
+        "detail": "Policy term density: 51/1000 chars (high)"
+      }
+    ],
+    "pass": true,
+    "recommendation": "review",
+    "checked_at": "2026-06-08T08:23:22.792728+00:00"
+  },
+  {
+    "section": "一、高等教育提质扩容的必然逻辑",
+    "chars": 1057,
+    "citations": 0,
+    "policy_density": 46.4,
+    "p0_issues": [],
+    "p1_issues": [
+      {
+        "type": "heading",
+        "severity": "P1",
+        "detail": "No numbered headings found"
+      }
+    ],
+    "warnings": [
+      {
+        "type": "policy_density",
+        "severity": "P2",
+        "detail": "Policy term density: 46/1000 chars (high)"
+      }
+    ],
+    "pass": true,
+    "recommendation": "review",
+    "checked_at": "2026-06-08T08:23:22.792728+00:00"
+  },
+  {
+    "section": "一、高等教育提质扩容的必然逻辑",
+    "chars": 1246,
+    "citations": 4,
+    "policy_density": 32.1,
+    "p0_issues": [],
+    "p1_issues": [
+      {
+        "type": "heading",
+        "severity": "P1",
+        "detail": "No numbered headings found"
+      },
+      {
+        "type": "placeholder",
+        "severity": "P1",
+        "detail": "Found 4 reference placeholders: [']', ']', ']']"
+      }
+    ],
+    "warnings": [
+      {
+        "type": "policy_density",
+        "severity": "P2",
+        "detail": "Policy term density: 32/1000 chars (high)"
+      }
+    ],
+    "pass": true,
+    "recommendation": "review",
+    "checked_at": "2026-06-08T08:23:22.792728+00:00"
+  },
+  {
+    "section": "二、高等教育提质扩容的内在张力",
+    "chars": 104,
+    "citations": 0,
+    "policy_density": 28.8,
+    "p0_issues": [],
+    "p1_issues": [
+      {
+        "type": "heading",
+        "severity": "P1",
+        "detail": "No numbered headings found"
+      }
+    ],
+    "warnings": [
+      {
+        "type": "length",
+        "severity": "P3",
+        "detail": "Section too short: 104 chars"
+      }
+    ],
+    "pass": true,
+    "recommendation": "review",
+    "checked_at": "2026-06-08T08:23:22.792728+00:00"
+  },
+  {
+    "section": "二、高等教育提质扩容的内在张力",
+    "chars": 1474,
+    "citations": 10,
+    "policy_density": 29.9,
+    "p0_issues": [],
+    "p1_issues": [
+      {
+        "type": "heading",
+        "severity": "P1",
+        "detail": "No numbered headings found"
+      },
+      {
+        "type": "placeholder",
+        "severity": "P1",
+        "detail": "Found 10 reference placeholders: [']', ']', ']']"
+      }
+    ],
+    "warnings": [],
+    "pass": true,
+    "recommendation": "review",
+    "checked_at": "2026-06-08T08:23:22.792728+00:00"
+  },
+  {
+    "section": "二、高等教育提质扩容的内在张力",
+    "chars": 1093,
+    "citations": 2,
+    "policy_density": 25.6,
+    "p0_issues": [],
+    "p1_issues": [
+      {
+        "type": "heading",
+        "severity": "P1",
+        "detail": "No numbered headings found"
+      },
+      {
+        "type": "placeholder",
+        "severity": "P1",
+        "detail": "Found 2 reference placeholders: [']', ']']"
+      }
+    ],
+    "warnings": [],
+    "pass": true,
+    "recommendation": "review",
+    "checked_at": "2026-06-08T08:23:22.792728+00:00"
+  },
+  {
+    "section": "二、高等教育提质扩容的内在张力",
+    "chars": 1176,
+    "citations": 3,
+    "policy_density": 30.6,
+    "p0_issues": [],
+    "p1_issues": [
+      {
+        "type": "heading",
+        "severity": "P1",
+        "detail": "No numbered headings found"
+      },
+      {
+        "type": "placeholder",
+        "severity": "P1",
+        "detail": "Found 3 reference placeholders: [']', ']', ']']"
+      }
+    ],
+    "warnings": [
+      {
+        "type": "policy_density",
+        "severity": "P2",
+        "detail": "Policy term density: 31/1000 chars (high)"
+      }
+    ],
+    "pass": true,
+    "recommendation": "review",
+    "checked_at": "2026-06-08T08:23:22.792728+00:00"
+  },
+  {
+    "section": "三、高等教育提质扩容的平衡之道",
+    "chars": 128,
+    "citations": 1,
+    "policy_density": 23.4,
+    "p0_issues": [],
+    "p1_issues": [
+      {
+        "type": "heading",
+        "severity": "P1",
+        "detail": "No numbered headings found"
+      },
+      {
+        "type": "placeholder",
+        "severity": "P1",
+        "detail": "Found 1 reference placeholders: [']']"
+      }
+    ],
+    "warnings": [
+      {
+        "type": "length",
+        "severity": "P3",
+        "detail": "Section too short: 128 chars"
+      }
+    ],
+    "pass": true,
+    "recommendation": "review",
+    "checked_at": "2026-06-08T08:23:22.792728+00:00"
+  },
+  {
+    "section": "三、高等教育提质扩容的平衡之道",
+    "chars": 1396,
+    "citations": 3,
+    "policy_density": 22.2,
+    "p0_issues": [],
+    "p1_issues": [
+      {
+        "type": "heading",
+        "severity": "P1",
+        "detail": "No numbered headings found"
+      },
+      {
+        "type": "placeholder",
+        "severity": "P1",
+        "detail": "Found 3 reference placeholders: [']', ']', ']']"
+      }
+    ],
+    "warnings": [
+      {
+        "type": "long_sentence",
+        "severity": "P2",
+        "count": 1,
+        "detail": "1 sentences exceed 150 chars"
+      }
+    ],
+    "pass": true,
+    "recommendation": "review",
+    "checked_at": "2026-06-08T08:23:22.793729+00:00"
+  },
+  {
+    "section": "三、高等教育提质扩容的平衡之道",
+    "chars": 1423,
+    "citations": 3,
+    "policy_density": 23.2,
+    "p0_issues": [],
+    "p1_issues": [
+      {
+        "type": "heading",
+        "severity": "P1",
+        "detail": "No numbered headings found"
+      },
+      {
+        "type": "placeholder",
+        "severity": "P1",
+        "detail": "Found 3 reference placeholders: [']', ']', ']']"
+      }
+    ],
+    "warnings": [
+      {
+        "type": "long_sentence",
+        "severity": "P2",
+        "count": 3,
+        "detail": "3 sentences exceed 150 chars"
+      }
+    ],
+    "pass": true,
+    "recommendation": "review",
+    "checked_at": "2026-06-08T08:23:22.793729+00:00"
+  },
+  {
+    "section": "三、高等教育提质扩容的平衡之道",
+    "chars": 7027,
+    "citations": 46,
+    "policy_density": 12.0,
+    "p0_issues": [],
+    "p1_issues": [
+      {
+        "type": "heading",
+        "severity": "P1",
+        "detail": "No numbered headings found"
+      },
+      {
+        "type": "placeholder",
+        "severity": "P1",
+        "detail": "Found 102 reference placeholders: [']', ']', ']']"
+      }
+    ],
+    "warnings": [
+      {
+        "type": "long_sentence",
+        "severity": "P2",
+        "count": 1,
+        "detail": "1 sentences exceed 150 chars"
+      }
+    ],
+    "pass": true,
+    "recommendation": "review",
+    "checked_at": "2026-06-08T08:23:22.793729+00:00"
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "project_status": 201,
+  "report_status": 201,
+  "download_status": 200,
+  "project_id": "18b0c57c-ae3e-4c3f-a413-80d42f0cfffb",
+  "report_id": "06ea9bee-9695-43f5-a1b5-8496858b54ef",
+  "endpoint": "/api/reports/diagnosis/06ea9bee-9695-43f5-a1b5-8496858b54ef/writelab-handoff.zip",
+  "content_type": "application/zip",
+  "content_disposition": "attachment; filename=\"writelab-handoff-06ea9bee-9695-43f5-a1b5-8496858b54ef.zip\"",
+  "zip_path": "D:\\agent-acceptance\\_reports\\writelab-synthetic-e2e-a1\\writelab-handoff.zip",
+  "zip_bytes": 1952,
+  "synthetic_input_contains_forbidden_marker_count": 4,
+  "zip_namelist": [
+    "DIAGNOSIS_RESULT.json",
+    "PACK_MANIFEST.md",
+    "PRIVACY_ATTESTATION.yaml",
+    "WRITELAB_HANDOFF.yaml"
+  ]
+}

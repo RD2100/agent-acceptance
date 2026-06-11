@@ -1,0 +1,49 @@
+overall_judgment: accepted_with_limitation
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+
+none
+required_fixes:
+
+
+none
+limitations:
+
+
+R2 已修复上一轮 blocking issue：draft → gate_passing 现在改为 fail-closed，缺少 evidence_pack_dir、startup_proof_path 或任一 guard 未检查时均会 transition_allowed=false。
+
+
+evidence_pack_linter_pass、evidence_pack_complete、startup_read_gate_pass 已作为 T01 的必需 guard 集成，不再是可选检查。
+
+
+test_no_guards_skipped 已修正为 test_no_guards_blocks_transition，并新增 pack-only blocked 场景，避免把“无 guard 输入也允许转换”的错误行为固化为通过。
+
+
+状态定义包含 8 个状态，转换定义包含 10 个转换，与 PROCESS_STATE_MACHINE.json 的主结构基本对齐。
+
+
+测试覆盖主要路径，报告显示 tests/test_state_machine_runtime.py 为 23 passed；审查 prompt 中仍写 22 个测试，属于元数据轻微不一致，不影响本轮判断。
+
+
+当前运行时主要强制实现 draft → gate_passing 的 guard；其他转换仍为 validity-only，尚未强制 gpt_reviewing exit、accepted/accepted_with_limitation closure、human_required decision 等 guard。
+
+
+附件 pack 未包含 scripts/startup_read_gate.py 和 scripts/evidence_pack_linter.py，state_machine_runtime.py 在脱离仓库环境时不能独立复现全部依赖；当前可接受为仓库内集成任务，但后续更完整 pack 应嵌入关键依赖或明确外部依赖版本。
+
+
+EXECUTION_REPORT 声称 full suite 403 passed，但附件中未提供完整 full suite 原始输出；当前不阻塞本任务，但后续应附完整测试日志或降级为本地声明。
+
+
+PACK_MANIFEST.md 存在并列出主要文件，但未将 PACK_MANIFEST.md 自身列为 manifest row；当前不阻塞本轮审查。
+next_task_authorization:
+task_id: HUMAN-REQUIRED-DECISION-RECORD-TEMPLATE-A1
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+
+
+run_id: STATE_MACHINE_RUNTIME_INTEGRATE_A1_20260609T124000_RD
+task_id: STATE-MACHINE-RUNTIME-INTEGRATE-A1
+END_OF_GPT_RESPONSE_

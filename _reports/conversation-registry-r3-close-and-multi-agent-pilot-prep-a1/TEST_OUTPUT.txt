@@ -1,0 +1,3 @@
+﻿Combined targeted/related verification summary. Real commands:
+python -m pytest tests\test_conversation_registry.py tests\test_cross_project_scaffold.py -q -> 129 passed
+python -m pytest tests\test_validate_run_id_consistency.py tests\test_conversation_registry.py tests\test_cross_project_scaffold.py -q -> 143 passed

@@ -1,0 +1,105 @@
+severity_issues:
+
+id: M12-P1-04
+severity: P1
+status: accepted_with_limitation
+issue: "实证案例仍需具体化和核验"
+detail: >
+“某省分类评价改革案例”仍是占位，但它已经被放入清晰的制度平衡结构中。
+因为 M12 的核心机制已经建立，可以作为 accepted_with_limitation 关闭；
+但该案例不能直接进入正文，必须后续补充真实省份、政策文本、实施范围、效果证据和问题表现。
+
+id: M12-P2-01
+severity: P2
+status: accepted_limitation
+issue: "分类维度中‘技能型’表述需规范"
+detail: >
+“研究型/应用型/技能型”作为功能分类方向可以使用，但在高等教育论文中建议改为
+“研究型高校、应用型高校、高等职业院校或技能型人才培养导向高校”，避免概念过粗。
+
+id: M12-P2-02
+severity: P2
+status: accepted_limitation
+issue: "刚性标准举例需要更精确"
+detail: >
+“学位审核、学科评估”可作为刚性标准示例，但正文中需区分底线性质量保障、周期性评价和发展性评价，
+避免把所有评价工具都归入同一类刚性标准。
+
+id: M12-P2-03
+severity: P2
+status: accepted_limitation
+issue: "第四节引桥方向正确，但需避免跳跃"
+detail: >
+“分类评价是制度平衡的核心抓手，引出协同治理进路”方向成立。
+但过渡时应说明为什么制度平衡还需要治理协同支撑，而不是直接从评价制度跳到治理进路。
+
+verdict: pass_with_limitation
+
+close_module: true
+
+p1_resolution:
+M12-P1-01:
+status: resolved
+reason: >
+已将 7027 字超长模块重组为 4 个论证单元，避免继续作为单一长段或单一模块处理。
+结构上已经具备可修订性。
+
+M12-P1-02:
+status: resolved
+reason: >
+已提出分类评价的三种维度：功能、学科、发展阶段，并说明每种维度需要匹配不同政策情境。
+这已经从“应该分类”推进到“如何分类”。
+
+M12-P1-03:
+status: resolved
+reason: >
+已明确弹性框架的基本机制：刚性标准保底线，弹性空间促特色，
+二者共存以实现统一引领与分类评价之间的制度平衡。
+
+M12-P1-04:
+status: accepted_with_limitation
+reason: >
+已设置实证案例位置，但“某省分类评价改革案例”仍需后续 citation/evidence QA 核验。
+该限制不阻止结构关闭，但不能直接视为证据已完成。
+
+M12-P1-05:
+status: resolved
+reason: >
+分类评价与弹性框架已经回应 M8 的“统一与分类两难”，即通过刚性底线和分类弹性把两难转化为制度平衡。
+
+M12-P1-06:
+status: resolved
+reason: >
+M12 已明确作为制度平衡模块，并通过第四节引桥转向协同治理进路，具备第三部分收束和后文衔接功能。
+
+module_closure_decision:
+module_id: M12
+status: closed_as_pass_with_limitation
+reason: >
+Round 3 已经完成关键结构修复：超长模块被拆分，分类评价维度被具体化，
+刚性与弹性的制度框架被操作化，并且建立了从制度平衡到协同治理进路的过渡。
+虽然实证案例和部分术语仍需人工核验与规范，但核心 P1 已经解决，因此 M12 可以关闭。
+
+approved_revision_structure:
+unit_1: "分类评价维度：按功能、学科和发展阶段建立分类评价框架，并说明适用政策情境。"
+unit_2: "弹性制度框架：以刚性标准守住质量底线，以弹性空间支持特色发展。"
+unit_3: "实证案例：用真实省级或高校分类评价改革案例说明制度平衡的实施效果与问题。"
+unit_4: "过渡协同治理：说明分类评价如何作为制度平衡抓手，并引出后文治理协同。"
+
+required_follow_up:
+
+"将“某省分类评价改革案例”替换为真实、可检索、与论点匹配的案例。"
+
+"核验分类评价改革政策文本、实施范围和效果证据。"
+
+"规范‘技能型’等分类术语。"
+
+"区分刚性底线评价、发展性评价和分类评价的不同功能。"
+
+"不要虚构试点、省份、政策名称或国际案例。"
+
+next_action:
+recommended: "同步 M12 closure 到 Project Index；M10 仍保持 human_required；随后执行 Section 3 coherence review。"
+next_task_id: "PAPER-SECTION3-COHERENCE-CLOSURE-A1"
+
+END_OF_GPT_RESPONSE

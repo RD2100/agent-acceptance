@@ -1,0 +1,34 @@
+run_id: GLOBAL_EVIDENCE_BINDING_A1_R4_REVIEW_20260609_090100_RD
+task_id: GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R4
+overall_judgment: accepted_with_limitation
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+none
+required_fixes:
+
+none
+limitations:
+
+R4 已修复 R3 的核心打包问题：旧 closure ZIP 实际存在于附件 ZIP 的 source_evidence/evidence_packs/global-project-handoff-repair-a1/GLOBAL_PROJECT_HANDOFF_REPAIR_A1_20260608_223800.zip，并已列入 PACK_MANIFEST，SHA256 为 defe3a08596b9b48fbf01690bbf9395eceab6c04c606bd2b7e3372c5fe6c5eba。
+
+HANDOFF_REPLY_V4.txt 仍保留为 tracked_deleted_human_required，未被伪装成 resolved/pass。
+
+evidence pack 声称未执行 git restore / checkout / reset / clean，且未恢复、删除、移动、重命名或覆盖 HANDOFF_REPLY_V4.txt。
+
+whole-project/global status 仍保留 partial / needs_more_evidence。
+
+production promotion 未声称已批准。
+
+296 PASS 仍保留为 unverified conversational claim。
+
+PACK_MANIFEST 明确说明未将自身列为 manifest row 以避免 self-referential drift。
+
+safety scan 扫描 27 个非 ZIP 文件，并将嵌入的旧 closure ZIP 作为二进制 ZIP 通过 manifest hash 覆盖，而不是逐项解包扫描。
+next_task_authorization:
+task_id: none
+authorized: 未授权
+execute_immediately: 否
+ask_before_starting: 是
+END_OF_GPT_RESPONSE

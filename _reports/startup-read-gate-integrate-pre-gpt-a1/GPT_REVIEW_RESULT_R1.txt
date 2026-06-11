@@ -1,0 +1,40 @@
+overall_judgment: accepted_with_limitation
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+none
+required_fixes:
+
+none
+limitations:
+
+pre_gpt_review_gate.py 已将 startup_read_gate.py 作为可选 pre-submission gate 集成：提供 --startup-proof-path 时会运行 startup gate，并在 startup gate 失败时阻止提交，返回非零退出码。
+
+不提供 --startup-proof-path 时，原有 pre_gpt_review_gate 行为保持兼容，符合向后兼容要求。
+
+strict 标志已传递到 startup_read_gate，测试覆盖 non-strict pass / strict fail 的 task_id mismatch 场景。
+
+5 个新增集成测试覆盖了无 proof 跳过、有效 proof 通过、无效 proof 阻断、strict 模式传播、coverage_ratio 传播等主要路径。
+
+startup gate 当前仍是 opt-in，尚未强制所有 GPT 提交必须携带 startup proof；因此这是 pre-GPT gate 集成组件完成，不是全链路强制执行完成态。
+
+默认 required_reads_path 指向 REPO / NEXT_AGENT_REQUIRED_READS.json，但当前项目实际 required reads 文件可能位于 _reports/next-agent-workflow-bootstrap-a1/NEXT_AGENT_REQUIRED_READS.json；实际使用时应显式传入 --required-reads，或后续统一默认路径。
+
+task_id 从 PACK_MANIFEST.md 中通过简单表格行解析提取，能覆盖当前 manifest 格式，但对复杂 manifest 或多处 task_id 不够稳健，后续可改为结构化 metadata。
+
+startup_read_gate.py 中部分 P0 path coverage 检查仍未完全统一到 _find_proof_entry 的 normalized lookup，属于前序任务遗留 limitation，后续可继续收敛。
+
+evidence pack 内部 PACK_MANIFEST run_id 为 STARTUP_READ_GATE_INTEGRATE_PRE_GPT_A1_REVIEW_20260609T122658_RD，与本次审查 prompt run_id STARTUP_READ_GATE_INTEGRATE_PRE_GPT_A1_20260609T122600_RD 不完全一致；当前不影响核心集成判断，但后续应统一 pack run_id、review run_id 与文件名元数据。
+
+PACK_MANIFEST.md 存在并列出主要文件，但未将 PACK_MANIFEST.md 自身列为 manifest row；当前不阻塞本轮审查。
+next_task_authorization:
+task_id: STARTUP-READ-GATE-DEFAULT-PATH-RUNID-HARDEN-A1
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+
+run_id: STARTUP_READ_GATE_INTEGRATE_PRE_GPT_A1_20260609T122600_RD
+task_id: STARTUP-READ-GATE-INTEGRATE-PRE-GPT-A1
+
+END_OF_GPT_RESPONSE_

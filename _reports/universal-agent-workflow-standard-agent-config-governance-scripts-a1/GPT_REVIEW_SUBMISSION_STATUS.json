@@ -1,0 +1,54 @@
+{
+  "run_id": "UNIVERSAL_AGENT_WORKFLOW_STANDARD_AGENT_CONFIG_GOVERNANCE_SCRIPTS_A1_20260609T163257_RD",
+  "task_id": "UNIVERSAL-AGENT-WORKFLOW-STANDARD-AGENT-CONFIG-GOVERNANCE-SCRIPTS-A1",
+  "scenario": "A",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\universal-agent-workflow-standard-agent-config-governance-scripts-a1\\UNIVERSAL_AGENT_WORKFLOW_STANDARD_AGENT_CONFIG_GOVERNANCE_SCRIPTS_A1_20260609T163257_RD.zip",
+  "pack_exists": true,
+  "pack_size": 35583,
+  "pack_sha256": "2c396519832e8295f530892157dc0ded46e764eb281b952053a19fa61288dbac",
+  "prompt_chars": 3553,
+  "dry_run": false,
+  "sent": true,
+  "captured": false,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T16:39:36",
+  "reply_chars": 0,
+  "reply_sha256": null,
+  "run_id_match": false,
+  "has_end_marker": false,
+  "has_overall_judgment": false,
+  "parsed_overall_judgment": null,
+  "capture_reconciliation": {
+    "target_run_id": "UNIVERSAL_AGENT_WORKFLOW_STANDARD_AGENT_CONFIG_GOVERNANCE_SCRIPTS_A1_20260609T163257_RD",
+    "target_task_id": "UNIVERSAL-AGENT-WORKFLOW-STANDARD-AGENT-CONFIG-GOVERNANCE-SCRIPTS-A1",
+    "before_user_count": 54,
+    "before_assistant_count": 61,
+    "after_user_count": 55,
+    "after_assistant_count": 63,
+    "candidate_indices": [],
+    "selected_index": null,
+    "last_index": 62,
+    "last_text_contains_run_id": false,
+    "selected_text_contains_run_id": false,
+    "selected_text_contains_end_marker": false,
+    "capture_mismatch": false,
+    "decision": "capture_failed_no_run_id_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\universal-agent-workflow-standard-agent-config-governance-scripts-a1\\GPT_REVIEW_RESULT.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\universal-agent-workflow-standard-agent-config-governance-scripts-a1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "D:\\agent-acceptance\\_reports\\universal-agent-workflow-standard-agent-config-governance-scripts-a1\\GPT_CAPTURE_RECONCILIATION.json"
+}

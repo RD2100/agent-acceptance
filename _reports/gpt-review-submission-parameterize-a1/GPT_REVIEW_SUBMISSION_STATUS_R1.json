@@ -1,0 +1,53 @@
+{
+  "run_id": "GPT_REVIEW_SUBMISSION_PARAMETERIZE_A1_REVIEW_20260609T023631_RD",
+  "task_id": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1",
+  "round": "R1",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\gpt-review-submission-parameterize-a1\\GPT_REVIEW_SUBMISSION_PARAMETERIZE_A1_20260609T023631.zip",
+  "pack_exists": true,
+  "pack_size": 32764,
+  "pack_sha256": "db3cf38db01e009fc0bf009a56406777dcfaa978313941c02e130f0bff3180a5",
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T10:37:55",
+  "reply_chars": 886,
+  "reply_sha256": "4a6853c20718432f3c81093b41e3914cb64f626af86c8be698bfd3a35f76726a",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "capture_reconciliation": {
+    "target_run_id": "GPT_REVIEW_SUBMISSION_PARAMETERIZE_A1_REVIEW_20260609T023631_RD",
+    "target_task_id": "GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1",
+    "before_user_count": 14,
+    "before_assistant_count": 8,
+    "after_user_count": 15,
+    "after_assistant_count": 9,
+    "candidate_indices": [
+      8
+    ],
+    "selected_index": 8,
+    "last_index": 8,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\evidence_packs\\gpt-review-submission-parameterize-a1\\GPT_REVIEW_RESULT_R1.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\gpt-review-submission-parameterize-a1\\GPT_REVIEW_RESULT_R1.txt"
+}

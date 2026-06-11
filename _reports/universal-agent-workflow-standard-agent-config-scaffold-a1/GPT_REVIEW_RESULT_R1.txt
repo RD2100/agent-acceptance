@@ -1,0 +1,27 @@
+overall_judgment: accepted_with_limitation
+run_id: UNIVERSAL_AGENT_WORKFLOW_STANDARD_AGENT_CONFIG_SCAFFOLD_A1_20260609T154821_RD
+findings:
+
+awsp_scaffold.py 已升级到 AWSP_VERSION = 1.2.0，AWSP_DIRECTORIES 已包含 ".agent"，并能生成 evidence_packs、_reports、docs、scripts、tests、.agent 与 .awsp.json 的跨项目基础结构。
+
+create_scaffold() 已生成 4 个 .agent/ governance config 文件：REQUIRED_READS.json、PROJECT_AGENT_CONFIG.json、GATE_CONFIG.json、startup_proof_template.json，且文件均包含 schema_version。
+
+validate_scaffold() 已检查 .awsp.json 的 awsp_version、project_root、directories、validation 配置，并新增对 .agent/ 四个配置文件存在性、JSON 有效性和 schema_version 的检查。
+
+validate_scaffold() 已能检测 project_root mismatch、.agent 文件缺失、.agent JSON 非法、schema_version 缺失等关键错误。
+
+docs/AGENT_WORKFLOW_STANDARD.md 已升级为 AWSP v1.2.0，并新增 .agent governance config scaffold、deployment、validation、version history 等说明。
+
+本地复核目标测试通过：test_cross_project_scaffold.py 与 test_validate_run_id_consistency.py 合计 49/49 passed；附件 FULL_SUITE_OUTPUT.txt 也显示 full suite 540 passed。
+
+limitation: create_scaffold() 在 project_root 使用相对路径时，会把相对路径写入 .awsp.json；随后 validate_scaffold() 使用 root.resolve() 比对实际绝对路径，导致同一 scaffold 可能自生成后自验证失败。后续应在 create_scaffold() 中统一写入 root.resolve() 后的规范化 project_root。
+
+limitation: validate_scaffold() 目前只检查 .agent/ 文件存在、JSON 有效与 schema_version，尚未校验各 .agent 配置中的 awsp_version、project_root、governance flags、gate enabled/block_on_failure、required_reads 结构与 startup_proof_template 字段完整性。
+
+limitation: .agent/ 配置已生成，但对应 startup_read_gate、pre_task_gate、pre_gpt_review_gate、state_machine_runtime、human_decision_record 仍只是路径声明，尚未作为跨项目可部署脚本一并 scaffold 或验证可运行。
+
+limitation: REQUIRED_READS.json 当前是基础模板，尚未支持项目自定义 P0/P1 文件清单、hash binding、must_read_at_startup 覆盖率和严格读取证明生成。
+
+limitation: FULL_SUITE_OUTPUT.txt 已嵌入并显示 540 passed，但包含既有 pytest warnings；当前不影响本轮 scaffold 审查结论。
+next_task_authorization: UNIVERSAL-AGENT-WORKFLOW-STANDARD-AGENT-CONFIG-SCAFFOLD-A1-R2
+---END_OF_GPT_RESPONSE---

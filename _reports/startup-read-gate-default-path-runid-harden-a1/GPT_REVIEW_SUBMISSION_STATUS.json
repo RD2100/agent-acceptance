@@ -1,0 +1,56 @@
+{
+  "run_id": "STARTUP_READ_GATE_DEFAULT_PATH_RUNID_HARDEN_A1_REVIEW_20260609T123133_RD",
+  "task_id": "STARTUP-READ-GATE-DEFAULT-PATH-RUNID-HARDEN-A1",
+  "scenario": "A",
+  "pack": "D:\\agent-acceptance\\evidence_packs\\startup-read-gate-default-path-runid-harden-a1\\STARTUP_READ_GATE_DEFAULT_PATH_RUNID_HARDEN_A1_20260609T123133_RD.zip",
+  "pack_exists": true,
+  "pack_size": 11216,
+  "pack_sha256": "431891a764037a3b3eb000b1e50c3d63a0be0edba18223deefb3b7c40924d114",
+  "prompt_chars": 1409,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-09T12:31:57",
+  "reply_chars": 1868,
+  "reply_sha256": "a7bc0151a3e6e87b1fa2b06ee5fd5e071a6b22fea3cd0733df84dbcb61974e59",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "capture_reconciliation": {
+    "target_run_id": "STARTUP_READ_GATE_DEFAULT_PATH_RUNID_HARDEN_A1_REVIEW_20260609T123133_RD",
+    "target_task_id": "STARTUP-READ-GATE-DEFAULT-PATH-RUNID-HARDEN-A1",
+    "before_user_count": 23,
+    "before_assistant_count": 17,
+    "after_user_count": 24,
+    "after_assistant_count": 18,
+    "candidate_indices": [
+      17
+    ],
+    "selected_index": 17,
+    "last_index": 17,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\startup-read-gate-default-path-runid-harden-a1\\GPT_REVIEW_RESULT_R1.txt",
+  "report_result_path": "D:\\agent-acceptance\\_reports\\startup-read-gate-default-path-runid-harden-a1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "D:\\agent-acceptance\\_reports\\startup-read-gate-default-path-runid-harden-a1\\GPT_CAPTURE_RECONCILIATION.json"
+}

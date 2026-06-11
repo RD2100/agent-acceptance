@@ -1,0 +1,60 @@
+{
+  "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+  "generated_at": "2026-06-08T12:46:21.218248+00:00",
+  "source_priority": [
+    {
+      "layer": "P0",
+      "description": "Verified GPT verdicts, evidence packs, TEST_OUTPUT, Project Index, issue ledgers, manifests"
+    },
+    {
+      "layer": "P1",
+      "description": "GPT-approved BOOT_CONTEXT, HANDOFF, PASTE_BLOCK"
+    },
+    {
+      "layer": "P2",
+      "description": "claude-memory-compiler and memory/index recall layer"
+    },
+    {
+      "layer": "P3",
+      "description": "legacy PROJECT_HISTORY, old HANDOFF, old PASTE_BLOCK audit references"
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "source_truth_hierarchy",
+      "claim": "P0/P1/P2/P3 source-of-truth hierarchy is defined.",
+      "source_layer": "P1",
+      "source_path": "HANDOFF_SOURCE_OF_TRUTH.md",
+      "sha256": "6fac2b229a4207a05bf45719ae3d78a252fe21e18e6285851be53b809674e3c2",
+      "timestamp": "2026-06-08T12:44:44.814207+00:00",
+      "bound": true
+    },
+    {
+      "claim_id": "legacy_inventory",
+      "claim": "Legacy handoff files are inventoried, not modified.",
+      "source_layer": "P1",
+      "source_path": "LEGACY_HANDOFF_INVENTORY.md",
+      "sha256": "551f0486fc56d838fd763b6125a4c7cc80b7c6c0aa9c1a86b2476fb8e4353867",
+      "timestamp": "2026-06-08T12:44:44.854147+00:00",
+      "bound": true
+    },
+    {
+      "claim_id": "paper_project_index",
+      "claim": "Paper module status is sourced from PAPER_PROJECT_INDEX.",
+      "source_layer": "P0",
+      "source_path": "_reports/PAPER_PROJECT_INDEX.json",
+      "sha256": "6725f91466da41f5110e79f5a9bd7dc4eef918fc0b5abe59ed3228bcc5e1d0da",
+      "timestamp": "2026-06-08T08:22:13.010460+00:00",
+      "bound": true
+    },
+    {
+      "claim_id": "gate0_reuse",
+      "claim": "Gate 0 reuse-before-build inventory was completed.",
+      "source_layer": "P0",
+      "source_path": "_reports/handoff-pipeline-refactor-a1/GATE0_REUSE_CHECK.md",
+      "sha256": "4aea29148501d20c9ee15d6b72f5b6302246ee9e4733dab8826c64b5c7947f8b",
+      "timestamp": "2026-06-08T12:37:51.739032+00:00",
+      "bound": true
+    }
+  ]
+}

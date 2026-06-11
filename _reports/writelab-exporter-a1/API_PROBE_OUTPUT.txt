@@ -1,0 +1,10 @@
+﻿{
+  "project_id": "ad5f516f-dddd-4e8d-a275-6625511c3bdd",
+  "report_id": "7a15daed-739f-42e0-bb22-4cd2378347ef",
+  "status_code": 200,
+  "content_type": "application/zip",
+  "content_disposition": "attachment; filename=\"writelab-handoff-7a15daed-739f-42e0-bb22-4cd2378347ef.zip\"",
+  "zip_path": "D:\\agent-acceptance\\_reports\\writelab-exporter-a1\\writelab-handoff.zip",
+  "zip_size": 1947,
+  "database_scope": "temporary_sqlite_disposed_after_probe"
+}

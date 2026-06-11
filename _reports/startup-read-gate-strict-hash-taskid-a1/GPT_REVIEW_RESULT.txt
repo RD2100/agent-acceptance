@@ -1,0 +1,52 @@
+overall_judgment: accepted_with_limitation
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+
+none
+required_fixes:
+
+
+none
+limitations:
+
+
+strict 模式已覆盖 R1 review 中提出的 4 个核心 limitation：task_id mismatch 在 strict 下升级为 error；P0 / fail_closed must_read 缺少 summary_hash 在 strict 下升级为 error；非存在 fail_closed 文件带 proof hash 在 strict 下升级为 error；coverage_ratio 已改为 matched_required / must_read_count，避免额外 proof entries 虚增覆盖率。
+
+
+非 strict 模式基本保持向后兼容，原有 12 个测试继续通过；本轮 19/19 startup_read_gate 测试通过。
+
+
+SHA-256 校验支持 sha256: 前缀处理，valid P0 hash 与 hash mismatch 路径均有测试覆盖。
+
+
+P0 enforcement 已单独保留 critical error 路径，strict 模式进一步强化了 P0 / fail_closed 读证据完整性。
+
+
+_normalize_path 与 _find_proof_entry 提升了路径匹配能力，但 missing_reads 与 P0 proof path 的部分早期检查仍使用 exact / repo-prefix 匹配，尚未完全统一到 normalized lookup；后续可进一步收敛为单一路径匹配函数。
+
+
+strict 模式仍为 opt-in，尚未默认接入正式任务入口、pre_gpt_review_gate.py 或状态机运行时，因此当前是更强门禁组件，不是全链路强制执行完成态。
+
+
+startup_timestamp 新鲜度检查、state machine runtime 集成、pre_gpt_review_gate.py 集成仍为后续任务。
+
+
+EXECUTION_REPORT 声称 full suite 366 passed，但 evidence pack 主要提供 startup_read_gate 相关测试与报告；若后续继续引用 full suite，应附完整原始测试输出或降级为本地声明。
+
+
+PACK_MANIFEST 存在并列出主要文件，但未将自身列为 manifest row；当前不阻塞本轮审查。
+
+
+evidence pack 内部 manifest run_id 与审查 prompt run_id 存在时间戳/命名差异，未影响核心代码审查，但后续应统一 pack run_id、review run_id 与文件名元数据。
+next_task_authorization:
+task_id: STARTUP-READ-GATE-INTEGRATE-PRE-GPT-A1
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+
+
+run_id: STARTUP_READ_GATE_STRICT_HASH_TASKID_A1_20260609T121957_RD
+task_id: STARTUP-READ-GATE-STRICT-HASH-TASKID-A1
+END_OF_GPT_RESPONSE_

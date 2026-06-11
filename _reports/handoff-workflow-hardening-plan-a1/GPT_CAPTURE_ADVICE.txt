@@ -1,0 +1,270 @@
+你的判断是对的：在延续性对话里，不能再用 msgs.last.inner_text() 作为 GPT verdict 的唯一捕获依据。
+因为“最后一个 assistant DOM 节点”不一定等于“本次提交生成完成后的目标回复”。尤其在流式生成、DOM 更新延迟、虚拟列表、旧消息仍处于可见区域时，last() 很容易误取旧 assistant。
+
+更稳妥的做法是：以 submit 前的消息计数为边界，以 run_id 为锚点，以 END_OF_GPT_RESPONSE 为完成信号，以 verifier 为最终确认。
+
+1. 延续性对话中如何确保捕获本次回复
+
+推荐捕获逻辑从：
+
+取最后一条 assistant message
+
+改成：
+
+提交前记录 baseline
+→ 提交后确认 user_count 增加
+→ 等 assistant_count 增加
+→ 只扫描新增 assistant 区间
+→ 用 run_id + task_id + overall_judgment + END_OF_GPT_RESPONSE 匹配目标回复
+→ verifier 校验
+
+也就是说，不要相信：
+
+msgs.last
+
+而要相信：
+
+target_run_id matched assistant message
+
+在延续性对话中，正确的捕获对象应满足至少四个条件：
+
+1. index >= before_assistant_count
+2. text contains exact run_id
+3. text contains exact task_id
+4. text contains END_OF_GPT_RESPONSE
+
+如果只满足 overall_judgment，但不包含目标 run_id，不能接受。
+如果只包含 run_id，但还没有 END_OF_GPT_RESPONSE，说明可能还在生成中，不能立即捕获。
+
+2. 是否建议记录 before_assistant_count
+
+建议，而且应该作为强制步骤。
+
+提交前至少记录：
+
+JSON
+{
+  "before_user_count": 12,
+  "before_assistant_count": 11,
+  "target_run_id": "...",
+  "target_task_id": "...",
+  "captured_at_start": "..."
+}
+
+提交后要确认：
+
+after_user_count > before_user_count
+
+这只能证明 user message 发出去了，还不能证明 assistant reply 完成。
+
+然后再等：
+
+after_assistant_count > before_assistant_count
+
+但这也只是候选条件，还不能直接取 last()。
+因为 assistant 节点可能生成中、排序未稳定、DOM 有延迟，或者脚本看到的是旧缓存。
+
+所以正确逻辑是：
+
+candidate_messages = assistant_messages[before_assistant_count:]
+
+然后在 candidate_messages 中搜索目标 run_id。
+
+如果新增区间没找到，再可以做一次全量扫描作为 fallback，但全量扫描只能用于诊断，不能优先于新增区间。
+
+建议优先级：
+
+新增 assistant 区间中 exact run_id 命中
+> 全量 assistant 中 exact run_id 命中且 index >= before_assistant_count
+> 全量 assistant 中 exact run_id 命中但 index < before_assistant_count，标记 stale_match，不得接受
+> 未命中，manual_required / capture_failed
+3. run_id 匹配逻辑建议
+
+run_id 必须作为强锚点，但不能只用模糊匹配。
+
+建议采用这些规则：
+
+第一，必须 exact match
+
+不要用包含部分时间戳、任务名前缀、相似 run_id。
+必须匹配完整字符串：
+
+run_id: HANDOFF_WORKFLOW_HARDENING_PLAN_A1_REVIEW_20260609_012328_RD
+
+而不是只匹配：
+
+HANDOFF_WORKFLOW_HARDENING_PLAN
+第二，同时匹配 task_id
+
+因为有时候 prompt 中可能引用旧 run_id 或旧 verdict。
+所以目标回复必须同时包含：
+
+run_id: <target_run_id>
+task_id: <target_task_id>
+第三，必须匹配结构化 verdict 字段
+
+至少要有：
+
+overall_judgment:
+
+并且值在允许集合中：
+
+accepted
+accepted_with_limitation
+blocked
+review_unverified
+第四，必须等待 END_OF_GPT_RESPONSE
+
+这是判断流式生成完成的关键标记。
+没有这个标记，不能进入 verifier。
+
+第五，避免误取 prompt 回显
+
+有些页面文本可能包含用户 prompt，其中也有 run_id 和返回模板。
+所以候选必须来自 assistant message，而不是全页面文本，也不能来自 user message。
+
+另外要防止 assistant 在分析中复述 prompt 模板但没有 verdict。
+因此要验证：
+
+overall_judgment 的值不是模板占位符
+blocking_issues 不是 <问题或 none>
+required_fixes 不是 <修复或 none>
+第六，处理多命中
+
+如果多个 assistant message 都包含同一个 run_id，要记录为异常：
+
+capture_ambiguous
+
+处理规则可以是：
+
+优先选择 index >= before_assistant_count 且包含 END_OF_GPT_RESPONSE 的最新一条；
+如果仍有多个，进入 manual_required，不自动判定。
+4. 如何固化到 runbook 和脚本
+
+建议把这次问题正式固化为一个 capture 规则升级，至少改四个地方。
+
+一是更新 runbook
+
+在：
+
+ATTACHMENT_BACKED_GPT_REVIEW_RUNBOOK.md
+
+新增一节：
+
+延续性对话 capture 规则
+
+核心写法可以是：
+
+不得使用 assistant.last() 作为 verdict 捕获依据。
+必须在提交前记录 before_user_count 与 before_assistant_count。
+提交后必须确认 user_count 增加、assistant_count 增加。
+捕获时必须优先扫描 index >= before_assistant_count 的 assistant messages。
+只有同时包含 target run_id、target task_id、overall_judgment、END_OF_GPT_RESPONSE 的 assistant message 才可作为 GPT_REVIEW_RESULT。
+如果 last assistant 与 run_id 命中 assistant 不一致，必须记录 capture_mismatch。
+二是修改 capture 脚本
+
+在 gpt_new_chat_attachment_submit.py 或相关 Playwright 脚本中，把当前逻辑从：
+
+msgs.last.inner_text()
+
+升级为：
+
+capture_candidates_by_index_and_run_id
+
+建议输出这些机器字段：
+
+JSON
+{
+  "before_user_count": 0,
+  "before_assistant_count": 0,
+  "after_user_count": 0,
+  "after_assistant_count": 0,
+  "target_run_id": "",
+  "target_task_id": "",
+  "selected_assistant_index": 4,
+  "selected_by": "new_assistant_run_id_match",
+  "last_assistant_index": 3,
+  "last_assistant_matched_target": false,
+  "capture_mismatch": true,
+  "end_marker_seen": true,
+  "verifier_status": "pass"
+}
+
+这能直接解释“为什么 last 是错的，但我们选中了 assistant[4]”。
+
+三是新增 capture reconciliation report
+
+建议每次 GPT 审查都生成：
+
+GPT_CAPTURE_RECONCILIATION_REPORT.json
+
+内容包括：
+
+JSON
+{
+  "target_run_id": "...",
+  "target_task_id": "...",
+  "before_assistant_count": 4,
+  "after_assistant_count": 5,
+  "candidate_indices": [4],
+  "selected_index": 4,
+  "last_index": 3,
+  "last_text_contains_run_id": false,
+  "selected_text_contains_run_id": true,
+  "selected_text_contains_end_marker": true,
+  "decision": "accepted_for_verifier",
+  "notes": "msgs.last returned stale assistant[3]; selected assistant[4] by exact run_id match"
+}
+
+这个报告应该进入 evidence pack。
+
+四是增加回归测试
+
+把这次问题固化成 regression case：
+
+case: continuation_conversation_last_assistant_stale
+given:
+  assistant[3] = old prompt/template
+  assistant[4] = target GPT verdict with run_id
+when:
+  capture script runs
+then:
+  selected_assistant_index == 4
+  capture_mismatch == true
+  verifier passes
+
+还应增加几个负向样例：
+
+1. 新增 assistant 没有 run_id → capture_failed
+2. run_id 出现在 user prompt，不在 assistant → capture_failed
+3. assistant 有 run_id 但无 END_OF_GPT_RESPONSE → wait / incomplete
+4. assistant 有旧 run_id → stale_match
+5. 多个 assistant 命中同一 run_id → capture_ambiguous / manual_required
+建议的最终捕获判定标准
+
+可以把标准写死为：
+
+A GPT verdict capture is valid only if:
+1. send_confirm == true
+2. user_count increased
+3. assistant_count increased
+4. selected assistant index >= before_assistant_count
+5. selected assistant text contains exact target run_id
+6. selected assistant text contains exact target task_id
+7. selected assistant text contains overall_judgment with allowed value
+8. selected assistant text contains END_OF_GPT_RESPONSE
+9. verify_gpt_reply.py passes
+
+如果 msgs.last 与 selected assistant 不一致，不是失败，而是记录：
+
+capture_mismatch: true
+
+并以 run_id 命中的 selected assistant 为准。
+
+最关键的一句话
+
+这次问题应该固化成规则：
+
+在延续性对话中，last assistant is not authoritative；target run_id match is authoritative。
+
+也就是：最后一条 DOM 消息不可靠，目标 run_id 才是本次 GPT verdict 的唯一锚点。

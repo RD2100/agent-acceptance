@@ -1,0 +1,18 @@
+{
+  "target_run_id": "STARTUP_READ_GATE_ENFORCE_A1_REVIEW_20260609T121329_RD",
+  "target_task_id": "STARTUP-READ-GATE-ENFORCE-A1",
+  "before_user_count": 20,
+  "before_assistant_count": 14,
+  "after_user_count": 21,
+  "after_assistant_count": 15,
+  "candidate_indices": [
+    14
+  ],
+  "selected_index": 14,
+  "last_index": 14,
+  "last_text_contains_run_id": true,
+  "selected_text_contains_run_id": true,
+  "selected_text_contains_end_marker": true,
+  "capture_mismatch": false,
+  "decision": "selected_and_last_match"
+}

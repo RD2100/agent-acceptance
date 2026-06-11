@@ -1,0 +1,172 @@
+{
+  "report_id": "DRY_RUN_DISPATCH_10",
+  "phase": "MULTI-PROJECT-GPT-REVIEW-DRY-RUN-10-A1",
+  "generated_at": "2026-06-10T14:14:21Z",
+  "sent": false,
+  "packets": [
+    {
+      "project_id": "agent-acceptance",
+      "dispatchable": true,
+      "classification": "dispatchable",
+      "cdp_endpoint": "http://localhost:9222",
+      "target_id": "3A3D3CCDC371138CD78FDCB1407EEFC6",
+      "tab_match_status": "exact_match",
+      "binding_status": "active",
+      "conversation_id": "6a26cc03...",
+      "error": null,
+      "packet": {
+        "dispatchable": true,
+        "project_id": "agent-acceptance",
+        "cdp_endpoint": "http://localhost:9222",
+        "cdp_active": true,
+        "conversation_id": "6a26cc03-235c-83a2-a0fc-cd29be615959",
+        "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+        "agent_id": "agent-local-001",
+        "agent_role": "reviewer",
+        "target_id": "3A3D3CCDC371138CD78FDCB1407EEFC6",
+        "target_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+        "tab_match_status": "exact_match",
+        "capture_policy": {
+          "must_match_run_id": true,
+          "must_match_task_id": true,
+          "must_include_end_marker": true,
+          "forbid_last_message_only_capture": true
+        },
+        "expected_run_id": null,
+        "expected_task_id": "DRYRUN-AGENT-ACCEPTANCE-001",
+        "expected_end_marker": "END_OF_GPT_RESPONSE",
+        "forbid_last_message_only_capture": true,
+        "dispatch_mode": "dry_run",
+        "cdp_mode": "shared_single_chrome",
+        "isolation_model": "conversation_target_bound",
+        "task_spec": {
+          "task_id": "DRYRUN-AGENT-ACCEPTANCE-001",
+          "description": "Dry-run dispatch test for agent-acceptance",
+          "dry_run": true,
+          "scope": "gated_capture_only"
+        },
+        "message_text": "AWSP dry-run test for project agent-acceptance. Do not process.",
+        "message_length": 63,
+        "built_at": "2026-06-10T14:14:21Z"
+      }
+    },
+    {
+      "project_id": "project-alpha",
+      "dispatchable": false,
+      "classification": "human_required",
+      "cdp_endpoint": "http://localhost:9222",
+      "target_id": null,
+      "tab_match_status": null,
+      "binding_status": "pending_binding",
+      "conversation_id": null,
+      "error": "No active agent found in binding",
+      "packet": null
+    },
+    {
+      "project_id": "project-beta",
+      "dispatchable": false,
+      "classification": "human_required",
+      "cdp_endpoint": "http://localhost:9222",
+      "target_id": null,
+      "tab_match_status": null,
+      "binding_status": "pending_binding",
+      "conversation_id": null,
+      "error": "No active agent found in binding",
+      "packet": null
+    },
+    {
+      "project_id": "project-gamma",
+      "dispatchable": false,
+      "classification": "human_required",
+      "cdp_endpoint": "http://localhost:9222",
+      "target_id": null,
+      "tab_match_status": null,
+      "binding_status": "pending_binding",
+      "conversation_id": null,
+      "error": "No active agent found in binding",
+      "packet": null
+    },
+    {
+      "project_id": "project-delta",
+      "dispatchable": false,
+      "classification": "human_required",
+      "cdp_endpoint": "http://localhost:9222",
+      "target_id": null,
+      "tab_match_status": null,
+      "binding_status": "pending_binding",
+      "conversation_id": null,
+      "error": "No active agent found in binding",
+      "packet": null
+    },
+    {
+      "project_id": "project-epsilon",
+      "dispatchable": false,
+      "classification": "human_required",
+      "cdp_endpoint": "http://localhost:9222",
+      "target_id": null,
+      "tab_match_status": null,
+      "binding_status": "pending_binding",
+      "conversation_id": null,
+      "error": "No active agent found in binding",
+      "packet": null
+    },
+    {
+      "project_id": "project-zeta",
+      "dispatchable": false,
+      "classification": "human_required",
+      "cdp_endpoint": "http://localhost:9222",
+      "target_id": null,
+      "tab_match_status": null,
+      "binding_status": "pending_binding",
+      "conversation_id": null,
+      "error": "No active agent found in binding",
+      "packet": null
+    },
+    {
+      "project_id": "project-eta",
+      "dispatchable": false,
+      "classification": "human_required",
+      "cdp_endpoint": "http://localhost:9222",
+      "target_id": null,
+      "tab_match_status": null,
+      "binding_status": "pending_binding",
+      "conversation_id": null,
+      "error": "No active agent found in binding",
+      "packet": null
+    },
+    {
+      "project_id": "project-theta",
+      "dispatchable": false,
+      "classification": "human_required",
+      "cdp_endpoint": "http://localhost:9222",
+      "target_id": null,
+      "tab_match_status": null,
+      "binding_status": "pending_binding",
+      "conversation_id": null,
+      "error": "No active agent found in binding",
+      "packet": null
+    },
+    {
+      "project_id": "project-iota",
+      "dispatchable": false,
+      "classification": "human_required",
+      "cdp_endpoint": "http://localhost:9222",
+      "target_id": null,
+      "tab_match_status": null,
+      "binding_status": "pending_binding",
+      "conversation_id": null,
+      "error": "No active agent found in binding",
+      "packet": null
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "dispatchable_count": 1,
+    "pending_count": 0,
+    "collision_count": 0,
+    "blocked_tab_count": 0,
+    "tab_unresolved_count": 0,
+    "missing_target_id_count": 0,
+    "human_required_count": 9
+  }
+}

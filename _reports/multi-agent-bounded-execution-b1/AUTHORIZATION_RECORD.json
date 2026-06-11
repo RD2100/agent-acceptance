@@ -1,0 +1,40 @@
+{
+  "authorization_id": "b1-bounded-execution-auth-001",
+  "task_id": "multi-agent-bounded-execution-b1",
+  "scope": "bounded_local_dry_run_only",
+  "authorizing_decision": "Human authorizes bounded execution dry run of 3 local-only assignments from DISPATCH_PLAN_R3. No external runtime, no cross-repo, no paper workflow, no real GPT dispatch.",
+  "decision_maker": "human-operator",
+  "decision_reason": "A1 pilot activation was accepted_with_limitation. B1 dry run proves READY->EXECUTED transition works within tool-policy boundaries. All operations are read-only local checks.",
+  "approved_at": "2026-06-10T04:55:00Z",
+  "expires_at": "2026-06-11T04:55:00Z",
+  "risk_acknowledged": true,
+  "allowed_repos": ["agent-acceptance"],
+  "allowed_commands": [
+    "python scripts/bounded_execution_dry_run.py",
+    "python -m pytest tests/ -q",
+    "python scripts/multi_agent_gate0_preflight.py",
+    "python scripts/validate_conversation_registry.py"
+  ],
+  "forbidden_commands": [
+    "opencode run",
+    "cross-repo smoke",
+    "paper workflow real processing",
+    "git push",
+    "git reset --hard",
+    "npm install",
+    "pip install"
+  ],
+  "expected_write_set": [
+    "_reports/multi-agent-bounded-execution-b1/"
+  ],
+  "evidence_file": "_reports/multi-agent-bounded-execution-b1/EXECUTION_REPORT.json",
+  "safety_boundary": "All operations remain local and read-only. No external runtime execution. No real GPT dispatch via CDP. No cross-repo operations.",
+  "prior_authorization": "MULTI-AGENT-MULTI-GPT-PILOT-A1 (accepted_with_limitation R2)",
+  "gating_context": {
+    "gate0_status": "PASS",
+    "dispatch_plan_status": "READY",
+    "cap029_status": "approved/verified/usable_for_execution",
+    "agents_active": 2,
+    "executed_external_runtime": false
+  }
+}

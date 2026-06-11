@@ -1,0 +1,29 @@
+{
+  "task_id": "HUMAN-DECISION-RECORD-CLI-T10-HASH-INTEGRATE-A1",
+  "run_id": "HUMAN_DECISION_RECORD_CLI_T10_HASH_INTEGRATE_A1_20260609T132027_RD",
+  "round": "R1",
+  "verdict": "accepted_with_limitation",
+  "overall_judgment": "accepted_with_limitation",
+  "valid": true,
+  "closure_ready": true,
+  "verified_at": "2026-06-09T13:23:46.421615+08:00",
+  "source": "manual_recapture",
+  "gpt_reply_size": 1597,
+  "checks": {
+    "has_end_marker": true,
+    "has_next_task_auth": true,
+    "verdict_allowed": true
+  },
+  "findings": [
+    "CLI create accepts --repo-root and --compute-hashes flags",
+    "CLI validate accepts --repo-root for binding and hash verification",
+    "state_machine_runtime.py T10 guard accepts repo_root parameter",
+    "End-to-end chain: create(hash) -> validate(hash) -> T10(hash) fully connected",
+    "4 new tests verify CLI and T10 hash integration"
+  ],
+  "limitations": [
+    "PACK_MANIFEST not listed as manifest row in evidence pack",
+    "Pack run_id / timestamp differs from prompt run_id"
+  ],
+  "next_task_authorization": "HUMAN-DECISION-RECORD-MANIFEST-BIND-A1"
+}

@@ -1,0 +1,18 @@
+{
+  "target_run_id": "GPT_REVIEW_FLOW_REGRESSION_TEST_A1_REVIEW_20260609T120034_RD",
+  "target_task_id": "GPT-REVIEW-FLOW-REGRESSION-TEST-A1",
+  "before_user_count": 18,
+  "before_assistant_count": 12,
+  "after_user_count": 19,
+  "after_assistant_count": 13,
+  "candidate_indices": [
+    12
+  ],
+  "selected_index": 12,
+  "last_index": 12,
+  "last_text_contains_run_id": true,
+  "selected_text_contains_run_id": true,
+  "selected_text_contains_end_marker": true,
+  "capture_mismatch": false,
+  "decision": "selected_and_last_match"
+}

@@ -1,0 +1,57 @@
+{
+  "module": "multi_cdp_launcher.py",
+  "functions": [
+    {
+      "name": "_find_chrome",
+      "purpose": "Locate Chrome executable on Windows/macOS/Linux",
+      "tested": true
+    },
+    {
+      "name": "_check_port",
+      "purpose": "Check if CDP port is responsive via /json/version",
+      "tested": true
+    },
+    {
+      "name": "_get_version",
+      "purpose": "Get CDP version info from a port",
+      "tested": true
+    },
+    {
+      "name": "load_registry",
+      "purpose": "Load PROJECT_REGISTRY.json (or return default)",
+      "tested": true
+    },
+    {
+      "name": "save_registry",
+      "purpose": "Save PROJECT_REGISTRY.json with timestamp",
+      "tested": true
+    },
+    {
+      "name": "launch_chrome",
+      "purpose": "Launch Chrome with --remote-debugging-port and --user-data-dir",
+      "tested": true,
+      "params": ["project_id", "port", "profiles_dir", "chrome_path"],
+      "returns": "dict with launched/pid/cdp_endpoint or error"
+    },
+    {
+      "name": "verify_instance",
+      "purpose": "Verify CDP instance is responsive and count ChatGPT pages",
+      "tested": true
+    }
+  ],
+  "cli_commands": ["launch", "status", "register"],
+  "registry_path": ".agent/PROJECT_REGISTRY.json",
+  "registry_schema": {
+    "schema_version": "1.0.0",
+    "awsp_version": "1.3.0",
+    "projects": {
+      "<project_id>": {
+        "project_id": "string",
+        "cdp_port": "int",
+        "cdp_endpoint": "string",
+        "profile_dir": "string",
+        "registered_at": "ISO-8601"
+      }
+    }
+  }
+}

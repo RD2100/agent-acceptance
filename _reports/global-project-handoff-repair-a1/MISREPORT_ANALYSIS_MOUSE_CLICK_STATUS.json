@@ -1,0 +1,11 @@
+{
+  "run_id": "MISREPORT_ANALYSIS_20260608_231014_HO3ZMD",
+  "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "button_box": null,
+  "editor_chars": 0,
+  "editor_has_run_id": false,
+  "before_user": 9,
+  "before_assistant": 13,
+  "status": "manual_required",
+  "reason": "send_button_not_found"
+}

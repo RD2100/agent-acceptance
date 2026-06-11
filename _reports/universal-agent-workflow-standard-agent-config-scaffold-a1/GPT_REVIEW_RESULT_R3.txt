@@ -1,0 +1,27 @@
+overall_judgment: accepted_with_limitation
+run_id: UNIVERSAL_AGENT_WORKFLOW_STANDARD_AGENT_CONFIG_SCAFFOLD_A1_20260609T155920_RD
+findings:
+
+R3 已修复 R2 blocking issue：validate_scaffold() 现在会在 .agent/PROJECT_AGENT_CONFIG.json 缺少 awsp_version 字段时加入错误，并返回 valid=false。
+
+新增 test_project_agent_config_missing_awsp_version_fails 覆盖了 awsp_version 缺失场景，能够防止该问题回归。
+
+我基于附件中的实际脚本与测试文件复跑目标测试，test_cross_project_scaffold.py 与 test_validate_run_id_consistency.py 合计 56/56 passed。
+
+create_scaffold() 继续使用 root.resolve() 写入 .awsp.json 与 .agent 模板中的 project_root，相对路径 scaffold 自验证问题保持修复状态。
+
+.agent/ 四个治理配置文件仍可生成并被 validate_scaffold() 检查：REQUIRED_READS.json、PROJECT_AGENT_CONFIG.json、GATE_CONFIG.json、startup_proof_template.json。
+
+validate_scaffold() 已具备较完整的 .agent 基础结构校验：文件存在、JSON 有效、schema_version、PROJECT_AGENT_CONFIG awsp_version、governance flags、GATE_CONFIG gates、REQUIRED_READS required_reads array。
+
+limitation: 附件中的 TARGET_TEST_OUTPUT.txt 和 FULL_SUITE_OUTPUT.txt 仍是旧输出，分别显示 49 passed 和 540 passed，而不是 prompt / EXECUTION_REPORT 声称的 56 passed 和 547 passed；我可以独立复核目标测试 56 passed，但 full suite 547 passed 仍未由附件中的原始输出直接证明。
+
+limitation: governance flags 目前仍只检查字段存在，不检查值是否为 true；如果这些 flags 表示强制门禁，后续应将 false 值设为 fail-closed。
+
+limitation: GATE_CONFIG 目前只检查 required gates 存在，尚未检查 enabled、strict_mode、block_on_failure 等关键 gate 配置值。
+
+limitation: REQUIRED_READS.json 当前只检查 required_reads 是 array，尚未验证 P0/P1 entries、must_read_at_startup、fail_closed_if_missing、hash binding 等结构。
+
+limitation: .agent/ 配置 scaffold 已基本成型，但 startup_read_gate、pre_task_gate、pre_gpt_review_gate、state_machine_runtime、human_decision_record 等跨项目可部署脚本仍未作为 scaffold 组件完整生成和验证。
+next_task_authorization: UNIVERSAL-AGENT-WORKFLOW-STANDARD-AGENT-CONFIG-STRICT-VALIDATION-A1
+---END_OF_GPT_RESPONSE---

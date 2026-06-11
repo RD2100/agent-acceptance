@@ -1,0 +1,205 @@
+以下是 MULTI-AGENT-MULTI-GPT-PILOT-A1 的实际代码与运行证据，请审查并给出正式判决。
+
+Run ID: MULTI_AGENT_MULTI_GPT_PILOT_A1_20260610T102443_RD
+Prerequisite: CONVERSATION-REGISTRY-R3-CLOSE (accepted_with_limitation)
+
+=== FILE 1: .agent/CONVERSATION_BINDING.json (bindings array) ===
+{
+  "schema_version": "1.0.0", "awsp_version": "1.3.0",
+  "project_id": "agent-acceptance", "project_root": "D:/agent-acceptance",
+  "default_conversation_policy": "one_agent_one_conversation",
+  "governance_scope": {
+    "default_execution_policy": "human_gated_for_external_runtime_execution",
+    "forbid_ad_hoc_gpt_submission": true,
+    "forbid_cross_repo_smoke_without_human_gate": true,
+    "external_runtimes": [
+      {"runtime_id":"devframe-control-plane","runtime_kind":"control_plane",
+       "governance_status":"in_scope_read_only","human_gate_required":true,
+       "allowed_actions":["read_policy","adapter_dry_run","pipeline_provenance_reference"],
+       "forbidden_actions":["modify_runtime_files","run_smoke_test","produce_gate_result","..."]},
+      {"runtime_id":"dev-frame-opencode","runtime_kind":"agent_dispatch",
+       "governance_status":"in_scope_human_gated","human_gate_required":true,
+       "allowed_actions":["dispatch_with_taskspec","return_execution_report","..."],
+       "forbidden_actions":["direct_gpt_submission","bypass_submission_adapter","..."]},
+      {"runtime_id":"paper-workflow","runtime_kind":"business_workflow",
+       "governance_status":"in_scope_pilot_only","human_gate_required":true,
+       "allowed_actions":["sanitized_paper_probe","evidence_pack_generation","..."],
+       "forbidden_actions":["fabricated_gpt_review","live_cdp_without_authorization","..."]}
+    ]},
+  "bindings": [
+    {"agent_id":"agent-local-001","role":"reviewer","binding_status":"active",
+     "conversation_id":"6a26cc03-235c-83a2-a0fc-cd29be615959",
+     "chat_url":"https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+     "browser_profile_id":"cdp-profile-pilot-a1",
+     "cdp_endpoint":"http://localhost:9222",
+     "allowed_task_scope":["*"],
+     "capture_policy":{"must_match_run_id":true,"must_match_task_id":true,
+       "must_include_end_marker":true,"forbid_last_message_only_capture":true}},
+    {"agent_id":"agent-pilot-beta","role":"executor",
+     "binding_status":"pending_manual_binding",
+     "conversation_id":null,"chat_url":null,
+     "browser_profile_id":null,"cdp_endpoint":null,
+     "allowed_task_scope":["*"],
+     "capture_policy":{"must_match_run_id":true,"must_match_task_id":true,
+       "must_include_end_marker":true,"forbid_last_message_only_capture":true}}
+  ]
+}
+
+=== FILE 2: ACTIVATION_RECORD.json ===
+{
+  "pilot_id": "multi-agent-multi-gpt-pilot-a1",
+  "activation_timestamp": "2026-06-10T02:22:43Z",
+  "binding_path": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json",
+  "binding_valid": true, "schema_validated": true,
+  "agent_summary": {"total": 2, "active": 1, "pending": 1},
+  "active_agents": [
+    {"agent_id":"agent-local-001","role":"reviewer","binding_status":"active",
+     "chat_url":"https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+     "conversation_id":"6a26cc03-235c-83a2-a0fc-cd29be615959",
+     "cdp_endpoint":"http://localhost:9222","cdp_session_verified":true}
+  ],
+  "pending_agents": [
+    {"agent_id":"agent-pilot-beta","role":"executor",
+     "binding_status":"pending_manual_binding"}
+  ],
+  "cdp_session": {"active":true,"browser":"Chrome/149.0.7827.54","chat_pages":1},
+  "governance_scope": {
+    "external_runtimes":["devframe-control-plane","dev-frame-opencode","paper-workflow"],
+    "default_execution_policy":"human_gated_for_external_runtime_execution"
+  },
+  "pilot_readiness": {
+    "all_agents_active": false,
+    "at_least_one_active": true, "at_least_two_agents": true,
+    "schema_validated": true, "cdp_verified": true
+  }
+}
+
+=== FILE 3: GATE0_PREFLIGHT_R2.json (compact) ===
+{
+  "overall": "HUMAN_REQUIRED",
+  "executed_external_runtime": false, "human_gate_required": true,
+  "agent_count": 2,
+  "checks": [
+    {"name":"binding_0_valid","status":"passed"},
+    {"name":"binding_0_runtime_scope","status":"passed"},
+    {"name":"agent_agent-pilot-beta_manual_binding","status":"human_required",
+     "detail":"agent remains pending_manual_binding"},
+    {"name":"unique_agent_ids","status":"passed","detail":"2 unique agent id(s)"},
+    {"name":"pilot_agent_count","status":"passed","detail":"2 agent(s) declared"},
+    {"name":"cap_029_registered","status":"passed"},
+    {"name":"cap_029_gate0","status":"passed","detail":"usable_for_gate0=true"},
+    {"name":"cap_029_execution","status":"human_required",
+     "detail":"opencode dispatch not executable (status=proposed)"},
+    {"name":"tool_policy_runtime_gates","status":"passed"}
+  ]
+}
+Summary: 7/9 passed, 2/9 human_required. No external runtime executed.
+
+=== FILE 4: scripts/pilot_activation_record.py (190 lines, key signatures) ===
+"""Pilot activation record -- documents CDP evidence and binding activation.
+Reads and validates existing state only. Does NOT modify any files."""
+
+CDP_ENDPOINT = "http://localhost:9222"
+PILOT_ID = "multi-agent-multi-gpt-pilot-a1"
+
+def _cdp_get(path: str) -> dict[str, Any] | list | None:
+    """Query CDP endpoint. Returns None on failure."""
+
+def verify_cdp_session() -> dict[str, Any]:
+    """Verify CDP session is active and return metadata.
+    Queries /json/version and /json. Returns:
+    {cdp_active, browser, protocol_version, chat_pages, chat_page_count}"""
+
+def build_activation_record(
+    binding_path: Path,
+    cdp_evidence: dict[str, Any],
+    validation_result: dict[str, Any],
+) -> dict[str, Any]:
+    """Build structured activation record. Cross-checks each active agent's
+    conversation_id against CDP page URLs. Returns record with:
+    pilot_id, agent_summary, active_agents, pending_agents,
+    cdp_session, governance_scope, pilot_readiness"""
+
+def _utc_now() -> str:
+    """Return current UTC timestamp in ISO 8601 format."""
+
+def main() -> None:
+    """CLI entry. Args: --binding, --output.
+    Exit codes: 0=fully active, 2=partial (some pending), 1=blocked."""
+
+=== FILE 5: tests/test_pilot_activation.py (24 tests, 5 classes) ===
+
+class TestPilotBindingActivation:  # 12 tests
+    test_binding_has_two_agents
+    test_agent_local_001_is_active
+    test_agent_local_001_has_real_chat_url
+    test_agent_local_001_has_real_conversation_id
+    test_agent_local_001_has_cdp_endpoint
+    test_agent_pilot_beta_is_pending
+    test_agent_pilot_beta_has_executor_role
+    test_agent_ids_are_unique
+    test_binding_validates_successfully
+    test_binding_summary_counts
+    test_binding_passes_schema_validation
+    test_capture_policy_preserved_for_active_agent
+
+class TestPilotActivationSafetyGuards:  # 5 tests
+    test_one_agent_one_conversation_policy
+    test_active_agents_have_distinct_conversations
+    test_governance_scope_preserved
+    test_external_runtimes_preserved
+    test_no_fabricated_pending_as_active
+
+class TestPilotScaffoldActivationPath:  # 4 tests
+    test_fresh_scaffold_can_be_activated
+    test_scaffold_rejects_active_without_real_url
+    test_scaffold_adds_second_agent
+    test_scaffold_rejects_duplicate_agent_on_activation
+
+class TestPilotActivationRecord:  # 3 tests
+    test_build_activation_record_structure
+    test_activation_record_cdp_verification
+    test_activation_record_cdp_not_verified_when_no_match
+
+=== FILE 6: Test Results ===
+Total: 718 passed, 0 failed (24 new tests added in this task)
+No external runtime was executed. All tests run locally against
+CONVERSATION_BINDING.json, schema validation, and CDP mock evidence.
+
+=== FILE 7: Files Changed ===
+| File                                              | Action   | Purpose                            |
+|---------------------------------------------------|----------|------------------------------------|
+| .agent/CONVERSATION_BINDING.json                  | Modified | Activated agent-local-001, added agent-pilot-beta |
+| scripts/pilot_activation_record.py                | Created  | Pilot activation record builder (190 lines) |
+| tests/test_pilot_activation.py                    | Created  | 24 pilot activation tests          |
+| _reports/.../ACTIVATION_RECORD.json               | Created  | Machine-readable activation evidence |
+| _reports/.../GATE0_PREFLIGHT_R2.json              | Created  | Updated gate0 preflight (7/9 pass) |
+| _reports/.../DISPATCH_PLAN.json                   | Created  | 6 assignments, no write conflicts  |
+| _reports/.../EXECUTION_REPORT.md                  | Created  | Full execution report              |
+| _reports/.../SAFETY_ATTESTATION.md                | Created  | Safety boundary attestation        |
+
+=== FILE 8: Pilot Readiness Assessment ===
+| Criterion                    | Status   | Evidence                          |
+|------------------------------|----------|-----------------------------------|
+| agent-local-001 activated    | DONE     | Real CDP-backed chat_url          |
+| agent-pilot-beta pending     | EXPECTED | Needs independent conversation     |
+| Binding validates            | DONE     | schema_validated=true, 0 errors   |
+| Gate 0 improved              | DONE     | 7/9 passed (was 6/9)             |
+| Dispatch plan generated      | DONE     | 6 assignments, no conflicts       |
+| No external runtime executed | VERIFIED | executed_external_runtime=false   |
+| Tests added and passing      | DONE     | 24 new, 718 total, 0 failed       |
+
+Remaining gates for full pilot activation:
+1. agent-pilot-beta binding: requires second independent ChatGPT conversation
+2. CAP-029 execution: requires human/reviewer approval (proposed -> executable)
+3. Gate 0 PASS: both above gates must clear before preflight returns PASS
+
+请基于以上实际代码和证据给出正式判决：
+
+overall_judgment: accepted | accepted_with_limitation | blocked | human_required
+run_id: MULTI_AGENT_MULTI_GPT_PILOT_A1_20260610T102443_RD
+findings:
+  - ...
+next_task_authorization: ...
+
+---END_OF_EVIDENCE---

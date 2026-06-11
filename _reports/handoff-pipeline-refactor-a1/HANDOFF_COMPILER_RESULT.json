@@ -1,0 +1,19 @@
+{
+  "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+  "generated_at": "2026-06-08T12:46:21.220248+00:00",
+  "approval_status": "draft_only",
+  "draft_path": "D:\\agent-acceptance\\_reports\\handoff-pipeline-refactor-a1\\HANDOFF_DRAFT_FOR_GPT.md",
+  "paste_block_path": "D:\\agent-acceptance\\_reports\\handoff-pipeline-refactor-a1\\PASTE_BLOCK_DRAFT_FOR_NEW_GPT.txt",
+  "source_map_path": "D:\\agent-acceptance\\_reports\\handoff-pipeline-refactor-a1\\HANDOFF_EVIDENCE_MAP.json",
+  "privacy_checked": true,
+  "safety_pass": true,
+  "handoff_validation": {
+    "file": "D:\\agent-acceptance\\_reports\\handoff-pipeline-refactor-a1\\HANDOFF_DRAFT_FOR_GPT.md",
+    "valid": false,
+    "size": 2277,
+    "issues": [
+      "too short: 2277 < 8000 bytes"
+    ]
+  },
+  "hash": "37d84edd176b0c870b8f525b744e2d86ee64be97682149bbf5f07e374cdf6db1"
+}

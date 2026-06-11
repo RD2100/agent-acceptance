@@ -1,0 +1,166 @@
+{
+  "task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1",
+  "run_id": "HANDOFF_WORKFLOW_HARDENING_PLAN_A1_20260609_012328",
+  "generated_at": "2026-06-09T01:23:28+00:00",
+  "analysis_type": "workflow_hardening_gap_analysis",
+  "current_workflow_components": [
+    {
+      "component": "source_of_truth_hierarchy",
+      "file": "HANDOFF_SOURCE_OF_TRUTH.md",
+      "status": "active",
+      "completeness": "high"
+    },
+    {
+      "component": "attachment_backed_gpt_review_runbook",
+      "file": "_reports/handoff-pipeline-refactor-a1/ATTACHMENT_BACKED_GPT_REVIEW_RUNBOOK.md",
+      "status": "active",
+      "completeness": "high"
+    },
+    {
+      "component": "gpt_reply_verifier",
+      "file": "scripts/verify_gpt_reply.py",
+      "status": "active",
+      "completeness": "high"
+    },
+    {
+      "component": "evidence_pack_linter",
+      "file": "scripts/evidence_pack_linter.py",
+      "status": "active",
+      "completeness": "high"
+    },
+    {
+      "component": "pre_gpt_review_gate",
+      "file": "scripts/pre_gpt_review_gate.py",
+      "status": "active",
+      "completeness": "high"
+    },
+    {
+      "component": "startup_read_gate",
+      "file": "_reports/next-agent-workflow-bootstrap-a1/NEXT_AGENT_STARTUP_READ_GATE.md",
+      "status": "guidance_only",
+      "completeness": "medium",
+      "limitation": "Not machine-verifiable; relies on agent compliance"
+    },
+    {
+      "component": "source_evidence_binding",
+      "file": "_reports/global-project-evidence-binding-a1/SOURCE_MAP_EVIDENCE_BINDING_APPENDIX.json",
+      "status": "active",
+      "completeness": "high"
+    },
+    {
+      "component": "legacy_handoff_inventory",
+      "file": "LEGACY_HANDOFF_INVENTORY.md",
+      "status": "active",
+      "completeness": "high"
+    },
+    {
+      "component": "gpt_attachment_submitter",
+      "file": "scripts/gpt_new_chat_attachment_submit.py",
+      "status": "pointer_only",
+      "completeness": "low",
+      "limitation": "1KB pointer delegating to _submit_new_chat_with_attachment_strict.py; actual implementation has hardcoded paths and is not parameterized for reuse across tasks"
+    },
+    {
+      "component": "capture_mechanism",
+      "file": "_submit_new_chat_with_attachment_strict.py",
+      "status": "functional_but_fragile",
+      "completeness": "medium",
+      "limitation": "msgs.last capture can grab wrong assistant message in continuation conversations; lacks before_assistant_count guard and run_id hard gate (R1 incident: captured assistant[3] instead of assistant[4])"
+    }
+  ],
+  "gaps": [
+    {
+      "gap_id": "GAP-001",
+      "name": "process_state_machine",
+      "description": "No machine-readable state machine defining task lifecycle states and transitions",
+      "affects": ["correctness", "automation_reliability"],
+      "priority": "high",
+      "proposed_solution": "Create PROCESS_STATE_MACHINE.md (human-readable) and PROCESS_STATE_MACHINE.json (machine-readable) defining states: draft, gate_passing, gpt_reviewing, accepted, accepted_with_limitation, blocked, human_required, closed with transition conditions and irreversible constraints"
+    },
+    {
+      "gap_id": "GAP-002",
+      "name": "changed_files_proof_standardization",
+      "description": "CHANGED_FILES evidence format inconsistent across tasks (txt/json/md variants)",
+      "affects": ["correctness", "auditability"],
+      "priority": "high",
+      "proposed_solution": "Define CHANGED_FILES_SCHEMA.json with unified fields: path, change_type, sha256_before, sha256_after, tracked, git_porcelain_status"
+    },
+    {
+      "gap_id": "GAP-003",
+      "name": "gpt_attachment_submitter_parameterization",
+      "description": "gpt_new_chat_attachment_submit.py is a 1KB pointer; not parameterized for reuse across tasks",
+      "affects": ["automation_reliability"],
+      "priority": "high",
+      "proposed_solution": "Parameterize with: task_id, pack_path, run_id_path, output_path, prompt_template"
+    },
+    {
+      "gap_id": "GAP-004",
+      "name": "gpt_capture_reconciliation_report",
+      "description": "No end-to-end reconciliation of submissions vs captures vs verdicts",
+      "affects": ["auditability", "correctness"],
+      "priority": "medium",
+      "proposed_solution": "Create GPT_CAPTURE_RECONCILIATION_REPORT mapping all run_ids to submissions, captures, and verdicts"
+    },
+    {
+      "gap_id": "GAP-005",
+      "name": "gpt_review_regression_tests",
+      "description": "Key gate scripts lack regression test coverage for edge cases",
+      "affects": ["automation_reliability"],
+      "priority": "medium",
+      "proposed_solution": "Create test suite covering: missing run_id, missing END_OF_GPT_RESPONSE, empty file, verdict flattening, stale reply"
+    },
+    {
+      "gap_id": "GAP-006",
+      "name": "human_required_decision_record_template",
+      "description": "No structured template for recording human intervention decisions",
+      "affects": ["auditability", "safety"],
+      "priority": "medium",
+      "proposed_solution": "Create HUMAN_REQUIRED_DECISION_RECORD_TEMPLATE.json with fields for decision context, risk assessment, authorization, and outcome"
+    },
+    {
+      "gap_id": "GAP-007",
+      "name": "startup_read_gate_machine_verification",
+      "description": "Startup read gate is guidance-only; no machine-verifiable check",
+      "affects": ["automation_reliability"],
+      "priority": "medium",
+      "proposed_solution": "Create scripts/verify_startup_read_proof.py that validates startup proof JSON exists and all required reads are present"
+    },
+    {
+      "gap_id": "GAP-008",
+      "name": "project_governance_dashboard",
+      "description": "No unified view of project governance state across all tasks",
+      "affects": ["auditability"],
+      "priority": "low",
+      "proposed_solution": "Optional HTML/MD dashboard aggregating all task verdicts, limitations, and next actions"
+    },
+    {
+      "gap_id": "GAP-009",
+      "name": "next_task_authorization_chain_break",
+      "description": "R4 next_task_authorization is none/unauthorized; automation chain is broken",
+      "affects": ["automation_reliability"],
+      "priority": "high",
+      "proposed_solution": "Requires user decision to authorize next task; plan task fills this gap by proposing candidates"
+    },
+    {
+      "gap_id": "GAP-010",
+      "name": "capture_mechanism_hardening",
+      "description": "msgs.last.inner_text() can grab wrong assistant message in continuation conversations. R1 incident: captured assistant[3] (Qwen prompt template) instead of assistant[4] (actual verdict). Must use before_assistant_count baseline + run_id matching as authoritative capture method.",
+      "affects": ["correctness", "automation_reliability", "auditability"],
+      "priority": "high",
+      "proposed_solution": "1) Record before_assistant_count before submit. 2) Only scan assistant messages with index >= before_assistant_count. 3) Use exact run_id + task_id + END_OF_GPT_RESPONSE as hard gate. 4) Record capture_mismatch when last != selected. 5) Add GPT_CAPTURE_RECONCILIATION_REPORT per submission. 6) Add regression test case: continuation_conversation_last_assistant_stale. Rule: last assistant is not authoritative; target run_id match is authoritative.",
+      "discovered_during": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1 R1 submission",
+      "gpt_advice_file": "_reports/handoff-workflow-hardening-plan-a1/GPT_CAPTURE_ADVICE.txt"
+    }
+  ],
+  "priority_matrix": {
+    "P0_high": ["GAP-001", "GAP-002", "GAP-003", "GAP-009", "GAP-010"],
+    "P1_medium": ["GAP-004", "GAP-005", "GAP-006", "GAP-007"],
+    "P2_low": ["GAP-008"]
+  },
+  "impact_matrix": {
+    "correctness": ["GAP-001", "GAP-002", "GAP-004", "GAP-010"],
+    "auditability": ["GAP-002", "GAP-004", "GAP-006", "GAP-008", "GAP-010"],
+    "automation_reliability": ["GAP-001", "GAP-003", "GAP-005", "GAP-007", "GAP-009", "GAP-010"],
+    "safety": ["GAP-006"]
+  }
+}

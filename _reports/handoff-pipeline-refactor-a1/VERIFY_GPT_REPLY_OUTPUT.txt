@@ -1,0 +1,50 @@
+{
+  "verify": {
+    "valid": false,
+    "overall_judgment": null,
+    "errors": [
+      "missing END_OF_GPT_RESPONSE",
+      "missing overall_judgment",
+      "task_id not found in reply (expected HANDOFF-PIPELINE-REFACTOR-A1)"
+    ],
+    "checks": {
+      "has_end_marker": false,
+      "evidence_pack_reviewed": false,
+      "task_id_in_reply": null,
+      "task_id_matches": false,
+      "has_next_task_auth": false
+    },
+    "sha256": "4f6b651cc361198c2a477bcfd78c1a64...",
+    "size": 6803,
+    "verdict_allowed": false,
+    "source": "captured_gpt_response",
+    "task_id": "HANDOFF-PIPELINE-REFACTOR-A1"
+  },
+  "closure_ready": {
+    "closure_ready": false,
+    "reason": "GPT reply not valid",
+    "verdict": {
+      "valid": false,
+      "overall_judgment": null,
+      "errors": [
+        "missing END_OF_GPT_RESPONSE",
+        "missing overall_judgment",
+        "task_id not found in reply (expected HANDOFF-PIPELINE-REFACTOR-A1)"
+      ],
+      "checks": {
+        "has_end_marker": false,
+        "evidence_pack_reviewed": false,
+        "task_id_in_reply": null,
+        "task_id_matches": false,
+        "has_next_task_auth": false
+      },
+      "sha256": "4f6b651cc361198c2a477bcfd78c1a64...",
+      "size": 6803,
+      "verdict_allowed": false,
+      "source": "captured_gpt_response"
+    }
+  }
+}
+
+GUARD BLOCKED: GPT reply for HANDOFF-PIPELINE-REFACTOR-A1 is not valid.
+Errors: ['missing END_OF_GPT_RESPONSE', 'missing overall_judgment', 'task_id not found in reply (expected HANDOFF-PIPELINE-REFACTOR-A1)']

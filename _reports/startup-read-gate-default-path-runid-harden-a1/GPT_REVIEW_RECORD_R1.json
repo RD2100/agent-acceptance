@@ -1,0 +1,72 @@
+{
+  "task_id": "STARTUP-READ-GATE-DEFAULT-PATH-RUNID-HARDEN-A1",
+  "run_id": "STARTUP_READ_GATE_DEFAULT_PATH_RUNID_HARDEN_A1_REVIEW_20260609T123133_RD",
+  "round": "R1",
+  "verdict": {
+    "overall_judgment": "accepted_with_limitation",
+    "evidence_pack_reviewed": true,
+    "attachment_reviewed": true,
+    "has_end_marker": true,
+    "has_next_task_auth": true,
+    "blocking_issues": "none",
+    "required_fixes": "none"
+  },
+  "verifier": {
+    "valid": true,
+    "closure_ready": true,
+    "exit_code": 0,
+    "verifier_false_positive": false,
+    "false_positive_reason": null,
+    "manual_verdict": null,
+    "manual_closure_ready": null,
+    "note": "Fourth consecutive clean verification."
+  },
+  "submission": {
+    "sent": true,
+    "upload_confirmed": true,
+    "upload_method": "input[0]",
+    "send_confirmed": true,
+    "sent_at": "2026-06-09T12:31:57",
+    "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959"
+  },
+  "capture_reconciliation": {
+    "before_user_count": 23,
+    "before_assistant_count": 17,
+    "after_user_count": 24,
+    "after_assistant_count": 18,
+    "selected_index": 17,
+    "last_index": 17,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "evidence_pack": {
+    "zip_path": "evidence_packs/startup-read-gate-default-path-runid-harden-a1/STARTUP_READ_GATE_DEFAULT_PATH_RUNID_HARDEN_A1_20260609T123133_RD.zip",
+    "zip_size": 11216,
+    "zip_sha256": "431891a764037a3b3eb000b1e50c3d63a0be0edba18223deefb3b7c40924d114"
+  },
+  "captured_reply": {
+    "result_path": "_reports/startup-read-gate-default-path-runid-harden-a1/GPT_REVIEW_RESULT_R1.txt",
+    "reply_chars": 1868,
+    "run_id_in_reply": true,
+    "has_end_marker": true,
+    "parsed_overall_judgment": "accepted_with_limitation",
+    "capture_truncated": false
+  },
+  "limitations_from_gpt": [
+    "task_id extraction only supports Markdown table format, not YAML/JSON/multi-task manifests",
+    "required reads auto-detect fallback uses latest modified file — may pick wrong file with multiple candidates",
+    "startup gate still opt-in, not enforced for all submissions",
+    "evidence pack does not include startup_read_gate.py — assumes it exists in repo",
+    "PACK_MANIFEST.md not listed as manifest row in itself",
+    "pack run_id vs review prompt run_id timestamp mismatch"
+  ],
+  "next_task_authorization": {
+    "task_id": "STATE-MACHINE-RUNTIME-INTEGRATE-A1",
+    "authorized": "已授权",
+    "execute_immediately": "是",
+    "ask_before_starting": "否"
+  },
+  "created_at": "2026-06-09T20:34:00+08:00",
+  "method": "playwright_cdp_9222",
+  "verifier_known_limitation": null
+}

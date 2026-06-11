@@ -1,0 +1,32 @@
+{
+  "run_id": "NEXT_AGENT_WORKFLOW_BOOTSTRAP_CONSENSUS_20260608_235000_RD",
+  "task_id": "NEXT-AGENT-WORKFLOW-BOOTSTRAP-CONSENSUS-A1",
+  "target_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "sent": true,
+  "captured": true,
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "send_confirm": {
+    "ok": true,
+    "reason": "user_message_bubble_appeared",
+    "checks": [
+      {
+        "user_count": 15,
+        "assistant_count": 14,
+        "url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959"
+      }
+    ]
+  },
+  "sent_at": "2026-06-08T23:54:17",
+  "reply_chars": 5743,
+  "reply_sha256": "313032b62f6e1ef51818820eac2bee08334defe318945ee27761e60ec65e9202",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "chat_url_final": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "result_path": "D:\\agent-acceptance\\_reports\\existing-workflow-discovery-smoke-a1\\GPT_CONSENSUS_RESULT.txt"
+}

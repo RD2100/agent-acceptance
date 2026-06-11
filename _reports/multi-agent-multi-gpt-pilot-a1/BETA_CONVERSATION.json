@@ -1,0 +1,8 @@
+{
+  "agent_id": "agent-pilot-beta",
+  "conversation_id": "6a28d545-f918-83a5-b122-dc1503386374",
+  "chat_url": "https://chatgpt.com/c/6a28d545-f918-83a5-b122-dc1503386374",
+  "cdp_endpoint": "http://localhost:9222",
+  "browser_profile_id": "cdp-profile-pilot-a1",
+  "tab_created": true
+}

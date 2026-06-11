@@ -1,0 +1,18 @@
+{
+  "target_run_id": "HANDOFF_WORKFLOW_HARDENING_PLAN_A1_R2_REVIEW_20260609T021002_RD",
+  "target_task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1-R2",
+  "before_user_count": 12,
+  "before_assistant_count": 6,
+  "after_user_count": 13,
+  "after_assistant_count": 7,
+  "candidate_indices": [
+    6
+  ],
+  "selected_index": 6,
+  "last_index": 6,
+  "last_text_contains_run_id": true,
+  "selected_text_contains_run_id": true,
+  "selected_text_contains_end_marker": true,
+  "capture_mismatch": false,
+  "decision": "selected_and_last_match"
+}

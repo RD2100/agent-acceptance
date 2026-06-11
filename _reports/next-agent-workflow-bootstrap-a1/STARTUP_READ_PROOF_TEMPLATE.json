@@ -1,0 +1,196 @@
+{
+  "task_id": "<current task id>",
+  "agent_session_id": "<session id or timestamp>",
+  "fresh_shell_check": {
+    "command": "cd \"D:/agent-acceptance\" && pwd && date && echo FRESH_SHELL_OK && git rev-parse --is-inside-work-tree",
+    "exit_code": null,
+    "stdout_excerpt": ""
+  },
+  "read_proof": [
+    {
+      "path": "HANDOFF_SOURCE_OF_TRUTH.md",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "HANDOFF_APPROVAL_RECORD.json",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/handoff-pipeline-refactor-a1/ATTACHMENT_BACKED_GPT_REVIEW_RUNBOOK.md",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "scripts/verify_gpt_reply.py",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "scripts/gpt_new_chat_attachment_submit.py",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "scripts/pre_gpt_review_gate.py",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "scripts/evidence_pack_linter.py",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/GPT_REVIEW_RECORD.json",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/VERIFY_GPT_REPLY_OUTPUT.txt",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/PRE_GPT_GATE_OUTPUT.txt",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/EXECUTION_REPORT.md",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/PACK_MANIFEST.md",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_SOURCE_OF_TRUTH_MAP.json",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_STALE_CLAIMS_REGISTER.json",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_TEST_LEDGER.json",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/GPT_REVIEW_RESULT.txt",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/VERIFY_GPT_REPLY_OUTPUT.txt",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/PACK_MANIFEST.md",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/EXECUTION_REPORT.md",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/CHANGED_FILES_EVIDENCE.json",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/PROTECTED_LEGACY_FILES_STATUS.json",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/SOURCE_MAP_EVIDENCE_BINDING_APPENDIX.json",
+      "exists": null,
+      "reviewed": false,
+      "sha256_or_size": null,
+      "summary_source": "repo_file_not_conversation",
+      "notes": ""
+    }
+  ],
+  "workflow_understanding_claim_allowed": false,
+  "blocked_if_any_required_read_missing_or_unreviewed": true,
+  "must_preserve_semantics": [
+    "blocked",
+    "accepted_with_limitation",
+    "partial",
+    "needs_more_evidence",
+    "unverified"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "verify": {
+    "valid": true,
+    "overall_judgment": "blocked",
+    "errors": [],
+    "checks": {
+      "has_end_marker": true,
+      "overall_judgment": "blocked",
+      "evidence_pack_reviewed": true,
+      "task_id_in_reply": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1",
+      "task_id_matches": true,
+      "has_next_task_auth": true
+    },
+    "sha256": "e8de1c7c6807cd6f5162cbd14181525d...",
+    "size": 2161,
+    "verdict_allowed": true,
+    "source": "captured_gpt_response",
+    "task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1"
+  },
+  "closure_ready": {
+    "closure_ready": false,
+    "reason": "GPT blocked ¡ª fix required before closure",
+    "verdict": {
+      "valid": true,
+      "overall_judgment": "blocked",
+      "errors": [],
+      "checks": {
+        "has_end_marker": true,
+        "overall_judgment": "blocked",
+        "evidence_pack_reviewed": true,
+        "task_id_in_reply": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1",
+        "task_id_matches": true,
+        "has_next_task_auth": true
+      },
+      "sha256": "e8de1c7c6807cd6f5162cbd14181525d...",
+      "size": 2161,
+      "verdict_allowed": true,
+      "source": "captured_gpt_response"
+    }
+  }
+}
+
+GUARD OK: GPT reply for HANDOFF-WORKFLOW-HARDENING-PLAN-A1 is valid.
+Verdict: blocked
+Closure ready: False

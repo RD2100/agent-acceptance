@@ -1,0 +1,18 @@
+{
+  "target_run_id": "VERIFY_GPT_REPLY_STRUCTURED_PARSE_HARDEN_A1_REVIEW_20260609T120738_RD",
+  "target_task_id": "VERIFY-GPT-REPLY-STRUCTURED-PARSE-HARDEN-A1",
+  "before_user_count": 19,
+  "before_assistant_count": 13,
+  "after_user_count": 20,
+  "after_assistant_count": 14,
+  "candidate_indices": [
+    13
+  ],
+  "selected_index": 13,
+  "last_index": 13,
+  "last_text_contains_run_id": true,
+  "selected_text_contains_run_id": true,
+  "selected_text_contains_end_marker": true,
+  "capture_mismatch": false,
+  "decision": "selected_and_last_match"
+}

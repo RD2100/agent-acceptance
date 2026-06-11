@@ -1,0 +1,10 @@
+﻿{
+  "gate_passed": true,
+  "errors": [],
+  "warnings": [],
+  "extra_checks": {
+    "deliverable_count": 23,
+    "has_sha256_entries": true
+  },
+  "recommendation": "READY for GPT submission"
+}
