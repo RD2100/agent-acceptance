@@ -2,7 +2,11 @@ task_id: CONVERSATION-HEALTH-GATE-A2
 type: feature
 priority: P1
 status: complete
-gpt_verdict: pending
+gpt_verdict: ACCEPTED
+gpt_verdict_file: _evidence/conversation_health_gate_a2_verdict.txt
+gpt_evidence_zip: _evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A2_R3.zip
+gpt_review_rounds: 3
+gpt_accepted_at: "2026-06-12"
 completed: "2026-06-12T16:00:00+08:00"
 live_dispatch: NOT_AUTHORIZED
 created: "2026-06-12T00:00:00Z"

@@ -1,26 +1,28 @@
-最终判定：NEEDS_REVISION
+最终判定：ACCEPTED
 
-A2-R2 比 R1 有明显进展：_cdp_submit_helper.py 的 fail-open 已经改成 fail-closed，_ask_next_task_v2.py 也开始补 post-response metrics refresh，测试数量从 1126 增至 1128，并且新增了两个 runtime evidence 文件。
-但这份 R2 证据包仍不能 ACCEPTED，原因有三点：
+我已按 R2 裁决中的 3 个 blocker 对 CONVERSATION-HEALTH-GATE-A2 R3 证据包做了逐项复核。结论是：R3 已经关闭 R2 的关键问题，可以接受。
 
-1. modified_tracked 实际不是 0，而是 2；
-2. review.md / final-report.md 的 runtime evidence 汇总表仍然错误；
-3. legacy post-response metrics refresh 的真实接入仍有可疑 fail-open / import 路径问题。
 0. 基础核对
 
-通过项：
+通过：
 
 ZIP SHA-256:
-9f1b20371233ddb40017dc53c5fdac30a467a7dcf0ce02ccc00edb2b99ab89f3
+ff561bc7c06739b9cd85de52513fbcd35de275a8677ba25140323f2ee207aafc
 
-ZIP 文件数:
+ZIP files:
 40
 
 Commit chain:
-fbb08f0 → 593d78f → 9336d56
+fbb08f0 → 593d78f → 9336d56 → be0491f
+
+当前 R3 scope:
+9336d56 → be0491f
 
 Tests:
 1128 passed, 21 warnings
+
+modified_tracked:
+0
 
 conversation-health/latest.json:
 included
@@ -28,147 +30,44 @@ included
 conversation-health/current-snapshot.json:
 included
 
-但是这里有一个关键不一致：
-
-你提交说明写的是：
+git-status-after.txt / review.yaml / safety-report.json / review.md / final-report.md 中的 post-commit 状态一致，均显示：
 
 modified_tracked: 0
+untracked_total: 115
+1. Blocker 1：modified_tracked=2 → 0
+判定：通过
 
-证据包内 git-status-after.txt / review.yaml / safety-report.json / final-report.md 全部显示：
-
-modified_tracked: 2
-
-具体为：
+R2 中的问题是：
 
 M evidence/conversation-health/current-snapshot.json
 M _evidence/conversation-health/latest.json
 
-这直接违反了你提交说明中的 clean workspace 状态，也不符合此前 A1/R4 的 accepted baseline 要求。
+R3 已修复。证据包中 git-status-after.txt 显示：
 
-1. _cdp_submit_helper fail-open → fail-closed
-判定：通过
+modified_tracked_files: 0
+  (none)
 
-R1 中的问题是：
+review.yaml 也显示：
 
-Python
-运行
-except ImportError:
-    return 0, {"decision": "UNKNOWN"}, "proceeding without gate check"
-
-R2 已改为：
-
-Python
-运行
-except ImportError as exc:
-    return 3, {
-        "decision": "UNKNOWN",
-        "severity": "BLOCKING",
-        "reasons": [{
-            "code": "pre_gpt_gate_unavailable",
-            "actual": str(exc),
-            "threshold": "pre_gpt_gate import required",
-            "policy": "force",
-        }]
-    }, f"BLOCKED: pre_gpt_gate unavailable: {exc}"
-
-legacy_helper_import_failure_blocks.txt 也验证了：
-
-return_3=True
-blocking=True
-no_fail_open=True
-Status: PASS
+YAML
+post_commit_state:
+  modified_tracked: 0
 
 这一项可以判定为 Fixed。
 
-2. Legacy script post-response metrics refresh
-判定：部分通过，仍需修正
+2. Blocker 2：review.md / final-report.md runtime summary 表错误
+判定：通过
 
-R2 在 _ask_next_task_v2.py 中确实新增了 post-response metrics refresh：
+R2 中的问题是主报告把所有场景都误写成 Expected exit!=0。R3 已经修正。
 
-Python
-运行
-_new_metrics = {
-    "assistant_message_count": cnt,
-    "last_gpt_reply_bytes": _reply_bytes,
-}
-_new_metrics["last_response_time_seconds"] = round(_resp_time, 1)
-_updated, _err = _um(new_metrics=_new_metrics, nav_result="ok", source="cdp_dom_count")
-
-对应 evidence 也显示：
-
-legacy_script_post_response_updates_current_json
-Expected: msgs=15, bytes=3200, source=cdp_dom_count, freshness=fresh
-Actual: msgs=15, bytes=3200, source=cdp_dom_count, freshness=fresh
-Status: PASS
-
-但这里仍有一个真实接入风险：_ask_next_task_v2.py 里直接写的是：
-
-Python
-运行
-from pre_gpt_gate import update_metrics as _um
-
-而 pre_gpt_gate.py 实际位于：
-
-scripts/pre_gpt_gate.py
-
-此前 _cdp_submit_helper.run_pre_gpt_gate() 是通过临时把 scripts/ 加入 sys.path 来导入 pre_gpt_gate，但 _ask_next_task_v2.py 的 post-response refresh 路径没有看到同样的 sys.path 处理。
-
-也就是说，在真实运行中可能出现：
-
-提交前 gate check 成功；
-提交后 update_metrics import 失败；
-脚本只打印 WARNING；
-current.json 没有更新。
-
-当前代码是：
-
-Python
-运行
-except ImportError:
-    print("WARNING: pre_gpt_gate not available for post-response refresh")
-
-这不是提交前的 fail-open，但它会让 post-response metrics refresh 静默降级为 warning。A2 的目标是“CDP metrics refresh + legacy submit script integration”，所以这个路径还不够硬。
-
-建议修正为：
-
-1. 复用 _cdp_submit_helper 中的导入逻辑；
-2. 或新增 helper 函数 update_conversation_metrics_after_response()；
-3. 不要在 post-response refresh import 失败时只打印 warning；
-4. 至少写入一条 evidence / error decision，标明 metrics_refresh_failed。
-
-这一项不能算完全通过。
-
-3. Evidence 汇总表 Expected 口径修正
-判定：未完全修复
-
-R2 的单个 evidence 文件已经比 R1 好，例如：
-
-latest_json_written_for_pre_gpt_gate:
-Actual value: latest=True, snapshot=True
-
-successful_metrics_refresh_updates_current_json:
-Actual value: 20
-
-但是 review.md 和 final-report.md 的汇总表仍然写错了。
-
-例如：
-
-latest json written for pre gpt gate | Expected exit!=0 | Actual exit=0 | PASS
-legacy helper import failure blocks | Expected exit!=0 | Actual exit=0 | PASS
-legacy script post response updates current json | Expected exit!=0 | Actual exit=0 | PASS
-stale metrics warns or suggests | Expected exit!=0 | Actual exit=0 | PASS
-successful metrics refresh updates current json | Expected exit!=0 | Actual exit=0 | PASS
-
-这些不是 exit!=0 场景。
-
-正确写法应类似：
+现在 review.md 和 final-report.md 的表格能区分 exit-code 场景和 value 场景，例如：
 
 latest_json_written_for_pre_gpt_gate
-Expected: latest=True, snapshot=True
+Expected: latest.json exists AND current-snapshot.json exists
 Actual: latest=True, snapshot=True
 
 legacy_helper_import_failure_blocks
-Expected: return_3=True, blocking=True, no_fail_open=True
+Expected: return 3, severity=BLOCKING, no 'proceeding without gate check'
 Actual: return_3=True, blocking=True, no_fail_open=True
 
 legacy_script_post_response_updates_current_json
@@ -176,72 +75,134 @@ Expected: msgs=15, bytes=3200, source=cdp_dom_count, freshness=fresh
 Actual: msgs=15, bytes=3200, source=cdp_dom_count, freshness=fresh
 
 stale_metrics_warns_or_suggests
-Expected: exit=0, decision=SUGGEST_HANDOFF
+Expected: exit_code=0
 Actual: exit=0
 
 successful_metrics_refresh_updates_current_json
 Expected: assistant_message_count=20
-Actual: assistant_message_count=20
+Actual: 20
 
-所以 Blocker 3 仍然没有在最终报告层闭合。单个文件修了，但主报告没有同步。
+这已经解决了 R2 中“报告层 evidence 口径错误”的问题。
 
-4. 新增 runtime evidence
-判定：新增了，但质量仍需修
+这一项判定为 Fixed。
 
-新增文件确实存在：
-
-extra/legacy_helper_import_failure_blocks.txt
-extra/legacy_script_post_response_updates_current_json.txt
-pre-gpt-gate-evidence/legacy_helper_import_failure_blocks.txt
-pre-gpt-gate-evidence/legacy_script_post_response_updates_current_json.txt
-
-combined_summary.txt 也显示：
-
-Scenarios: 10
-Passed: 10
-Failed: 0
-
-这说明数量上已经补齐。
-
-但由于 review.md / final-report.md 的 Expected 表仍然错误，以及 post-response refresh 的真实 import 路径仍有疑点，这一项只能算 Partial。
-
-5. check_pre_gpt_gate() 阻断 FORCE / HUMAN_REQUIRED
+3. Blocker 3：post-response import 路径与静默降级问题
 判定：通过
 
-核心 runtime evidence 仍然成立：
+R2 中的问题是 _ask_next_task_v2.py 的 post-response refresh 路径直接：
 
-force_handoff_blocks_submit:
-exit=1
-decision=FORCE_HANDOFF
-Status=PASS
+Python
+运行
+from pre_gpt_gate import update_metrics
 
-human_required_blocks_submit:
-exit=2
-decision=HUMAN_REQUIRED
-Status=PASS
+可能在真实运行中找不到 scripts/pre_gpt_gate.py，并且失败时只打印 warning。
 
-这部分没有回退。
+R3 已修复为：
 
-6. latest.json / current-snapshot.json 写入
-判定：功能通过，但 workspace 状态不通过
+Python
+运行
+_scripts_dir = str(Path(__file__).resolve().parent / "scripts")
+if _scripts_dir not in sys.path:
+    sys.path.insert(0, _scripts_dir)
 
-文件确实入包：
+from pre_gpt_gate import update_metrics as _um
+
+并且 ImportError 不再只是静默 warning，而是写入：
+
+_evidence/conversation-health/metrics_refresh_failed.json
+
+内容包括：
+
+JSON
+{
+  "decision": "UNKNOWN",
+  "severity": "WARNING",
+  "code": "post_response_refresh_failed",
+  "recommended_action": "check_pre_gpt_gate_import_path"
+}
+
+这满足 R2 要求：不要静默伪装成成功刷新，至少要产生 evidence。
+
+对应 runtime evidence 也显示：
+
+legacy_script_post_response_updates_current_json
+Expected: msgs=15, bytes=3200, source=cdp_dom_count, freshness=fresh
+Actual: msgs=15, bytes=3200, source=cdp_dom_count, freshness=fresh
+Status: PASS
+
+这一项判定为 Fixed。
+
+4. Pre-GPT Gate 核心语义复核
+
+继续通过。
+
+关键阻断路径成立：
+
+FORCE_HANDOFF → exit=1
+HUMAN_REQUIRED → exit=2
+missing current.json without refresh → exit=3
+SUGGEST_HANDOFF → exit=0
+
+runtime evidence 中对应结果：
+
+场景	预期	实际	判定
+force_handoff_blocks_submit	exit=1	exit=1	PASS
+human_required_blocks_submit	exit=2	exit=2	PASS
+missing_current_json_blocks_without_refresh	exit=3	exit=3	PASS
+stale_metrics_warns_or_suggests	exit=0	exit=0	PASS
+access_denied_records_force	exit=1	exit=1	PASS
+auth_required_records_human_required	exit=2	exit=2	PASS
+
+说明 A2 的核心门禁语义已经成立。
+
+5. latest / snapshot 写入复核
+
+通过。
+
+证据包包含：
 
 conversation-health/latest.json
 conversation-health/current-snapshot.json
 
-但它们同时造成 post-commit dirty state：
+runtime evidence 显示：
 
-M evidence/conversation-health/current-snapshot.json
-M _evidence/conversation-health/latest.json
+latest=True
+snapshot=True
+Status: PASS
 
-这意味着 evidence 生成发生在 commit 之后，或者相关文件没有被正确提交/复原。
-因此“文件存在”通过，但“clean baseline”不通过。
+review.yaml 也记录：
+
+YAML
+conversation_health:
+  checked: true
+  decision: OK
+  verdict_eligibility: eligible
+  pre_gpt_gate: true
+  snapshot_file: present
+  pre_gpt_evidence: present
+
+这一项通过。
+
+6. Legacy 集成复核
+
+通过。
+
+A2 当前已接入：
+
+_cdp_submit_helper.py
+_submit_health_gate_a1_r4.py
+_capture_r4_verdict.py
+_ask_next_task_v2.py
+
+其中 R3 对 _ask_next_task_v2.py 补上了 post-response metrics refresh，并修复了 import path 和 failure evidence。
+
+这已经满足 A2 的边界要求：不迁移所有 legacy 脚本，只接入 2–3 个高频脚本并证明可行。
 
 7. A1 语义保持
-判定：通过
 
-测试中仍保留了 A1 non-regression：
+通过。
+
+A2 没有破坏 A1 accepted 语义：
 
 response_time alone → SUGGEST
 reply_bytes alone → SUGGEST
@@ -249,82 +210,35 @@ slow + short + rounds → FORCE
 manual_estimate no force
 auth_required → HUMAN_REQUIRED
 
-这一项通过。
+测试仍然通过：
 
-8. 1128 tests 是否全部通过
-判定：通过
+1128 passed
+8. 非阻塞记录
 
-证据显示：
+ai-guard-scope-check-output.txt 仍有：
 
-1128 passed, 21 warnings in 45.51s
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review
+AI Guard: 0 errors, 1 warning(s) - PASS with warnings
 
-这一项通过。
+但这类 warning 在前几轮已反复出现，且当前：
 
-9. modified_tracked 是否为 0
-判定：不通过
+modified_tracked: 0
+tests passed
+secret scan: no real secret violations
 
-证据包内部一致显示：
+因此不构成 blocker。
 
-modified_tracked: 2
+最终裁决
+VERDICT: ACCEPTED
 
-不是用户说明中的 0。
+CONVERSATION-HEALTH-GATE-A2 已完成当前阶段的目标：
 
-这两个文件是：
+1. pre_gpt_gate.py 已作为 Pre-GPT 门禁模块落地；
+2. FORCE_HANDOFF / HUMAN_REQUIRED 能阻断 GPT/CDP 提交；
+3. latest.json / current-snapshot.json 能在 Pre-GPT 流程中写入；
+4. legacy submit/capture 脚本已完成阶段性接入；
+5. post-response metrics refresh 已在至少一个 legacy 脚本中形成闭环；
+6. runtime negative-path evidence 已覆盖 10 个场景；
+7. modified_tracked 已恢复为 0。
 
-M evidence/conversation-health/current-snapshot.json
-M _evidence/conversation-health/latest.json
-
-这属于当前 R2 最大的硬 blocker 之一。
-
-逐项结论表
-检查项	判定
-ZIP SHA-256	Pass
-Commit chain	Pass
-Tests 1128 passed	Pass
-check_pre_gpt_gate() FORCE exit=1	Pass
-check_pre_gpt_gate() HUMAN exit=2	Pass
-_cdp_submit_helper ImportError fail-closed	Fixed
-latest.json / current-snapshot.json 入包	Pass
-3 个 legacy 脚本集成	Partial
-post-response metrics refresh	Partial
-10 个 runtime scenarios	Mostly pass
-runtime summary 表	Not fixed
-A1 non-regression	Pass
-modified_tracked=0	Fail
-最终判定
-VERDICT: NEEDS_REVISION
-
-不建议 REJECTED，因为 A2 的主实现已经相当接近：核心 gate、阻断语义、helper fail-closed、latest/snapshot、测试和新增 evidence 都有基础。
-但不能 ACCEPTED，因为：
-
-1. post-commit workspace 不干净，modified_tracked=2；
-2. final-report/review 的 runtime evidence 汇总表仍然错误；
-3. legacy post-response metrics refresh 的 import/降级路径仍有 fail-open 风险。
-A2-R3 最小修复清单
-
-建议 R3 只做这些：
-
-1. 清理 post-commit tracked state
-   - 确保 git-status-after 显示 modified_tracked: 0；
-   - 对 evidence/conversation-health/current-snapshot.json 与 _evidence/conversation-health/latest.json 执行 commit / revert / 正确移入 untracked evidence artifact；
-   - review.yaml / final-report / safety-report 必须全部一致显示 0。
-
-2. 修正 review.md / final-report.md 的 Runtime Evidence 表
-   - 不要给所有场景统一写 exit!=0；
-   - 对非 exit-code 场景使用 Actual value；
-   - stale metrics 应为 expected exit=0；
-   - latest/snapshot 应为 expected latest=True, snapshot=True；
-   - metrics refresh 应为 expected assistant_message_count=20；
-   - legacy helper 应为 expected return_3=True, blocking=True；
-   - legacy post-response 应为 expected msgs/bytes/source/freshness。
-
-3. 修正 _ask_next_task_v2.py 的 post-response refresh 导入路径
-   - 不要直接 `from pre_gpt_gate import update_metrics`；
-   - 复用 `_cdp_submit_helper` 的 scripts path 注入逻辑，或新增统一 helper；
-   - 如果 metrics refresh 失败，必须写入 evidence 或显式返回非零，不要只 print warning。
-
-4. 增加一个真实路径测试或 source evidence
-   - 验证 `_ask_next_task_v2.py` post-response refresh 能在正常运行路径找到 `scripts/pre_gpt_gate.py`；
-   - 验证 import failure 不会静默伪装成成功刷新。
-
-修完这三类问题后，A2-R3 很有希望直接 ACCEPTED。
+下一步可以进入 A3：Pre-Commit Advisory + Startup Read Gate 第 7 项 + Conversation Registry Reconciliation。
