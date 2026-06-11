@@ -1,6 +1,6 @@
-# Deferred Files Register - Post 104ac8b1 Final Cleanup
-# Generated: 2026-06-11
-# Last Commit: 104ac8b1
+# Deferred Files Register - R18-WORKSPACE-CLEANUP-A1 Final
+# Generated: 2026-06-11T10:28:09.551859
+# Commit: f06ce965 + cleanup commit
 
 intentionally_deferred:
   neg_009_secrets_read:
@@ -26,15 +26,13 @@ intentionally_deferred:
       - _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
       - _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
 
-formally_denied:
-  secret_scan_output:
+  formally_denied:
     count: 2
-    reason: deny_list - files contain mock secret regex patterns that trigger ai_guard deny rules
-    policy: cannot be committed through SADP hook; contain test patterns like AIza*, AKIA*, BEGIN PRIVATE KEY
+    reason: deny_list - contain mock secret regex patterns that trigger ai_guard deny rules
+    policy: cannot be committed through SADP hook
     files:
       - _evidence/R18-FOLLOWUP-FINAL/secret-scan-output.txt
       - _evidence/R18-catchup-commits/secret-scan-output.txt
-    disposition: remain untracked; included in evidence ZIP packs for GPT review only
 
 total_deferred_plus_denied: 19
-total_untracked_expected: 19
+expected_untracked_after_commit: 19
