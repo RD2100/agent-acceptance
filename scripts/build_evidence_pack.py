@@ -602,7 +602,7 @@ def gen_review_md(git_data: Dict, task_id: str, commits: List[str], base: str,
                                 else:
                                     expected = "exit!=0"
                             elif line.startswith("# Actual exit:"):
-                                actual = "exit=" + line.split("=")[1].strip()
+                                actual = "exit=" + line.split("# Actual exit:")[1].strip()
                 except OSError:
                     pass
                 lines.append(f"| {i} | {scenario} | {expected} | {actual} | PASS |")
@@ -824,7 +824,7 @@ def gen_final_report(git_data: Dict, task_id: str, commits: List[str],
                                 else:
                                     expected = "exit!=0"
                             elif line.startswith("# Actual exit:"):
-                                actual = "exit=" + line.split("=")[1].strip()
+                                actual = "exit=" + line.split("# Actual exit:")[1].strip()
                 except OSError:
                     pass
                 lines.append(f"| {i} | {scenario} | {expected} | {actual} | PASS |")
