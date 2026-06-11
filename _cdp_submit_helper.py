@@ -1,12 +1,49 @@
 """CDP submission helper — uses clipboard paste instead of keyboard.type for long messages.
 
+CONVERSATION-HEALTH-GATE-A2: Now integrates with pre_gpt_gate for
+conversation health enforcement before every GPT/CDP submission.
+
 Usage:
-    from _cdp_submit_helper import paste_and_send
+    from _cdp_submit_helper import paste_and_send, run_pre_gpt_gate
+
+    # Check gate before submission
+    exit_code, decision, message = run_pre_gpt_gate()
+    if exit_code != 0:
+        print(f"BLOCKED: {message}")
+        return
 
     await paste_and_send(page, message_text)
 """
 import asyncio
 import json
+import sys
+from pathlib import Path
+
+
+def run_pre_gpt_gate(allow_init=False):
+    """Run the Pre-GPT gate check before CDP submission.
+
+    Returns (exit_code, decision, message).
+    exit_code 0 = proceed, non-zero = blocked.
+
+    A2 integration: legacy scripts call this before any CDP interaction.
+    """
+    try:
+        repo = Path(__file__).resolve().parent
+        scripts_dir = str(repo / "scripts")
+        added = False
+        if scripts_dir not in sys.path:
+            sys.path.insert(0, scripts_dir)
+            added = True
+        from pre_gpt_gate import check_pre_gpt_gate  # type: ignore
+        result = check_pre_gpt_gate(allow_init=allow_init)
+        if added and scripts_dir in sys.path:
+            sys.path.remove(scripts_dir)
+        return result
+    except ImportError as exc:
+        # Graceful degradation: if pre_gpt_gate not available, warn but proceed
+        print(f"WARNING: pre_gpt_gate not available ({exc}), proceeding without gate check")
+        return 0, {"decision": "UNKNOWN"}, f"Gate unavailable: {exc}"
 
 
 async def paste_and_send(page, msg: str):

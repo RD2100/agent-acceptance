@@ -1,0 +1,352 @@
+确认：下一个任务应该进入 A2。
+
+理由很简单：A1 已经把“对话健康度判断”接入了 Pre-Task 和 Evidence Pack，但真正最容易出问题的位置还没有闭合，就是 GPT/CDP 提交前后。如果不做 A2，agent 仍然可能在 _submit_*.py 或 _capture_*.py 里直接操作 CDP，绕开实时 metrics 刷新。
+
+所以当前最优先任务是：
+
+CONVERSATION-HEALTH-GATE-A2
+Pre-GPT Gate + CDP Metrics Refresh + Legacy Submit Script Integration
+1. 是否就是 A2？
+
+是，建议直接进入 A2。
+
+但 A2 的范围要控制住，不要一次性迁移所有 CDP 脚本，也不要急着做完整统一 submit wrapper。
+
+A2 的核心目标应该是：
+
+建立 pre_gpt_gate.py 作为所有 GPT/CDP 提交前的统一门禁模块；
+让至少若干个高频 legacy submit/capture 脚本接入它；
+在 GPT/CDP 交互后刷新 current.json 和 latest.json；
+证明 force_handoff / human_required / nav failure 等场景会被正确拦截或记录。
+
+换句话说，A2 不是“大重构”，而是把 A1 的静态判断能力接到真实 GPT/CDP 交互链路上。
+
+2. 建议的正式 TaskSpec 基础
+
+下面这段可以直接作为下一个 agent 的任务说明基础。
+
+编辑
+
+Task: CONVERSATION-HEALTH-GATE-A2
+
+Goal:
+Implement the Pre-GPT Gate layer for the Conversation Health Gate system by connecting the A1 conversation-health decision engine to GPT/CDP submission and capture workflows. A2 must refresh runtime conversation metrics, write updated conversation-health evidence, and prevent GPT/CDP submission when an unresolved FORCE_HANDOFF or HUMAN_REQUIRED condition is present.
+
+Context:
+CONVERSATION-HEALTH-GATE-A1 has been ACCEPTED at commit fbb08f0. A1 delivered the data layer, decision engine, Pre-Task Hard Gate integration, Evidence Pack hard requirement, policy YAML, schemas, and negative-path evidence. A2 continues the four-layer defense model by implementing the Pre-GPT Gate layer. A3 will later handle Pre-Commit Advisory and registry reconciliation.
+
+Required Work:
+
+Create scripts/pre_gpt_gate.py
+
+Provide a reusable module and CLI for GPT/CDP workflows.
+
+It must read .ai/conversation/current.json.
+
+It must call the existing check_handoff_needed.py / check_handoff_v2 logic rather than duplicating threshold rules.
+
+It must support at least:
+
+pre-submit check
+
+post-response metrics update
+
+writing _evidence/conversation-health/latest.json
+
+writing _evidence/conversation-health/current-snapshot.json
+
+It must return blocking exit codes for unresolved FORCE_HANDOFF and HUMAN_REQUIRED states.
+
+Define Pre-GPT decision semantics
+
+OK → allow GPT/CDP submission.
+
+SUGGEST_HANDOFF → allow submission but write evidence and warning.
+
+FORCE_HANDOFF → block submission unless a handoff or migration record is present.
+
+HUMAN_REQUIRED → block submission and require human intervention.
+
+Missing current.json:
+
+allowed only if the wrapper can initialize or refresh metrics before submission;
+
+otherwise BLOCKED.
+
+Stale current.json:
+
+attempt refresh when CDP context is available;
+
+if refresh fails, write evidence and apply policy-defined behavior.
+
+Add CDP metrics refresh support
+
+Capture assistant_message_count from the ChatGPT DOM when available.
+
+Capture last_gpt_reply_bytes from the latest assistant response when available.
+
+Capture last_response_time_seconds around GPT/CDP submission when available.
+
+Capture last_nav_result from navigation or submit failures.
+
+Update .ai/conversation/current.json using schema-compliant fields:
+
+last_response_time_seconds
+
+last_gpt_reply_bytes
+
+assistant_message_count
+
+review_round_count
+
+metrics_source
+
+last_nav_result
+
+last_checked_at
+
+Integrate with legacy scripts incrementally
+
+Do not migrate every submit.py or capture.py script in A2.
+
+Select 2–3 active/high-frequency GPT/CDP scripts and add pre_gpt_gate integration.
+
+Add a clear deprecation note or TODO in legacy scripts not yet integrated.
+
+Do not delete legacy scripts.
+
+The target architecture may mention submit_gpt_review.py, but a full unified wrapper is not required in A2 unless it can be done safely as a thin wrapper.
+
+Preserve A1 semantics
+
+Do not change accepted A1 threshold semantics unless a clear bug is found.
+
+Do not regress:
+
+response_time_seconds alone → SUGGEST
+
+last_gpt_reply_bytes alone → SUGGEST
+
+slow + short + rounds → FORCE
+
+auth_required → HUMAN_REQUIRED
+
+manual_estimate does not trigger FORCE by itself
+
+Any schema or policy change must include tests and updated runtime evidence.
+
+Evidence requirements
+
+Generate _evidence/conversation-health/latest.json during Pre-GPT flows.
+
+Generate _evidence/conversation-health/current-snapshot.json.
+
+If a conversation switch occurs, generate:
+
+_evidence/conversation-health/migration-records/{timestamp}.yaml
+
+Evidence Pack must include these files or mark verdict_eligibility as needs_more_evidence.
+
+Tests
+Add or update tests covering:
+
+pre_gpt_gate allows OK
+
+pre_gpt_gate allows SUGGEST with warning
+
+pre_gpt_gate blocks FORCE_HANDOFF
+
+pre_gpt_gate blocks HUMAN_REQUIRED
+
+missing current.json with no refresh path blocks submission
+
+stale current.json attempts refresh or records stale decision
+
+access_denied writes last_nav_result and triggers FORCE
+
+auth_required writes HUMAN_REQUIRED
+
+post-response metrics update writes schema-compliant current.json
+
+generated latest.json validates against conversation-health-decision schema
+
+Runtime negative-path evidence
+Provide runtime evidence for at least:
+
+force_handoff_blocks_submit
+
+human_required_blocks_submit
+
+missing_current_json_blocks_without_refresh
+
+stale_metrics_warns_or_suggests
+
+access_denied_records_force
+
+auth_required_records_human_required
+
+successful_metrics_refresh_updates_current_json
+
+latest_json_written_for_pre_gpt_gate
+
+Out of Scope:
+
+Do not implement full Pre-Commit Advisory in A2.
+
+Do not implement full registry reconciliation in A2.
+
+Do not migrate all legacy CDP scripts.
+
+Do not redesign A1 schemas, policy, or threshold semantics unless required by a failing test.
+
+Do not introduce a large framework or replace existing evidence pack architecture.
+
+Do not mark missing conversation-health evidence as acceptable.
+
+Acceptance Criteria:
+
+scripts/pre_gpt_gate.py exists and is usable both as a module and CLI.
+
+At least 2–3 active GPT/CDP legacy scripts are integrated with pre_gpt_gate.
+
+Pre-GPT submission is blocked on unresolved FORCE_HANDOFF and HUMAN_REQUIRED.
+
+Runtime metrics can refresh .ai/conversation/current.json using schema-compliant fields.
+
+_evidence/conversation-health/latest.json and current-snapshot.json are written during Pre-GPT flows.
+
+Evidence Pack includes conversation-health evidence and records conversation_health in review.yaml.
+
+Tests pass in full regression.
+
+Runtime negative-path evidence is included in the evidence pack.
+
+modified_tracked is 0 after commit.
+
+No accepted A1 behavior regresses.
+
+3. A2 的范围边界
+
+A2 最容易失控，所以边界要写死。
+
+A2 要做
+1. pre_gpt_gate.py
+2. Pre-GPT 检查逻辑
+3. CDP metrics refresh 的最小实现
+4. current.json / latest.json 写入
+5. 2–3 个 legacy submit/capture 脚本接入
+6. 对 FORCE / HUMAN_REQUIRED 的阻断证据
+7. runtime negative-path evidence
+A2 不要做
+1. 不迁移全部 _submit_*.py
+2. 不把所有 CDP 脚本统一重写为 submit_gpt_review.py
+3. 不实现 pre-commit conversation-health stage
+4. 不做完整 conversation registry lifecycle
+5. 不改 A1 阈值语义
+6. 不重构 evidence pack builder 的整体架构
+
+A2 最理想的状态是：形成可复用 gate 模块，并证明它可以接入真实 CDP 脚本。不要求一次性完成全部迁移。
+
+4. 验收标准重点
+
+A2 的验收不应只看 tests passed，还要看 4 类证据。
+
+第一类：阻断证据
+
+必须证明：
+
+FORCE_HANDOFF → GPT submit 被阻断
+HUMAN_REQUIRED → GPT submit 被阻断
+
+这两个是 A2 的硬核心。
+
+第二类：刷新证据
+
+必须证明：
+
+CDP/submit wrapper 能刷新 current.json
+能写 latest.json
+能记录 current-snapshot.json
+第三类：legacy 接入证据
+
+必须明确列出：
+
+哪些 _submit_*.py / _capture_*.py 已接入 pre_gpt_gate
+哪些仍是 legacy
+为什么没有全部迁移
+第四类：不回归证据
+
+必须证明 A1 语义没有被破坏：
+
+response_time alone → suggest
+reply_bytes alone → suggest
+composite → force
+manual_estimate no force
+auth_required → human_required
+5. 其他任务优先级
+
+当前我建议优先级这样排：
+
+P0 / 当前立即做：CONVERSATION-HEALTH-GATE-A2
+
+这是 A1 的直接后续，也是真正堵住“agent 绕过 GPT 交互门禁”的关键。A1 如果不接 A2，Conversation Health Gate 仍有明显空洞。
+
+P1：CONVERSATION-HEALTH-GATE-A3
+
+A3 应在 A2 后做，内容包括：
+
+pre-commit.governance.ps1 增加 conversation-health ADVISORY stage
+startup-read-gate.md 新增第 7 项
+conversation registry reconciliation
+migration lifecycle 文档和检查
+
+A3 不建议插到 A2 前面，因为 pre-commit advisory 只是审计层，不是最关键的执行入口。
+
+P1 / 可并行但不应抢占：Universal Agent Workflow Standard
+
+这是战略任务，仍然重要。
+但如果当前工程要沿着 Conversation Health Gate 收束，A2 更优先。
+
+原因是：A2 会提供一个很好的通用模式：
+
+pre-task 只读 last known state
+pre-gpt 刷新 runtime metrics
+evidence pack 防绕过
+reviewer 以证据为准
+
+这个模式后续正好可以写进 Universal Agent Workflow Standard。
+所以建议是：A2 完成后，把 A1/A2 经验再沉淀进 Universal Standard。
+
+P2：OPERATIONS-MANUAL-AUDIT-PATTERN-BIND-A1
+
+这个任务听起来像是“把 operations manual 与 audit pattern 绑定”，属于复用治理和文档治理方向。它有价值，但当前不应高于 A2。
+
+除非出现以下情况，才建议把它提前：
+
+1. A2 实施前必须先确认已有 submit/capture 脚本清单；
+2. operations manual 中已有脚本索引是 A2 的前置依赖；
+3. agent 明确不知道该改哪些 legacy scripts。
+
+否则它可以作为 A2 后的 P2，或者作为 A2 的轻量前置要求：
+
+A2 开始前，先阅读 operations manual，列出将接入的 2–3 个 legacy scripts。
+
+不需要单独抢占一个完整任务。
+
+6. 推荐执行顺序
+
+我建议接下来这样走：
+
+1. CONVERSATION-HEALTH-GATE-A2
+   先把 Pre-GPT Gate 接进真实 GPT/CDP 提交流程。
+
+2. CONVERSATION-HEALTH-GATE-A3
+   再做 pre-commit advisory、startup-read-gate 第 7 项、registry reconciliation。
+
+3. Universal Agent Workflow Standard
+   把 A1/A2/A3 沉淀成通用 agent 工作规范。
+
+4. OPERATIONS-MANUAL-AUDIT-PATTERN-BIND-A1
+   作为复用治理和文档治理增强任务，视项目节奏插入。
+
+一句话判断：下一步就是 A2，而且 A2 应该是“小步接入真实 CDP 脚本”，不是“大规模统一 submit wrapper 重构”。

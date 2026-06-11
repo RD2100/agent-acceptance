@@ -674,8 +674,10 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
         f"  sum_check: {n_neg} + {n_sec} + {n_ses} = {n_neg + n_sec + n_ses} == untracked_total({n_unt})",
     ]
 
-    # Conversation health evidence (CONVERSATION-HEALTH-GATE-A1)
+    # Conversation health evidence (CONVERSATION-HEALTH-GATE-A1/A2)
     health_path = os.path.join(repo, "_evidence", "conversation-health", "latest.json")
+    health_snapshot = os.path.join(repo, "_evidence", "conversation-health", "current-snapshot.json")
+    pre_gpt_dir = os.path.join(repo, "_evidence", "pre-gpt-gate-evidence")
     if os.path.isfile(health_path):
         try:
             with open(health_path, encoding="utf-8") as _hf:
@@ -691,6 +693,9 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
                 f"  latest_file: _evidence/conversation-health/latest.json",
                 f"  checked_at: \"{_checked}\"",
                 f"  verdict_eligibility: eligible",
+                f"  pre_gpt_gate: true",
+                f"  snapshot_file: {'present' if os.path.isfile(health_snapshot) else 'missing'}",
+                f"  pre_gpt_evidence: {'present' if os.path.isdir(pre_gpt_dir) else 'missing'}",
             ]
         except (json.JSONDecodeError, OSError):
             lines += [
@@ -990,7 +995,7 @@ def build_evidence_pack(
                  gen_review_yaml(git_data, task_id, commits, base,
                                  tests_passed, now, repo=repo))
 
-    # 15b. conversation-health evidence (CONVERSATION-HEALTH-GATE-A1)
+    # 15b. conversation-health evidence (CONVERSATION-HEALTH-GATE-A1/A2)
     health_evidence_dir = os.path.join(repo, "_evidence", "conversation-health")
     health_latest = os.path.join(health_evidence_dir, "latest.json")
     if os.path.isfile(health_latest):
@@ -1000,6 +1005,23 @@ def build_evidence_pack(
     else:
         print("  [15b] conversation-health/latest.json NOT FOUND — HARD REQUIREMENT MISSING")
         print("        Evidence pack verdict_eligibility: needs_more_evidence")
+
+    # 15c. conversation-health current-snapshot.json (CONVERSATION-HEALTH-GATE-A2)
+    health_snapshot = os.path.join(health_evidence_dir, "current-snapshot.json")
+    if os.path.isfile(health_snapshot):
+        with open(health_snapshot, encoding="utf-8") as _csf:
+            writer.write("conversation-health/current-snapshot.json", _csf.read())
+        print("  [15c] conversation-health/current-snapshot.json included")
+
+    # 15d. pre-gpt-gate negative-path evidence (CONVERSATION-HEALTH-GATE-A2)
+    pre_gpt_evidence_dir = os.path.join(repo, "_evidence", "pre-gpt-gate-evidence")
+    if os.path.isdir(pre_gpt_evidence_dir):
+        for _pgf in sorted(os.listdir(pre_gpt_evidence_dir)):
+            _pgsrc = os.path.join(pre_gpt_evidence_dir, _pgf)
+            if os.path.isfile(_pgsrc):
+                with open(_pgsrc, encoding="utf-8") as _pgfh:
+                    writer.write(f"pre-gpt-gate-evidence/{_pgf}", _pgfh.read())
+        print(f"  [15d] pre-gpt-gate-evidence/ included ({len(os.listdir(pre_gpt_evidence_dir))} files)")
 
     # 16. final-report.md (initially without ZIP info)
     #     We'll overwrite it after building the ZIP to include ZIP metadata.
