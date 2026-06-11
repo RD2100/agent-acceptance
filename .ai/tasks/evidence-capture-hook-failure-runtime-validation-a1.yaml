@@ -42,6 +42,7 @@ write_set:
   - "hooks/sealed-files-manifest.json"
   - "scripts/validate_hook_output.py"
   - "scripts/run_negative_path_evidence.py"
+  - "scripts/build_evidence_pack.py"
   - "tests/test_hook_failure_semantics.py"
   - "schemas/agent-runtime/evidence-capture.schema.json"
   - "docs/agent-runtime/hook-failure-semantics.md"

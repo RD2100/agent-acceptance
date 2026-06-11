@@ -1,12 +1,15 @@
-"""Runtime negative-path evidence for hook failure semantics.
+"""Runtime negative-path evidence for hook failure semantics (v2.3.0).
 
 Generates synthetic latest.json files with failure scenarios and validates
-them against the validator. Proves:
-1. ai_guard failure → validator exits nonzero
-2. test_governance failure → validator exits nonzero
-3. sadp_audit failure → validator exits nonzero
-4. invalid latest.json → validator exits nonzero
-5. PASS_WITH_WARNINGS → validator exits nonzero (forbidden in v2.3.0)
+them against the validator. Proves (8 scenarios):
+1. sadp_audit failure → BLOCKED → validator PASS (correct semantics)
+2. ai_guard failure → BLOCKED → validator PASS (correct semantics)
+3. test_governance failure → PASS advisory → validator PASS (advisory, not blocking)
+4. ai_guard failure + result=PASS → REJECTED (validator exit nonzero)
+5. PASS_WITH_WARNINGS → REJECTED (forbidden in v2.3.0)
+6. Invalid JSON → REJECTED (validator exit nonzero)
+7. Missing sadp-audit stage → REJECTED (fail-closed: absence = BLOCKED)
+8. Null exit_code + PASS → REJECTED (fail-closed: null = expected BLOCKED)
 
 This script generates evidence files for the evidence pack.
 """
@@ -105,6 +108,21 @@ def main():
     Path(tmp_path).unlink(missing_ok=True)
     results.append(("invalid_json_rejected", result.returncode, result.stdout + result.stderr))
     print(f"[6] Invalid JSON → REJECTED: exit={result.returncode} {'PASS' if result.returncode != 0 else 'FAIL'}")
+
+    # Test 7: missing blocking stage (sadp-audit) → validator should FAIL (fail-closed)
+    data = json.loads(json.dumps(BASELINE))
+    data["stages"] = [s for s in data["stages"] if s["name"] != "sadp-audit"]
+    rc, out = run_validator(data, "missing_sadp_audit_rejected")
+    results.append(("missing_sadp_audit_rejected", rc, out))
+    print(f"[7] Missing sadp-audit → REJECTED: exit={rc} {'PASS' if rc != 0 else 'FAIL'}")
+
+    # Test 8: null exit_code on blocking stage → validator should FAIL (fail-closed)
+    data = json.loads(json.dumps(BASELINE))
+    data["stages"][2]["exit_code"] = None  # ai-guard
+    data["overall_result"] = "PASS"
+    rc, out = run_validator(data, "null_exit_code_rejected")
+    results.append(("null_exit_code_rejected", rc, out))
+    print(f"[8] Null exit_code + PASS → REJECTED: exit={rc} {'PASS' if rc != 0 else 'FAIL'}")
 
     # Write all evidence to files
     all_output = []

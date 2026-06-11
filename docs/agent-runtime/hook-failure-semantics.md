@@ -14,6 +14,27 @@ process exit code.
 | ai-guard | **Yes** | `BLOCKED` + exit 1 | Content policy scan; uses reliable Job.ChildJobs exit code |
 | test-governance | No | Advisory only | Runs in `-Mode advisory`; exit code logged but does not block |
 
+### Governance Decision: Test-Governance Advisory Mode
+
+**Decision**: Test-Governance is advisory (non-blocking) in v2.3.0.
+
+**Rationale**: `Test-Governance.ps1` is invoked with `-Mode advisory`, which means it runs
+advisory checks (e.g., stale task detection, protected path coverage) that are informational
+rather than enforcement. Its exit code reflects advisory findings, not governance violations.
+Making it blocking would require modifying `Test-Governance.ps1` to distinguish advisory from
+enforcement failures — this is outside the scope of the current hook failure semantics task.
+
+**Trade-off**: This means a Test-Governance failure (e.g., stale tasks detected) will NOT
+reject the commit. The failure is still logged in `_evidence/hook-output/test-governance-*.txt`
+and `latest.json` for post-commit review.
+
+**Future path**: If Test-Governance should become a blocking gate, a separate
+`HUMAN_REQUIRED` task must be opened to modify `Test-Governance.ps1` to support
+enforcement mode, and the hook must be updated accordingly.
+
+**Approved by**: Task EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1 scope constraint
+(no modification to Test-Governance.ps1 without separate human_required task).
+
 ### Result Mapping
 
 ```

@@ -744,6 +744,7 @@ def build_evidence_pack(
     zip_path: str,
     repo: str,
     hook_log_path: Optional[str] = None,
+    extra_dir: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Top-level orchestrator: gather data, generate all files, build ZIP."""
 
@@ -864,6 +865,17 @@ def build_evidence_pack(
     # ---- Phase 7: Build ZIP ----
     print("\n=== Phase 7: Build ZIP ===")
 
+    # Copy extra-dir files into output (e.g., negative-path evidence)
+    if extra_dir and os.path.isdir(extra_dir):
+        print(f"  Copying extra files from: {extra_dir}")
+        for fname in sorted(os.listdir(extra_dir)):
+            src = os.path.join(extra_dir, fname)
+            if os.path.isfile(src):
+                dst_name = f"extra/{fname}"
+                with open(src, "r", encoding="utf-8", errors="replace") as fh:
+                    content = fh.read()
+                writer.write(dst_name, content)
+
     # Write final-report.md without ZIP info first (so it's in the ZIP)
     final_no_zip = gen_final_report(git_data, task_id, commits, base,
                                     test_summary, tests_passed, None, now)
@@ -968,6 +980,11 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         help="Path to the git repository root (default: current directory)",
     )
     parser.add_argument(
+        "--extra-dir",
+        default=None,
+        help="Directory of extra files to include in ZIP (e.g. negative-path evidence)",
+    )
+    parser.add_argument(
         "--version",
         action="version",
         version=f"%(prog)s {VERSION}",
@@ -993,6 +1010,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         else args.hook_log
     )
 
+    extra_dir_path = (
+        os.path.join(repo, args.extra_dir)
+        if args.extra_dir and not os.path.isabs(args.extra_dir)
+        else args.extra_dir
+    )
+
     result = build_evidence_pack(
         task_id=args.task_id,
         commits=args.commits,
@@ -1001,6 +1024,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         zip_path=zip_path,
         repo=repo,
         hook_log_path=hook_log,
+        extra_dir=extra_dir_path,
     )
 
     # Exit code: 0 if consistent, 1 if inconsistency detected

@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-11T17:29:11.6410655+08:00",
+    "generated":  "2026-06-11T18:21:16.6106062+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
@@ -188,7 +188,7 @@
                              "path":  "docs/agent-runtime/historical-evidence-policy.md"
                          },
                          {
-                             "sha256":  "F31D657D5E9B1430D9664A230961252AEDCA53945A11F36EE4146FBD556B3416",
+                             "sha256":  "B8388CC90A2468F0EC8FEC0643B0C642C863D51B1C56B372328C4FC911F224CB",
                              "path":  "docs/agent-runtime/hook-failure-semantics.md"
                          },
                          {
@@ -488,7 +488,7 @@
                              "path":  "governance/manifest-ignore.txt"
                          },
                          {
-                             "sha256":  "2E82101E47D0BC42FD9DAA18CE237BDA18022480C69458F6F4E4CD374ADC5BD2",
+                             "sha256":  "5A5E8E3C237849C7B27CAE2FDFFD411ACF899FD46E9201B36D7CA8D0B756F0D3",
                              "path":  "hooks/pre-commit.governance.ps1"
                          },
                          {

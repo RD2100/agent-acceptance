@@ -107,38 +107,46 @@ if (Test-Path $auditScript) {
                 $job = Start-Job -ScriptBlock {
                     param($scriptPath, $files, $root)
                     Set-Location $root
-                    python $scriptPath --files $files 2>&1 | Out-String
+                    $output = python $scriptPath --files $files 2>&1 | Out-String
+                    # Return output and exit code as array (cross-process safe)
+                    return @($output, $LASTEXITCODE)
                 } -ArgumentList $aiGuardScript, $stagedFiles, $ProjectRoot
 
                 $completed = Wait-Job $job -Timeout $aiGuardTimeoutSec
-                if ($null -eq $completed) {
-                    # Timeout — kill job and report
+                $timedOut = ($null -eq $completed)
+                if ($timedOut) {
                     Stop-Job $job -ErrorAction SilentlyContinue
                     Remove-Job $job -Force -ErrorAction SilentlyContinue
-                    $script:aiGuardTimedOut = $true
-                    $script:aiGuardJobExitCode = 1
-                    return "TIMEOUT: ai_guard exceeded ${aiGuardTimeoutSec}s limit"
+                    return @{
+                        Output   = "TIMEOUT: ai_guard exceeded ${aiGuardTimeoutSec}s limit"
+                        ExitCode = 1
+                        TimedOut = $true
+                    }
                 }
-                $jobOutput = Receive-Job $job
-                # Reliable exit code from child job process
-                $rawExit = if ($job.ChildJobs -and $job.ChildJobs[0]) {
-                    $job.ChildJobs[0].ExitCode
-                } else { $null }
-                # Ensure numeric — null or non-numeric defaults to 0
-                $script:aiGuardJobExitCode = if ($null -ne $rawExit) { [int]$rawExit } else { 0 }
+                # Receive-Job returns the array: [output_string, exit_code]
+                $jobResult = @(Receive-Job $job)
+                $jobExitCode = $jobResult[-1]   # Last element = exit code
+                $jobOutput = ($jobResult[0..($jobResult.Count - 2)]) -join "`n"
                 Remove-Job $job -Force -ErrorAction SilentlyContinue
-                $script:aiGuardTimedOut = $false
-                return $jobOutput
+                # Null-safe: default to 1 (fail-closed)
+                $exitCode = if ($null -ne $jobExitCode) { [int]$jobExitCode } else { 1 }
+                return @{
+                    Output   = $jobOutput
+                    ExitCode = $exitCode
+                    TimedOut = $false
+                }
             }
             $aiGuardElapsedMs = $timing.ElapsedMs
-            $aiGuardOutput = $timing.Result
+            $aiGuardResult = $timing.Result
 
-            # Determine exit code: timeout = 1, otherwise use reliable Job.ChildJobs exit code
+            # Extract values from cross-process result hashtable
+            $aiGuardOutput = $aiGuardResult.Output
+            $aiGuardExit = $aiGuardResult.ExitCode
+            $aiGuardTimedOut = $aiGuardResult.TimedOut
+
             if ($aiGuardTimedOut) {
-                $aiGuardExit = 1
                 $aiGuardOutput = "TIMEOUT: ai_guard exceeded ${aiGuardTimeoutSec}s limit"
-            } else {
-                $aiGuardExit = $aiGuardJobExitCode
+                $aiGuardExit = 1
             }
 
             # Persist ai_guard output

@@ -3,11 +3,14 @@
 Validates _evidence/hook-output/latest.json against
 schemas/agent-runtime/evidence-capture.schema.json.
 
-Failure semantics (v2.3.0):
+Failure semantics (v2.3.0, fail-closed):
   - sadp-audit exit_code != 0 → overall_result must be BLOCKED
   - ai-guard exit_code != 0 → overall_result must be BLOCKED
-  - test-governance exit_code != 0 → overall_result must be BLOCKED
-  - all exit_code == 0 → overall_result must be PASS
+  - Missing blocking stage (sadp-audit, ai-guard) → error (absence = BLOCKED)
+  - Null exit_code on blocking stage → expected BLOCKED
+  - test-governance: advisory (exit code logged, not blocking)
+  - manifest-regen: advisory
+  - all blocking exit_code == 0 → overall_result must be PASS
   - PASS_WITH_WARNINGS is forbidden
   - Semantic mismatch → validator exits nonzero (fail-closed)
 
@@ -95,7 +98,8 @@ def validate_against_schema(data: dict, schema: dict) -> list[str]:
 def check_failure_semantics(data: dict) -> list[str]:
     """Verify the hook output follows expected failure semantics.
 
-    Rules (v2.3.0):
+    Rules (v2.3.0, fail-closed):
+      - Missing blocking stage → error (fail-closed: absence = failure)
       - sadp-audit exit_code != 0 → overall_result must be BLOCKED
       - ai-guard exit_code != 0 → overall_result must be BLOCKED
       - test-governance: advisory (runs in -Mode advisory, exit code logged but not blocking)
@@ -104,28 +108,43 @@ def check_failure_semantics(data: dict) -> list[str]:
       - PASS_WITH_WARNINGS is forbidden in v2.3.0
     """
     errors = []
-    stages = {s["name"]: s["exit_code"] for s in data.get("stages", [])}
+    stages = {s["name"]: s.get("exit_code") for s in data.get("stages", [])}
     result = data.get("overall_result", "")
 
     # PASS_WITH_WARNINGS is forbidden
     if result == "PASS_WITH_WARNINGS":
         errors.append("overall_result=PASS_WITH_WARNINGS is forbidden in v2.3.0")
 
-    # Blocking stages: sadp-audit and ai-guard must produce BLOCKED on failure
+    # Blocking stages must be present — missing = fail-closed
     blocking_stages = ["sadp-audit", "ai-guard"]
     for stage_name in blocking_stages:
-        exit_code = stages.get(stage_name, 0)
-        if exit_code != 0 and result != "BLOCKED":
+        if stage_name not in stages:
+            errors.append(
+                f"Missing required blocking stage: {stage_name} (fail-closed: absence = BLOCKED)"
+            )
+            continue
+        exit_code = stages[stage_name]
+        # null exit_code treated as failure (fail-closed)
+        if exit_code is None:
+            if result != "BLOCKED":
+                errors.append(
+                    f"{stage_name} exit_code=null but overall_result={result} (expected BLOCKED)"
+                )
+        elif exit_code != 0 and result != "BLOCKED":
             errors.append(
                 f"{stage_name} exit_code={exit_code} but overall_result={result} (expected BLOCKED)"
             )
 
     # All blocking stages zero must produce PASS
-    blocking_zeros = all(stages.get(s, 0) == 0 for s in blocking_stages)
-    if blocking_zeros and result not in ("PASS", "BLOCKED"):
-        errors.append(
-            f"All blocking stages pass but overall_result={result} (expected PASS)"
+    all_present = all(s in stages for s in blocking_stages)
+    if all_present:
+        blocking_zeros = all(
+            stages[s] is not None and stages[s] == 0 for s in blocking_stages
         )
+        if blocking_zeros and result != "PASS":
+            errors.append(
+                f"All blocking stages pass but overall_result={result} (expected PASS)"
+            )
 
     return errors
 
