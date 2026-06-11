@@ -41,6 +41,7 @@ write_set:
   - "hooks/pre-commit.governance.ps1"
   - "hooks/sealed-files-manifest.json"
   - "scripts/validate_hook_output.py"
+  - "scripts/run_negative_path_evidence.py"
   - "tests/test_hook_failure_semantics.py"
   - "schemas/agent-runtime/evidence-capture.schema.json"
   - "docs/agent-runtime/hook-failure-semantics.md"

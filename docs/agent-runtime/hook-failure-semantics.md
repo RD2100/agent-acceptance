@@ -11,13 +11,13 @@ process exit code.
 |---|---|---|---|
 | manifest-regen | No | Advisory only | Manifest drift is logged but does not indicate a governance violation |
 | sadp-audit | **Yes** | `BLOCKED` + exit 1 | Validates sealed-file integrity and rule compliance |
-| ai-guard | **Yes** | `BLOCKED` + exit 1 | Content policy scan; failures block to prevent unsafe commits |
-| test-governance | **Yes** | `BLOCKED` + exit 1 | Governance scan; failures block to ensure policy compliance |
+| ai-guard | **Yes** | `BLOCKED` + exit 1 | Content policy scan; uses reliable Job.ChildJobs exit code |
+| test-governance | No | Advisory only | Runs in `-Mode advisory`; exit code logged but does not block |
 
 ### Result Mapping
 
 ```
-overall_result  = BLOCKED    if any required stage (sadp-audit, ai-guard, test-governance) has exit_code ≠ 0
+overall_result  = BLOCKED    if sadp-audit or ai-guard has exit_code ≠ 0
                 = PASS       otherwise
 ```
 
@@ -83,4 +83,4 @@ It also performs semantic checks (e.g., verifying that nonzero blocking-stage ex
 | 2.0.0 | Initial 3-stage hook (manifest, sadp-audit, test-governance) |
 | 2.1.0 | Added ai-guard as separate capture + output persistence |
 | 2.2.0 | PASS_WITH_WARNINGS for ai-guard (non-blocking), 30s timeout, schema alignment |
-| 2.3.0 | All required stages blocking (sadp-audit, ai-guard, test-governance). Removed PASS_WITH_WARNINGS. |
+| 2.3.0 | sadp-audit + ai-guard blocking (reliable exit code). test-governance advisory. Removed PASS_WITH_WARNINGS. |

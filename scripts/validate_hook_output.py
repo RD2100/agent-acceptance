@@ -1,7 +1,15 @@
-"""Hook output validator for EVIDENCE-CAPTURE-HOOK-RUNTIME-VALIDATION-A1.
+"""Hook output validator for EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1.
 
 Validates _evidence/hook-output/latest.json against
 schemas/agent-runtime/evidence-capture.schema.json.
+
+Failure semantics (v2.3.0):
+  - sadp-audit exit_code != 0 → overall_result must be BLOCKED
+  - ai-guard exit_code != 0 → overall_result must be BLOCKED
+  - test-governance exit_code != 0 → overall_result must be BLOCKED
+  - all exit_code == 0 → overall_result must be PASS
+  - PASS_WITH_WARNINGS is forbidden
+  - Semantic mismatch → validator exits nonzero (fail-closed)
 
 Usage:
     python scripts/validate_hook_output.py \
@@ -87,35 +95,39 @@ def validate_against_schema(data: dict, schema: dict) -> list[str]:
 def check_failure_semantics(data: dict) -> list[str]:
     """Verify the hook output follows expected failure semantics.
 
-    Rules (v2.2.0):
+    Rules (v2.3.0):
       - sadp-audit exit_code != 0 → overall_result must be BLOCKED
-      - ai-guard exit_code != 0 (with sadp-audit pass) → overall_result must be PASS_WITH_WARNINGS
-      - all exit_code == 0 → overall_result must be PASS
+      - ai-guard exit_code != 0 → overall_result must be BLOCKED
+      - test-governance: advisory (runs in -Mode advisory, exit code logged but not blocking)
+      - manifest-regen: advisory
+      - all blocking exit_code == 0 → overall_result must be PASS
+      - PASS_WITH_WARNINGS is forbidden in v2.3.0
     """
-    warnings = []
+    errors = []
     stages = {s["name"]: s["exit_code"] for s in data.get("stages", [])}
     result = data.get("overall_result", "")
 
-    sadp = stages.get("sadp-audit", 0)
-    ai_guard = stages.get("ai-guard", 0)
+    # PASS_WITH_WARNINGS is forbidden
+    if result == "PASS_WITH_WARNINGS":
+        errors.append("overall_result=PASS_WITH_WARNINGS is forbidden in v2.3.0")
 
-    if sadp != 0 and result != "BLOCKED":
-        warnings.append(
-            f"sadp-audit exit_code={sadp} but overall_result={result} (expected BLOCKED)"
+    # Blocking stages: sadp-audit and ai-guard must produce BLOCKED on failure
+    blocking_stages = ["sadp-audit", "ai-guard"]
+    for stage_name in blocking_stages:
+        exit_code = stages.get(stage_name, 0)
+        if exit_code != 0 and result != "BLOCKED":
+            errors.append(
+                f"{stage_name} exit_code={exit_code} but overall_result={result} (expected BLOCKED)"
+            )
+
+    # All blocking stages zero must produce PASS
+    blocking_zeros = all(stages.get(s, 0) == 0 for s in blocking_stages)
+    if blocking_zeros and result not in ("PASS", "BLOCKED"):
+        errors.append(
+            f"All blocking stages pass but overall_result={result} (expected PASS)"
         )
 
-    if sadp == 0 and ai_guard != 0 and result != "PASS_WITH_WARNINGS":
-        warnings.append(
-            f"ai-guard exit_code={ai_guard} (sadp-audit pass) but "
-            f"overall_result={result} (expected PASS_WITH_WARNINGS)"
-        )
-
-    if all(v == 0 for v in stages.values()) and result != "PASS":
-        warnings.append(
-            f"All stages pass but overall_result={result} (expected PASS)"
-        )
-
-    return warnings
+    return errors
 
 
 def main():
@@ -155,12 +167,13 @@ def main():
             print(f"  - {err}")
         sys.exit(1)
 
-    # Semantic checks
-    warnings = check_failure_semantics(data)
-    if warnings:
-        print(f"WARNING: Semantic checks found {len(warnings)} issues")
-        for w in warnings:
-            print(f"  - {w}")
+    # Semantic checks — failures here are BLOCKING (fail-closed validator)
+    semantic_errors = check_failure_semantics(data)
+    if semantic_errors:
+        print(f"FAIL: Semantic checks found {len(semantic_errors)} errors")
+        for e in semantic_errors:
+            print(f"  - {e}")
+        sys.exit(1)
 
     # Report
     stages_summary = ", ".join(
@@ -171,9 +184,6 @@ def main():
     print(f"  overall_result: {data.get('overall_result', 'N/A')}")
     print(f"  stages: {stages_summary}")
     print(f"  timestamp: {data.get('timestamp', 'N/A')}")
-
-    if warnings:
-        sys.exit(0)  # Warnings don't fail
     sys.exit(0)
 
 

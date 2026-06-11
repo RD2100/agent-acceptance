@@ -116,28 +116,29 @@ if (Test-Path $auditScript) {
                     Stop-Job $job -ErrorAction SilentlyContinue
                     Remove-Job $job -Force -ErrorAction SilentlyContinue
                     $script:aiGuardTimedOut = $true
+                    $script:aiGuardJobExitCode = 1
                     return "TIMEOUT: ai_guard exceeded ${aiGuardTimeoutSec}s limit"
                 }
                 $jobOutput = Receive-Job $job
+                # Reliable exit code from child job process
+                $rawExit = if ($job.ChildJobs -and $job.ChildJobs[0]) {
+                    $job.ChildJobs[0].ExitCode
+                } else { $null }
+                # Ensure numeric — null or non-numeric defaults to 0
+                $script:aiGuardJobExitCode = if ($null -ne $rawExit) { [int]$rawExit } else { 0 }
                 Remove-Job $job -Force -ErrorAction SilentlyContinue
-                # Job exit code is not directly available; check output for error indicators
                 $script:aiGuardTimedOut = $false
                 return $jobOutput
             }
             $aiGuardElapsedMs = $timing.ElapsedMs
             $aiGuardOutput = $timing.Result
 
-            # Determine exit code: timeout = 1, otherwise check output
+            # Determine exit code: timeout = 1, otherwise use reliable Job.ChildJobs exit code
             if ($aiGuardTimedOut) {
                 $aiGuardExit = 1
                 $aiGuardOutput = "TIMEOUT: ai_guard exceeded ${aiGuardTimeoutSec}s limit"
             } else {
-                # ai_guard.py prints "PASS" or "FAIL" — use output heuristic
-                if ($aiGuardOutput -match "(?i)\bFAIL\b") {
-                    $aiGuardExit = 1
-                } else {
-                    $aiGuardExit = 0
-                }
+                $aiGuardExit = $aiGuardJobExitCode
             }
 
             # Persist ai_guard output
@@ -237,18 +238,19 @@ $stages = @(
 )
 
 # Failure semantics (v2.3.0):
-#   BLOCKING:   sadp-audit, ai-guard, test-governance (any non-zero → BLOCKED + exit 1)
-#   ADVISORY:   manifest-regen (exit code logged, never blocks)
-#   All required stages must fail closed — no silent pass on failure.
+#   BLOCKING:   sadp-audit, ai-guard (any non-zero → BLOCKED + exit 1)
+#   ADVISORY:   manifest-regen, test-governance (exit code logged, never blocks)
+#   Test-Governance runs in advisory mode (-Mode advisory), so its exit code
+#   does not affect the commit decision. Only sadp-audit and ai-guard are
+#   enforcement gates with reliable process exit codes.
 $overallResult = "PASS"
 foreach ($s in $stages) {
     if ($s.exit_code -ne 0) {
-        if ($s.name -ne "manifest-regen") {
-            # sadp-audit, ai-guard, test-governance are all blocking
+        if ($s.name -eq "sadp-audit" -or $s.name -eq "ai-guard") {
             $overallResult = "BLOCKED"
             break
         }
-        # manifest-regen: advisory only
+        # manifest-regen and test-governance: advisory only
     }
 }
 

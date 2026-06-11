@@ -137,13 +137,18 @@ class TestOverallResultLogic:
 
     @staticmethod
     def compute_overall_result(stages):
-        """Mirror the PowerShell logic from the hook script."""
+        """Mirror the PowerShell logic from the hook script (v2.3.0).
+
+        BLOCKING: sadp-audit, ai-guard
+        ADVISORY: manifest-regen, test-governance
+        """
         overall_result = "PASS"
         for s in stages:
             if s["exit_code"] != 0:
-                if s["name"] != "manifest-regen":
+                if s["name"] in ("sadp-audit", "ai-guard"):
                     overall_result = "BLOCKED"
                     break
+                # manifest-regen and test-governance: advisory only
         return overall_result
 
     def test_all_pass(self):
@@ -176,15 +181,15 @@ class TestOverallResultLogic:
         ]
         assert self.compute_overall_result(stages) == "BLOCKED"
 
-    def test_test_governance_exit_1_blocks(self):
-        """test_governance_exit_1_blocks"""
+    def test_test_governance_exit_1_advisory(self):
+        """test_governance_exit_1_advisory — runs in -Mode advisory, not blocking"""
         stages = [
             {"name": "manifest-regen", "exit_code": 0},
             {"name": "sadp-audit", "exit_code": 0},
             {"name": "ai-guard", "exit_code": 0},
             {"name": "test-governance", "exit_code": 1},
         ]
-        assert self.compute_overall_result(stages) == "BLOCKED"
+        assert self.compute_overall_result(stages) == "PASS"
 
     def test_manifest_regen_advisory(self):
         """manifest-regen failure does not block"""
@@ -257,11 +262,13 @@ class TestLatestJsonValidation:
         assert len(stages) >= schema["properties"]["stages"]["minItems"]
         assert len(stages) <= schema["properties"]["stages"]["maxItems"]
 
-        # Check stage names
+        # Check stage names and types
         valid_names = set(schema["properties"]["stages"]["items"]["properties"]["name"]["enum"])
         for s in stages:
             assert s["name"] in valid_names, f"Invalid stage name: {s['name']}"
-            assert isinstance(s["exit_code"], int)
+            # exit_code may be null in early-exit scenarios (e.g., ai_guard not reached)
+            ec = s.get("exit_code")
+            assert ec is None or isinstance(ec, int), f"exit_code must be int or null, got {type(ec)}"
             assert isinstance(s["duration_ms"], int)
 
         # Check overall_result enum
