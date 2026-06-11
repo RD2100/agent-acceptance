@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Unified SADP enforcement policy — shared by sadp-audit.ps1 and sadp_pre_task_enforcer.py",
+  "generated_at": "2026-06-10",
+
+  "protected_files": [
+    "rules/core.md",
+    "docs/agent-runtime/sub-agent-dispatch-protocol.md",
+    "docs/agent-runtime/capability-inventory.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "docs/agent-runtime/lessons-learned.md",
+    ".sadp/SADP_POLICY.json",
+    ".sadp/TRIGGER_RULES.json",
+    "scripts/sadp-audit.ps1"
+  ],
+
+  "self_protecting_enforcer_files": [
+    "scripts/sadp_pre_task_enforcer.py",
+    "scripts/sadp-audit.ps1",
+    "scripts/qoderwork_task_runner.py"
+  ],
+
+  "governance_adjacent_files": [
+    ".agent/PROJECT_REGISTRY.json",
+    ".agent/MULTI_PROJECT_RESOURCE_POLICY.json",
+    ".agent/CONVERSATION_BINDING.json"
+  ],
+
+  "pre_edit_policy": {
+    "scope_creep_by_priority": {
+      "P0": "BLOCKED",
+      "P1": "BLOCKED",
+      "P2": "WARNING",
+      "P3": "WARNING"
+    },
+    "default_scope_creep": "WARNING",
+    "protected_file_edit": "BLOCKED",
+    "self_protecting_file_edit": "HUMAN_REQUIRED"
+  },
+
+  "pre_task_policy": {
+    "require_taskspec": true,
+    "require_gate0": true,
+    "require_gate0_inventory_evidence": true,
+    "require_conflict_registry": true,
+    "require_acceptance_gates": true,
+    "protected_file_in_write_set": "BLOCKED"
+  },
+
+  "post_task_policy": {
+    "require_execution_report": true,
+    "require_reviewer_index": "advisory",
+    "require_conflict_registry": true
+  }
+}

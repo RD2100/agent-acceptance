@@ -11,7 +11,44 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 
 
-def verify(reply_path: str, expected_task_id: str = None) -> dict:
+def _extract_field_outside_auth_block(content: str, field: str) -> str | None:
+    """Extract `field: value` from the reply, EXCLUDING occurrences
+    inside the `next_task_authorization:` block.
+
+    Strategy: find all line-start `field: value` matches. Then check
+    if each match is inside the `next_task_authorization:` section.
+    The section starts at `next_task_authorization:` and ends at the
+    next blank line or the END_OF_GPT_RESPONSE marker.
+    """
+    # Find the next_task_authorization block boundaries
+    auth_start = -1
+    auth_end = len(content)
+    for m in re.finditer(r"^next_task_authorization:", content, re.IGNORECASE | re.MULTILINE):
+        auth_start = m.start()
+        # Find end: next blank line (two consecutive newlines) or END_OF_GPT_RESPONSE
+        rest = content[m.end():]
+        blank = re.search(r"\n\s*\n", rest)
+        end_marker = re.search(r"END_OF_GPT_RESPONSE", rest, re.IGNORECASE)
+        if blank:
+            auth_end = m.end() + blank.start()
+        elif end_marker:
+            auth_end = m.end() + end_marker.start()
+        break  # Only one auth block expected
+
+    # Find all matches of field: value at line start
+    for m in re.finditer(rf"^{field}:\s*(\S+)", content, re.IGNORECASE | re.MULTILINE):
+        pos = m.start()
+        # Skip if inside the auth block
+        if auth_start >= 0 and auth_start <= pos < auth_end:
+            continue
+        return m.group(1).strip()
+
+    # Fallback: if all matches were inside auth block, return last one
+    matches = re.findall(rf"^{field}:\s*(\S+)", content, re.IGNORECASE | re.MULTILINE)
+    return matches[-1].strip() if matches else None
+
+
+def verify(reply_path: str, expected_task_id: str = None, expected_run_id: str = None) -> dict:
     """Verify a captured GPT reply. Returns verdict dict. Fail-closed."""
     fp = Path(reply_path)
     if not fp.exists():
@@ -43,9 +80,24 @@ def verify(reply_path: str, expected_task_id: str = None) -> dict:
     # 3. evidence_pack_reviewed flag
     checks["evidence_pack_reviewed"] = "evidence_pack_reviewed: true" in content.lower()
 
-    # 4. task_id matching — extract from reply, compare with expected
-    tm = re.search(r"task_id:\s*(\S+)", content, re.IGNORECASE)
-    reply_task_id = tm.group(1).strip() if tm else None
+    # 3b. run_id validation — extract outside auth block
+    reply_run_id = _extract_field_outside_auth_block(content, "run_id")
+    checks["run_id_in_reply"] = reply_run_id
+    if expected_run_id:
+        if not reply_run_id:
+            checks["run_id_matches"] = False
+            errors.append("missing_run_id")
+        else:
+            checks["run_id_matches"] = (expected_run_id.upper() == reply_run_id.upper())
+            if not checks["run_id_matches"]:
+                errors.append(f"run_id_mismatch: expected {expected_run_id}, reply has {reply_run_id}")
+    elif not reply_run_id:
+        # No expected run_id but reply also has none — flag as missing
+        checks["run_id_matches"] = False
+        errors.append("missing_run_id")
+
+    # 4. task_id matching — extract outside next_task_authorization block
+    reply_task_id = _extract_field_outside_auth_block(content, "task_id")
     checks["task_id_in_reply"] = reply_task_id
     if expected_task_id and reply_task_id:
         checks["task_id_matches"] = (expected_task_id.upper() == reply_task_id.upper())
@@ -74,9 +126,9 @@ def verify(reply_path: str, expected_task_id: str = None) -> dict:
     }
 
 
-def closure_ready(reply_path: str, task_id: str) -> dict:
+def closure_ready(reply_path: str, task_id: str, expected_run_id: str = None) -> dict:
     """Check if task is ready for closure/binding based on GPT reply."""
-    result = verify(reply_path, task_id)
+    result = verify(reply_path, task_id, expected_run_id=expected_run_id)
     if not result["valid"]:
         return {"closure_ready": False, "reason": "GPT reply not valid", "verdict": result}
     judgment = result["overall_judgment"]
@@ -91,15 +143,16 @@ def closure_ready(reply_path: str, task_id: str) -> dict:
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: verify_gpt_reply.py <reply_file> [task_id]")
+        print("Usage: verify_gpt_reply.py <reply_file> [task_id] [run_id]")
         sys.exit(1)
 
     reply_path = sys.argv[1]
     task_id = sys.argv[2] if len(sys.argv) > 2 else None
+    run_id = sys.argv[3] if len(sys.argv) > 3 else None
 
-    result = verify(reply_path, task_id)
+    result = verify(reply_path, task_id, expected_run_id=run_id)
     result["task_id"] = task_id
-    cr = closure_ready(reply_path, task_id) if task_id else None
+    cr = closure_ready(reply_path, task_id, expected_run_id=run_id) if task_id else None
 
     print(json.dumps({"verify": result, "closure_ready": cr}, indent=2, ensure_ascii=False))
 

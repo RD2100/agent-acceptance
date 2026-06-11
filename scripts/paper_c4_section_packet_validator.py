@@ -22,9 +22,9 @@ def validate(data: dict) -> dict:
         if field not in data:
             errors.append(f"missing required field: {field}")
 
-    # Forbidden fields
+    # Forbidden fields — fail closed on presence, not just truthy values
     for field in FORBIDDEN_FIELDS:
-        if data.get(field):
+        if field in data:
             errors.append(f"forbidden field present: {field}")
 
     # Privacy mode

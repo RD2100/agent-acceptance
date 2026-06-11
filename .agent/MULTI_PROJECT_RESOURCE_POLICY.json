@@ -1,0 +1,42 @@
+{
+  "schema_version": "2.0.0",
+  "architecture_version": "2.0.0",
+  "cdp_mode": "shared_single_chrome",
+  "shared_cdp_endpoint": "http://localhost:9222",
+  "shared_cdp_port": 9222,
+  "max_registered_projects": 10,
+  "max_concurrent_gpt_reviews": 2,
+  "max_active_gpt_reviews": 2,
+  "max_warm_cdp_instances": 1,
+  "base_port": 9222,
+  "port_range": [
+    9222,
+    9231
+  ],
+  "allowed_cdp_ports_description": "9222-9231 inclusive (10 ports, one per project slot)",
+  "lazy_launch": true,
+  "auto_restart": false,
+  "idle_shutdown_enabled": false,
+  "require_human_for_live_dispatch": true,
+  "isolation_boundaries": [
+    "conversation_id",
+    "chat_url",
+    "tab_target_id",
+    "run_id",
+    "task_id"
+  ],
+  "known_tradeoffs": [
+    "shared_cdp_endpoint",
+    "shared_browser_profile",
+    "shared_login_state",
+    "single_point_of_failure"
+  ],
+  "forbidden_practices": [
+    "fallback_to_active_tab",
+    "last_message_only_capture",
+    "dispatch_without_target_id",
+    "shared_conversation_id",
+    "bypass_gate0_v2"
+  ],
+  "generated_at": "2026-06-10T16:00:00Z"
+}

@@ -21,6 +21,8 @@ This directory contains JSON Schema definitions for the core integration contrac
 | 10 | `review.schema.json` | Independent reviewer verdict for an @go run |
 | 11 | `safety-report.schema.json` | Deterministic guard output captured for an @go run |
 | 12 | `chain-evidence.schema.json` | Role/session chain for an @go run |
+| 13 | `multi-agent-gate0-preflight.schema.json` | Read-only readiness report for multi-agent / multi-GPT pilot startup |
+| 14 | `multi-agent-dispatch-plan.schema.json` | Read-only first-wave worker assignment packet with conflict boundaries |
 
 ## Constraints
 

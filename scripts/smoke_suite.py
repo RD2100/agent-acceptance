@@ -3,6 +3,7 @@
 smoke_suite.py — One-command health check for DevFrame agent-acceptance.
 
 Verifies: tests, ai_guard, BOOT_CONTEXT, memory/index, review_queue, demo artifacts.
+External runtime checks are presence-only preflights; they do not run sibling repos.
 Outputs JSON result. Exit 0 = all pass.
 """
 import json
@@ -39,6 +40,18 @@ def file_check(name: str, path: str, min_size: int = 10) -> dict:
     return {"name": name, "passed": False, "size": fp.stat().st_size if fp.exists() else 0}
 
 
+def external_runtime_presence_check(name: str, path: Path) -> dict:
+    """Check external runtime presence without executing any sibling-repo command."""
+    return {
+        "name": name,
+        "passed": path.is_dir(),
+        "scope": "presence_only",
+        "executed": False,
+        "human_gate_required_for_execution": True,
+        "path": str(path),
+    }
+
+
 def main():
     # 1. Full test suite
     RESULTS.append(check("full_tests", [sys.executable, "-m", "pytest", "tests/", "-q", "--tb=line"]))
@@ -67,9 +80,9 @@ def main():
     RESULTS.append(file_check("demo_readme", "demo/README.md", 100))
     RESULTS.append(file_check("demo_guide", "demo/USER_GUIDE.md", 100))
 
-    # 8. Cross-repo (lightweight — just check control-plane exists)
+    # 8. External runtime presence preflight only; no sibling-repo command is run.
     cp_tests = Path("D:/devframe-control-plane/tests")
-    RESULTS.append({"name": "control_plane_tests_dir", "passed": cp_tests.is_dir()})
+    RESULTS.append(external_runtime_presence_check("control_plane_tests_dir", cp_tests))
 
     # Compile report
     passed = sum(1 for r in RESULTS if r["passed"])

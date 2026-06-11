@@ -7,11 +7,10 @@ Checks before git push:
 2. ai_guard staged-only (0 errors)
 3. No dirty baseline in latest commit
 4. GPT review evidence exists for recent tasks
-5. Cross-repo health
+5. External runtime presence preflight only
 
 Exit 0 = safe to push. Exit 1 = fix before pushing.
 """
-import json
 import subprocess
 import sys
 from pathlib import Path
@@ -21,6 +20,17 @@ REPO = Path(__file__).resolve().parent.parent
 
 def run(cmd, **kw):
     return subprocess.run(cmd, capture_output=True, text=True, cwd=str(REPO), **kw)
+
+
+def external_runtime_presence_status(path: Path) -> dict:
+    """Return a presence-only status; never execute commands in the external runtime."""
+    return {
+        "passed": path.is_dir(),
+        "scope": "presence_only",
+        "executed": False,
+        "human_gate_required_for_execution": True,
+        "path": str(path),
+    }
 
 
 def main():
@@ -69,11 +79,12 @@ def main():
                 accepted += 1
         print(f"  OK: {len(evidence_packs)} GPT review files, {accepted} accepted")
 
-    # 5. Cross-repo
-    print("[5/5] Cross-repo health...")
+    # 5. External runtime presence preflight only; no sibling-repo command is run.
+    print("[5/5] External runtime presence preflight...")
     cp = Path("D:/devframe-control-plane")
-    if cp.is_dir():
-        print(f"  OK: control-plane exists")
+    cp_status = external_runtime_presence_status(cp)
+    if cp_status["passed"]:
+        print("  OK: control-plane exists (presence-only; no cross-repo tests executed)")
     else:
         warnings.append("control-plane not found at D:/devframe-control-plane")
 

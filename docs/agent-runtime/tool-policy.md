@@ -87,6 +87,20 @@ This section governs the current phase. All other sections are future reference.
 | **External skill execution** | Running any skill code from `skills-inbox/external/` | Untrusted code |
 | **Remote execution** | `ssh`, `scp`, remote PowerShell | Not in bootstrap scope |
 
+### Explicit dev-frame / opencode / paper Workflow Policy
+
+| Surface | Default Policy | Allowed Without Extra Human Gate | Forbidden Without Extra Human Gate |
+|---------|----------------|----------------------------------|------------------------------------|
+| `D:\dev-frame\ai-workflow-hub` | governed, read-only | read policy docs, inspect file names, cite existing historical evidence | execute CLI, modify files, update `tasks.yaml`, run pipeline, produce GateResult |
+| `D:\dev-frame\smoke_test.py` | forbidden execution | read source/policy only | run smoke test, regenerate smoke report, use historical smoke as current evidence |
+| `opencode run` / dev-frame-opencode dispatch | proposed capability, human-gated | document intended TaskSpec and dispatch boundary | execute worker dispatch, submit GPT, write closure, bypass reviewer node |
+| Cross-repo pytest/smoke scripts | human-gated | source inspection and risk classification | run tests across `D:\dev-frame`, `D:\test-frame`, or secondary clones |
+| Paper workflow | pilot-only unless authorized | synthetic fixtures, sanitized examples, evidence contract design | real user paper processing, live CDP, ad-hoc Playwright/GPT submission |
+
+Any exception must name the authorizing task, the exact command, the expected write set, and the evidence file that will record the result.
+
+Cross-repo execution exceptions additionally require an auditable authorization record with matching `scope`, exact `allowed_repos`, non-empty `decision_maker`, non-empty `decision_reason`, timezone-bearing `approved_at`, future `expires_at`, and `risk_acknowledged=true`. A legacy `authorized=true` JSON file is not sufficient.
+
 ### Reviewer-Approved Validation Commands
 
 The following commands are pre-approved for verification during Batch execution.

@@ -5,6 +5,7 @@ run_demo.py — One-command synthetic paper demo runner.
 Usage: python scripts/run_demo.py
 Runs the full DevFrame synthetic paper workflow verification in one command.
 No real paper content. No external API calls.
+External runtime checks are presence-only preflights; they do not run sibling repos.
 """
 import subprocess
 import sys
@@ -21,6 +22,19 @@ def step(name, cmd):
     return r.returncode == 0
 
 
+def external_runtime_presence_command(path: Path):
+    code = (
+        "from pathlib import Path; "
+        f"cp=Path({str(path)!r}); "
+        "print("
+        "f'scope=presence_only executed=false "
+        "human_gate_required_for_execution=true "
+        "control_plane_exists={cp.is_dir()} tests_dir_exists={(cp / \"tests\").is_dir()}'"
+        ")"
+    )
+    return [sys.executable, "-c", code]
+
+
 def main():
     print("=" * 60)
     print("  DevFrame Synthetic Paper Demo — One-Command Runner")
@@ -35,8 +49,10 @@ def main():
     ok &= step("5. Memory Index Check", [sys.executable, "-c",
         "import sys; c=open('memory/index.md',encoding='utf-8').read(); print(f'memory/index: {len(c)} chars'); sys.exit(0 if len(c)>=500 else 1)"])
     ok &= step("6. Review Queue Status", [sys.executable, "scripts/review_queue.py", "status"])
-    ok &= step("7. Cross-Repo Health", [sys.executable, "-c",
-        "import sys; from pathlib import Path; cp=Path('D:/devframe-control-plane'); print(f'control-plane exists: {cp.is_dir()}, tests: {(cp/\"tests\").is_dir()}')"])
+    ok &= step(
+        "7. External Runtime Presence Preflight",
+        external_runtime_presence_command(Path("D:/devframe-control-plane")),
+    )
 
     print(f"\n{'='*60}")
     print(f"  DEMO RESULT: {'ALL PASS' if ok else 'SOME FAILED'}")

@@ -1,7 +1,7 @@
 # Capability Inventory -- Cross-Platform
 
 > Batch C3C, 2026-05-28
-> 28 capabilities across Claude Code + Codex.
+> 29 capabilities across Claude Code + Codex.
 > All: auto_use_allowed=false, execution_allowed=false, mutation_allowed=false.
 
 ## Registration Procedure
@@ -597,6 +597,7 @@ JSON
 | 26 | linear | Codex | pm | medium | approved | restricted |
 | 28 | Sub-Agent Dispatch | Both | orchestration | medium | approved | read-only |
 | 27 | notion | Codex | knowledge | medium | approved | restricted |
+| 29 | dev-frame-opencode Dispatch | Both | orchestration | high | proposed | human-gated |
 
 > Verified status removed from summary table. See Capability Passport Summary below for verification status. Detailed entries are the source of truth.
 
@@ -605,7 +606,7 @@ JSON
 | Risk | Count | Capabilities |
 |:---:|:---:|------|
 | critical | 1 | Phase 6 SourceLock |
-| high | 10 | CodeGraph, test-frame, dev-frame, Local Skills, Memory, WorkQueue, Scripts, Hook Registration Script, supabase, github |
+| high | 11 | CodeGraph, test-frame, dev-frame, Local Skills, Memory, WorkQueue, Scripts, Hook Registration Script, supabase, github, dev-frame-opencode Dispatch |
 | medium | 6 | Shell, Hooks, Sealed Manifest, browser, linear, notion |
 | low | 9 | rg/Grep, JSON, Docs, Rules, Negative Tests, Playbooks, coderabbit, codex-security, superpowers |
 
@@ -628,6 +629,26 @@ JSON
 - **Passport usable_for_gate0**: true
 - **Passport usable_for_execution**: true
 
+## 29. dev-frame-opencode Dispatch
+- **Status**: approved
+- **Platform**: Both
+- **Type**: orchestration
+- **Access**: human_gated (not executable by default)
+- **Risk**: high
+- **Preferred for**: TaskSpec-bound worker dispatch when SADP explicitly selects opencode and records chain evidence
+- **Forbidden for**: direct GPT submission, writing authoritative closure artifacts, bypassing submission_adapter, bypassing reviewer node, running without TaskSpec, running without tool-policy authorization
+- **Fallback**: Codex direct execution with explicit fallback record, or blocked/human_required for governance modifications
+- **Human gate**: yes (any `opencode run` execution or external runtime invocation)
+- **Must explain if skipped**: yes
+- **Evidence**: dependency-canaries.md, sub-agent-dispatch-protocol.md dispatch checks, Conversation Registry `governance_scope`
+
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-06-10
+- **Passport confidence**: 0.8
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: external_dependency
+
 ### Status Legend
 
 | Status | Meaning |
@@ -644,10 +665,11 @@ JSON
 ## Capability Passport Summary (2026-05-28)
 
 Evidence-based verification status. **27 of 27 classified** (updated 2026-05-31, CAP-009 removed).
+CAP-029 is approved on 2026-06-10 and is included in approved execution totals.
 
 | Status | Count | IDs |
 |--------|:-----:|-----|
-| verified | 25 | CAP-001~008, CAP-010~013, CAP-015~016, CAP-018~028 (CAP-009 removed) |
+| verified | 26 | CAP-001~008, CAP-010~013, CAP-015~016, CAP-018~029 (CAP-009 removed) |
 | degraded | 0 | �� | |
 | broken | 0 | (none) |
 | stale | 1 | CAP-017 (Phase 6 SourceLock: not yet active) |
@@ -656,7 +678,7 @@ Evidence-based verification status. **27 of 27 classified** (updated 2026-05-31,
 | Type | Count | Expiry |
 |------|:-----:|--------|
 | local_static | 20 | 90 days |
-| external_dependency | 7 | 30 days |
+| external_dependency | 8 | 30 days |
 
 **Rule**: unknown/stale/broken must NOT be sole basis to reject new construction in Gate 0.
 

@@ -60,6 +60,40 @@ These rules block delivery. Do not violate:
 | 5 | No write to dirty baseline files (13M + 6U) | `rules/core.md` core-005 |
 | 6 | No capability without inventory registration | `rules/core.md` core-007 |
 | 7 | No `@go` pass without independent reviewer artifacts | `docs/agent-runtime/sub-agent-dispatch-protocol.md` 0.R |
+| 8 | No P0/P1 file edit without task runner | `scripts/qoderwork_task_runner.py` |
+
+
+## Mandatory Task Runner (P0 — Hard Stop)
+
+All QoderWork agents executing P0 or P1 tasks **MUST** use the task runner. Direct file editing without runner approval is a SADP violation (core-008).
+
+```
+# Step 1: Before any editing
+python scripts/qoderwork_task_runner.py start --task-id <ID>
+
+# Step 2: Before EACH file modification
+python scripts/qoderwork_task_runner.py edit-check --task-id <ID> --file <PATH>
+
+# Step 3: After task completion (before reporting done)
+python scripts/qoderwork_task_runner.py finish --task-id <ID>
+```
+
+**Rules:**
+- Agent MUST NOT edit any file until `start` returns exit 0
+- Agent MUST NOT edit a file if `edit-check` returns exit 1 (BLOCKED)
+- Agent MUST NOT report task complete until `finish` returns exit 0
+- Bypassing the runner for P0/P1 tasks = SADP violation (treated as core-008 breach)
+
+**Exit codes:**
+- `0` = PASS (proceed)
+- `1` = BLOCKED (do NOT proceed — fix issues first)
+- `2` = WARNING (proceed with caution, document reason)
+
+**Enforcement stack:**
+- Layer 1: `qoderwork_task_runner.py` — mandatory agent entry point
+- Layer 2: `sadp_pre_task_enforcer.py` — validation logic
+- Layer 3: `sadp-audit.ps1` — commit-time audit
+- Layer 4: `.sadp/SADP_POLICY.json` — unified policy source
 
 
 ## Agent Secret Safety Rules (P0 — Hard Stop)

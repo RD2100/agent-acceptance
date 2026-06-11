@@ -38,28 +38,28 @@ class TestVerifyFailClosed:
 
 class TestVerifyPass:
     def test_blocked_reply_valid(self):
-        r = guard.verify(_reply("overall_judgment: blocked\nblocking_issues:\n  - x\nEND_OF_GPT_RESPONSE"))
+        r = guard.verify(_reply("overall_judgment: blocked\nblocking_issues:\n  - x\nrun_id: TEST_RD\nEND_OF_GPT_RESPONSE"))
         assert r["valid"]
         assert r["overall_judgment"] == "blocked"
 
     def test_accepted_with_next_auth_valid(self):
-        r = guard.verify(_reply("overall_judgment: accepted\nnext_task_authorization:\n  authorized: yes\nEND_OF_GPT_RESPONSE"))
+        r = guard.verify(_reply("overall_judgment: accepted\nnext_task_authorization:\n  authorized: yes\nrun_id: TEST_RD\nEND_OF_GPT_RESPONSE"))
         assert r["valid"]
         assert r["overall_judgment"] == "accepted"
 
     def test_task_id_match_valid(self):
-        r = guard.verify(_reply("task_id: MY-TASK\noverall_judgment: accepted\nnext_task_authorization:\n  authorized: yes\nEND_OF_GPT_RESPONSE"), "MY-TASK")
+        r = guard.verify(_reply("task_id: MY-TASK\noverall_judgment: accepted\nnext_task_authorization:\n  authorized: yes\nrun_id: TEST_RD\nEND_OF_GPT_RESPONSE"), "MY-TASK")
         assert r["valid"]
 
 class TestClosureReady:
     def test_accepted_is_closure_ready(self):
-        r = guard.closure_ready(_reply("task_id: T\noverall_judgment: accepted\nnext_task_authorization:\n  authorized: yes\nEND_OF_GPT_RESPONSE"), "T")
+        r = guard.closure_ready(_reply("task_id: T\noverall_judgment: accepted\nnext_task_authorization:\n  authorized: yes\nrun_id: TEST_RD\nEND_OF_GPT_RESPONSE"), "T")
         assert r["closure_ready"]
 
     def test_blocked_is_not_closure_ready(self):
-        r = guard.closure_ready(_reply("task_id: T\noverall_judgment: blocked\nEND_OF_GPT_RESPONSE"), "T")
+        r = guard.closure_ready(_reply("task_id: T\noverall_judgment: blocked\nrun_id: TEST_RD\nEND_OF_GPT_RESPONSE"), "T")
         assert not r["closure_ready"]
 
     def test_review_unverified_not_closure_ready(self):
-        r = guard.closure_ready(_reply("task_id: T\noverall_judgment: review_unverified\nEND_OF_GPT_RESPONSE"), "T")
+        r = guard.closure_ready(_reply("task_id: T\noverall_judgment: review_unverified\nrun_id: TEST_RD\nEND_OF_GPT_RESPONSE"), "T")
         assert not r["closure_ready"]

@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "description": "SADP trigger rules — when SADP enforcement activates",
+  "generated_at": "2026-06-10",
+
+  "explicit_triggers": [
+    "@go keyword"
+  ],
+
+  "automatic_triggers": {
+    "file_count_gte": 3,
+    "governance_file_touched": true,
+    "capability_registered": true,
+    "git_commit_involved": true
+  },
+
+  "cumulative_triggers": {
+    "scope": ["session_id", "objective_id"],
+    "track": [
+      "cumulative_write_set",
+      "cumulative_new_artifacts",
+      "cumulative_protected_touches",
+      "cumulative_task_count"
+    ],
+    "trigger_when": {
+      "cumulative_write_set_count_gte": 3,
+      "new_artifacts_count_gte": 1,
+      "protected_touches_gte": 1,
+      "same_objective_task_count_gte": 3
+    },
+    "rule": "task_splitting_does_not_reduce_governance_level"
+  },
+
+  "exemptions": [
+    "single_file_read",
+    "pure_qa",
+    "trivial_non_governance_fix"
+  ]
+}

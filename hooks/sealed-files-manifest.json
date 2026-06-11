@@ -9,18 +9,58 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-08T12:12:33.6733862+08:00",
+    "generated":  "2026-06-11T08:43:07.0050233+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
                              "path":  ".ai/policy.yaml"
                          },
                          {
+                             "sha256":  "025C2BED1508FEFFA7F62EA6C5492986C427EE8E74094B0B631E74A0E3358F5F",
+                             "path":  ".claude/skills/claude-memory-compiler/AGENTS.md"
+                         },
+                         {
                              "sha256":  "0B0659EDA9CE03B0CAFB7F91A696B59F7CA772CFFA61C233504300893FBA4121",
                              "path":  ".github/workflows/ai-guard.yml"
                          },
                          {
-                             "sha256":  "59E7999A575FEAE014DD52D151DB3886C67C5F7531E15CB092CD10B047A001BD",
+                             "sha256":  "B76B75E0BA3E660CCA3E3896F90C71D7CDDA3D7BF9D1AA1ED5C7C248886A08D0",
+                             "path":  "_projects/project-alpha/AGENTS.md"
+                         },
+                         {
+                             "sha256":  "D6AFFFAD1C6D112A459361CA56825F5844E1E7127286BF67DD71DB3D2B2EB77E",
+                             "path":  "_projects/project-beta/AGENTS.md"
+                         },
+                         {
+                             "sha256":  "8564F060ADB40B2E148537E3EAFA34F20D510A1497A5D80D002E7DCEF7A8B65D",
+                             "path":  "_projects/project-delta/AGENTS.md"
+                         },
+                         {
+                             "sha256":  "CA5F7A0E051A455F5B5F63808DC8EB0AE7B1BB2E02BA61D05DFBDAD3F9EB4271",
+                             "path":  "_projects/project-epsilon/AGENTS.md"
+                         },
+                         {
+                             "sha256":  "C8412AF500DE763C57C78A2546FA2E4819A5F042D81B4880EF5C5E6A54C709F5",
+                             "path":  "_projects/project-eta/AGENTS.md"
+                         },
+                         {
+                             "sha256":  "7D7C10C456F45D58EF1052AE5217ECA766C62A2F5BAEF0CDC9E42EB940934CCE",
+                             "path":  "_projects/project-gamma/AGENTS.md"
+                         },
+                         {
+                             "sha256":  "DD0F8981B708A0BE9BB69996E07FC55D87DBC3AE4CFE9D3ED243BD1E7986BD92",
+                             "path":  "_projects/project-iota/AGENTS.md"
+                         },
+                         {
+                             "sha256":  "E2EC522157D53BD3E5DBC9B4BF0E4D7C8E260242728574A47F85913F1197CDDE",
+                             "path":  "_projects/project-theta/AGENTS.md"
+                         },
+                         {
+                             "sha256":  "E8615246D2E7592C36B2306FE3107A6115569898502D5B43B784E0E3D516E6CD",
+                             "path":  "_projects/project-zeta/AGENTS.md"
+                         },
+                         {
+                             "sha256":  "B0688B901E5A229C00905AFE9FB61AA602756DEA2082752FFB2030632E18B332",
                              "path":  "AGENTS.md"
                          },
                          {
@@ -44,7 +84,7 @@
                              "path":  "docs/agent-runtime/capability-fallback-policy.md"
                          },
                          {
-                             "sha256":  "1E258B1EE5794BB1AD119D17F8EC7840F5E1FC50B16CE6800BCF7706A5346F35",
+                             "sha256":  "5ABD30F1AB891FBDB29BC074B49E5DE000A54033E9C0C3BCA3F22515B21335DB",
                              "path":  "docs/agent-runtime/capability-inventory.md"
                          },
                          {
@@ -178,6 +218,10 @@
                          {
                              "sha256":  "F415C9CBF801A049521F966447C0AF259934B69FA352588E67C212F41B99CCB0",
                              "path":  "docs/agent-runtime/operating-model.md"
+                         },
+                         {
+                             "sha256":  "634D8657C1156FC043DF0F2133C04C9F0AC31C623BE7A94ACA71737ABF1B214C",
+                             "path":  "docs/agent-runtime/operations-manual.md"
                          },
                          {
                              "sha256":  "022DA04B67020CC2D0FF3224B9204D6317802814E6A89B91852265A2E87C977F",
@@ -352,7 +396,7 @@
                              "path":  "docs/agent-runtime/stride-threat-model.md"
                          },
                          {
-                             "sha256":  "D43900921E35FFE52ACB922C86C643E319C78BAB198B9BBFEB18B4E6EE111CB5",
+                             "sha256":  "152DE1097047E4DDFC065083D34C64175229AFA34D756C967DC5CFF40F35465A",
                              "path":  "docs/agent-runtime/sub-agent-dispatch-protocol.md"
                          },
                          {
@@ -376,8 +420,12 @@
                              "path":  "docs/agent-runtime/test-frame-evidence-provider.md"
                          },
                          {
-                             "sha256":  "9746BF29A799C90B0FE4BEFFE5FB1F029745473DFC60E3BD6CF33A8F8EEDCBD6",
+                             "sha256":  "A9FAA701DA5F87FA6EE9511D8CEB6B34262A2337D313DB79C6911F0A0C2E72B2",
                              "path":  "docs/agent-runtime/tool-policy.md"
+                         },
+                         {
+                             "sha256":  "443F33EE2951F0E0CCD1F8FEA6FEACAC272E7A7DEC60B4C1FF308BED0476D908",
+                             "path":  "docs/agent-runtime/v2-shared-cdp-architecture-baseline.md"
                          },
                          {
                              "sha256":  "3821028EA5A7DF777986E7B62008C5682200064A3F65886972C19E0B4B80CAC0",
@@ -468,6 +516,14 @@
                              "path":  "schemas/agent-runtime/memory-update-record.schema.json"
                          },
                          {
+                             "sha256":  "08A58BE30EAD61DE84A13E9B493EDA2C6E4A4FDA4A4635D907A7C4535D35AB9D",
+                             "path":  "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
+                         },
+                         {
+                             "sha256":  "D82F0BD476FA115542EE55E7CBA15CD8F5049FA9EABEF39533DDC803D0E6AD37",
+                             "path":  "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
+                         },
+                         {
                              "sha256":  "07C823E5C6D9865A74FDD45C2A97B377DD42BE8240B6CFDC1127138ABCD8BABD",
                              "path":  "schemas/agent-runtime/review.schema.json"
                          },
@@ -540,7 +596,7 @@
                              "path":  "scripts/Run-WorkQueue.ps1"
                          },
                          {
-                             "sha256":  "0935E88E0B5A7BFC9C66960C25D9D0AC91CEBE81E3027D96AEABF78EEDAA4AA3",
+                             "sha256":  "77CADD16FCDC690E3D1AED3AA06542B23F747C095BC68CCE26C1EEEEC5A0FE84",
                              "path":  "scripts/sadp-audit.ps1"
                          },
                          {

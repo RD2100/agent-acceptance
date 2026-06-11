@@ -13,3 +13,15 @@ reports/
 agent-workqueue/
 
 .backup/
+
+# Local runtime/cache noise
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.chrome-cdp-profile*/
+.cdp-profile*/
+.tmpconfig/
+.tmpdata/
+_cdp_profile/
+_cdp_profiles/
+.report.json

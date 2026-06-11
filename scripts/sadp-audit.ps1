@@ -82,9 +82,11 @@ try {
         "docs\\agent-runtime\\audit-record",
         "docs\\agent-runtime\\governance-manifest",
         "docs\\agent-runtime\\dependency-canaries",
+        "docs\\agent-runtime\\operations-manual",
         "schemas\\agent-runtime\\",
         "templates\\runtime-bootstrap\\",
-        "hooks\\"
+        "hooks\\",
+        "\.sadp\\"
     )
 
     $governanceTouched = $false

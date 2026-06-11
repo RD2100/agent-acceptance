@@ -552,7 +552,7 @@ plan_agent_review:
 
 ### 4.1 dev-frame (Task State Machine)
 
-AI Workflow Hub (`D:\dev-frame\ai-workflow-hub`) manages task state:
+AI Workflow Hub (`D:\dev-frame\ai-workflow-hub`) is inside the governance boundary as the future/reference control-plane task state machine:
 - `tasks.yaml`: Task definitions with status, risk, dependencies
 - `projects.yaml`: Project registry with enabled/disabled state
 - SADP TaskSpec maps to ai-workflow-hub task format:
@@ -561,7 +561,9 @@ AI Workflow Hub (`D:\dev-frame\ai-workflow-hub`) manages task state:
   - `TaskSpec.Goal` 锟斤拷 `tasks.yaml: description`
   - `ExecutionReport.Status` 锟斤拷 `tasks.yaml: status`
 
-When a task completes, update `tasks.yaml` status in the project:
+Phase 0-5 boundary: this mapping is reference-only unless a separate human-gated task authorizes dev-frame writes or execution. Agents MUST NOT update `D:\dev-frame\ai-workflow-hub\tasks.yaml`, run ai-workflow-hub, or generate GateResult from dev-frame by default.
+
+Future authorized control-plane updates use this shape:
 ```yaml
 - id: task-a1b2c3d4
   status: completed    # or failed, blocked
@@ -602,7 +604,9 @@ Task involves code files (.ps1/.py)?
 1. Close opencode desktop app (process conflict)
 2. Keep prompt <500 chars
 3. Target files <5KB each
-4. Verify `opencode run "say ok"` returns quickly before real dispatch
+4. Confirm `dev-frame-opencode Dispatch` is approved in `capability-inventory.md`
+5. Confirm `tool-policy.md` allows the exact `opencode run` command class
+6. Verify `opencode run "say ok"` only when the current task has a human gate for opencode execution
 
 **Failure fallback:** If dispatch times out twice, execute task directly as Codex goal agent and note in ExecutionReport.
 
