@@ -1,6 +1,6 @@
 ## Hook Failure Semantics
 
-This document formally defines the failure propagation rules for `pre-commit.governance.ps1` (v2.3.0).
+This document formally defines the failure propagation rules for `pre-commit.governance.ps1` (v2.4.0).
 Every commit that passes through the SADP pre-commit hook produces `_evidence/hook-output/latest.json`.
 The semantics below govern how each stage's exit code maps to the `overall_result` field and the hook's
 process exit code.
@@ -13,6 +13,7 @@ process exit code.
 | sadp-audit | **Yes** | `BLOCKED` + exit 1 | Validates sealed-file integrity and rule compliance |
 | ai-guard | **Yes** | `BLOCKED` + exit 1 | Content policy scan; uses reliable Job.ChildJobs exit code |
 | test-governance | No | Advisory only | Runs in `-Mode advisory`; exit code logged but does not block |
+| conversation-health | No | Advisory only | A3 Layer 4: reads conversation-health evidence, never blocks commit |
 
 ### Governance Decision: Test-Governance Advisory Mode
 
@@ -35,6 +36,24 @@ enforcement mode, and the hook must be updated accordingly.
 **Approved by**: Task EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1 scope constraint
 (no modification to Test-Governance.ps1 without separate human_required task).
 
+### Governance Decision: Conversation-Health Advisory Mode (A3)
+
+**Decision**: Conversation-health is advisory (non-blocking) in v2.4.0.
+
+**Rationale**: This is Layer 4 of the four-layer conversation health defense
+(conversation-health-gate.md §1.4). The primary enforcement points are Layer 1
+(pre-task hard gate), Layer 2 (pre-GPT gate), and Layer 3 (evidence pack requirement).
+The pre-commit advisory layer provides an additional signal at commit time but is not
+the primary enforcement mechanism. Making it blocking would duplicate enforcement
+already covered by Layers 1–3 and would introduce friction for routine commits.
+
+**Behavior**: `scripts/pre_commit_health_advisory.py` reads existing conversation-health
+evidence (`latest.json` or `current.json`) and runs the decision engine in advisory mode.
+It outputs a diagnostic summary (decision, severity, recommendation) but never blocks.
+Fail-graceful: any internal error results in exit 0 with a diagnostic message.
+
+**Approved by**: Task CONVERSATION-HEALTH-GATE-A3 scope definition.
+
 ### Result Mapping
 
 ```
@@ -49,7 +68,7 @@ All required stages must fail closed — no silent pass on failure.
 
 When `sadp-audit` fails, the hook takes an early-exit path (line ~161 in the script):
 
-1. Writes `latest.json` with 3 stages (manifest-regen, sadp-audit, ai-guard) — test-governance is omitted because it never ran.
+1. Writes `latest.json` with 3 stages (manifest-regen, sadp-audit, ai-guard) — test-governance and conversation-health are omitted because they never ran.
 2. Sets `overall_result = "BLOCKED"`.
 3. Prints `[BLOCKED]` to console.
 4. Calls `exit 1`, which rejects the commit.
@@ -83,7 +102,7 @@ Fail-closed rules:
 `latest.json` MUST validate against `schemas/agent-runtime/evidence-capture.schema.json`.
 The schema defines:
 
-- `stages`: array of 1–4 items (enum: manifest-regen, sadp-audit, ai-guard, test-governance)
+- `stages`: array of 1–5 items (enum: manifest-regen, sadp-audit, ai-guard, test-governance, conversation-health)
 - `overall_result`: enum of PASS, BLOCKED
 - `hook_version`: semver pattern
 
@@ -116,3 +135,4 @@ It also performs semantic checks (e.g., verifying that nonzero blocking-stage ex
 | 2.1.0 | Added ai-guard as separate capture + output persistence |
 | 2.2.0 | PASS_WITH_WARNINGS for ai-guard (non-blocking), 30s timeout, schema alignment |
 | 2.3.0 | sadp-audit + ai-guard blocking (reliable exit code). test-governance advisory. Removed PASS_WITH_WARNINGS. |
+| 2.4.0 | Added conversation-health advisory stage (A3 Layer 4). Never blocks commit. Reads existing evidence. |

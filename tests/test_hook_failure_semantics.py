@@ -36,8 +36,8 @@ class TestSchemaConformance:
     def test_schema_exists(self):
         assert SCHEMA_PATH.exists()
 
-    def test_max_items_is_4(self, schema):
-        assert schema["properties"]["stages"]["maxItems"] == 4
+    def test_max_items_is_5(self, schema):
+        assert schema["properties"]["stages"]["maxItems"] == 5
 
     def test_min_items_is_1(self, schema):
         assert schema["properties"]["stages"]["minItems"] == 1
@@ -46,9 +46,9 @@ class TestSchemaConformance:
         enum = schema["properties"]["stages"]["items"]["properties"]["name"]["enum"]
         assert "ai-guard" in enum
 
-    def test_stage_enum_has_all_4(self, schema):
+    def test_stage_enum_has_all_5(self, schema):
         enum = schema["properties"]["stages"]["items"]["properties"]["name"]["enum"]
-        assert set(enum) == {"manifest-regen", "sadp-audit", "ai-guard", "test-governance"}
+        assert set(enum) == {"manifest-regen", "sadp-audit", "ai-guard", "test-governance", "conversation-health"}
 
     def test_overall_result_enum(self, schema):
         enum = schema["properties"]["overall_result"]["enum"]
@@ -70,8 +70,8 @@ class TestHookScript:
     def test_hook_exists(self):
         assert HOOK_PATH.exists()
 
-    def test_version_is_2_3(self, hook_text):
-        assert '$HookVersion = "2.3.0"' in hook_text
+    def test_version_is_2_4(self, hook_text):
+        assert '$HookVersion = "2.4.0"' in hook_text
 
     def test_ai_guard_has_timeout(self, hook_text):
         assert "aiGuardTimeoutSec" in hook_text

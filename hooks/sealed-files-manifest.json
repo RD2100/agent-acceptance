@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-12T07:32:48.4800443+08:00",
+    "generated":  "2026-06-12T07:55:17.0509471+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
@@ -192,7 +192,7 @@
                              "path":  "docs/agent-runtime/historical-evidence-policy.md"
                          },
                          {
-                             "sha256":  "C225389CB568DA85282E60CFC2E51DAA1AA6029BD706261EB91FEDDC9E7FBDFC",
+                             "sha256":  "76FB0C73A0FB0A80A6F0CAF8B885F60A1EFE03089130A3F221DB07EF5F619323",
                              "path":  "docs/agent-runtime/hook-failure-semantics.md"
                          },
                          {
@@ -492,7 +492,7 @@
                              "path":  "governance/manifest-ignore.txt"
                          },
                          {
-                             "sha256":  "5A5E8E3C237849C7B27CAE2FDFFD411ACF899FD46E9201B36D7CA8D0B756F0D3",
+                             "sha256":  "36E6C59498E0F8BA7DF09D3B6A9BCEB5185659E6EE6D1091FA0238FF337076A0",
                              "path":  "hooks/pre-commit.governance.ps1"
                          },
                          {
@@ -556,7 +556,7 @@
                              "path":  "schemas/agent-runtime/conversation-health-decision.schema.json"
                          },
                          {
-                             "sha256":  "70C14CCD6BC70BD5AF0F6F32FC655405E20D2D99828437F193595E5C9B270533",
+                             "sha256":  "A647C7CC41F27C412F5982CE794930AA97B230EAA9B31F504EF402B84FCE2AE6",
                              "path":  "schemas/agent-runtime/evidence-capture.schema.json"
                          },
                          {

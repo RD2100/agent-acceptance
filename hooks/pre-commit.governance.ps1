@@ -9,7 +9,7 @@
 
 $ErrorActionPreference = 'Continue'
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$HookVersion = "2.3.0"
+$HookVersion = "2.4.0"
 
 Write-Host "=== Pre-Commit Governance Gate (v$HookVersion) ==="
 
@@ -31,7 +31,7 @@ function Invoke-WithTiming {
 }
 
 # ---- 1. Manifest auto-regeneration (before audit) ----
-Write-Host "[1/3] Manifest auto-regeneration..."
+Write-Host "[1/4] Manifest auto-regeneration..."
 $updateScript = Join-Path $ProjectRoot "scripts\Update-GovernanceManifest.ps1"
 $manifestPath = "hooks\sealed-files-manifest.json"
 
@@ -64,7 +64,7 @@ try {
 Write-Host ""
 
 # ---- 2. SADP audit ----
-Write-Host "[2/3] SADP audit..."
+Write-Host "[2/4] SADP audit..."
 $auditScript = Join-Path $ProjectRoot "scripts\sadp-audit.ps1"
 $sadpOutputFile = Join-Path $evidenceDir "sadp-audit-$timestamp.txt"
 $aiGuardOutputFile = Join-Path $evidenceDir "ai-guard-$timestamp.txt"
@@ -202,7 +202,7 @@ if (Test-Path $auditScript) {
 Write-Host ""
 
 # ---- 3. Advisory governance scan ----
-Write-Host "[3/3] Governance scan..."
+Write-Host "[3/4] Governance scan..."
 $governanceScript = Join-Path $ProjectRoot "scripts\Test-Governance.ps1"
 $govOutputFile = Join-Path $evidenceDir "test-governance-$timestamp.txt"
 $govElapsedMs = 0
@@ -233,24 +233,61 @@ if (Test-Path $governanceScript) {
     "# Test-Governance - $isoTimestamp`n# Test-Governance.ps1 not found - skipped`n" | Out-File -FilePath $govOutputFile -Encoding utf8
 }
 
+# ---- 4. Conversation Health Advisory (A3 Layer 4 — ADVISORY only) ----
+Write-Host "[4/4] Conversation health advisory..."
+$healthScript = Join-Path $ProjectRoot "scripts\pre_commit_health_advisory.py"
+$healthOutputFile = Join-Path $evidenceDir "conversation-health-$timestamp.txt"
+$healthElapsedMs = 0
+$healthExit = 0
+
+if (Test-Path $healthScript) {
+    Push-Location $ProjectRoot
+    try {
+        $timing = Invoke-WithTiming {
+            $healthOutput = python $healthScript --project-root $ProjectRoot 2>&1 | Out-String
+            $healthOutput
+        }
+        $healthExit = $LASTEXITCODE
+        $healthElapsedMs = $timing.ElapsedMs
+        $healthOutputContent = $timing.Result
+
+        # Persist conversation-health advisory output
+        $healthHeader = "# Conversation Health Advisory - $isoTimestamp`n# Exit code: $healthExit (advisory)`n# Source: pre-commit hook v$HookVersion`n`n"
+        $healthHeader + $healthOutputContent | Out-File -FilePath $healthOutputFile -Encoding utf8
+
+        Write-Host $healthOutputContent
+    } catch {
+        $healthOutputContent = "ERROR: $($_.Exception.Message)"
+        $healthExit = 0  # Advisory: fail-graceful, never blocks
+        "# Conversation Health Advisory - $isoTimestamp`n# Error during execution (advisory)`n`n$healthOutputContent" | Out-File -FilePath $healthOutputFile -Encoding utf8
+        Write-Host "[ADVISORY] Conversation health check had issues: $($_.Exception.Message)"
+    } finally {
+        Pop-Location
+    }
+} else {
+    Write-Host "[ADVISORY] pre_commit_health_advisory.py not found - skipping."
+    "# Conversation Health Advisory - $isoTimestamp`n# pre_commit_health_advisory.py not found - skipped`n" | Out-File -FilePath $healthOutputFile -Encoding utf8
+}
+
 # ---- Write combined JSON summary ----
 $branch = git rev-parse --abbrev-ref HEAD 2>$null
 $commitCount = (git rev-list --count HEAD 2>$null)
 $stagedFileCount = (git diff --cached --name-only 2>$null | Measure-Object).Count
 
 $stages = @(
-    @{ name = "manifest-regen";   exit_code = $stage1Exit;   output_file = $null;               duration_ms = 0 }
-    @{ name = "sadp-audit";       exit_code = $auditExit;    output_file = $sadpOutputFile;     duration_ms = $sadpElapsedMs }
-    @{ name = "ai-guard";         exit_code = $aiGuardExit;  output_file = $aiGuardOutputFile;  duration_ms = $aiGuardElapsedMs }
-    @{ name = "test-governance";  exit_code = $govExit;      output_file = $govOutputFile;      duration_ms = $govElapsedMs }
+    @{ name = "manifest-regen";        exit_code = $stage1Exit;   output_file = $null;                 duration_ms = 0 }
+    @{ name = "sadp-audit";            exit_code = $auditExit;    output_file = $sadpOutputFile;       duration_ms = $sadpElapsedMs }
+    @{ name = "ai-guard";              exit_code = $aiGuardExit;  output_file = $aiGuardOutputFile;    duration_ms = $aiGuardElapsedMs }
+    @{ name = "test-governance";       exit_code = $govExit;      output_file = $govOutputFile;        duration_ms = $govElapsedMs }
+    @{ name = "conversation-health";   exit_code = $healthExit;   output_file = $healthOutputFile;     duration_ms = $healthElapsedMs }
 )
 
-# Failure semantics (v2.3.0):
+# Failure semantics (v2.4.0):
 #   BLOCKING:   sadp-audit, ai-guard (any non-zero → BLOCKED + exit 1)
-#   ADVISORY:   manifest-regen, test-governance (exit code logged, never blocks)
+#   ADVISORY:   manifest-regen, test-governance, conversation-health (exit code logged, never blocks)
 #   Test-Governance runs in advisory mode (-Mode advisory), so its exit code
-#   does not affect the commit decision. Only sadp-audit and ai-guard are
-#   enforcement gates with reliable process exit codes.
+#   does not affect the commit decision. conversation-health is advisory only (A3 Layer 4).
+#   Only sadp-audit and ai-guard are enforcement gates with reliable process exit codes.
 $overallResult = "PASS"
 foreach ($s in $stages) {
     if ($s.exit_code -ne 0) {
@@ -258,7 +295,7 @@ foreach ($s in $stages) {
             $overallResult = "BLOCKED"
             break
         }
-        # manifest-regen and test-governance: advisory only
+        # manifest-regen, test-governance, conversation-health: advisory only
     }
 }
 
