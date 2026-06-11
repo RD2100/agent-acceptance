@@ -1,0 +1,50 @@
+# Git Status After Final Commit (caa85c28)
+# Generated: 2026-06-11T11:05:40.654884
+# Command: git status --porcelain
+
+## Modified tracked files: 0
+  (none)
+
+## Untracked files: 28
+
+### NEG-009 fixtures (deny_paths): 17
+  ?? _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-alpha/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-delta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-delta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-eta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-eta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-iota/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-iota/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-theta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-theta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+  ?? _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+
+### Secret scan outputs (deny_list): 3
+  ?? _evidence/R18-FOLLOWUP-FINAL/secret-scan-output.txt
+  ?? _evidence/R18-WORKSPACE-CLEANUP-FINAL/secret-scan-output.txt
+  ?? _evidence/R18-catchup-commits/secret-scan-output.txt
+
+### Session artifacts (pending commit): 8
+  ?? _build_r18_closure.py
+  ?? _build_r18_closure_slim.py
+  ?? _capture_reply.py
+  ?? _evidence/EVIDENCE_PACK_R18_WORKSPACE_CLOSURE.zip
+  ?? _evidence/R18-WORKSPACE-CLEANUP-FINAL/gpt_reply_final4.txt
+  ?? _evidence/R18-WORKSPACE-CLOSURE/
+  ?? _submit_workspace_final3.py
+  ?? scripts/validate_project_registry_bindings.py
+
+## Summary
+modified_tracked: 0
+untracked_total: 28
+  neg_009: 17
+  secret_scan: 3
+  session_artifacts: 8
+grand_total: 28

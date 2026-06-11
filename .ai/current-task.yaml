@@ -1,5 +1,5 @@
-task_id: R18-WORKSPACE-CLEANUP-A1
-title: R18 workspace cleanup — registry reconciliation, session artifacts, NUL removal
+task_id: R18-EVIDENCE-MAINTENANCE-A1
+title: R18 evidence maintenance — commit session artifacts, update register
 priority: P1
 status: in_progress
 mode: "@go edit"

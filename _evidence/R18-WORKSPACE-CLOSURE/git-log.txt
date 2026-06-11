@@ -1,0 +1,15 @@
+caa85c28 feat: R18 workspace cleanup FINAL — complete evidence with deferred register
+c4017e89 chore: R18 workspace cleanup — additional session artifacts
+04b3d562 chore: update R18 workspace cleanup evidence pack with final commit refs
+6022c187 feat: R18 workspace cleanup — closure evidence with deferred register and raw audit
+e1bbd516 feat: R18 workspace cleanup — FINAL evidence pack, closure scripts
+f06ce965 feat: R18 workspace cleanup — commit session artifacts, register deferred files
+104ac8b1 feat: R18 workspace cleanup — registry reconciliation, session artifacts, NUL removal
+bc974d2f feat: R18 follow-up cleanup — session artifacts, gate_0 repair, project-beta removal, dev-frame-writing
+4efcbac9 feat: tripmark binding, bindChrome v5, docs, and session cleanup
+3fc33dac feat: 10 project scaffolding and task definitions
+a9ad148d feat: CDP automation scripts, GPT interaction tools, TaskSpecs, and handoff docs
+dae0e9fb feat: reports, handoff docs, contracts, and governance artifacts
+283b5834 feat: evidence packs and review archives (R1-R17)
+511c54ab feat: SADP core infrastructure — scripts, tests, governance, schemas
+ce0a8398 feat: M10 M11 M12 closed R3 — all 9 substantive modules reviewed by GPT

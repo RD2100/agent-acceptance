@@ -1,0 +1,51 @@
+task_id: R18-EVIDENCE-MAINTENANCE-A1
+title: R18 evidence maintenance — commit session artifacts, update register
+priority: P2
+status: in_progress
+mode: "@go edit"
+whole_dirty_worktree_allowed: false
+external_upload_allowed: false
+raw_transcript_allowed: false
+real_paper_text_allowed: false
+description: >
+  Follow-up from GPT ACCEPTED_WITH_LIMITATION verdict on R18 Workspace Closure SLIM.
+  Commit all pending session artifacts, rebuild deferred register, achieve zero
+  untracked committable files state.
+
+goal:
+  user_visible_success: >
+    All committable session artifacts are committed. Only remaining untracked
+    files are the 17 NEG-009 fixtures (deny_paths) and 3 secret-scan outputs
+    (deny_list) — all formally registered.
+  in_scope:
+    - Commit 12 session artifact files (builders, scripts, evidence dirs)
+    - Update deferred-files-register.yaml to reflect true post-commit state
+    - Build evidence pack and submit to GPT for review
+  out_of_scope:
+    - NEG-009 fixture management (permanently deferred)
+    - Secret scan file management (permanently denied)
+
+gate_0:
+  triggered: true
+  inventory_evidence:
+    queried_sources:
+      - GPT verdict: gpt_reply_closure.txt (ACCEPTED_WITH_LIMITATION)
+      - deferred-files-register.yaml (session_artifacts_pending: 8)
+      - git status --porcelain (29 untracked)
+    matched_capabilities:
+      - evidence_pack_builder
+      - cdp_submission
+    compared_against_request:
+      - "commit session artifacts, update register"
+  sufficiency_decision: new_delta_required
+  decision: build_delta
+
+write_set:
+  - ".ai/tasks/r18-evidence-maintenance-a1.yaml"
+  - ".ai/current-task.yaml"
+  - "_build_*.py"
+  - "_capture_*.py"
+  - "_submit_*.py"
+  - "_evidence/**"
+  - "scripts/validate_project_registry_bindings.py"
+  - "hooks/sealed-files-manifest.json"
