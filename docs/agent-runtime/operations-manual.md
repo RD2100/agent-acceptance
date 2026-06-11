@@ -492,15 +492,36 @@ from scripts.tab_target_resolver import _normalize_url
 
 ---
 
-## 9. 版本历史和变更日志
+## 9. Universal Agent Workflow Standard (交叉引用)
+
+本操作手册与 Universal Agent Workflow Standard 配套使用。Standard 将 R15-R18 的治理经验提炼为项目无关的通用规范：
+
+| 标准文档 | 用途 |
+|----------|------|
+| [universal-agent-workflow-standard.md](universal-agent-workflow-standard.md) | 主标准：8 大治理规范总览 |
+| [startup-read-gate.md](startup-read-gate.md) | 启动读取门控：agent 开工前必读清单 |
+| [pre-task-gate.md](pre-task-gate.md) | 任务前门控：write_set/TaskSpec 验证 |
+| [pre-gpt-review-gate.md](pre-gpt-review-gate.md) | GPT 审核前门控：证据包最低要求 |
+| [evidence-pack-standard.md](evidence-pack-standard.md) | 证据包标准：文件清单和验证规则 |
+| [status-state-machine.md](status-state-machine.md) | 状态机：任务生命周期 10 态转换 |
+| [human-required-decision-record.md](human-required-decision-record.md) | 人工决策记录：9 类强制授权触发器 |
+| [workspace-closure-standard.md](workspace-closure-standard.md) | 工作区闭合标准：clean/registered/dirty 三态 |
+| [evidence-generation-hygiene.md](evidence-generation-hygiene.md) | 证据生成卫生：防止递归 artifact 污染 |
+
+**使用方式**：本手册是项目级操作参考（what to do），Standard 是治理规范（how to do it right）。新 session 应先读本手册了解工具，再读 Standard 了解规则。
+
+---
+
+## 10. 版本历史和变更日志
 
 | 日期 | Round | 变更 | 作者 |
 |------|:-----:|------|------|
 | 2026-06-10 | R13 | 初始版本，基于 R1-R13 开发经验 | QoderWork |
+| 2026-06-11 | R18 | 添加 §9 Universal Agent Workflow Standard 交叉引用 | UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1 |
 
 ---
 
-## 10. 下一步改进 (P2)
+## 11. 下一步改进 (P2)
 
 1. **公用函数提取**: `_utc_now()`, `load_registry()`, `load_binding()` 提取到 `scripts/lib/common.py`
 2. **Workspace 脚本迁移**: 将有价值的 workspace 脚本整合到正式 scripts/

@@ -1,0 +1,66 @@
+task_id: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
+title: Universal Agent Workflow Standard — governance specification
+priority: P0
+status: in_progress
+mode: "@go edit"
+whole_dirty_worktree_allowed: false
+external_upload_allowed: false
+raw_transcript_allowed: false
+real_paper_text_allowed: false
+description: >
+  Abstract hard-earned governance lessons from R15-R18 into a stable,
+  project-independent Universal Agent Workflow Standard. This prevents
+  future regressions such as text-only evidence, broad write_set expansion,
+  TaskSpec identity mismatch, missing hook evidence, status mismatch,
+  evidence-builder recursion, and false clean-workspace claims.
+
+goal:
+  user_visible_success: >
+    A reusable workflow standard covering startup gates, pre-task gates,
+    pre-GPT-review gates, evidence pack requirements, state machine,
+    human_required decision records, workspace closure rules, and
+    evidence generation hygiene.
+  in_scope:
+    - Create universal workflow standard document
+    - Define 8 gate/standard sub-documents
+    - Update operations-manual with cross-reference only
+    - Create evidence pack for GPT review
+  out_of_scope:
+    - Runtime enforcement changes
+    - Live dispatch execution
+    - SADP audit script modifications
+    - Core enforcement script changes
+    - NEG-009 fixture management
+
+gate_0:
+  triggered: true
+  inventory_evidence:
+    queried_sources:
+      - docs/agent-runtime/operations-manual.md
+      - docs/agent-runtime/sub-agent-dispatch-protocol.md
+      - GPT verdict: gpt_reply_maintenance.txt
+      - R15-R18 failure modes from session history
+    matched_capabilities:
+      - documentation_authoring
+      - governance_standard_design
+      - evidence_pack_builder
+    compared_against_request:
+      - "universal agent workflow standard from R15-R18 lessons"
+  sufficiency_decision: new_delta_required
+  decision: build_delta
+
+write_set:
+  - ".ai/tasks/universal-agent-workflow-standard-a1.yaml"
+  - ".ai/current-task.yaml"
+  - "docs/agent-runtime/universal-agent-workflow-standard.md"
+  - "docs/agent-runtime/startup-read-gate.md"
+  - "docs/agent-runtime/pre-task-gate.md"
+  - "docs/agent-runtime/pre-gpt-review-gate.md"
+  - "docs/agent-runtime/evidence-pack-standard.md"
+  - "docs/agent-runtime/status-state-machine.md"
+  - "docs/agent-runtime/human-required-decision-record.md"
+  - "docs/agent-runtime/workspace-closure-standard.md"
+  - "docs/agent-runtime/evidence-generation-hygiene.md"
+  - "docs/agent-runtime/operations-manual.md"
+  - "_evidence/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/**"
+  - "hooks/sealed-files-manifest.json"

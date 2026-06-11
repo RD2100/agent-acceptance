@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-11T11:27:41.5048680+08:00",
+    "generated":  "2026-06-11T14:54:55.7818645+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
@@ -152,6 +152,14 @@
                              "path":  "docs/agent-runtime/dispatch-model-profiles.md"
                          },
                          {
+                             "sha256":  "530FE66AF633E4C99BAFA9E97B70CE20AA938B3E0A3AD3293B074116F165BD4C",
+                             "path":  "docs/agent-runtime/evidence-generation-hygiene.md"
+                         },
+                         {
+                             "sha256":  "EFCC11ED6AFDEF1142891CDB0329B27208208D8C97B45D530AB4CEA75F617DD4",
+                             "path":  "docs/agent-runtime/evidence-pack-standard.md"
+                         },
+                         {
                              "sha256":  "9F95CE3C6C2F70A81D5D95DC2EB855840F39223CF82EBE8CB89D5E138FAE8D3D",
                              "path":  "docs/agent-runtime/external-skill-intake.md"
                          },
@@ -178,6 +186,10 @@
                          {
                              "sha256":  "45AD5284DD53F2338330F44FC2BF313291EA90316868CB81ACE8AC4C1F97B1DF",
                              "path":  "docs/agent-runtime/hook-governance-upgrade-decision.md"
+                         },
+                         {
+                             "sha256":  "89A4215048C8CABB851771AB3C3294E56167AEDB92EBD13910CEB5790E31EB97",
+                             "path":  "docs/agent-runtime/human-required-decision-record.md"
                          },
                          {
                              "sha256":  "F34E223DA4A3EE3D8F03DA51DA021AA561006AC6C4192C7849748ABD54C2A754",
@@ -220,12 +232,20 @@
                              "path":  "docs/agent-runtime/operating-model.md"
                          },
                          {
-                             "sha256":  "634D8657C1156FC043DF0F2133C04C9F0AC31C623BE7A94ACA71737ABF1B214C",
+                             "sha256":  "8C30BFD025A2AEFE0B3DE81A8664DF47E402377FF9101D3DB18C34283C748FC5",
                              "path":  "docs/agent-runtime/operations-manual.md"
                          },
                          {
                              "sha256":  "022DA04B67020CC2D0FF3224B9204D6317802814E6A89B91852265A2E87C977F",
                              "path":  "docs/agent-runtime/path-drift-register.md"
+                         },
+                         {
+                             "sha256":  "BAB6B6F13F3A76C8DC8B2510810462F4F604FBD7AA218674AAEE285C80D8AE70",
+                             "path":  "docs/agent-runtime/pre-gpt-review-gate.md"
+                         },
+                         {
+                             "sha256":  "08E700984B3295B48059C6972521B106641D02D030AB0C82174DB4BB009B4533",
+                             "path":  "docs/agent-runtime/pre-task-gate.md"
                          },
                          {
                              "sha256":  "5C4E76709E1E1DD05D7C2C202B00BF6E6CBDF541911C90C2DAE10AD851312419",
@@ -392,6 +412,14 @@
                              "path":  "docs/agent-runtime/stale-memory-review-checklist.md"
                          },
                          {
+                             "sha256":  "BC4F898CBBB37D94649F69E5176A4A2CF8FA0AD719511C35EB4704CAA0491AB9",
+                             "path":  "docs/agent-runtime/startup-read-gate.md"
+                         },
+                         {
+                             "sha256":  "65D9D601CDFD9FBCD29A30B587022F55B514AD8D811FACE82F41A2CAE4C5F89D",
+                             "path":  "docs/agent-runtime/status-state-machine.md"
+                         },
+                         {
                              "sha256":  "595A251DE8B1E5CDCA1FC415999ADD8A09C7E638706807B75CF0BBA56AA53087",
                              "path":  "docs/agent-runtime/stride-threat-model.md"
                          },
@@ -424,6 +452,10 @@
                              "path":  "docs/agent-runtime/tool-policy.md"
                          },
                          {
+                             "sha256":  "71205F415395F6233D5CE7419862950265FDDD67CDCD352276F7E1FBE152529B",
+                             "path":  "docs/agent-runtime/universal-agent-workflow-standard.md"
+                         },
+                         {
                              "sha256":  "443F33EE2951F0E0CCD1F8FEA6FEACAC272E7A7DEC60B4C1FF308BED0476D908",
                              "path":  "docs/agent-runtime/v2-shared-cdp-architecture-baseline.md"
                          },
@@ -434,6 +466,10 @@
                          {
                              "sha256":  "2AFA0E37D746DA663AF6B38A933492E001AD94C3B7FF1C9DD357FFA44610FFB1",
                              "path":  "docs/agent-runtime/workqueue-controlled-use-policy.md"
+                         },
+                         {
+                             "sha256":  "7AAD4706BAA641E853E3E6D414B919D577CE12C1A5C79686E32AF081C27B8838",
+                             "path":  "docs/agent-runtime/workspace-closure-standard.md"
                          },
                          {
                              "sha256":  "4516D862ABA423C59C099D9B07F9C6A147F20D5A3BA8D951DA53E87B634706F9",
