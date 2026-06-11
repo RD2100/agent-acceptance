@@ -1,0 +1,23 @@
+{
+  "schema_version": "conversation-health.v1",
+  "conversation_id": "6a2a8cb1-b228-83aa-addb-79bda9aba043",
+  "chat_url": "https://chatgpt.com/c/6a2a8cb1-b228-83aa-addb-79bda9aba043",
+  "status": "active",
+  "last_known_metrics": {
+    "assistant_message_count": 12,
+    "review_round_count": 1,
+    "last_response_time_seconds": 8.5,
+    "last_gpt_reply_bytes": 5851
+  },
+  "last_nav_result": "ok",
+  "last_health_decision": "OK",
+  "last_health_reasons": [
+    "msg_count 12 < 60 (force threshold)",
+    "rounds 1 < 3 (force threshold)",
+    "nav_result ok",
+    "metrics fresh"
+  ],
+  "last_checked_at": "2026-06-11T22:14:45+08:00",
+  "metrics_source": "cdp_dom_count",
+  "metrics_freshness": "fresh"
+}

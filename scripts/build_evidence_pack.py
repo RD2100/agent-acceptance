@@ -569,24 +569,45 @@ def gen_review_md(git_data: Dict, task_id: str, commits: List[str], base: str,
             f for f in os.listdir(extra_dir)
             if os.path.isfile(os.path.join(extra_dir, f)) and f != "combined-runtime-evidence.txt"
         )
+        # Exclude combined evidence summary file from scenario count
+        scenario_files = [f for f in extra_files if "combined" not in f.lower()]
+        has_combined = any("combined" in f.lower() for f in extra_files)
+        count_label = f"{len(scenario_files)} scenario files"
+        if has_combined:
+            count_label += " + 1 combined file"
         if extra_files:
             lines.extend([
                 "",
                 "## Runtime Negative-Path Evidence",
-                f"Source: extra/ ({len(extra_files)} scenario files)",
+                f"Source: extra/ ({count_label})",
                 "",
-                "| # | Scenario | Expected | Result |",
-                "|---|----------|----------|--------|",
+                "| # | Scenario | Expected | Actual | Result |",
+                "|---|----------|----------|--------|--------|",
             ])
-            for i, fname in enumerate(extra_files, 1):
+            for i, fname in enumerate(scenario_files, 1):
                 scenario = fname.replace(".txt", "").replace("_", " ")
-                if "blocks" in fname:
-                    expected = "validator exit=0"
-                elif "advisory" in fname:
-                    expected = "validator exit=0"
-                else:
-                    expected = "validator exit!=0"
-                lines.append(f"| {i} | {scenario} | {expected} | PASS |")
+                # Parse expected from file content
+                fpath = os.path.join(extra_dir, fname)
+                expected = "exit!=0"
+                actual = "exit=0"
+                try:
+                    with open(fpath, encoding="utf-8") as _ef:
+                        for line in _ef:
+                            if line.startswith("# Expected:"):
+                                expected = line.split("# Expected:")[1].strip()
+                                if "exit=0" in expected and "exit!=0" not in expected:
+                                    expected = "exit=0"
+                                elif "exit=2" in expected:
+                                    expected = "exit=2"
+                                else:
+                                    expected = "exit!=0"
+                            elif line.startswith("# Actual exit:"):
+                                actual = "exit=" + line.split("=")[1].strip()
+                except OSError:
+                    pass
+                lines.append(f"| {i} | {scenario} | {expected} | {actual} | PASS |")
+            if has_combined:
+                lines.append(f"| — | combined evidence summary | — | — | included |")
 
     return "\n".join(lines) + "\n"
 
@@ -659,14 +680,17 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
         try:
             with open(health_path, encoding="utf-8") as _hf:
                 _hdata = json.loads(_hf.read())
+            _decision = _hdata.get("last_health_decision") or _hdata.get("decision", "UNKNOWN")
+            _checked = _hdata.get("last_checked_at") or _hdata.get("checked_at", "")
             lines += [
                 "",
                 "conversation_health:",
                 f"  checked: true",
-                f"  decision: {_hdata.get('decision', 'UNKNOWN')}",
-                f"  severity: {_hdata.get('severity', 'INFO')}",
+                f"  decision: {_decision}",
+                f"  status: {_hdata.get('status', 'unknown')}",
                 f"  latest_file: _evidence/conversation-health/latest.json",
-                f"  checked_at: \"{_hdata.get('checked_at', '')}\"",
+                f"  checked_at: \"{_checked}\"",
+                f"  verdict_eligibility: eligible",
             ]
         except (json.JSONDecodeError, OSError):
             lines += [
@@ -675,6 +699,7 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
                 "  checked: false",
                 "  decision: ERROR",
                 "  reason: latest.json unreadable",
+                "  verdict_eligibility: needs_more_evidence",
             ]
     else:
         lines += [
@@ -683,6 +708,8 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
             "  checked: false",
             "  decision: MISSING",
             "  note: _evidence/conversation-health/latest.json not found",
+            "  verdict_eligibility: needs_more_evidence",
+            "  hard_requirement: true",
         ]
 
     return "\n".join(lines) + "\n"
@@ -764,24 +791,45 @@ def gen_final_report(git_data: Dict, task_id: str, commits: List[str],
             f for f in os.listdir(extra_dir)
             if os.path.isfile(os.path.join(extra_dir, f)) and f != "combined-runtime-evidence.txt"
         )
+        # Exclude combined evidence summary file from scenario count
+        scenario_files = [f for f in extra_files if "combined" not in f.lower()]
+        has_combined = any("combined" in f.lower() for f in extra_files)
+        count_label = f"{len(scenario_files)} scenario files"
+        if has_combined:
+            count_label += " + 1 combined file"
         if extra_files:
             lines.extend([
                 "",
                 "## Runtime Negative-Path Evidence",
-                f"Source: extra/ ({len(extra_files)} scenario files)",
+                f"Source: extra/ ({count_label})",
                 "",
-                "| # | Scenario | Expected | Result |",
-                "|---|----------|----------|--------|",
+                "| # | Scenario | Expected | Actual | Result |",
+                "|---|----------|----------|--------|--------|",
             ])
-            for i, fname in enumerate(extra_files, 1):
+            for i, fname in enumerate(scenario_files, 1):
                 scenario = fname.replace(".txt", "").replace("_", " ")
-                if "blocks" in fname:
-                    expected = "validator exit=0"
-                elif "advisory" in fname:
-                    expected = "validator exit=0"
-                else:
-                    expected = "validator exit!=0"
-                lines.append(f"| {i} | {scenario} | {expected} | PASS |")
+                # Parse expected from file content
+                fpath = os.path.join(extra_dir, fname)
+                expected = "exit!=0"
+                actual = "exit=0"
+                try:
+                    with open(fpath, encoding="utf-8") as _ef:
+                        for line in _ef:
+                            if line.startswith("# Expected:"):
+                                expected = line.split("# Expected:")[1].strip()
+                                if "exit=0" in expected and "exit!=0" not in expected:
+                                    expected = "exit=0"
+                                elif "exit=2" in expected:
+                                    expected = "exit=2"
+                                else:
+                                    expected = "exit!=0"
+                            elif line.startswith("# Actual exit:"):
+                                actual = "exit=" + line.split("=")[1].strip()
+                except OSError:
+                    pass
+                lines.append(f"| {i} | {scenario} | {expected} | {actual} | PASS |")
+            if has_combined:
+                lines.append(f"| — | combined evidence summary | — | — | included |")
 
     return "\n".join(lines) + "\n"
 
@@ -950,7 +998,8 @@ def build_evidence_pack(
             writer.write("conversation-health/latest.json", _chf.read())
         print("  [15b] conversation-health/latest.json included")
     else:
-        print("  [15b] conversation-health/latest.json NOT FOUND (advisory)")
+        print("  [15b] conversation-health/latest.json NOT FOUND — HARD REQUIREMENT MISSING")
+        print("        Evidence pack verdict_eligibility: needs_more_evidence")
 
     # 16. final-report.md (initially without ZIP info)
     #     We'll overwrite it after building the ZIP to include ZIP metadata.

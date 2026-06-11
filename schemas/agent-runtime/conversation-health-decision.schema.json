@@ -17,7 +17,7 @@
           "code": { "type": "string" },
           "actual": {},
           "threshold": {},
-          "policy": { "type": "string", "enum": ["force", "suggest", "composite", "nav_result"] }
+          "policy": { "type": "string", "enum": ["force", "suggest", "force_composite", "human", "suggest_capped", "warning"] }
         }
       }
     },

@@ -21,9 +21,11 @@ def test_force_handoff_message_count():
 
 
 def test_force_handoff_short_reply():
+    """Short reply alone is SUGGEST, not FORCE (consensus semantics from GPT R1 review)."""
     result = check_handoff(last_gpt_reply_bytes=500)
-    assert result["handoff_needed"] is True
-    assert result["force_handoff"] is True
+    assert result["handoff_needed"] is False
+    assert result["force_handoff"] is False
+    assert result["suggested_only"] is True
     assert any("< 2000" in r for r in result["reasons"])
 
 

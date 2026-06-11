@@ -35,9 +35,10 @@ Exit codes:
 
 Thresholds (defaults, overridable via policy YAML):
     - assistant_message_count >= 60: force handoff
-    - response_time_seconds >= 60: force handoff
     - review_round_count >= 3: force handoff
-    - last_gpt_reply_bytes < 2000: force handoff
+    - response_time_seconds >= 60: suggest handoff (alone)
+    - last_gpt_reply_bytes < 2000: suggest handoff (alone)
+    - composite (slow + short + rounds): force handoff
 """
 
 import argparse
@@ -56,13 +57,12 @@ DEFAULT_POLICY = {
     "thresholds": {
         "force": {
             "assistant_message_count": 60,
-            "response_time_seconds": 60,
             "review_round_count": 3,
-            "last_gpt_reply_bytes_low": 2000,
         },
         "suggest": {
             "assistant_message_count": 45,
-            "response_time_seconds": 40,
+            "response_time_seconds": 60,
+            "last_gpt_reply_bytes_low": 2000,
         },
     },
     "composite": {
@@ -232,13 +232,11 @@ def check_handoff(
     elif assistant_message_count >= 45:
         suggest_reasons.append(f"assistant_message_count={assistant_message_count} >= 45 (suggested)")
     if response_time_seconds >= 60:
-        force_reasons.append(f"response_time_seconds={response_time_seconds}s >= 60")
-    elif response_time_seconds >= 40:
-        suggest_reasons.append(f"response_time_seconds={response_time_seconds}s >= 40 (suggested)")
+        suggest_reasons.append(f"response_time_seconds={response_time_seconds}s >= 60 (suggested)")
     if review_round_count >= 3:
         force_reasons.append(f"review_round_count={review_round_count} >= 3")
     if 0 < last_gpt_reply_bytes < 2000:
-        force_reasons.append(f"last_gpt_reply_bytes={last_gpt_reply_bytes} < 2000")
+        suggest_reasons.append(f"last_gpt_reply_bytes={last_gpt_reply_bytes} < 2000 (suggested)")
 
     all_reasons = force_reasons + suggest_reasons
     return {
@@ -369,13 +367,9 @@ def check_handoff_v2(metrics, policy=None, *, mode=None, max_staleness_hours=Non
         suggest_reasons.append(_reason(
             "assistant_message_count_elevated", msg_count, suggest_msg, "suggest"))
 
-    # Response time
-    force_rt = force_th.get("response_time_seconds", 60)
-    suggest_rt = suggest_th.get("response_time_seconds", 40)
-    if resp_time >= force_rt:
-        force_reasons.append(_reason(
-            "response_time_exceeded", resp_time, force_rt, "force"))
-    elif resp_time >= suggest_rt:
+    # Response time — single metric only triggers SUGGEST (consensus: R1 review)
+    suggest_rt = suggest_th.get("response_time_seconds", 60)
+    if resp_time >= suggest_rt:
         suggest_reasons.append(_reason(
             "response_time_elevated", resp_time, suggest_rt, "suggest"))
 
@@ -385,11 +379,11 @@ def check_handoff_v2(metrics, policy=None, *, mode=None, max_staleness_hours=Non
         force_reasons.append(_reason(
             "review_round_count_exceeded", rounds, force_rr, "force"))
 
-    # Reply bytes (low = bad)
-    force_bytes_low = force_th.get("last_gpt_reply_bytes_low", 2000)
-    if 0 < reply_bytes < force_bytes_low:
-        force_reasons.append(_reason(
-            "last_gpt_reply_bytes_low", reply_bytes, force_bytes_low, "force"))
+    # Reply bytes — single metric only triggers SUGGEST (consensus: R1 review)
+    suggest_bytes_low = suggest_th.get("last_gpt_reply_bytes_low", 2000)
+    if 0 < reply_bytes < suggest_bytes_low:
+        suggest_reasons.append(_reason(
+            "last_gpt_reply_bytes_low", reply_bytes, suggest_bytes_low, "suggest"))
 
     # --- Composite force check ---
     if composite:

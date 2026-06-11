@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-11T22:14:18.9817583+08:00",
+    "generated":  "2026-06-11T22:29:44.1236784+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
@@ -552,7 +552,7 @@
                              "path":  "schemas/agent-runtime/conversation-health.schema.json"
                          },
                          {
-                             "sha256":  "34ABAF5FDFB7B2A1BF31BF9CCDDC7D73C32A8E6F4CD481DF06A264EA3D8272F7",
+                             "sha256":  "42B7FF2DB899A678B72673BC9BC6E3D392AE2B490B0C87E703D5A64C2F73270C",
                              "path":  "schemas/agent-runtime/conversation-health-decision.schema.json"
                          },
                          {

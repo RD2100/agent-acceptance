@@ -6,12 +6,11 @@ schema_version: conversation-health-policy.v1
 thresholds:
   force:
     assistant_message_count: 60
-    response_time_seconds: 60
     review_round_count: 3
-    last_gpt_reply_bytes_low: 2000
   suggest:
     assistant_message_count: 45
-    response_time_seconds: 40
+    response_time_seconds: 60
+    last_gpt_reply_bytes_low: 2000
 
 composite:
   response_time_seconds: 60

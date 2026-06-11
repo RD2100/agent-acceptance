@@ -55,6 +55,8 @@ write_set:
   - "_cdp_submit_helper.py"
   - "_evidence/conversation-health-gate-consensus.md"
   - "_evidence/conversation-health-evidence/*"
+  - "_evidence/conversation-health/latest.json"
+  - "tests/test_handoff_trigger.py"
 
 deny_paths:
   - "**/NEG-009-secrets-read.json"

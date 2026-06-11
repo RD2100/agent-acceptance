@@ -77,6 +77,14 @@ class TestConversationHealthDecisionSchema:
         assert "WARNING" in enum
         assert "BLOCKING" in enum
 
+    def test_policy_enum_covers_all_code_outputs(self, schema):
+        """reasons[].policy enum must cover all values output by check_handoff_v2."""
+        policy_enum = schema["properties"]["reasons"]["items"]["properties"]["policy"]["enum"]
+        # These are the actual values emitted by check_handoff_v2
+        required = ["force", "suggest", "force_composite", "human", "suggest_capped", "warning"]
+        for val in required:
+            assert val in policy_enum, f"policy enum missing code output value: {val}"
+
 
 # ---------------------------------------------------------------------------
 # Threshold logic tests (check_handoff_needed.py v2)
@@ -154,6 +162,30 @@ class TestCheckHandoffNeeded:
             "nav_result": "ok",
         }, composite=True)
         assert result["decision"] == "FORCE_HANDOFF"
+
+    def test_response_time_only_is_suggest(self):
+        """response_time >= 60 alone should SUGGEST, not FORCE (consensus semantics)."""
+        result = check_handoff_v2({
+            "assistant_message_count": 10,
+            "response_time_seconds": 75,
+            "last_gpt_reply_bytes": 5000,
+            "review_round_count": 1,
+            "metrics_source": "cdp_dom_count",
+            "nav_result": "ok",
+        }, composite=True)
+        assert result["decision"] == "SUGGEST_HANDOFF"
+
+    def test_reply_bytes_only_is_suggest(self):
+        """reply_bytes < 2000 alone should SUGGEST, not FORCE (consensus semantics)."""
+        result = check_handoff_v2({
+            "assistant_message_count": 10,
+            "response_time_seconds": 5,
+            "last_gpt_reply_bytes": 500,
+            "review_round_count": 1,
+            "metrics_source": "cdp_dom_count",
+            "nav_result": "ok",
+        }, composite=True)
+        assert result["decision"] == "SUGGEST_HANDOFF"
 
     def test_stale_metrics_suggest(self):
         result = check_handoff_v2({
