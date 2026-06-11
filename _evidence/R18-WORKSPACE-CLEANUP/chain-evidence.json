@@ -1,0 +1,31 @@
+{
+  "chain_id": "R18-WORKSPACE-CLEANUP-A1",
+  "date": "2026-06-11",
+  "task_id": "R18-WORKSPACE-CLEANUP-A1",
+  "predecessor": "R18-FOLLOWUP-CLEANUP-A1 (bc974d2f) ACCEPTED_WITH_LIMITATION",
+  "commits_in_scope": [
+    "bc974d2f",
+    "104ac8b1"
+  ],
+  "evidence_files": [
+    "diff.patch",
+    "git-show-name-status-104ac8b1.txt",
+    "test-output.txt",
+    "safety-report.json",
+    "chain-evidence.json",
+    "review.md",
+    "review.yaml",
+    "final-report.md",
+    "git-status-after.txt",
+    "sadp-hook-output.txt"
+  ],
+  "items_addressed": [
+    "PROJECT_REGISTRY.json reconciliation (dev-frame-opencode, total 10->11)",
+    "5 session artifact scripts committed",
+    "R18 FOLLOWUP + FINAL evidence packs staged",
+    "NUL device artifact removed (via git bash rm -- NUL)",
+    "final-report.md naming fix (sadp-audit-raw.txt)",
+    "hooks/sealed-files-manifest.json auto-regenerated",
+    "EXPECTED_PROJECTS test fix (10->11)"
+  ]
+}

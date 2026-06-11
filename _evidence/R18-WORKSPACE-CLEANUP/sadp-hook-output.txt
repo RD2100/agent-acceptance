@@ -1,0 +1,18 @@
+=== Pre-Commit Governance Gate ===
+[1/3] Manifest auto-regeneration...
+[OK] Manifest regenerated and staged for this commit.
+
+[2/3] SADP audit...
+[SADP-AUDIT] Staged files: 44
+[SADP-AUDIT] TaskSpecs found: 46
+[SADP-AUDIT] V2: All 44 files covered by TaskSpec write_sets.
+[SADP-AUDIT] ai_guard.py: 0 errors, 1 warning(s) - PASS with warnings
+  WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review
+
+[3/3] Governance advisory...
+[Test-ProtectedPaths] PASS
+[Test-KeyScan] PASS
+[Test-BatchReferences] PASS
+Summary: BLOCKED=0 ERROR=0 WARN=0
+
+=== Pre-Commit PASS ===

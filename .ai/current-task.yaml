@@ -155,6 +155,7 @@ write_set:
   - "_pack_*.py"
   - "_submit_*.py"
   - "_capture_*.py"
+  - "_gen_*.py"
   - "_review*.py"
   - "_gh_*.py"
   - "_git_*.py"
