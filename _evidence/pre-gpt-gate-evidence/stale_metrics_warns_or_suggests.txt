@@ -6,7 +6,7 @@
 # Severity: WARNING
 # Status: PASS
 #
-# Message: SUGGEST (proceed with caution): SUGGEST_HANDOFF: metrics_stale: 103.2 (threshold: 12, policy: suggest)
+# Message: SUGGEST (proceed with caution): SUGGEST_HANDOFF: metrics_stale: 103.4 (threshold: 12, policy: suggest)
 #
 # Reasons:
-#   - metrics_stale: actual=103.2 threshold=12 policy=suggest
+#   - metrics_stale: actual=103.4 threshold=12 policy=suggest

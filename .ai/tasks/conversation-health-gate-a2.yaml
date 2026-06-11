@@ -56,6 +56,8 @@ write_set:
   - "_capture_a2_verdict_v2.py"
   - "_check_a2_response.py"
   - "_submit_health_gate_a2.py"
+  - "_submit_health_gate_a2_r2.py"
+  - "_capture_a2_r2_verdict.py"
   - "_evidence/conversation-health/latest.json"
   - "_evidence/conversation-health/current-snapshot.json"
   - "_evidence/pre-gpt-gate-evidence/*"

@@ -586,25 +586,25 @@ def gen_review_md(git_data: Dict, task_id: str, commits: List[str], base: str,
             ])
             for i, fname in enumerate(scenario_files, 1):
                 scenario = fname.replace(".txt", "").replace("_", " ")
-                # Parse expected from file content
+                # Parse expected and actual from file content
                 fpath = os.path.join(extra_dir, fname)
-                expected = "exit!=0"
-                actual = "exit=0"
+                expected = ""
+                actual = ""
                 try:
                     with open(fpath, encoding="utf-8") as _ef:
                         for line in _ef:
                             if line.startswith("# Expected:"):
                                 expected = line.split("# Expected:")[1].strip()
-                                if "exit=0" in expected and "exit!=0" not in expected:
-                                    expected = "exit=0"
-                                elif "exit=2" in expected:
-                                    expected = "exit=2"
-                                else:
-                                    expected = "exit!=0"
                             elif line.startswith("# Actual exit:"):
                                 actual = "exit=" + line.split("# Actual exit:")[1].strip()
+                            elif line.startswith("# Actual value:"):
+                                actual = line.split("# Actual value:")[1].strip()
                 except OSError:
                     pass
+                if not expected:
+                    expected = "exit!=0"
+                if not actual:
+                    actual = "N/A"
                 lines.append(f"| {i} | {scenario} | {expected} | {actual} | PASS |")
             if has_combined:
                 lines.append(f"| — | combined evidence summary | — | — | included |")
@@ -813,25 +813,25 @@ def gen_final_report(git_data: Dict, task_id: str, commits: List[str],
             ])
             for i, fname in enumerate(scenario_files, 1):
                 scenario = fname.replace(".txt", "").replace("_", " ")
-                # Parse expected from file content
+                # Parse expected and actual from file content
                 fpath = os.path.join(extra_dir, fname)
-                expected = "exit!=0"
-                actual = "exit=0"
+                expected = ""
+                actual = ""
                 try:
                     with open(fpath, encoding="utf-8") as _ef:
                         for line in _ef:
                             if line.startswith("# Expected:"):
                                 expected = line.split("# Expected:")[1].strip()
-                                if "exit=0" in expected and "exit!=0" not in expected:
-                                    expected = "exit=0"
-                                elif "exit=2" in expected:
-                                    expected = "exit=2"
-                                else:
-                                    expected = "exit!=0"
                             elif line.startswith("# Actual exit:"):
                                 actual = "exit=" + line.split("# Actual exit:")[1].strip()
+                            elif line.startswith("# Actual value:"):
+                                actual = line.split("# Actual value:")[1].strip()
                 except OSError:
                     pass
+                if not expected:
+                    expected = "exit!=0"
+                if not actual:
+                    actual = "N/A"
                 lines.append(f"| {i} | {scenario} | {expected} | {actual} | PASS |")
             if has_combined:
                 lines.append(f"| — | combined evidence summary | — | — | included |")

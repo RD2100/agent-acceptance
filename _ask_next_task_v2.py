@@ -134,7 +134,17 @@ async def main():
             _reply_bytes = len(reply.encode("utf-8"))
             _resp_time = _time.monotonic() - _start_time if '_start_time' in dir() else None
             try:
-                from pre_gpt_gate import update_metrics as _um
+                # Use same sys.path injection as _cdp_submit_helper.py
+                _scripts_dir = str(Path(__file__).resolve().parent / "scripts")
+                _path_added = False
+                if _scripts_dir not in sys.path:
+                    sys.path.insert(0, _scripts_dir)
+                    _path_added = True
+                try:
+                    from pre_gpt_gate import update_metrics as _um
+                finally:
+                    if _path_added and _scripts_dir in sys.path:
+                        sys.path.remove(_scripts_dir)
                 _new_metrics = {
                     "assistant_message_count": cnt,
                     "last_gpt_reply_bytes": _reply_bytes,
@@ -147,8 +157,28 @@ async def main():
                     print(f"WARNING: Metrics refresh failed: {_err}")
                 else:
                     print(f"A2: current.json refreshed — msgs={cnt}, bytes={_reply_bytes}")
-            except ImportError:
-                print("WARNING: pre_gpt_gate not available for post-response refresh")
+            except ImportError as _imp_exc:
+                # Post-response refresh failed — record as evidence, don't silently degrade
+                _err_evidence = Path(r"D:\agent-acceptance\_evidence\conversation-health")
+                _err_evidence.mkdir(parents=True, exist_ok=True)
+                _err_data = {
+                    "schema_version": "conversation-health-decision.v1",
+                    "decision": "UNKNOWN",
+                    "severity": "WARNING",
+                    "reasons": [{
+                        "code": "post_response_refresh_failed",
+                        "actual": str(_imp_exc),
+                        "threshold": "update_metrics import required",
+                        "policy": "warning",
+                    }],
+                    "recommended_action": "check_pre_gpt_gate_import_path",
+                    "checked_at": _time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                    "source": "ask_next_task_v2_post_response",
+                }
+                (_err_evidence / "metrics_refresh_failed.json").write_text(
+                    json.dumps(_err_data, indent=2), encoding="utf-8")
+                print(f"BLOCKED: Post-response refresh failed: {_imp_exc}")
+                print(f"  Evidence written to: {_err_evidence / 'metrics_refresh_failed.json'}")
         else:
             print("No assistant messages found")
             await target_page.screenshot(path=r"D:\agent-acceptance\_evidence\ask_next_task_debug.png")
