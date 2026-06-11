@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-11T18:21:16.6106062+08:00",
+    "generated":  "2026-06-11T18:35:11.6541238+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
@@ -152,7 +152,7 @@
                              "path":  "docs/agent-runtime/dispatch-model-profiles.md"
                          },
                          {
-                             "sha256":  "426036FEDA9B79FD545CFCCD5FEA547928C57718F7907ABC46696A1831CDC485",
+                             "sha256":  "179026A884F88598E58EA4000C57AC009D4596FBE7ED769B78EC78439B7B928E",
                              "path":  "docs/agent-runtime/evidence-capture-workflow.md"
                          },
                          {
@@ -188,7 +188,7 @@
                              "path":  "docs/agent-runtime/historical-evidence-policy.md"
                          },
                          {
-                             "sha256":  "B8388CC90A2468F0EC8FEC0643B0C642C863D51B1C56B372328C4FC911F224CB",
+                             "sha256":  "C225389CB568DA85282E60CFC2E51DAA1AA6029BD706261EB91FEDDC9E7FBDFC",
                              "path":  "docs/agent-runtime/hook-failure-semantics.md"
                          },
                          {
@@ -544,7 +544,7 @@
                              "path":  "schemas/agent-runtime/chain-evidence.schema.json"
                          },
                          {
-                             "sha256":  "658EC621D2C6BF9CADBC6540A68394B16CB1A6DD39AD1A3D2864FB218F895130",
+                             "sha256":  "4CC3BAB82F1458F09303D36B88D348EDC1E430FA0993D2BA6BF5DEBA60CE85DC",
                              "path":  "schemas/agent-runtime/evidence-capture.schema.json"
                          },
                          {

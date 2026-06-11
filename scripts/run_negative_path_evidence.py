@@ -129,7 +129,14 @@ def main():
     for label, rc, output in results:
         fname = f"{label}.txt"
         fpath = OUT_DIR / fname
-        content = f"# Runtime Negative-Path Evidence: {label}\n# Validator exit code: {rc}\n# Expected: {'0 (correct semantics)' if 'blocks' in label else 'nonzero (mismatch rejected)'}\n\n{output}\n"
+        # Determine expected label based on scenario type
+        if "blocks" in label:
+            expected_text = "0 (correct semantics — blocking stage failure → BLOCKED)"
+        elif "advisory" in label:
+            expected_text = "0 (advisory semantics — failure logged but not blocking)"
+        else:
+            expected_text = "nonzero (mismatch/invalid input rejected by validator)"
+        content = f"# Runtime Negative-Path Evidence: {label}\n# Validator exit code: {rc}\n# Expected: {expected_text}\n\n{output}\n"
         fpath.write_text(content, encoding="utf-8")
         all_output.append(f"=== {label} (exit={rc}) ===\n{output}\n")
 

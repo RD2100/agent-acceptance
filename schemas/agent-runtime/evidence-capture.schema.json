@@ -28,8 +28,8 @@
             "enum": ["manifest-regen", "sadp-audit", "ai-guard", "test-governance"]
           },
           "exit_code": {
-            "type": "integer",
-            "description": "Process exit code (0=pass, non-zero=block/error)"
+            "type": ["integer", "null"],
+            "description": "Process exit code (0=pass, non-zero=block/error, null=unavailable/fail-closed). Null on a blocking stage implies failure (fail-closed semantics)."
           },
           "output_file": {
             "type": "string",

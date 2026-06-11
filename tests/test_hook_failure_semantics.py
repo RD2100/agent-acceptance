@@ -3,13 +3,13 @@
 Validates that:
 1. latest.json conforms to evidence-capture.schema.json
 2. The hook's overall_result mapping follows fail-closed rules
-3. All required stages (sadp-audit, ai-guard, test-governance) block on failure
+3. Blocking stages (sadp-audit, ai-guard) block on failure; advisory stages do not
 4. The hook output validator works correctly
 5. Replay-style evidence is labeled
 
 Failure semantics (v2.3.0):
-  BLOCKING:   sadp-audit, ai-guard, test-governance
-  ADVISORY:   manifest-regen
+  BLOCKING:   sadp-audit, ai-guard
+  ADVISORY:   manifest-regen, test-governance
 """
 import json
 import subprocess
@@ -86,8 +86,8 @@ class TestHookScript:
     def test_ai_guard_marked_blocking(self, hook_text):
         assert "blocking" in hook_text.lower()
 
-    def test_all_stages_blocking_in_overall_result(self, hook_text):
-        # v2.3.0: all stages except manifest-regen are blocking
+    def test_blocking_stages_in_overall_result(self, hook_text):
+        # v2.3.0: sadp-audit and ai-guard are blocking; test-governance is advisory
         assert '"manifest-regen"' in hook_text
         assert "$overallResult = \"BLOCKED\"" in hook_text
 
@@ -131,8 +131,8 @@ class TestOverallResultLogic:
     """Simulate the hook's overall_result calculation to verify correctness.
 
     v2.3.0 rules:
-      - BLOCKING: sadp-audit, ai-guard, test-governance
-      - ADVISORY: manifest-regen
+      - BLOCKING: sadp-audit, ai-guard
+      - ADVISORY: manifest-regen, test-governance
     """
 
     @staticmethod

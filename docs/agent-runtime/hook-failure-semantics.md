@@ -67,6 +67,17 @@ For `ai-guard` and `test-governance` failures, the hook completes all stages bef
 
 This ensures a hung AI guard process does not silently pass commits.
 
+### Null Exit Code Semantics (Fail-Closed)
+
+The schema allows `exit_code` to be `integer` or `null`. A `null` exit code means the
+process exit code was unavailable (e.g., `Start-Job` did not complete normally).
+
+Fail-closed rules:
+- **Blocking stage** with `exit_code = null` → treated as failure (BLOCKED expected)
+- **Advisory stage** with `exit_code = null` → logged but not blocking
+- The hook defaults `null` to `1` internally, ensuring unavailable = blocked for blocking stages
+- The validator rejects `null` exit codes on blocking stages unless `overall_result = BLOCKED`
+
 ### Schema Conformance
 
 `latest.json` MUST validate against `schemas/agent-runtime/evidence-capture.schema.json`.
