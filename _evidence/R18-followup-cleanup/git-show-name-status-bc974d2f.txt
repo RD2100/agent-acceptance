@@ -1,0 +1,256 @@
+commit bc974d2ff626fc2ac37f3524595ae5d83b32e339
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Thu Jun 11 09:33:19 2026 +0800
+
+    feat: R18 follow-up cleanup — session artifacts, gate_0 repair, project-beta removal, dev-frame-writing
+    
+    Address all 4 GPT R18 v3 follow-up requirements:
+    - Commit R18 evidence directory and build/submit scripts
+    - Fix handoff-pipeline-refactor-a1.yaml gate_0.inventory_evidence
+    - Stage 186 project-beta file deletions
+    - Commit dev-frame-writing project scaffold (11th project)
+    - Update router stress test for new project registry
+    - Full SADP evidence: 1038 tests passed, 0 scope violations
+    
+    Remaining deferred: 15x NEG-009-secrets-read.json (deny_paths, mock secrets)
+    
+    🤖 Generated with [Qoder][https://qoder.com]
+
+M	.agent/PROJECT_REGISTRY.json
+M	.ai/current-task.yaml
+A	.ai/tasks/handoff-pipeline-refactor-a1.yaml
+A	.ai/tasks/r18-followup-cleanup-a1.yaml
+A	_build_r18_evidence.py
+A	_build_r18_v3.py
+A	_cdp_r18_submit.py
+A	_cdp_r18_zip_submit.py
+A	_evidence/EVIDENCE_PACK_R18.zip
+A	_evidence/R18-catchup-commits/ai-guard-scope-check-output.txt
+A	_evidence/R18-catchup-commits/chain-evidence.json
+A	_evidence/R18-catchup-commits/commit-manifest.json
+A	_evidence/R18-catchup-commits/current-task-after.yaml
+A	_evidence/R18-catchup-commits/current-task-before.yaml
+A	_evidence/R18-catchup-commits/current-task-diff.patch
+A	_evidence/R18-catchup-commits/deferred-files-register.yaml
+A	_evidence/R18-catchup-commits/final-report.md
+A	_evidence/R18-catchup-commits/git-show-name-status-283b5834.txt
+A	_evidence/R18-catchup-commits/git-show-name-status-3fc33dac.txt
+A	_evidence/R18-catchup-commits/git-show-name-status-4efcbac9.txt
+A	_evidence/R18-catchup-commits/git-show-name-status-511c54ab.txt
+A	_evidence/R18-catchup-commits/git-show-name-status-a9ad148d.txt
+A	_evidence/R18-catchup-commits/git-show-name-status-dae0e9fb.txt
+A	_evidence/R18-catchup-commits/git-status-after.txt
+A	_evidence/R18-catchup-commits/git-status-before.txt
+A	_evidence/R18-catchup-commits/governance-decision-record.yaml
+A	_evidence/R18-catchup-commits/gpt_reply.txt
+A	_evidence/R18-catchup-commits/gpt_reply_r2.txt
+A	_evidence/R18-catchup-commits/gpt_reply_r3.txt
+A	_evidence/R18-catchup-commits/pytest-output.txt
+A	_evidence/R18-catchup-commits/review.yaml
+A	_evidence/R18-catchup-commits/sadp-audit-output-commit-1.txt
+A	_evidence/R18-catchup-commits/sadp-audit-output-commit-2.txt
+A	_evidence/R18-catchup-commits/sadp-audit-output-commit-3.txt
+A	_evidence/R18-catchup-commits/sadp-audit-output-commit-4.txt
+A	_evidence/R18-catchup-commits/sadp-audit-output-commit-5.txt
+A	_evidence/R18-catchup-commits/sadp-audit-output-commit-6.txt
+A	_evidence/R18-catchup-commits/sadp-audit-summary.txt
+A	_evidence/R18-catchup-commits/safety-report.json
+A	_evidence/R18-catchup-commits/submission_text.txt
+A	_pack_r18_zip.py
+R059	_projects/project-beta/.agent/CONVERSATION_BINDING.json	_projects/dev-frame-writing/.agent/CONVERSATION_BINDING.json
+R100	_projects/project-beta/AGENTS.md	_projects/dev-frame-writing/AGENTS.md
+R100	_projects/project-beta/docs/agent-runtime/capability-inventory.md	_projects/dev-frame-writing/docs/agent-runtime/capability-inventory.md
+R100	_projects/project-beta/docs/agent-runtime/dispatch-model-profiles.md	_projects/dev-frame-writing/docs/agent-runtime/dispatch-model-profiles.md
+R100	_projects/project-beta/docs/agent-runtime/governance-manifest.md	_projects/dev-frame-writing/docs/agent-runtime/governance-manifest.md
+R100	_projects/project-beta/docs/agent-runtime/integration-contracts.md	_projects/dev-frame-writing/docs/agent-runtime/integration-contracts.md
+R100	_projects/project-beta/docs/agent-runtime/lessons-learned.md	_projects/dev-frame-writing/docs/agent-runtime/lessons-learned.md
+R100	_projects/project-beta/docs/agent-runtime/negative-acceptance-tests.md	_projects/dev-frame-writing/docs/agent-runtime/negative-acceptance-tests.md
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-001-missing-pre-git-status.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-001-missing-pre-git-status.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-002-fake-green-failed-as-pass.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-002-fake-green-failed-as-pass.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-003-source-of-truth-unapproved.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-003-source-of-truth-unapproved.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-004-hook-registered-in-phase05.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-004-hook-registered-in-phase05.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-005-mcp-config-modified.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-005-mcp-config-modified.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-006-external-repo-cloned.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-006-external-repo-cloned.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-007-package-installed.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-007-package-installed.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-008-memory-written-in-phase05.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-008-memory-written-in-phase05.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-010-dangerous-git-executed.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-010-dangerous-git-executed.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-011-executor-self-approved.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-011-executor-self-approved.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-012-agents-md-bloated-with-rules.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-012-agents-md-bloated-with-rules.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-013-gate-result-self-signed.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-013-gate-result-self-signed.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-014-skill-intake-approved.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-014-skill-intake-approved.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-015-tool-risk-permissive.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-015-tool-risk-permissive.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-016-memory-update-approved.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-016-memory-update-approved.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-017-write-outside-scope.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-017-write-outside-scope.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-018-dirty-baseline-modified.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-018-dirty-baseline-modified.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-019-no-post-git-status.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-019-no-post-git-status.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-020-blocked-reported-as-pass.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-020-blocked-reported-as-pass.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-021-no-evidence-for-claim.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-021-no-evidence-for-claim.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-022-phase-boundary-violated.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-022-phase-boundary-violated.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-023-command-injection-bash.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-023-command-injection-bash.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-024-path-traversal-read.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-024-path-traversal-read.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-025-empty-catch-block.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-025-empty-catch-block.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-026-ui-tars-invoked.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-026-ui-tars-invoked.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-027-skill-installer-invoked.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-027-skill-installer-invoked.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-029-missing-constraint-compliance-table.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-029-missing-constraint-compliance-table.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-030-priority-p0-task-no-approval.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-030-priority-p0-task-no-approval.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/README.md	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/README.md
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-001-missing-pre-git-status.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-001-missing-pre-git-status.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-002-fake-green-failed-as-pass.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-002-fake-green-failed-as-pass.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-003-source-of-truth-unapproved.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-003-source-of-truth-unapproved.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-004-hook-registered-in-phase05.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-004-hook-registered-in-phase05.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-005-mcp-config-modified.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-005-mcp-config-modified.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-006-external-repo-cloned.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-006-external-repo-cloned.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-007-package-installed.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-007-package-installed.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-008-memory-written-in-phase05.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-008-memory-written-in-phase05.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-010-dangerous-git-executed.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-010-dangerous-git-executed.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-011-executor-self-approved.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-011-executor-self-approved.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-012-agents-md-bloated-with-rules.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-012-agents-md-bloated-with-rules.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-013-gate-result-self-signed.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-013-gate-result-self-signed.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-014-skill-intake-approved.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-014-skill-intake-approved.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-015-tool-risk-permissive.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-015-tool-risk-permissive.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-016-memory-update-approved.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-016-memory-update-approved.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-017-write-outside-scope.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-017-write-outside-scope.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-018-dirty-baseline-modified.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-018-dirty-baseline-modified.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-019-no-post-git-status.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-019-no-post-git-status.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-020-blocked-reported-as-pass.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-020-blocked-reported-as-pass.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-021-no-evidence-for-claim.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-021-no-evidence-for-claim.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-022-phase-boundary-violated.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-022-phase-boundary-violated.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-023-command-injection-bash.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-023-command-injection-bash.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-024-path-traversal-read.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-024-path-traversal-read.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-025-empty-catch-block.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-025-empty-catch-block.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-026-ui-tars-invoked.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-026-ui-tars-invoked.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-027-skill-installer-invoked.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-027-skill-installer-invoked.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-029-missing-constraint-compliance-table.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-029-missing-constraint-compliance-table.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-030-priority-p0-task-no-approval.json	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-030-priority-p0-task-no-approval.json
+R100	_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/README.md	_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/README.md
+R100	_projects/project-beta/docs/agent-runtime/operating-model.md	_projects/dev-frame-writing/docs/agent-runtime/operating-model.md
+R100	_projects/project-beta/docs/agent-runtime/reviewer-playbook.md	_projects/dev-frame-writing/docs/agent-runtime/reviewer-playbook.md
+R100	_projects/project-beta/docs/agent-runtime/runtime-invariants.md	_projects/dev-frame-writing/docs/agent-runtime/runtime-invariants.md
+R100	_projects/project-beta/docs/agent-runtime/sub-agent-dispatch-protocol.md	_projects/dev-frame-writing/docs/agent-runtime/sub-agent-dispatch-protocol.md
+R100	_projects/project-beta/docs/agent-runtime/tool-policy.md	_projects/dev-frame-writing/docs/agent-runtime/tool-policy.md
+R100	_projects/project-beta/docs/agent-runtime/verification-gates.md	_projects/dev-frame-writing/docs/agent-runtime/verification-gates.md
+R100	_projects/project-beta/rules/README.md	_projects/dev-frame-writing/rules/README.md
+R100	_projects/project-beta/rules/coding.md	_projects/dev-frame-writing/rules/coding.md
+R100	_projects/project-beta/rules/core.md	_projects/dev-frame-writing/rules/core.md
+R100	_projects/project-beta/rules/frontend.md	_projects/dev-frame-writing/rules/frontend.md
+R100	_projects/project-beta/rules/git.md	_projects/dev-frame-writing/rules/git.md
+R100	_projects/project-beta/rules/research.md	_projects/dev-frame-writing/rules/research.md
+R100	_projects/project-beta/rules/review.md	_projects/dev-frame-writing/rules/review.md
+R100	_projects/project-beta/rules/rules/README.md	_projects/dev-frame-writing/rules/rules/README.md
+R100	_projects/project-beta/rules/rules/coding.md	_projects/dev-frame-writing/rules/rules/coding.md
+R100	_projects/project-beta/rules/rules/core.md	_projects/dev-frame-writing/rules/rules/core.md
+R100	_projects/project-beta/rules/rules/frontend.md	_projects/dev-frame-writing/rules/rules/frontend.md
+R100	_projects/project-beta/rules/rules/git.md	_projects/dev-frame-writing/rules/rules/git.md
+R100	_projects/project-beta/rules/rules/research.md	_projects/dev-frame-writing/rules/rules/research.md
+R100	_projects/project-beta/rules/rules/review.md	_projects/dev-frame-writing/rules/rules/review.md
+R100	_projects/project-beta/rules/rules/security.md	_projects/dev-frame-writing/rules/rules/security.md
+R100	_projects/project-beta/rules/security.md	_projects/dev-frame-writing/rules/security.md
+R100	_projects/project-beta/schemas/SUBMISSION_TARGET.schema.json	_projects/dev-frame-writing/schemas/SUBMISSION_TARGET.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/README.md	_projects/dev-frame-writing/schemas/agent-runtime/README.md
+R100	_projects/project-beta/schemas/agent-runtime/chain-evidence.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/chain-evidence.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/evidence-index.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/evidence-index.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/execution-report.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/execution-report.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/gate-result.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/gate-result.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/memory-update-record.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/memory-update-record.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/multi-agent-dispatch-plan.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/multi-agent-dispatch-plan.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/multi-agent-gate0-preflight.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/multi-agent-gate0-preflight.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/review.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/review.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/run-spec.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/run-spec.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/safety-report.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/safety-report.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/skill-intake-record.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/skill-intake-record.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/source-lock-record.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/source-lock-record.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/task-spec.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/task-spec.schema.json
+R100	_projects/project-beta/schemas/agent-runtime/tool-risk-record.schema.json	_projects/dev-frame-writing/schemas/agent-runtime/tool-risk-record.schema.json
+R100	_projects/project-beta/schemas/boot_context.schema.json	_projects/dev-frame-writing/schemas/boot_context.schema.json
+R100	_projects/project-beta/schemas/compressed_memory_entry.schema.json	_projects/dev-frame-writing/schemas/compressed_memory_entry.schema.json
+R100	_projects/project-beta/schemas/draft/boundary-envelope.schema.draft.json	_projects/dev-frame-writing/schemas/draft/boundary-envelope.schema.draft.json
+R100	_projects/project-beta/schemas/draft/frame-manifest.schema.draft.json	_projects/dev-frame-writing/schemas/draft/frame-manifest.schema.draft.json
+R100	_projects/project-beta/schemas/gpt_review_result.schema.json	_projects/dev-frame-writing/schemas/gpt_review_result.schema.json
+R100	_projects/project-beta/schemas/handoff_compiler_result.schema.json	_projects/dev-frame-writing/schemas/handoff_compiler_result.schema.json
+R100	_projects/project-beta/schemas/handoff_evidence_map.schema.json	_projects/dev-frame-writing/schemas/handoff_evidence_map.schema.json
+R100	_projects/project-beta/schemas/minimax_m3_observation.schema.json	_projects/dev-frame-writing/schemas/minimax_m3_observation.schema.json
+R100	_projects/project-beta/schemas/paper_c2_authorization_gate.schema.json	_projects/dev-frame-writing/schemas/paper_c2_authorization_gate.schema.json
+R100	_projects/project-beta/schemas/paper_c2_redaction_gate.schema.json	_projects/dev-frame-writing/schemas/paper_c2_redaction_gate.schema.json
+R100	_projects/project-beta/schemas/paper_c4_section_review_input.schema.json	_projects/dev-frame-writing/schemas/paper_c4_section_review_input.schema.json
+R100	_projects/project-beta/schemas/paper_c4_section_review_result.schema.json	_projects/dev-frame-writing/schemas/paper_c4_section_review_result.schema.json
+R100	_projects/project-beta/schemas/paper_evidence_pack.schema.json	_projects/dev-frame-writing/schemas/paper_evidence_pack.schema.json
+R100	_projects/project-beta/schemas/paper_redacted_evidence_pack.schema.json	_projects/dev-frame-writing/schemas/paper_redacted_evidence_pack.schema.json
+R100	_projects/project-beta/schemas/paper_task_input.schema.json	_projects/dev-frame-writing/schemas/paper_task_input.schema.json
+R100	_projects/project-beta/schemas/paper_task_output.schema.json	_projects/dev-frame-writing/schemas/paper_task_output.schema.json
+R100	_projects/project-beta/schemas/resource-integration/capability-promotion-record.schema.json	_projects/dev-frame-writing/schemas/resource-integration/capability-promotion-record.schema.json
+R100	_projects/project-beta/schemas/resource-integration/capability-record.schema.json	_projects/dev-frame-writing/schemas/resource-integration/capability-record.schema.json
+R100	_projects/project-beta/schemas/resource-integration/capability-routing-audit-record.schema.json	_projects/dev-frame-writing/schemas/resource-integration/capability-routing-audit-record.schema.json
+R100	_projects/project-beta/schemas/resource-integration/codegraph-index-record.schema.json	_projects/dev-frame-writing/schemas/resource-integration/codegraph-index-record.schema.json
+R100	_projects/project-beta/schemas/resource-integration/dev-frame-adapter-record.schema.json	_projects/dev-frame-writing/schemas/resource-integration/dev-frame-adapter-record.schema.json
+R100	_projects/project-beta/schemas/resource-integration/evidence-provider-record.schema.json	_projects/dev-frame-writing/schemas/resource-integration/evidence-provider-record.schema.json
+R100	_projects/project-beta/schemas/resource-integration/local-skill-intake-record.schema.json	_projects/dev-frame-writing/schemas/resource-integration/local-skill-intake-record.schema.json
+R100	_projects/project-beta/schemas/resource-integration/memory-context-record.schema.json	_projects/dev-frame-writing/schemas/resource-integration/memory-context-record.schema.json
+R100	_projects/project-beta/schemas/resource-integration/resource-registry-record.schema.json	_projects/dev-frame-writing/schemas/resource-integration/resource-registry-record.schema.json
+R100	_projects/project-beta/schemas/resource-integration/script-safety-record.schema.json	_projects/dev-frame-writing/schemas/resource-integration/script-safety-record.schema.json
+R100	_projects/project-beta/schemas/review_ticket.schema.json	_projects/dev-frame-writing/schemas/review_ticket.schema.json
+R100	_projects/project-beta/schemas/schemas/SUBMISSION_TARGET.schema.json	_projects/dev-frame-writing/schemas/schemas/SUBMISSION_TARGET.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/README.md	_projects/dev-frame-writing/schemas/schemas/agent-runtime/README.md
+R100	_projects/project-beta/schemas/schemas/agent-runtime/chain-evidence.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/chain-evidence.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/evidence-index.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/evidence-index.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/execution-report.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/execution-report.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/gate-result.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/gate-result.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/memory-update-record.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/memory-update-record.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/multi-agent-dispatch-plan.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/multi-agent-dispatch-plan.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/multi-agent-gate0-preflight.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/multi-agent-gate0-preflight.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/review.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/review.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/run-spec.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/run-spec.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/safety-report.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/safety-report.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/skill-intake-record.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/skill-intake-record.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/source-lock-record.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/source-lock-record.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/task-spec.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/task-spec.schema.json
+R100	_projects/project-beta/schemas/schemas/agent-runtime/tool-risk-record.schema.json	_projects/dev-frame-writing/schemas/schemas/agent-runtime/tool-risk-record.schema.json
+R100	_projects/project-beta/schemas/schemas/boot_context.schema.json	_projects/dev-frame-writing/schemas/schemas/boot_context.schema.json
+R100	_projects/project-beta/schemas/schemas/compressed_memory_entry.schema.json	_projects/dev-frame-writing/schemas/schemas/compressed_memory_entry.schema.json
+R100	_projects/project-beta/schemas/schemas/draft/boundary-envelope.schema.draft.json	_projects/dev-frame-writing/schemas/schemas/draft/boundary-envelope.schema.draft.json
+R100	_projects/project-beta/schemas/schemas/draft/frame-manifest.schema.draft.json	_projects/dev-frame-writing/schemas/schemas/draft/frame-manifest.schema.draft.json
+R100	_projects/project-beta/schemas/schemas/gpt_review_result.schema.json	_projects/dev-frame-writing/schemas/schemas/gpt_review_result.schema.json
+R100	_projects/project-beta/schemas/schemas/handoff_compiler_result.schema.json	_projects/dev-frame-writing/schemas/schemas/handoff_compiler_result.schema.json
+R100	_projects/project-beta/schemas/schemas/handoff_evidence_map.schema.json	_projects/dev-frame-writing/schemas/schemas/handoff_evidence_map.schema.json
+R100	_projects/project-beta/schemas/schemas/minimax_m3_observation.schema.json	_projects/dev-frame-writing/schemas/schemas/minimax_m3_observation.schema.json
+R100	_projects/project-beta/schemas/schemas/paper_c2_authorization_gate.schema.json	_projects/dev-frame-writing/schemas/schemas/paper_c2_authorization_gate.schema.json
+R100	_projects/project-beta/schemas/schemas/paper_c2_redaction_gate.schema.json	_projects/dev-frame-writing/schemas/schemas/paper_c2_redaction_gate.schema.json
+R100	_projects/project-beta/schemas/schemas/paper_c4_section_review_input.schema.json	_projects/dev-frame-writing/schemas/schemas/paper_c4_section_review_input.schema.json
+R100	_projects/project-beta/schemas/schemas/paper_c4_section_review_result.schema.json	_projects/dev-frame-writing/schemas/schemas/paper_c4_section_review_result.schema.json
+R100	_projects/project-beta/schemas/schemas/paper_evidence_pack.schema.json	_projects/dev-frame-writing/schemas/schemas/paper_evidence_pack.schema.json
+R100	_projects/project-beta/schemas/schemas/paper_redacted_evidence_pack.schema.json	_projects/dev-frame-writing/schemas/schemas/paper_redacted_evidence_pack.schema.json
+R100	_projects/project-beta/schemas/schemas/paper_task_input.schema.json	_projects/dev-frame-writing/schemas/schemas/paper_task_input.schema.json
+R100	_projects/project-beta/schemas/schemas/paper_task_output.schema.json	_projects/dev-frame-writing/schemas/schemas/paper_task_output.schema.json
+R100	_projects/project-beta/schemas/schemas/resource-integration/capability-promotion-record.schema.json	_projects/dev-frame-writing/schemas/schemas/resource-integration/capability-promotion-record.schema.json
+R100	_projects/project-beta/schemas/schemas/resource-integration/capability-record.schema.json	_projects/dev-frame-writing/schemas/schemas/resource-integration/capability-record.schema.json
+R100	_projects/project-beta/schemas/schemas/resource-integration/capability-routing-audit-record.schema.json	_projects/dev-frame-writing/schemas/schemas/resource-integration/capability-routing-audit-record.schema.json
+R100	_projects/project-beta/schemas/schemas/resource-integration/codegraph-index-record.schema.json	_projects/dev-frame-writing/schemas/schemas/resource-integration/codegraph-index-record.schema.json
+R100	_projects/project-beta/schemas/schemas/resource-integration/dev-frame-adapter-record.schema.json	_projects/dev-frame-writing/schemas/schemas/resource-integration/dev-frame-adapter-record.schema.json
+R100	_projects/project-beta/schemas/schemas/resource-integration/evidence-provider-record.schema.json	_projects/dev-frame-writing/schemas/schemas/resource-integration/evidence-provider-record.schema.json
+R100	_projects/project-beta/schemas/schemas/resource-integration/local-skill-intake-record.schema.json	_projects/dev-frame-writing/schemas/schemas/resource-integration/local-skill-intake-record.schema.json
+R100	_projects/project-beta/schemas/schemas/resource-integration/memory-context-record.schema.json	_projects/dev-frame-writing/schemas/schemas/resource-integration/memory-context-record.schema.json
+R100	_projects/project-beta/schemas/schemas/resource-integration/resource-registry-record.schema.json	_projects/dev-frame-writing/schemas/schemas/resource-integration/resource-registry-record.schema.json
+R100	_projects/project-beta/schemas/schemas/resource-integration/script-safety-record.schema.json	_projects/dev-frame-writing/schemas/schemas/resource-integration/script-safety-record.schema.json
+R100	_projects/project-beta/schemas/schemas/review_ticket.schema.json	_projects/dev-frame-writing/schemas/schemas/review_ticket.schema.json
+R100	_projects/project-beta/schemas/schemas/writelab_diagnosis_result.schema.json	_projects/dev-frame-writing/schemas/schemas/writelab_diagnosis_result.schema.json
+R100	_projects/project-beta/schemas/schemas/writelab_paper_handoff.schema.json	_projects/dev-frame-writing/schemas/schemas/writelab_paper_handoff.schema.json
+R100	_projects/project-beta/schemas/writelab_diagnosis_result.schema.json	_projects/dev-frame-writing/schemas/writelab_diagnosis_result.schema.json
+R100	_projects/project-beta/schemas/writelab_paper_handoff.schema.json	_projects/dev-frame-writing/schemas/writelab_paper_handoff.schema.json
+R100	_projects/project-beta/templates/runtime-bootstrap/AGENTS.template.md	_projects/dev-frame-writing/templates/runtime-bootstrap/AGENTS.template.md
+R100	_projects/project-beta/templates/runtime-bootstrap/INSTANTIATION.md	_projects/dev-frame-writing/templates/runtime-bootstrap/INSTANTIATION.md
+R100	_projects/project-beta/templates/runtime-bootstrap/README.md	_projects/dev-frame-writing/templates/runtime-bootstrap/README.md
+R100	_projects/project-beta/templates/runtime-bootstrap/SKILL.md	_projects/dev-frame-writing/templates/runtime-bootstrap/SKILL.md
+R100	_projects/project-beta/templates/runtime-bootstrap/bootstrap.ps1	_projects/dev-frame-writing/templates/runtime-bootstrap/bootstrap.ps1
+R100	_projects/project-beta/templates/runtime-bootstrap/capability-inventory.template.md	_projects/dev-frame-writing/templates/runtime-bootstrap/capability-inventory.template.md
+R100	_projects/project-beta/templates/runtime-bootstrap/governance-manifest.template.md	_projects/dev-frame-writing/templates/runtime-bootstrap/governance-manifest.template.md
+R100	_projects/project-beta/templates/runtime-bootstrap/tool-policy.template.md	_projects/dev-frame-writing/templates/runtime-bootstrap/tool-policy.template.md
+A	_reports/r18-followup-cleanup-a1/chain-evidence.json
+A	_reports/r18-followup-cleanup-a1/diff.patch
+A	_reports/r18-followup-cleanup-a1/final-report.md
+A	_reports/r18-followup-cleanup-a1/gen_all_evidence.py
+A	_reports/r18-followup-cleanup-a1/gen_safety.py
+A	_reports/r18-followup-cleanup-a1/review.md
+A	_reports/r18-followup-cleanup-a1/review.yaml
+A	_reports/r18-followup-cleanup-a1/safety-report.json
+A	_reports/r18-followup-cleanup-a1/test-output.txt
+M	hooks/sealed-files-manifest.json
+M	tests/test_router_10_project_stress.py

@@ -7,7 +7,7 @@
   "isolation_model": "conversation_target_bound",
   "cdp_mode": "shared_single_chrome",
   "generated_at": "2026-06-10T16:00:00Z",
-  "total_projects": 10,
+  "total_projects": 11,
   "shared_cdp_port": 9222,
   "shared_cdp_endpoint": "http://localhost:9222",
   "shared_profile_dir": "D:\\agent-acceptance\\_cdp_profiles\\shared",
@@ -66,6 +66,12 @@
       "binding_status": "pending_binding",
       "registered_at": "2026-06-10T16:00:00Z"
     },
+    "dev-frame-opencode": {
+      "project_id": "dev-frame-opencode",
+      "project_root": "D:\\dev-frame-opencode",
+      "binding_status": "active",
+      "registered_at": "2026-06-11T01:35:26Z"
+    },
     "tripmark": {
       "project_id": "tripmark",
       "project_root": "D:\\agent-acceptance\\_projects\\project-alpha",
@@ -73,5 +79,5 @@
       "registered_at": "2026-06-10T16:00:00Z"
     }
   },
-  "updated_at": "2026-06-11T00:00:00Z"
+  "updated_at": "2026-06-11T01:35:26Z"
 }

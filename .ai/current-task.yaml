@@ -1,5 +1,5 @@
-task_id: R18-FOLLOWUP-CLEANUP-A1
-title: R18 review follow-up — cleanup, gate_0 repair, and session artifact commit
+task_id: R18-WORKSPACE-CLEANUP-A1
+title: R18 workspace cleanup — registry reconciliation, session artifacts, NUL removal
 priority: P1
 status: in_progress
 mode: "@go edit"
@@ -153,6 +153,8 @@ write_set:
   - "_batch_*.py"
   - "_build_*.py"
   - "_pack_*.py"
+  - "_submit_*.py"
+  - "_capture_*.py"
   - "_review*.py"
   - "_gh_*.py"
   - "_git_*.py"

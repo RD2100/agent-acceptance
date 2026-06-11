@@ -1,0 +1,66 @@
+task_id: R18-WORKSPACE-CLEANUP-A1
+title: R18 workspace cleanup — registry reconciliation, session artifacts, NUL removal
+priority: P1
+status: in_progress
+mode: "@go edit"
+whole_dirty_worktree_allowed: false
+external_upload_allowed: false
+raw_transcript_allowed: false
+real_paper_text_allowed: false
+description: >
+  Address remaining non-blocking follow-up items from GPT R18 Follow-Up FINAL verdict.
+  Reconcile PROJECT_REGISTRY.json modification, commit session artifact scripts,
+  stage FINAL evidence pack, remove NUL device artifact.
+
+goal:
+  user_visible_success: >
+    Working tree is reduced to only intentionally-deferred NEG-009 files,
+    all session artifacts are under version control, and the repository
+    reaches a clean post-R18 state.
+  in_scope:
+    - Commit .agent/PROJECT_REGISTRY.json (dev-frame-opencode addition)
+    - Commit session artifact scripts (_submit_*.py, _capture_*.py, _build_r18_followup_final.py)
+    - Commit R18 FINAL evidence pack and evidence directory
+    - Commit R18 catchup and followup evidence directories
+    - Remove NUL device artifact
+    - Fix naming inconsistency in final-report.md
+  out_of_scope:
+    - NEG-009 files (remain deferred per deny_paths policy)
+    - Live dispatch testing
+    - Future write_set expansion
+
+gate_0:
+  triggered: true
+  inventory_evidence:
+    queried_sources:
+      - .agent/PROJECT_REGISTRY.json
+      - current-task.yaml
+      - gpt_reply_final.txt (R18 FOLLOWUP FINAL verdict)
+      - git status output
+    matched_capabilities:
+      - cleanup_and_reconciliation
+      - session_artifact_commit
+      - evidence_pack_staging
+    compared_against_request:
+      - "remaining non-blocking follow-up items from GPT verdict"
+  sufficiency_decision: existing_sufficient
+  decision: execute_cleanup
+
+write_set:
+  - ".agent/PROJECT_REGISTRY.json"
+  - ".ai/tasks/r18-workspace-cleanup-a1.yaml"
+  - ".ai/current-task.yaml"
+  - "_submit_*.py"
+  - "_capture_*.py"
+  - "_build_r18_followup_final.py"
+  - "_evidence/R18-followup-cleanup/**"
+  - "_evidence/R18-FOLLOWUP-FINAL/**"
+  - "_evidence/EVIDENCE_PACK_R18_FOLLOWUP*.zip"
+  - "_evidence/R18-catchup-commits/secret-scan-output.txt"
+  - "_reports/r18-workspace-cleanup-a1/**"
+  - "hooks/sealed-files-manifest.json"
+
+known_deferred:
+  - reason: deny_paths - NEG-009-secrets-read.json contains mock secret patterns
+    count: 17
+    pattern: "*/negative-test-fixtures/NEG-009-secrets-read.json"

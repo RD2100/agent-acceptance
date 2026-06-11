@@ -1,0 +1,122 @@
+R18 Third Evidence Pack Reviewer Verdict
+YAML
+verdict: ACCEPTED_WITH_LIMITATION
+review_scope: EVIDENCE_PACK_R18(1).zip
+zip_sha256: f4fff1d53f6977bd28a8487804a9da3424fb53ef3f30c260b0cadc76e175afae
+evidence_pack_status: PRESENT_AND_READABLE
+actual_file_count_in_zip: 31
+catch_up_commits: 6
+committed_files_verified: 3634
+test_evidence: 1038 passed, 21 warnings
+live_dispatch: NOT_AUTHORIZED
+
+我没有把你发来的 ChatGPT 链接作为证据依据，实际审核依据是新上传的 EVIDENCE_PACK_R18(1).zip。这一版相比上一版有实质改进，足以把 R18 从 PARTIAL_ACCEPTANCE_WITH_REMAINING_BLOCKERS 更新为 ACCEPTED_WITH_LIMITATION。
+
+1. 上轮遗留 blocker 关闭情况
+Finding	本轮证据	裁定
+R18-BLOCKING-03：hook 证据不足	sadp-audit-output-commit-1..6.txt + sadp-audit-summary.txt 已列出每个 commit 的 staged files、write_set pattern count、scope result	CLOSED_WITH_LIMITATION
+R18-BLOCKING-04：ai_guard 只检查 0 文件	ai-guard-scope-check-output.txt 现在显示 6 个 commit 合计检查 3634 files，0 scope violations，0 deny-path violations	CLOSED
+R18-BLOCKING-06：deferred / secret scan 不一致	deferred-files-register.yaml 与 git-status-after.txt 完全对齐，均为 26 untracked entries	CLOSED
+R18-BLOCKING-07：git status 与说明不一致	已修正为 26 项，并逐项登记	CLOSED
+R18-NEW-BLOCKING-08：缺少 human/governance decision record	新增 governance-decision-record.yaml，明确记录 protected files、write_set expansion、task_id mismatch	CLOSED_WITH_LIMITATION
+2. 我实际核查到的关键结果
+Commit manifest 与 git show 一致
+
+6 个 commit 的 manifest 文件数与 git-show-name-status-*.txt 逐项匹配：
+
+Commit	Manifest files	Git-show files	结果
+511c54ab	100	100	PASS
+283b5834	751	751	PASS
+dae0e9fb	1061	1061	PASS
+a9ad148d	81	81	PASS
+3fc33dac	1610	1610	PASS
+4efcbac9	31	31	PASS
+
+合计：
+
+3634 files verified
+ai_guard 覆盖了实际 committed file set
+
+本轮 ai-guard-scope-check-output.txt 不再是 0 file(s) checked，而是：
+
+Total files checked: 3634
+Total scope violations: 0
+Total deny-path violations: 0
+AI Guard: PASS - 3634 file(s) checked
+
+这一项可以接受。
+
+deferred files 已对齐
+
+git-status-after.txt 中有 26 个 untracked entries。deferred-files-register.yaml 也登记了 26 个 path，且与 git status 完全一致。
+
+结构为：
+
+YAML
+total_untracked_entries: 26
+neg009_deferred: 17
+gate0_deferred: 1
+session_artifacts: 7
+nul_device_file: 1
+
+secret-scan-output.txt 覆盖全部 26 项，其中：
+
+24 CLEAN
+2 SKIPPED_DIRECTORY_OR_DEVICE
+0 real secret findings
+
+NUL 与 _evidence/R18-catchup-commits/ 被标为 device/directory skip，这可以接受，但应在后续清理任务中处理。
+
+3. 保留的 limitations
+
+虽然 R18 可以接受，但必须保留以下限制：
+
+YAML
+limitations:
+  - sadp-audit-output-commit-1..6.txt 仍是 reconstructed / replay-style evidence，不是原始 pre-commit hook console log
+  - current-task.yaml 的 task_id 仍为 CONTEXT-COMPRESSION-A1，而不是专门的 CATCH-UP-COMMIT-BATCH-R18 TaskSpec
+  - write_set expansion 范围非常宽，只能在本次 catch-up batch 的 human/governance decision record 下接受，不能作为未来常规开发的默认授权边界
+  - commit 6 仍属于 mixed-scope cleanup commit，但在 catch-up batch 场景下可接受
+  - safety-report.json 中 secret_scan.files_scanned 仍写 20，而实际 secret-scan-output.txt 覆盖 26 项；以 secret-scan-output.txt 和 deferred-files-register.yaml 为准
+
+这些问题不再构成阻塞，但必须写入 reviewer record，避免后续把本轮视作“无限制通过”。
+
+4. 对四个 review questions 的最终回答
+问题	最终裁定
+1. 6-commit split 是否合理？	接受，带限制。 前 5 个边界较清楚；commit 6 是 mixed-scope cleanup，但在 catch-up batch 中可接受。
+2. write_set expansion 是否适当？	本轮可接受，不能泛化。 只在 governance-decision-record.yaml 明确授权的 R18 6 commits 范围内有效。
+3. 26 个 deferred/untracked entries 是否需要立即处理？	不影响 R18 接受，但需要后续清理任务。 NEG-009 可继续 deferred；session artifacts、NUL、旧 _evidence/R18-catchup-commits/ 应清理或登记入库。
+4. overall governance compliance？	接受，带证据限制。 commit manifest、git-show、ai_guard、deferred register、secret scan、test output 已形成可审查闭环。
+Final R18 Decision
+YAML
+r18_final_decision:
+  verdict: ACCEPTED_WITH_LIMITATION
+
+  accepted:
+    - six catch-up commits
+    - 3634 committed files under manifest/git-show consistency
+    - pytest evidence: 1038 passed, 21 warnings
+    - ai_guard replay over 3634 files with 0 violations
+    - deferred file register reconciled with git-status-after
+    - secret scan evidence showing 0 real secrets
+    - governance decision record for bulk write_set expansion and protected file risk acceptance
+
+  accepted_limitations:
+    - hook logs reconstructed rather than raw
+    - task_id mismatch acknowledged but not ideal
+    - broad write_set expansion valid only for this R18 catch-up batch
+    - commit 6 mixed-scope cleanup accepted only as historical catch-up
+    - safety-report secret_scan count slightly stale compared with corrected scan output
+
+  not_authorized:
+    - live dispatch
+    - future reuse of broad write_set patterns without new TaskSpec / decision record
+    - treating reconstructed hook logs as the normal evidence standard
+
+  required_follow_up:
+    - create a cleanup task for the 26 remaining untracked entries
+    - either remove session-only scripts/artifacts or commit them under a dedicated evidence-maintenance task
+    - repair or defer `.ai/tasks/handoff-pipeline-refactor-a1.yaml` with valid gate_0.inventory_evidence
+    - keep NEG-009 fixtures denied unless a dedicated negative-test-fixture policy authorizes them
+
+一句话结论：R18 第三版证据包已经足以接受 6 个 catch-up commits；接受范围仅限本次已列明的 6 个 commit 和 3,634 个文件，且必须保留“hook 原始日志缺失、TaskSpec 身份不匹配、write_set 过宽仅限本轮授权”的限制。

@@ -1,0 +1,108 @@
+R18 Follow-Up FINAL Reviewer Verdict
+YAML
+verdict: ACCEPTED_WITH_LIMITATION
+review_scope: EVIDENCE_PACK_R18_FOLLOWUP_FINAL.zip
+zip_sha256: 2571382ca86000e06d9b89bd824b8fc8e4eec739d0d71d979bdb5fcd8231f1c6
+zip_file_count: 15
+commit_reviewed: bc974d2f
+evidence_status: PRESENT_AND_READABLE
+test_evidence: 1038 passed, 21 warnings
+live_dispatch: NOT_AUTHORIZED
+
+我已核查 EVIDENCE_PACK_R18_FOLLOWUP_FINAL.zip。本轮证据包确实补齐了上轮要求的关键材料，可以把 R18 follow-up commit bc974d2f 裁定为 accepted with limitation。
+
+1. 四个上轮 blocker 关闭情况
+Blocker	核查结果	裁定
+R18-FOLLOWUP-BLOCKING-01：diff.patch 不完整	diff.patch 有 238 个 diff headers，与 git-show-name-status-bc974d2f.txt 的 238 项完全匹配；hooks/sealed-files-manifest.json 已包含	CLOSED
+R18-FOLLOWUP-BLOCKING-02：chain-evidence.json 未绑定 bc974d2f	commits_in_scope 已包含 bc974d2f，chain_id 已更新为 R18-FOLLOWUP-CLEANUP-A1-FINAL	CLOSED
+R18-FOLLOWUP-BLOCKING-03：缺 post-commit status / deferred / secret evidence	已提供 git-status-after.txt、deferred-files-register.yaml、secret-scan-output.txt	CLOSED_WITH_LIMITATION
+R18-FOLLOWUP-BLOCKING-04：hook / ai_guard 证据不足	ai_guard 明确检查 238 files，0 scope violations，0 deny violations；sadp-audit-raw.txt 提供 replay chain	CLOSED_WITH_LIMITATION
+2. 关键实证核查结果
+
+diff.patch 与 git-show 已经对齐：
+
+diff headers: 238
+git-show name-status entries: 238
+missing paths: 0
+extra paths: 0
+
+ai_guard 证据也已经覆盖本次 commit 的实际文件集：
+
+total_files_checked: 238
+scope_violations: 0
+deny_path_violations: 0
+verdict: PASS
+
+测试证据记录：
+
+1038 passed, 21 warnings in 45.64s
+
+chain-evidence.json 与 safety-report.json 均为合法 JSON；deferred-files-register.yaml 与 review.yaml 也可以正常解析。
+
+3. 对本轮核心事项的裁定
+Follow-up item	裁定
+7 个 session artifacts 入库	接受。本次 commit 已覆盖相关 R18 证据与提交脚本。
+handoff-pipeline-refactor-a1.yaml gate_0 修复	接受。该文件进入 commit，并已作为本轮修复项记录。
+NEG-009 继续 deny/defer	接受，带限制。17 个 NEG-009 文件仍按 deny_paths deferred，secret scan 记录 0 real secret violations。
+Dedicated TaskSpec	接受。R18-FOLLOWUP-CLEANUP-A1 已创建，current-task.yaml 已切换到该 task。
+project-beta → dev-frame-writing 迁移	接受，带说明。Git 主要识别为 rename，不是纯删除加新增。
+hooks/sealed-files-manifest.json	接受，带治理限制。已提供 standalone diff，说明为 manifest 自动更新与项目路径迁移。
+4. 必须保留的 limitations
+
+这次可以接受，但不是“无条件 clean close”。需要在 reviewer record 中保留以下限制：
+
+YAML
+limitations:
+  - sadp-audit-raw.txt 是 replay / post-hoc governance chain evidence；其中 sadp-audit.ps1 显示 “No staged changes. PASS”，因此不能等同于原始 pre-commit console log。
+  - git-status-after.txt 仍显示 26 个 untracked entries，其中包括 17 个 NEG-009、9 个 session artifacts / evidence artifacts，以及 NUL。
+  - git-status-after.txt 还显示 1 个 modified tracked file: .agent/PROJECT_REGISTRY.json；这不是本次 bc974d2f acceptance 的 blocker，但必须进入下一轮 cleanup / registry reconciliation。
+  - secret-scan-output.txt 是 summary-level evidence，没有逐文件扫描明细；本轮可接受，但后续最好输出 per-file scan table。
+  - final-report.md 中 evidence file name 写作 sadp-audit-output-bc974d2f.txt，但 ZIP 实际文件名是 sadp-audit-raw.txt；属于命名不一致，不影响核心裁定。
+
+最需要注意的是：bc974d2f 可以接受，但当前工作区并不干净。git-status-after.txt 明确显示：
+
+M .agent/PROJECT_REGISTRY.json
+?? NUL
+?? _build_r18_followup_final.py
+?? _capture_followup_reply.py
+?? _evidence/EVIDENCE_PACK_R18_FOLLOWUP.zip
+?? _evidence/R18-FOLLOWUP-FINAL/
+...
+
+所以本轮不是“仓库完全 clean”，而是“本次 follow-up commit 的证据链达到可接受标准，剩余项已暴露并登记”。
+
+Final Decision
+YAML
+r18_followup_final_decision:
+  verdict: ACCEPTED_WITH_LIMITATION
+
+  accepted_commit:
+    - bc974d2f
+
+  accepted_scope:
+    - R18-FOLLOWUP-CLEANUP-A1 TaskSpec creation
+    - handoff-pipeline-refactor gate_0 inventory_evidence repair
+    - project-beta to dev-frame-writing migration
+    - router stress test update
+    - R18 follow-up evidence/report files
+    - hooks/sealed-files-manifest.json update as documented governance manifest regeneration
+
+  closed_previous_blockers:
+    - R18-FOLLOWUP-BLOCKING-01
+    - R18-FOLLOWUP-BLOCKING-02
+    - R18-FOLLOWUP-BLOCKING-03
+    - R18-FOLLOWUP-BLOCKING-04
+
+  remaining_non_blocking_followup:
+    - reconcile or commit .agent/PROJECT_REGISTRY.json modification under a dedicated task
+    - clean or formally register the 9 non-NEG session artifacts
+    - keep 17 NEG-009 files denied/deferred unless a dedicated negative-fixture policy authorizes them
+    - remove/ignore NUL artifact according to Windows-safe cleanup policy
+    - preserve the limitation that hook evidence is replay-style, not original pre-commit console capture
+
+  not_authorized:
+    - live dispatch
+    - treating replay hook evidence as the normal future evidence standard
+    - broad future write_set expansion without dedicated TaskSpec and governance decision record
+
+一句话结论：R18 Follow-Up FINAL 足以接受 bc974d2f，并关闭上轮 4 个 blocker；但 acceptance 带限制，因为 post-commit 工作区仍有 .agent/PROJECT_REGISTRY.json 修改、NUL 和若干 session artifacts，后续需要单独清理或登记。
