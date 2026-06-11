@@ -1,6 +1,8 @@
- M .agent/PROJECT_REGISTRY.json
- M _evidence/R18-WORKSPACE-CLEANUP-FINAL/chain-evidence.json
+ M _evidence/R18-WORKSPACE-CLEANUP-FINAL/diff-combined.patch
+?? _build_workspace_cleanup_final.py
 ?? _evidence/R18-FOLLOWUP-FINAL/secret-scan-output.txt
+?? _evidence/R18-WORKSPACE-CLEANUP-FINAL/diff-6022c187.patch
+?? _evidence/R18-WORKSPACE-CLEANUP-FINAL/git-show-6022c187.txt
 ?? _evidence/R18-WORKSPACE-CLEANUP-FINAL/secret-scan-output.txt
 ?? _evidence/R18-catchup-commits/secret-scan-output.txt
 ?? _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
