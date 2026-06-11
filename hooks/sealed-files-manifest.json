@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-11T19:07:37.3369422+08:00",
+    "generated":  "2026-06-11T22:14:18.9817583+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
@@ -126,6 +126,10 @@
                          {
                              "sha256":  "B58A262CA86787AEDA793C2E523E6EFB8C9223ECB818F0BD473FABF58095BE1C",
                              "path":  "docs/agent-runtime/contract-evolution-policy.md"
+                         },
+                         {
+                             "sha256":  "895F55C8511E4F99DB3210773C36C9DDA28C72AE10AA5787E1BDA792BB038EB6",
+                             "path":  "docs/agent-runtime/conversation-health-gate.md"
                          },
                          {
                              "sha256":  "EB0121810B9FC2DA1BB647467FDE517E0ADEC8025BBB977EE63B9576990D4F6D",
@@ -542,6 +546,14 @@
                          {
                              "sha256":  "5B2FB26BEFFC97C569B6BB92E3716F63318F283353C70B114A8339B1F06E88D5",
                              "path":  "schemas/agent-runtime/chain-evidence.schema.json"
+                         },
+                         {
+                             "sha256":  "EB4792E421B8B79F3BC08692CE0566714D26D4EED407DFA0E95863B40CCB9772",
+                             "path":  "schemas/agent-runtime/conversation-health.schema.json"
+                         },
+                         {
+                             "sha256":  "34ABAF5FDFB7B2A1BF31BF9CCDDC7D73C32A8E6F4CD481DF06A264EA3D8272F7",
+                             "path":  "schemas/agent-runtime/conversation-health-decision.schema.json"
                          },
                          {
                              "sha256":  "70C14CCD6BC70BD5AF0F6F32FC655405E20D2D99828437F193595E5C9B270533",

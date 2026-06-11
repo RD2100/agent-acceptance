@@ -221,6 +221,79 @@ def find_execution_report(task_id: str) -> Path | None:
 # ── Enforcement Checks ────────────────────────────────────────────────
 
 
+def _check_conversation_health() -> dict:
+    """Check conversation health from .ai/conversation/current.json.
+
+    Returns dict with keys: status (PASS/WARNING/BLOCKED), decision, reasons.
+    Missing file → WARNING (not BLOCKED) per A1 consensus.
+    Never opens CDP browser — reads last known state only.
+    """
+    import json as _json
+
+    current_path = REPO / ".ai" / "conversation" / "current.json"
+    if not current_path.exists():
+        return {
+            "status": "WARNING",
+            "decision": "UNKNOWN",
+            "reasons": ["conversation health not initialized (.ai/conversation/current.json missing)"],
+        }
+
+    try:
+        data = _json.loads(current_path.read_text(encoding="utf-8"))
+    except (_json.JSONDecodeError, OSError) as exc:
+        return {
+            "status": "WARNING",
+            "decision": "UNKNOWN",
+            "reasons": [f"conversation health metrics unreadable: {exc}"],
+        }
+
+    # Import check_handoff_needed module
+    _scripts_dir = str(REPO / "scripts")
+    if _scripts_dir not in sys.path:
+        sys.path.insert(0, _scripts_dir)
+    try:
+        from check_handoff_needed import check_handoff_v2  # type: ignore[import-untyped]
+
+        lkm = data.get("last_known_metrics", {})
+        decision = check_handoff_v2(
+            metrics={
+                "assistant_message_count": lkm.get("assistant_message_count"),
+                "response_time_seconds": lkm.get("last_response_time_seconds"),
+                "review_round_count": lkm.get("review_round_count"),
+                "last_gpt_reply_bytes": lkm.get("last_gpt_reply_bytes"),
+                "metrics_source": data.get("metrics_source", "none"),
+                "nav_result": data.get("last_nav_result", "unknown"),
+                "last_checked_at": data.get("last_checked_at"),
+            },
+            mode="pre-task",
+            max_staleness_hours=12,
+            composite=True,
+            source_label="current.json",
+        )
+    except ImportError:
+        return {
+            "status": "WARNING",
+            "decision": "UNKNOWN",
+            "reasons": ["check_handoff_needed module not available"],
+        }
+    finally:
+        if _scripts_dir in sys.path:
+            sys.path.remove(_scripts_dir)
+
+    d = decision.get("decision", "UNKNOWN")
+    reasons = [r.get("code", str(r)) if isinstance(r, dict) else str(r)
+               for r in decision.get("reasons", [])]
+
+    if d == "FORCE_HANDOFF":
+        return {"status": "BLOCKED", "decision": d, "reasons": reasons}
+    elif d == "HUMAN_REQUIRED":
+        return {"status": "BLOCKED", "decision": d, "reasons": reasons}
+    elif d == "SUGGEST_HANDOFF":
+        return {"status": "WARNING", "decision": d, "reasons": reasons}
+    else:
+        return {"status": "PASS", "decision": d, "reasons": reasons}
+
+
 def check_pre_task(task_id: str) -> tuple[int, list[str]]:
     """Pre-task enforcement: validate SADP compliance before task starts.
 
@@ -305,6 +378,16 @@ def check_pre_task(task_id: str) -> tuple[int, list[str]]:
     if adjacent_touched:
         messages.append(f"ADVISORY: Governance-adjacent files in write_set: {adjacent_touched}")
         messages.append("  Note in Conflict Registry as governance_adjacent_files_modified")
+
+    # 7. Conversation health check (CONVERSATION-HEALTH-GATE-A1)
+    #    Reads .ai/conversation/current.json only — never opens CDP browser.
+    #    Missing file → WARNING (not BLOCKED). FORCE_HANDOFF → BLOCKED.
+    health = _check_conversation_health()
+    if health["status"] == "BLOCKED":
+        messages.append(f"BLOCKED: conversation health {health['decision']} — {'; '.join(health['reasons'])}")
+        blocked = True
+    elif health["status"] == "WARNING":
+        messages.append(f"WARNING: conversation health {health['decision']} — {'; '.join(health['reasons'])}")
 
     if blocked:
         return 1, messages

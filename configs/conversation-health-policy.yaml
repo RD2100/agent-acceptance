@@ -1,0 +1,26 @@
+# conversation-health-policy.yaml
+# CONVERSATION-HEALTH-GATE-A1 -- Thresholds loaded by check_handoff_needed.py.
+# Structure must match DEFAULT_POLICY in scripts/check_handoff_needed.py.
+schema_version: conversation-health-policy.v1
+
+thresholds:
+  force:
+    assistant_message_count: 60
+    response_time_seconds: 60
+    review_round_count: 3
+    last_gpt_reply_bytes_low: 2000
+  suggest:
+    assistant_message_count: 45
+    response_time_seconds: 40
+
+composite:
+  response_time_seconds: 60
+  last_gpt_reply_bytes_high: 2000
+  review_round_count: 2
+
+staleness_hours: 12
+
+nav_result_map:
+  access_denied: FORCE_HANDOFF
+  not_found: FORCE_HANDOFF
+  auth_required: HUMAN_REQUIRED

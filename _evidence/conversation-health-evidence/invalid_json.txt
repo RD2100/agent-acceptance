@@ -1,0 +1,6 @@
+# Conversation Health Evidence: invalid_json
+# Actual exit: 2
+# Expected: exit=2 (invalid input rejected)
+
+ERROR: Invalid JSON in metrics file: Expecting property name enclosed in double quotes: line 1 column 3 (char 2)
+

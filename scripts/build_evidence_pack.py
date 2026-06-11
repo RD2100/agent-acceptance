@@ -592,7 +592,8 @@ def gen_review_md(git_data: Dict, task_id: str, commits: List[str], base: str,
 
 
 def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
-                    base: str, tests_passed: bool, now: str) -> str:
+                    base: str, tests_passed: bool, now: str,
+                    repo: str = ".") -> str:
     s = git_data["status"]
     n_mod = len(s["modified"])
     n_unt = len(s["untracked"])
@@ -651,6 +652,38 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
         "  all_files_agree: true",
         f"  sum_check: {n_neg} + {n_sec} + {n_ses} = {n_neg + n_sec + n_ses} == untracked_total({n_unt})",
     ]
+
+    # Conversation health evidence (CONVERSATION-HEALTH-GATE-A1)
+    health_path = os.path.join(repo, "_evidence", "conversation-health", "latest.json")
+    if os.path.isfile(health_path):
+        try:
+            with open(health_path, encoding="utf-8") as _hf:
+                _hdata = json.loads(_hf.read())
+            lines += [
+                "",
+                "conversation_health:",
+                f"  checked: true",
+                f"  decision: {_hdata.get('decision', 'UNKNOWN')}",
+                f"  severity: {_hdata.get('severity', 'INFO')}",
+                f"  latest_file: _evidence/conversation-health/latest.json",
+                f"  checked_at: \"{_hdata.get('checked_at', '')}\"",
+            ]
+        except (json.JSONDecodeError, OSError):
+            lines += [
+                "",
+                "conversation_health:",
+                "  checked: false",
+                "  decision: ERROR",
+                "  reason: latest.json unreadable",
+            ]
+    else:
+        lines += [
+            "",
+            "conversation_health:",
+            "  checked: false",
+            "  decision: MISSING",
+            "  note: _evidence/conversation-health/latest.json not found",
+        ]
 
     return "\n".join(lines) + "\n"
 
@@ -907,7 +940,17 @@ def build_evidence_pack(
     # 15. review.yaml
     writer.write("review.yaml",
                  gen_review_yaml(git_data, task_id, commits, base,
-                                 tests_passed, now))
+                                 tests_passed, now, repo=repo))
+
+    # 15b. conversation-health evidence (CONVERSATION-HEALTH-GATE-A1)
+    health_evidence_dir = os.path.join(repo, "_evidence", "conversation-health")
+    health_latest = os.path.join(health_evidence_dir, "latest.json")
+    if os.path.isfile(health_latest):
+        with open(health_latest, encoding="utf-8") as _chf:
+            writer.write("conversation-health/latest.json", _chf.read())
+        print("  [15b] conversation-health/latest.json included")
+    else:
+        print("  [15b] conversation-health/latest.json NOT FOUND (advisory)")
 
     # 16. final-report.md (initially without ZIP info)
     #     We'll overwrite it after building the ZIP to include ZIP metadata.
