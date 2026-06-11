@@ -1,0 +1,34 @@
+"""M4 R3: Reposition from governance plan to inevitability proof."""
+import json, os
+os.chdir("D:/agent-acceptance")
+
+m4_r3 = {
+    "module": "M4", "round": 3, "final": True,
+    "reframing": "M4从治理方案预演改为必然性论证",
+    "logic_chain": "M2应然(双重内涵)→M3实然(内在统一)→M4必然(协同推进不可回避)",
+    "revision_structure": [
+        {"unit": 1, "name": "从应然到实然的递进",
+         "content": "回顾M2论证：教育强国战略提出双重内涵。回顾M3论证：提质扩容在实然层面具有内在统一性。既然逻辑上必要、现实上可行，那么问题的关键不再是'要不要协同'，而是'如何协同'。这构成了协同推进的必然性基础。"},
+        {"unit": 2, "name": "协同推进不可回避的三重理由",
+         "content": "理由一：分散推进已导致政策碎片化——列举1个政策分割的具体问题。理由二：单纯规模扩张已触达质量天花板——引用1个数据（如生师比、生均经费等）。理由三：单纯质量提升缺乏规模基础——引用1个国际案例。三重理由共同证明协同推进不是政策选项而是必然路径。"},
+        {"unit": 3, "name": "向第二节内在张力的过渡",
+         "content": "协同推进虽然在逻辑上必然、在实践上迫切，但现实推进中必然遭遇价值、资源、制度层面的结构性张力。这构成了下一部分'内在张力'的分析起点。"}
+    ],
+    "citation_function_map": {
+        "政策碎片化证据": "高等教育政策协调性研究或政策评估报告",
+        "规模天花板数据": "生师比、生均经费、高校承载力等统计",
+        "质量缺乏规模的国际案例": "过度精英化导致覆盖面不足的教训",
+        "协同治理理论": "协同治理、整体性治理的学术文献"
+    },
+    "p1_resolution": {
+        "M4-P1-01": "已将治理方案预演改为必然性论证",
+        "M4-P1-02": "已构建M2→M3→M4显性论证链",
+        "M4-P1-03": "已补充3个具体证据需求（碎片化、天花板、国际案例）"
+    },
+    "status": "final_round_submitted"
+}
+
+json.dump(m4_r3, open("_reports/m4_round3_strategy.json", "w", encoding="utf-8"), indent=2, ensure_ascii=False)
+print("M4 R3: Reframed as inevitability proof with M2→M3→M4 chain")
+for p1, r in m4_r3["p1_resolution"].items():
+    print(f"  {p1}: {r[:80]}")

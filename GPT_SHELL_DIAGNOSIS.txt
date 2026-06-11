@@ -1,0 +1,155 @@
+这些补充说明把根因闭环了：问题不是单个 git / pytest / CDP 命令慢，而是长会话没有进程治理，后台任务不可回收，最终 shell 队列满后不可恢复。
+
+YAML
+issue_id: LONG-SESSION-SHELL-SATURATION
+judgment: confirmed_p0_environment_defect
+root_cause_final:
+  - "Git remote/network checks timeout."
+  - "Python subprocess calls such as pytest/git/CDP run 50-120 seconds."
+  - "Completed or stale background tasks are not automatically cleaned."
+  - "Background queue accumulates until shell can no longer run foreground commands reliably."
+  - "Once task queue is full, shell reset/drain only temporarily helps; in-place recovery is not reliable."
+
+你提到的已尝试措施应记录为 insufficient mitigations：
+
+YAML
+attempted_mitigations:
+  git_config_changes:
+    status: insufficient
+    note: "可能降低部分 git 网络等待，但不能解决后台任务队列堆积。"
+
+  drain_background_tasks:
+    status: insufficient
+    note: "短期可缓解，但队列已满时不能保证恢复 shell 可信度。"
+
+  explicit_shell_setting:
+    status: insufficient
+    note: "即使显式设置 shell，命令仍进入 background，说明问题在会话/进程队列层，不只是 shell 类型。"
+
+应固化为这条更强的规则：
+
+Markdown
+# P0 Rule: Fresh Session for Critical Automation
+
+Long-running automation must not rely on one shell session indefinitely.
+
+After a long automation session, or after any sign of background task accumulation, the agent must stop using the current shell for critical operations and start a fresh execution context.
+
+## Critical Operations
+
+A fresh verified shell is required before:
+
+- GPT/CDP submission
+- GPT response capture
+- evidence pack generation
+- full test runs
+- release/tag operations
+- git push / fetch / ls-remote
+- clean-room verification
+- final status reporting
+
+## Saturation Threshold
+
+The current shell is invalid if any of the following are true:
+
+- trivial commands go to background
+- 10+ background jobs are active or unreaped
+- completed background jobs are not automatically cleaned
+- git commands repeatedly timeout
+- pytest/git/CDP subprocesses exceed expected timeout and remain unresolved
+- shell reset only temporarily restores behavior
+- GPT review reply was submitted but not captured
+
+## Required Status
+
+If the shell is saturated:
+
+```yaml
+overall_status: environment_unstable
+shell_status: saturated
+task_may_close: false
+next_task_may_start: false
+verdict_allowed: false
+Recovery Rule
+
+Do not attempt to complete critical work inside a saturated shell.
+
+Required recovery:
+
+Stop the current automation loop.
+
+Open a fresh shell/session.
+
+Run a foreground health check:
+
+Bash
+pwd
+date
+git rev-parse --show-toplevel
+git status --short
+
+Confirm all return synchronously.
+
+Only then resume.
+
+If fresh shell also degrades, stop and report environment_unstable.
+
+Process Budget Rule
+
+For long sessions:
+
+YAML
+max_continuous_session_hours: 3
+max_unverified_background_jobs: 0
+max_active_long_running_subprocesses: 1
+critical_ops_require_fresh_shell: true
+
+Any command expected to take more than 30 seconds must:
+
+run in foreground
+
+write stdout/stderr to files
+
+have a timeout
+
+have an exit code captured
+
+be completed before the next critical command begins
+
+Git Remote Isolation
+
+Do not mix local git checks with remote network checks.
+
+Local checks may run during normal verification:
+
+Bash
+git status --short
+git diff --name-only
+git diff --cached --name-only
+git rev-parse HEAD
+git log --oneline -n 10
+
+Remote checks must be isolated, timeout-bound, and never used as shell health checks:
+
+Bash
+git fetch
+git push
+git push --dry-run
+git ls-remote
+git branch -vv
+
+If remote checks timeout:
+
+YAML
+remote_status: network_unverified
+local_status: preserved_if_local_checks_pass
+One-Line Rule
+
+No healthy shell, no command-based status.
+No completed foreground subprocess, no test/build verdict.
+No captured GPT reply, no review verdict.
+
+
+最终建议：**不要再试图“修复”已经饱和的 shell。关键流程必须改成短会话、前台执行、强制超时、命令结果落盘、关键操作前 fresh shell。**
+
+END_OF_GPT_RESPONSE

@@ -1,0 +1,126 @@
+YAML
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: V0.2.0-FINAL-RELEASE-PREP-A1
+
+recommended_task_id: V0.2.0-FINAL-RELEASE-PREP-A1
+
+rationale: >
+  RC1 clean-room verification passed: remote clone works, 275 tests PASS,
+  smoke 9/9, manifest consistent, release reproducible. The next highest-value
+  task is not new feature work. It is final-release preparation: package the
+  verified rc1 state into a v0.2.0 final release candidate decision packet,
+  confirm no code changes are needed, and prepare the final tag/release notes.
+  Actual final tag push may proceed only if the task confirms rc1 SHA should be
+  promoted unchanged.
+
+taskspec:
+  task_id: V0.2.0-FINAL-RELEASE-PREP-A1
+  task_name: "Prepare v0.2.0 final release from verified rc1"
+  task_type: release_promotion_preparation
+  primary_repo: agent-acceptance
+  secondary_repos:
+    - devframe-control-plane
+    - ai-workflow-hub
+    - dev-frame-opencode
+  status: authorized
+
+  objective:
+    - "Prepare v0.2.0 final release from verified v0.2.0-rc1."
+    - "Confirm final release can reuse the exact clean-room verified rc1 SHAs."
+    - "Generate final release notes, final manifest, and promotion report."
+    - "Do not introduce feature/code changes."
+    - "Do not retag or force-push."
+    - "If any mismatch appears, stop and mark release promotion blocked."
+
+  strict_scope:
+    allowed:
+      - "Release notes generation."
+      - "Final release manifest generation."
+      - "SHA and tag reconciliation."
+      - "CI/test/smoke status capture."
+      - "Final promotion report."
+      - "Optional final tag creation only if it points to the already verified rc1 commit."
+    forbidden:
+      - "No new feature development."
+      - "No PAPER-C3 expansion."
+      - "No control-plane workflow chain expansion."
+      - "No review queue hardening."
+      - "No dirty baseline commit."
+      - "No force push."
+      - "No history rewrite."
+      - "No real-paper execution."
+
+  write_set:
+    allowed:
+      - "_reports/v0.2.0-final-release-prep-a1/**"
+      - "evidence_packs/v0.2.0-final-release-prep-a1/**"
+      - ".ai/tasks/v0.2.0-final-release-prep-a1.yaml"
+      - "RELEASE_NOTES_v0.2.0.md"
+      - "PROJECT_HISTORY.md"
+      - "BOOT_CONTEXT.md"
+      - "memory/index.md"
+      - "memory/tasks/v0.2.0-final-release-prep-a1.md"
+
+    forbidden:
+      - "runs/**"
+      - "archive/draft-hooks/**"
+      - "HANDOFF_REPLY_V4.txt"
+      - ".tmpconfig/**"
+      - ".tmpdata/**"
+      - "**/__pycache__/**"
+      - "**/*.pyc"
+      - ".ai/bypass_approved"
+      - "tools/ai_guard.py"
+      - "review_queue/**"
+      - "scripts/paper_*"
+      - "examples/paper_*"
+
+  required_checks:
+    - "Verify v0.2.0-rc1 tag exists remotely."
+    - "Verify clean-room tested SHA equals rc1 SHA."
+    - "Verify latest test status: 275 PASS."
+    - "Verify smoke status: 9/9 PASS."
+    - "Verify release manifest consistency."
+    - "Verify no forbidden files are tracked."
+    - "Verify final v0.2.0 tag does not already exist, or if it exists, it points to the exact rc1 SHA."
+    - "Verify all accepted_with_limitation items are preserved in release notes."
+
+  required_outputs:
+    - "_reports/v0.2.0-final-release-prep-a1/FINAL_RELEASE_PREP.json"
+    - "_reports/v0.2.0-final-release-prep-a1/FINAL_RELEASE_PREP.md"
+    - "_reports/v0.2.0-final-release-prep-a1/TAG_RECONCILIATION.txt"
+    - "_reports/v0.2.0-final-release-prep-a1/REMOTE_SHA_VERIFY.txt"
+    - "_reports/v0.2.0-final-release-prep-a1/TEST_SMOKE_STATUS.txt"
+    - "_reports/v0.2.0-final-release-prep-a1/FINAL_RELEASE_MANIFEST.json"
+    - "_reports/v0.2.0-final-release-prep-a1/SAFETY_ATTESTATION.md"
+    - "RELEASE_NOTES_v0.2.0.md"
+    - "evidence_packs/v0.2.0-final-release-prep-a1/closure-pack.zip"
+
+  success_criteria:
+    - "Final release prep confirms rc1 is reproducible and promotable unchanged."
+    - "No code changes required."
+    - "Final release notes accurately preserve limitations."
+    - "Final manifest records remote SHAs, test/smoke status, GPT verdicts, and paper-safety CLOSED/NOGO default."
+    - "No dirty baseline or forbidden files are included."
+
+  final_release_action:
+    allowed_if_all_checks_pass: true
+    action: "Create and push v0.2.0 final tag pointing to the same commit as v0.2.0-rc1."
+    must_not:
+      - "Do not retag rc1."
+      - "Do not move existing v0.2.0 tag if already present."
+      - "Do not tag a different SHA."
+      - "Do not force push."
+
+  next_after_success:
+    recommended_action: "Stop automation and perform human release announcement/review."
+    next_task_authorization:
+      authorized: no
+      execute_immediately: no
+      ask_before_starting: yes
+      recommended_task_id: NONE
+
+END_OF_GPT_RESPONSE

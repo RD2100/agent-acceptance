@@ -1,0 +1,144 @@
+YAML
+overall_judgment: review_unverified
+formal_verdict: not_accepted_yet
+reason: >
+  当前只看到结果摘要，没有 evidence pack、sanitized metadata packet、4 个 section diagnosis 输出、
+  safety attestation、test output 或 no-full-text 证明。按 evidence-first 规则，不能仅凭摘要判定 accepted。
+
+provisional_assessment_if_evidence_matches:
+  likely_verdict: accepted_with_limitation
+  why: >
+    如果确实只处理了 sanitized metadata，未保存全文，296 PASS，且四节输出均为结构诊断，
+    那么这次 first real paper review 可作为 bounded real-paper pilot 接受，但必须保留限制：
+    这是结构/论证诊断，不是全文审稿、不是引文审计、不是政治评论、也不是完整修改稿。
+
+current_findings_quality:
+  section_1:
+    reported_issues: 4
+    status: plausible
+  section_2:
+    reported_issues: 5
+    status: plausible
+  section_3:
+    reported_issues: 4
+    status: plausible
+  section_4:
+    reported_issues: 4
+    status: plausible
+  cross_section_finding:
+    - "结构过于对称，各节之间可能形成机械镜像。"
+    - "治理/方案部分弱于问题分析部分。"
+  quality_comment: >
+    这两个 cross-section finding 很有价值。它们说明系统没有只做单节局部评价，
+    而是已经识别到全文结构层面的核心问题：前文问题分析较强，后文治理回应不足；
+    四节形式上整齐，但论证推进可能不够有层次。
+
+safety_review:
+  claimed_safe:
+    - "sanitized metadata only"
+    - "no full text stored"
+    - "no external upload"
+    - "296 PASS"
+  still_need_evidence:
+    - "每个 section input packet 是否确实无 raw/full text"
+    - "输出中是否复现了大段原文"
+    - "memory / BOOT_CONTEXT / PROJECT_HISTORY 是否未写入论文内容"
+    - "SAFETY_ATTESTATION 是否明确 no full-text stored"
+    - "测试输出是否为 fresh 296 PASS"
+
+risks_not_mentioned:
+  - risk: "metadata abstraction may distort diagnosis"
+    detail: >
+      只用 sanitized metadata 有隐私优势，但也可能丢失论证细节。某些“结构问题”可能来自 metadata 提取方式，
+      而不是原文真实问题。
+
+  - risk: "processing all 4 sections at once may bypass sequential gate"
+    detail: >
+      之前建议是一节一节推进。现在一次性诊断 4 节，虽然仍是 metadata-only，
+      但需要补一个 cross-section QA gate，确认没有范围膨胀。
+
+  - risk: "overly symmetric structure finding may be template-induced"
+    detail: >
+      如果四节 metadata packet 使用了同一模板，系统可能更容易判断为“镜像结构”。
+      需要人工复核：这是论文真实结构问题，还是输入格式造成的假象。
+
+  - risk: "political-policy topic drift"
+    detail: >
+      教育强国属于政策性表述，输出必须保持学术分析：概念、论证、教育治理逻辑，
+      不能转向政治立场评论或宣传性表达。
+
+  - risk: "solution weakness needs section-level evidence"
+    detail: >
+      “治理部分弱于问题分析”是重要判断，但需要进一步说明弱在哪里：
+      是治理主体不清、机制不具体、路径与张力不对应，还是措施停留在口号层面。
+
+  - risk: "citation quality remains unverified"
+    detail: >
+      当前只能判断引用功能需求，不能宣称完成引文质量审查或参考文献核验。
+
+required_next_step:
+  task_id: REAL-PAPER-C4-CROSS-SECTION-QA-GATE-A1
+  purpose: >
+    对本次 4-section metadata diagnosis 做质量与安全复核，再决定是否进入具体修改方案生成。
+  must_check:
+    - "4 个 section input packets 是否 sanitized-only"
+    - "4 个 outputs 是否无 full text leakage"
+    - "cross-section finding 是否有足够结构证据"
+    - "solution section weakness 是否被具体化"
+    - "是否保持 academic policy analysis，而非 political commentary"
+    - "是否需要人工确认后再生成 revision blueprint"
+
+concrete_execution_steps:
+  - step: 1
+    name: "Collect evidence"
+    required_files:
+      - "SECTION1_DIAGNOSIS.md/json"
+      - "SECTION2_DIAGNOSIS.md/json"
+      - "SECTION3_DIAGNOSIS.md/json"
+      - "SECTION4_DIAGNOSIS.md/json"
+      - "CROSS_SECTION_SYNTHESIS.md/json"
+      - "SAFETY_ATTESTATION.md"
+      - "TEST_OUTPUT.txt showing 296 PASS"
+      - "INPUT_PACKET_AUDIT.md showing no full text stored"
+
+  - step: 2
+    name: "Run safety QA"
+    checks:
+      - "no raw_paper_text"
+      - "no full_paper_text"
+      - "no full_chapter_text"
+      - "no long original quotations"
+      - "no memory write with paper content"
+      - "no external upload"
+
+  - step: 3
+    name: "Run quality QA"
+    checks:
+      - "每节问题是否具体"
+      - "跨节问题是否能解释全文结构"
+      - "是否区分结构问题、论证问题、证据问题、表达问题"
+      - "是否指出治理部分如何回应前文张力"
+      - "是否给出可执行而非空泛的修改方向"
+
+  - step: 4
+    name: "Human decision gate"
+    decisions:
+      - "accept diagnosis and generate revision plan"
+      - "revise sanitized metadata packets"
+      - "rerun one section only"
+      - "stop real-paper pilot"
+
+formal_required_before_acceptance:
+  - "Provide evidence pack or paste key outputs."
+  - "Include safety attestation."
+  - "Include 296 PASS raw output."
+  - "Include input-packet audit proving metadata-only."
+  - "Include cross-section synthesis output."
+
+final_verdict:
+  status: review_unverified
+  provisional: accepted_with_limitation_if_evidence_matches
+  do_not_advance_to_full_rewrite: true
+  next_allowed_action: "Run cross-section QA gate and human review before generating any section-level revision text."
+
+END_OF_GPT_RESPONSE

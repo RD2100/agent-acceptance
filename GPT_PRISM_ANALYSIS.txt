@@ -1,0 +1,290 @@
+YAML
+overall_judgment: "Prism 不应作为当前系统的替代方案；可把它当作对标方向，但不能按未核验产品规划"
+recommendation:
+  keep_building_current_system: true
+  copy_from_prism_like_tools:
+    - "长文档工作区体验"
+    - "跨章节导航"
+    - "引用/证据管理"
+    - "版本化修订计划"
+  do_not_copy:
+    - "把全文上传到云端工作区作为默认方式"
+    - "自动生成整篇论文正文"
+    - "弱化 fail-closed 和 evidence-first 审查"
+1. 我了解 OpenAI Prism 吗？它有哪些核心功能？
+
+我没有找到 OpenAI 官方关于 “Prism” 作为正式产品的可靠说明。也就是说，至少从可核验的官方信息看，我不能确认 Prism 当前是一个稳定、公开、可用的 OpenAI 产品。之前网络上有一些第三方说法，把它描述为“科研写作/协作工作区”，但这些说法不宜作为项目决策依据。
+
+可以确定的是，OpenAI 官方已有一些相邻能力：ChatGPT Projects 支持上传 PDF、表格、文档、图片等作为项目资料，并让 ChatGPT 基于这些资料回答；Projects 也支持项目说明、项目内记忆、Google Drive/Slack 链接、共享协作等能力。
+OpenAI Help Center
++2
+OpenAI Help Center
++2
+ OpenAI 的 deep research 官方介绍则强调，它能进行多步骤联网研究、分析大量文本/图片/PDF，并生成带引用的研究报告。
+OpenAI
+
+所以，更稳妥的说法是：
+
+YAML
+prism_status:
+  official_openai_product_status: "未能从官方来源确认"
+  should_plan_project_around_it: false
+  comparable_official_capabilities:
+    - "ChatGPT Projects: 文件、项目记忆、协作、项目上下文"
+    - "Deep research: 联网资料搜集、PDF/网页分析、带引用报告"
+2. 和 Prism/类似产品相比，我们缺少什么？
+
+如果把 Prism 理解为一个“科研写作工作区”类产品，你们现在缺的不是模型能力，而是产品化工作台能力。
+
+YAML
+gaps_vs_prism_like_workspace:
+  1_document_workspace:
+    missing:
+      - "可视化长文档导航"
+      - "按章节/小节/段落组展开诊断结果"
+      - "原文与诊断并排查看"
+      - "修改建议与原文位置绑定"
+    current_system:
+      - "有模块分割和报告"
+      - "但缺少可交互界面"
+
+  2_revision_versioning:
+    missing:
+      - "修订版本对比"
+      - "建议采纳/拒绝状态"
+      - "一轮修改前后质量变化"
+      - "按模块记录修改历史"
+    current_system:
+      - "有 issue ledger"
+      - "但还没有 manuscript revision history"
+
+  3_citation_workspace:
+    missing:
+      - "参考文献库"
+      - "引用位置映射"
+      - "引用功能分类"
+      - "文献缺口清单"
+      - "引用格式检查"
+    current_system:
+      - "能发现 citation gap"
+      - "但不能联网检索，也没有文献库管理"
+
+  4_human_review_ui:
+    missing:
+      - "用户逐条确认建议"
+      - "一键标记：采纳/暂缓/拒绝/需导师判断"
+      - "导出导师沟通版修改说明"
+    current_system:
+      - "输出报告"
+      - "但用户反馈尚未结构化进入系统"
+
+  5_multi_module_synthesis:
+    missing:
+      - "跨章节问题聚类"
+      - "全篇论证链可视化"
+      - "结构对称/重复/断裂的全篇图谱"
+    current_system:
+      - "已经能发现过度对称"
+      - "但还没有稳定的全篇结构图谱"
+3. Prism 可能做但我们不应该复制的东西
+
+哪怕 Prism 或类似工具能做，你们也不应直接复制以下模式：
+
+YAML
+do_not_copy:
+  cloud_full_text_default:
+    reason: "你们的核心优势是本地处理和不把全文放进 GPT 对话；不应变成默认全文上传。"
+
+  full_draft_generation:
+    reason: "博士/期刊论文涉及作者原创性，系统应给诊断、策略、模板，不应自动生成最终正文。"
+
+  autonomous_citation_generation:
+    reason: "不能虚构文献；网络受限时尤其不能伪造引用。"
+
+  political_position_advice:
+    reason: "教育强国战略只能作为教育政策与教育学研究语境分析，不做政治立场评论。"
+
+  always_on_project_memory:
+    reason: "论文内容不应进入长期 memory；只能记录结构性结论和任务状态。"
+
+  black_box_review:
+    reason: "你们已经建立 evidence-first、fail-closed、issue ledger，不应退回不可审计的黑箱建议。"
+
+重点是：Prism 类产品可能更顺滑，但你们不能牺牲本地、安全、可审计和不代写边界。
+
+4. 我们独有的优势
+
+你们当前系统的优势非常明确，而且不是通用写作工具天然具备的：
+
+YAML
+unique_strengths:
+  1_fail_closed_safety:
+    - "preflight"
+    - "privacy guard"
+    - "auth gate"
+    - "GO/NOGO"
+    - "dry run"
+    - "pre-GPT-review gate"
+    - "evidence-pack linter"
+    - "transaction runner"
+    - "verify_gpt_reply"
+
+  2_no_full_text_to_gpt:
+    - "Claude/local 读原文"
+    - "GPT 只审查摘要和策略"
+    - "不把全文放入 GPT 对话"
+
+  3_evidence_first_review:
+    - "PACK_MANIFEST"
+    - "TEST_OUTPUT"
+    - "SAFETY_ATTESTATION"
+    - "CLOSURE_REPORT"
+    - "issue ledger"
+    - "loop hash 去重"
+
+  4_paper_specific_diagnosis:
+    - "章节功能诊断"
+    - "段落功能映射"
+    - "论证链断裂检测"
+    - "比例失衡检测"
+    - "引用缺口检测"
+    - "过度对称结构识别"
+
+  5_academic_integrity_boundary:
+    - "诊断与策略，不代写"
+    - "不做政治评论"
+    - "不生成投稿终稿"
+    - "不虚构引用"
+
+这说明你们现在做的不是“通用 AI 写作器”，而是一个本地可审计的论文诊断与修订策略系统。
+
+5. 缩小差距，优先级最高的 3 个功能
+P1：文档导航与模块看板
+
+这是最该先做的，因为你们已有 12 个模块、C4/C5/C6/C7 输出，但缺一个统一视图。
+
+YAML
+feature_1:
+  task_id: PAPER-WORKSPACE-MODULE-DASHBOARD-A1
+  goal: "把 12 个模块、诊断问题、修订策略、GPT 审查状态放到一个可读 dashboard"
+  outputs:
+    - "PAPER_MODULE_DASHBOARD.md"
+    - "PAPER_MODULE_DASHBOARD.json"
+  fields:
+    - "module_id"
+    - "章节/小节标题"
+    - "字数"
+    - "引用数"
+    - "段落数"
+    - "P1/P2/P3 问题"
+    - "修订策略数量"
+    - "GPT 审查状态"
+    - "是否可进入下一轮"
+
+为什么它优先级最高： 当前最大问题不是读不懂文章，而是结果分散。需要把系统输出变成作者能用的工作台。
+
+P2：引用功能地图，而不是联网找文献
+
+你们网络受限，所以不要先做在线文献搜索。先做“引用功能地图”。
+
+YAML
+feature_2:
+  task_id: PAPER-CITATION-FUNCTION-MAP-A1
+  goal: "标记每个模块需要什么类型的引用支撑"
+  citation_functions:
+    - "政策依据"
+    - "概念界定"
+    - "事实/数据支撑"
+    - "既有研究依据"
+    - "对立观点"
+    - "方法论依据"
+    - "治理路径依据"
+  output:
+    - "CITATION_FUNCTION_MAP.json"
+    - "CITATION_GAP_REPORT.md"
+
+它比直接搜索文献更稳： 先知道“哪里需要什么类型的文献”，再由用户或联网环境补文献。
+
+P3：建议采纳/拒绝工作流
+
+C6 已经能给策略，但用户需要管理这些建议。
+
+YAML
+feature_3:
+  task_id: PAPER-REVISION-DECISION-LEDGER-A1
+  goal: "把每条修改建议变成可追踪决策"
+  decision_states:
+    - "accept"
+    - "reject"
+    - "revise"
+    - "needs_literature"
+    - "ask_advisor"
+    - "defer"
+  output:
+    - "REVISION_DECISION_LEDGER.json"
+    - "AUTHOR_REVISION_PLAN.md"
+
+它的价值： 让系统不只是“给建议”，而是帮助用户形成真正的修订计划。
+
+下一步具体建议
+
+不要继续做 C8/C9 模型链。下一步做产品化工作台：
+
+YAML
+next_task_authorization:
+  authorized: yes
+  recommended_task_id: PAPER-WORKSPACE-MODULE-DASHBOARD-A1
+
+taskspec:
+  task_id: PAPER-WORKSPACE-MODULE-DASHBOARD-A1
+  task_name: "Paper module dashboard for real-paper diagnosis and revision workflow"
+  task_type: paper_workspace_productization
+  objective:
+    - "汇总 12 个论文模块的 C4/C5/C6/C7 结果"
+    - "生成可读 dashboard"
+    - "让用户一眼看到每个模块的问题、优先级、修订状态和下一步"
+    - "不处理原文，不生成正文"
+
+  inputs:
+    - "C4 metadata diagnosis outputs"
+    - "C5 full-section structural reader outputs"
+    - "C6 revision strategy outputs"
+    - "C7 GPT review issue ledgers"
+    - "module metadata: title, chars, citations, section/subsection"
+
+  outputs:
+    - "_reports/paper-workspace-module-dashboard-a1/PAPER_MODULE_DASHBOARD.json"
+    - "_reports/paper-workspace-module-dashboard-a1/PAPER_MODULE_DASHBOARD.md"
+    - "_reports/paper-workspace-module-dashboard-a1/MODULE_PRIORITY_RANKING.md"
+    - "_reports/paper-workspace-module-dashboard-a1/SAFETY_ATTESTATION.md"
+
+  dashboard_fields:
+    - "module_id"
+    - "section_title"
+    - "subsection_title"
+    - "chars"
+    - "citations"
+    - "paragraph_count"
+    - "dominant_function"
+    - "major_issues"
+    - "P1_count"
+    - "P2_count"
+    - "revision_strategy_count"
+    - "gpt_review_status"
+    - "next_action"
+    - "privacy_status"
+
+  must_not_do:
+    - "不读取或输出原文"
+    - "不生成改写正文"
+    - "不调用 Web GPT"
+    - "不外部上传"
+    - "不写入论文内容到 memory"
+
+  success_criteria:
+    - "12 个模块全部进入 dashboard"
+    - "能按 P1/P2 问题排序"
+    - "能识别优先修订模块"
+    - "能生成作者下一步修订清单"
+
+一句话结论：不要追 Prism 的“通用写作器”形态；你们下一步应该做 paper workspace dashboard，把已有 C4-C7 产物汇总为可决策的修订工作台。

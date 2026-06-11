@@ -1,0 +1,182 @@
+YAML
+overall_judgment: proceed_sequentially_with_layered_diagnosis
+3. 诊断只看结构/逻辑，还是也看引用质量和论证强度？
+
+不应只看结构/逻辑。建议采用 三层诊断，但优先级不同：
+
+YAML
+diagnosis_scope:
+  primary:
+    - "结构功能"
+    - "问题意识"
+    - "论证逻辑"
+    - "章节衔接"
+  secondary:
+    - "论证强度"
+    - "概念解释力"
+    - "材料支撑是否充分"
+  tertiary:
+    - "引用质量"
+    - "文献类型是否匹配"
+    - "是否存在政策表述多、学术解释弱的问题"
+
+具体来说：
+
+第一层：结构/逻辑，必须做
+
+这是当前 pilot 的核心。要判断：
+
+YAML
+structure_logic_check:
+  - "摘要/引言提出的问题是否能统领全文"
+  - "第一节是否承担了‘为什么必须提质扩容’的论证功能"
+  - "必然逻辑、内在张力、平衡之道、协同治理之间是否递进"
+  - "各节之间是否存在重复、断裂或跳跃"
+  - "标题中的‘必然逻辑、内在张力、治理进路’是否在结构中真正展开"
+第二层：论证强度，应该做
+
+论证强度不是全文细读式评价，而是结构层面的强弱判断。比如：
+
+YAML
+argument_strength_check:
+  - "是否只是罗列政策背景，而没有形成学术问题"
+  - "是否从‘教育强国战略要求’自然推出‘高等教育提质扩容’"
+  - "是否解释了为什么是‘提质’与‘扩容’并举"
+  - "是否说明二者之间为什么会产生张力"
+  - "治理进路是否回应了前文张力，而不是另起一套政策建议"
+
+这一层很重要，因为你的论文题目不是一般政策解读，而是要形成学术论文的论证链。
+
+第三层：引用质量，可以做，但先做“类型诊断”
+
+不建议一开始就做详细引文核查，因为那会要求处理大量正文和参考文献，容易扩大范围。第一轮只做 引用功能诊断：
+
+YAML
+citation_quality_check:
+  allowed_now:
+    - "判断哪些论点需要政策依据"
+    - "判断哪些论点需要学术文献支撑"
+    - "判断哪些部分不能只靠政策文件"
+    - "判断是否需要补充高等教育规模、质量、结构、治理方面研究"
+  not_yet:
+    - "逐条核对参考文献格式"
+    - "逐条验证 CNKI 来源"
+    - "完整参考文献清洗"
+    - "全文引文一致性检查"
+
+所以第 3 个问题的结论是：
+
+YAML
+answer_3:
+  diagnosis_should_include:
+    - "structure_logic"
+    - "argument_strength"
+    - "citation_function"
+  diagnosis_should_not_yet_include:
+    - "full citation audit"
+    - "reference formatting"
+    - "full text rewrite"
+
+一句话：第一轮以结构和论证为主，同时判断引用支撑是否足够；不要一开始做完整引文审计。
+
+4. 其他章节应该顺序处理，还是并行处理？
+
+建议 顺序处理，不要并行。
+
+YAML
+answer_4:
+  recommended_mode: sequential
+  parallel_processing: not_recommended_for_real_paper_first_run
+
+原因是：这篇文章的四个argument_strength"
+- "citation_function"
+diagnosis_should_not_yet_include:
+- "full citation audit"
+- "reference formatting"
+- "full text rewrite"
+
+
+一句话：**第一轮以结构和论证为主，同时判断引用支撑是否足够；不要一开始做完整引文审计。**
+
+---
+
+## 4. 其他章节应该顺序处理，还是并行处理？
+
+建议 **顺序处理**，不要并行。
+
+```yaml
+answer_4:
+  recommended_mode: sequential
+  parallel_processing: not_recommended_for_real_paper_first_run
+
+原因是：这篇文章部分存在强递进关系：
+
+YAML
+paper_structure_logic:
+  section_1: "必然逻辑：为什么要提质扩容"
+  section_2: "内在张力：提质扩容过程中有什么矛盾"
+  section_3: "平衡之道：如何处理质量与规模等关系"
+  section_4: "协同治理：如何形成治理进路"
+
+如果并行处理，容易出现三个问题：
+
+YAML
+parallel_risks:
+  - "各节被孤立评价，看不出前后递进是否成立"
+  - "后文治理建议可能脱离前文张力"
+  - "多个 section packet 同时处理，增加隐私和范围失控风险"
+
+建议顺序是：
+
+YAML
+recommended_sequence:
+  phase_0:
+    name: "摘要/引言 metadata preflight"
+    goal: "确认全文问题意识、核心论点和结构承诺"
+
+  phase_1:
+    name: "第一节：必然逻辑"
+    goal: "检查全文论证起点是否成立"
+
+  phase_2:
+    name: "第二节：内在张力"
+    goal: "检查问题分析是否有解释力"
+
+  phase_3:
+    name: "第三节：平衡之道"
+    goal: "检查调适逻辑是否回应张力"
+
+  phase_4:
+    name: "第四节：协同治理"
+    goal: "检查治理进路是否回应前文问题"
+
+  phase_5:
+    name: "整体结构回看"
+    goal: "检查标题、摘要、引言、四节之间是否一致"
+
+每一节都要有一个 gate：
+
+YAML
+section_gate:
+  before_next_section:
+    - "本节 structural diagnosis 完成"
+    - "revision blueprint 完成"
+    - "utility evaluation 完成"
+    - "无全文泄露"
+    - "无外部上传"
+    - "用户确认输出有用"
+最终建议
+YAML
+final_plan:
+  start_with: "Abstract/Introduction metadata preflight"
+  then_process: "Section 1: 高等教育提质扩容的必然逻辑"
+  diagnosis_focus:
+    primary: "结构逻辑"
+    secondary: "论证强度"
+    tertiary: "引用功能"
+  process_mode: "sequential, not parallel"
+  advance_rule: "一节通过质量与安全审查后，再进入下一节"
+
+一句话：先做摘要/引言预检，再顺序处理第一节、第二节、第三节、第四节；每一节以结构逻辑和论证强度为主，同时判断引用支撑是否足够，但暂不做全文式引文审计。
+
+END_OF_GPT_RESPONSE

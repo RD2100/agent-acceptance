@@ -1,0 +1,173 @@
+task_id: t-governance-convergence-20260601
+title: Converge in-flight governance and blackboard cleanup module
+priority: P0
+status: ready
+mode: "@go edit"
+description: >
+  Resolve the current in-flight governance module as a coherent batch instead of
+  piecemeal fixes. This batch owns the existing dirty governance files, aligns
+  blackboard cleanup changes with runtime/evidence changes, and restores a
+  consistent project-completeness baseline.
+
+goal:
+  user_visible_success: >
+    The current dirty governance/blackboard cleanup worktree becomes a coherent,
+    reviewable module with explicit evidence, updated docs/inventory consistency,
+    and runnable validation gates.
+  in_scope:
+    - Reconcile current dirty governance files into one consistent batch
+    - Decide and implement the final Blackboard cleanup position across inventory, routing, and draft hooks
+    - Keep chain-evidence runtime hardening and schema updates aligned with the module
+    - Reduce ambiguous dirty state by converting it into a formally reviewed @go batch
+    - Produce a dedicated run evidence directory for this module
+  out_of_scope:
+    - Commit, push, merge, or destructive git cleanup
+    - External project bootstrap testing
+    - CodeGraph activation if blocked by phase policy
+    - 100+ skill classification backlog
+    - New external identity/signing infrastructure
+
+constraints:
+  token_strategy:
+    - Planner stays lean; worker does the heavy lifting
+    - Prefer one coherent batch over multiple micro-fixes
+    - Reuse existing reports and current diffs as source of truth
+  hard_stops:
+    - No fake green
+    - No destructive git
+    - No secrets in reports or code
+    - Executor must not write reviewer artifacts
+    - If validation cannot fully pass, report blocked with exact reasons
+
+allow_write:
+  - archive/draft-hooks/pre-final.audit.ps1
+  - archive/draft-hooks/pre-task.audit.ps1
+  - archive/draft-hooks/pre-tool.audit.ps1
+  - docs/agent-runtime/capability-inventory.md
+  - docs/agent-runtime/routing-matrix-summary.md
+  - schemas/agent-runtime/chain-evidence.schema.json
+  - tools/ai_guard.py
+  - tools/go_evidence.py
+  - audit/blackboard-cleanup-audit-20260531.md
+  - reports/go-orchestrator-plan-20260601.md
+  - runs/t-governance-convergence-20260601/**
+
+gate_0:
+  triggered: true
+  trigger_reason: >
+    Current repo state has one large unresolved governance/blackboard cleanup
+    module spread across 8 modified files. Treating them as isolated small fixes
+    has already produced blocked verification and repeated coordination overhead.
+  inventory_evidence:
+    queried_sources:
+      - AGENTS.md
+      - reports/project-completeness-report-final-20260528.md
+      - reports/session-summary-20260528.md
+      - reports/go-orchestrator-plan-20260601.md
+      - tasks/root-cause-analysis-20260530.md
+      - tasks/structural-governance-audit-20260531.md
+      - tasks/reviewer-node-audit-20260531.md
+      - docs/AGENT_WORKQUEUE_RULES.md
+      - scripts/Run-WorkQueue.ps1
+      - scripts/Test-WorkQueue.ps1
+    matched_capabilities:
+      - agent-acceptance
+      - ai_guard
+      - go_evidence
+      - workqueue
+      - governance-drift
+    compared_against_request:
+      - "project completeness first"
+      - "big module before detail patches"
+      - "complete @go flow with delegation"
+  rules_checked:
+    - core-004
+    - core-005
+    - core-007
+    - review-001
+    - sec-001
+  lessons_checked:
+    - LL-008
+    - LL-009
+    - LL-010
+  sufficiency_decision: new_delta_required
+  decision: build_delta
+  delta_justification: >
+    Existing work is partially implemented but not converged. The missing value
+    is not another small fix; it is module-level convergence, validation, and
+    evidence packaging across the current in-flight governance files.
+
+conflict_registry:
+  read_set:
+    - AGENTS.md
+    - reports/project-completeness-report-final-20260528.md
+    - reports/session-summary-20260528.md
+    - tasks/root-cause-analysis-20260530.md
+    - tasks/structural-governance-audit-20260531.md
+    - tasks/reviewer-node-audit-20260531.md
+    - docs/AGENT_WORKQUEUE_RULES.md
+    - scripts/Run-WorkQueue.ps1
+    - scripts/Test-WorkQueue.ps1
+    - archive/draft-hooks/pre-final.audit.ps1
+    - archive/draft-hooks/pre-task.audit.ps1
+    - archive/draft-hooks/pre-tool.audit.ps1
+    - docs/agent-runtime/capability-inventory.md
+    - docs/agent-runtime/routing-matrix-summary.md
+    - schemas/agent-runtime/chain-evidence.schema.json
+    - tools/ai_guard.py
+    - tools/go_evidence.py
+    - audit/blackboard-cleanup-audit-20260531.md
+  write_set:
+    - archive/draft-hooks/pre-final.audit.ps1
+    - archive/draft-hooks/pre-task.audit.ps1
+    - archive/draft-hooks/pre-tool.audit.ps1
+    - docs/agent-runtime/capability-inventory.md
+    - docs/agent-runtime/routing-matrix-summary.md
+    - schemas/agent-runtime/chain-evidence.schema.json
+    - tools/ai_guard.py
+    - tools/go_evidence.py
+    - audit/blackboard-cleanup-audit-20260531.md
+    - reports/go-orchestrator-plan-20260601.md
+    - runs/t-governance-convergence-20260601/**
+  protected_files_touched: false
+  conflict_level: high
+
+implementation_plan:
+  - Read the current dirty diffs and supporting audit/completeness reports first.
+  - Decide the final module position for Blackboard cleanup across inventory, routing, draft hooks, and audit report.
+  - Keep or refine chain-evidence runtime/schema changes only if they fit the converged module.
+  - Initialize module evidence with go_evidence.py init.
+  - Run the narrowest meaningful validations, then broader governance checks if the module reaches a coherent state.
+  - Write test-output.md with command, exit code, and verdict summaries.
+  - Do not write reviewer artifacts.
+
+verification:
+  required_commands:
+    - python tools/go_evidence.py init runs/t-governance-convergence-20260601 --run-id t-governance-convergence-20260601 --task .ai/tasks/t-governance-convergence-20260601.yaml --executor-id executor-t-governance-convergence-20260601
+    - python -m py_compile tools/ai_guard.py tools/go_evidence.py
+    - powershell -ExecutionPolicy Bypass -File scripts/Test-ReviewerEvidence.ps1
+    - powershell -ExecutionPolicy Bypass -File scripts\Test-WorkQueue.ps1
+  conditional_commands:
+    - powershell -ExecutionPolicy Bypass -File scripts\sadp-audit.ps1
+    - powershell -ExecutionPolicy Bypass -File hooks\pre-commit.governance.ps1
+  expected_positive:
+    - governance files form a coherent module-level story
+    - blackboard cleanup references are either intentionally removed or consistently documented
+    - runtime evidence hardening remains valid after convergence
+  expected_negative:
+    - if unrelated dirty-state or policy blockers remain, batch must be reported blocked instead of pass
+
+acceptance_criteria:
+  - Current dirty governance files are reconciled into one consistent module
+  - capability-inventory and routing-matrix no longer contradict the intended Blackboard policy
+  - draft hooks no longer contain stale Blackboard patterns inconsistent with the chosen policy
+  - audit/blackboard-cleanup-audit-20260531.md matches actual current disk state or is explicitly corrected
+  - chain-evidence schema/tool changes are aligned with runtime validation
+  - A dedicated run evidence directory exists under runs/t-governance-convergence-20260601/
+  - The executor reports exact residual blockers if the module cannot reach pass
+
+reviewer_requirements:
+  - Reviewer must be separate from executor
+  - Reviewer must read diff.patch, test-output.md, safety-report.json, and chain-evidence.json
+  - Reviewer must produce review.md and review.yaml
+  - Finalizer must run python tools/go_evidence.py finalize on runs/t-governance-convergence-20260601

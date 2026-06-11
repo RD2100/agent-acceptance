@@ -1,0 +1,72 @@
+task_id: t-review-chain-evidence-hardening-20260601
+title: Review blocked runtime hardening batch
+priority: P1
+status: ready
+mode: "@go read"
+description: >
+  Independent reviewer task for the blocked runtime hardening batch. Review the
+  existing evidence directory and produce review.md and review.yaml only.
+
+allow_write:
+  - runs/t-chain-evidence-hardening-20260601/review.md
+  - runs/t-chain-evidence-hardening-20260601/review.yaml
+
+no_touch_write_set:
+  - tools/ai_guard.py
+  - tools/go_evidence.py
+  - archive/draft-hooks/pre-final.audit.ps1
+  - archive/draft-hooks/pre-task.audit.ps1
+  - archive/draft-hooks/pre-tool.audit.ps1
+  - docs/agent-runtime/capability-inventory.md
+  - docs/agent-runtime/routing-matrix-summary.md
+  - audit/blackboard-cleanup-audit-20260531.md
+
+gate_0:
+  triggered: false
+  inventory_evidence:
+    queried_sources:
+      - runs/t-chain-evidence-hardening-20260601/diff.patch
+      - runs/t-chain-evidence-hardening-20260601/test-output.md
+      - runs/t-chain-evidence-hardening-20260601/safety-report.json
+      - runs/t-chain-evidence-hardening-20260601/chain-evidence.json
+    matched_capabilities:
+      - reviewer-evidence-validation
+    compared_against_request:
+      - "independent reviewer output for blocked batch"
+  sufficiency_decision: reuse_existing
+  decision: reuse
+
+conflict_registry:
+  read_set:
+    - runs/t-chain-evidence-hardening-20260601/diff.patch
+    - runs/t-chain-evidence-hardening-20260601/test-output.md
+    - runs/t-chain-evidence-hardening-20260601/safety-report.json
+    - runs/t-chain-evidence-hardening-20260601/chain-evidence.json
+    - tools/ai_guard.py
+  write_set:
+    - runs/t-chain-evidence-hardening-20260601/review.md
+    - runs/t-chain-evidence-hardening-20260601/review.yaml
+  protected_files_touched: false
+  conflict_level: low
+
+review_instructions:
+  required_inputs:
+    - diff.patch
+    - test-output.md
+    - safety-report.json
+    - chain-evidence.json
+  fixed_facts:
+    - executor changed only tools/ai_guard.py
+    - executor verdict is blocked
+    - positive probe on runs/structural-governance-fix-20260531 passed
+    - negative malformed-chain probe blocked as expected
+    - required guard command remained blocked by pre-existing unrelated dirty files outside TaskSpec allow_write
+  required_verdict: blocked
+
+acceptance_criteria:
+  - review.md exists and summarizes why verdict remains blocked
+  - review.yaml exists with reviewer_role reviewer
+  - review.yaml reviewer_id differs from executor_id
+  - review.yaml reviewed_inputs lists diff.patch, test-output.md, safety-report.json, chain-evidence.json
+  - review.yaml verdict is blocked
+  - no file outside allow_write is modified

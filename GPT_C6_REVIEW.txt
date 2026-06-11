@@ -1,0 +1,109 @@
+YAML
+overall_judgment: accepted_with_limitation
+formal_evidence_status: summary_based_review
+review_scope:
+  - "C5 updated full-section structural reader"
+  - "C6 bounded revision suggester"
+
+combined_verdict:
+  C5_updated: accepted_with_limitation
+  C6_bounded_revision_suggester: accepted_with_limitation
+  advance_to_full_rewrite: no
+  next_recommended_task: PAPER-C6-REVISION-SUGGESTION-QA-A1
+
+C5_updated_review:
+  verdict: accepted_with_limitation
+  accepted_basis:
+    - "PDF line-break normalization has been fixed enough to avoid the earlier 36/40/47 pseudo-paragraph problem."
+    - "C5 now produces paragraph/function mapping at a more stable unit level."
+    - "Three real-paper sections were analyzed."
+    - "No original text is included in output."
+    - "No external upload or Web GPT runner use."
+    - "296 PASS."
+  limitation:
+    - "4 paragraphs/section may now be slightly over-merged. Treat these as logical argument blocks, not necessarily natural paragraphs."
+    - "Before using C5 for fine-grained rewrite guidance, confirm that merged blocks still preserve the paper’s actual argumentative sequence."
+
+C6_review:
+  verdict: accepted_with_limitation
+  accepted_basis:
+    - "C6 consumes C5 diagnosis rather than raw full paper text."
+    - "It generates revision strategies, not full rewrites."
+    - "Compression targets, evidence-gap detection, citation strategy, prescriptive-ratio warning, and transition template are useful revision-level outputs."
+    - "The disclaimer correctly keeps authorship with the user."
+    - "No original text or rewritten paragraphs are output."
+    - "296 PASS."
+  limitation:
+    - "Transition sentence templates are acceptable, but they must remain templates, not polished substitute prose for the paper."
+    - "Evidence/citation strategy should identify citation functions, not fabricate sources."
+    - "Compression suggestions should be tied to argument function, not just word count."
+
+safety_verdict:
+  status: pass_with_limitations
+  confirmed_boundaries:
+    - "no original text in output"
+    - "no full rewrite"
+    - "no external upload"
+    - "no Web GPT execution"
+    - "strategy-level only"
+  must_remain_forbidden:
+    - "full-section rewritten draft"
+    - "full-paper rewrite"
+    - "verbatim paragraph reproduction"
+    - "fabricated citations"
+    - "political commentary"
+    - "memory write with paper content"
+
+quality_notes:
+  - "C5+C6 now forms a meaningful real-paper workflow: read section locally → diagnose structure → produce bounded revision strategies."
+  - "The key improvement is that C6 gives actionable revision directions without crossing into ghostwriting."
+  - "The prescriptive-ratio warning is especially useful for this paper because policy/g治理类文章容易把后文写成规范性倡议，而不是基于前文张力的机制回应."
+  - "The compression strategy is useful, but should be checked by a human because long paragraphs in CSSCI-style papers are not automatically wrong; the issue is whether each long block has a clear function."
+
+required_before_next_expansion:
+  - "Run a QA review on the 7 C6 suggestions: useful / too generic / unsafe / needs human refinement."
+  - "Verify that the transition template does not reproduce or replace original prose."
+  - "Check whether 4 logical blocks per section are too coarse for paragraph-level diagnosis."
+  - "Do not proceed to full rewrite generation."
+
+recommended_next_task_spec:
+  task_id: PAPER-C6-REVISION-SUGGESTION-QA-A1
+  task_name: "Quality and safety QA for bounded revision suggestions"
+  task_type: real_paper_revision_quality_gate
+  objective:
+    - "Review C6 revision suggestions for usefulness, specificity, and safety."
+    - "Decide whether C6 suggestions are actionable enough for human revision."
+    - "Identify which suggestions are too generic, over-compressive, or potentially unsafe."
+    - "Confirm C6 remains strategy-level and does not become rewrite generation."
+  write_set:
+    allowed_paths:
+      - "_reports/paper-c6-revision-suggestion-qa-a1/**"
+      - "evidence_packs/paper-c6-revision-suggestion-qa-a1/**"
+      - ".ai/tasks/paper-c6-revision-suggestion-qa-a1.yaml"
+    forbidden_paths:
+      - "memory/** containing paper text"
+      - "BOOT_CONTEXT.md containing paper text"
+      - "PROJECT_HISTORY.md containing paper text"
+      - "evidence_packs/** containing original section text"
+      - ".ai/bypass_approved"
+      - "**/__pycache__/**"
+      - "**/*.pyc"
+  required_checks:
+    - "Each C6 suggestion has a concrete target and reason."
+    - "No suggestion includes original paragraph text."
+    - "No suggestion becomes full rewritten prose."
+    - "Citation strategies are citation-function suggestions only."
+    - "Compression recommendations preserve argumentative function."
+    - "Transition templates remain generic and user-editable."
+  success_criteria:
+    - "QA report classifies all 7 suggestions."
+    - "At least some suggestions are judged useful and actionable."
+    - "Unsafe or overly generic suggestions are flagged."
+    - "Decision made: continue bounded suggestions, revise C6 logic, or stop before rewrite module."
+
+final_decision:
+  accept_C5_C6: yes_with_limitations
+  enter_C7_full_rewrite: no
+  next_step: "QA the C6 suggestions before expanding capability."
+
+END_OF_GPT_RESPONSE

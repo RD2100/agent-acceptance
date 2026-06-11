@@ -1,0 +1,43 @@
+overall_judgment: accepted_with_limitation
+task_id: REVIEW-QUEUE
+evidence_reviewed: pasted_targeted_test_proof
+
+verdict:
+REVIEW-QUEUE: accepted_with_limitation
+
+accepted_basis:
+
+"Targeted review queue tests now show 10 passed in 0.08s."
+
+"Previously failing test_only_one_active appears fixed or no longer failing."
+
+"END_OF_GPT_RESPONSE validation is covered."
+
+"Valid GPT reply path is covered."
+
+"GPT reply without next_task_authorization fails as required."
+
+limitations:
+
+"Full TEST_OUTPUT was not provided in this message, so full-suite green status remains unverified here."
+
+"This verdict applies to REVIEW-QUEUE targeted fix only, not to the entire final batch."
+
+blocking_issues: []
+
+required_fixes: []
+
+required_before_batch_closure:
+
+"Provide or regenerate full TEST_OUTPUT showing no failed tests."
+
+"Ensure final batch does not include dirty baseline files such as .ai/bypass_approved, HANDOFF deletion, runs/* rewrites, archive hooks, tmp/cache files."
+
+summary:
+REVIEW-QUEUE: accepted_with_limitation
+CONTROL-PLANE-SCRIPTS: accepted_with_limitation
+remaining_unresolved_from_prior_batch:
+- "PAPER-SAFETY-INFRASTRUCTURE remains blocked unless separately fixed and proven."
+- "CONTROL-PLANE-BYPASS-FIX remains only acceptable if targeted safety tests and marker exclusion are proven."
+
+END_OF_GPT_RESPONSE

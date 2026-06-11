@@ -1,0 +1,346 @@
+我查到了 OpenAI 官方 Prism 页面，所以这次不需要只靠训练数据推测。下面区分“官方明确写到的内容”和“基于产品定位的推断”。
+
+1. Prism 是什么产品？定位是什么？
+
+Prism 是 OpenAI 推出的 科研写作与协作工作空间，核心定位是：原生支持 LaTeX，把 GPT-5.2 融入科研写作、编辑、编译、引用和协作流程。官方页面称它是“免费工作空间”，用于提升日常科研效率，在同一平台完成撰写、编译与协作。
+OpenAI
+
+更准确地说，Prism 不是单纯聊天机器人，而是一个面向科研论文写作的 AI-native LaTeX workspace。它更接近 Overleaf + ChatGPT + 引用管理 + 文献检索 + AI 编辑工具的组合。官方表述强调，它以 LaTeX 为核心，将写作、协作和 AI 辅助编辑整合进同一流程。
+OpenAI
+
+2. Prism 的核心功能
+
+官方页面明确列出的核心功能包括：
+
+YAML
+prism_core_features:
+  writing_workspace:
+    - "云端 LaTeX 工作空间"
+    - "撰写、组织、编译、预览在同一平台完成"
+    - "无需本地安装 LaTeX 环境"
+
+  collaboration:
+    - "协作人数不设上限"
+    - "实时编辑"
+    - "即时预览"
+    - "评论功能"
+    - "减少版本冲突和手动合并"
+
+  ai_assistant:
+    - "AI 助手"
+    - "项目感知型 AI"
+    - "能在完整稿件上下文、历史草稿和修订中工作"
+    - "帮助澄清思路、检查推理、优化结构"
+
+  proofreading_and_editing:
+    - "AI 辅助校对"
+    - "AI 自动格式调整"
+    - "编辑优化"
+    - "AI 智能修复"
+
+  citation_and_literature:
+    - "引用管理"
+    - "文献检索"
+    - "与 Zotero 同步"
+    - "支持引用检索"
+
+  latex_support:
+    - "内置 LaTeX 渲染"
+    - "公式转换"
+    - "自动错误检查"
+    - "编译时间不设上限"
+    - "编译速度不受限制"
+
+  multimodal_or_input_tools:
+    - "图像转代码"
+    - "语音转代码"
+
+其中，“协作者不限、项目数量不限、编译时间不限、编译速度不受限制、Zotero 同步、评论、AI 助手、AI 智能修复、图像转代码、语音转代码”都在官方页面的能力列表中出现。
+OpenAI
+
+3. Prism 的工作流
+
+从官方页面可以推断出 Prism 的典型使用流程是：
+
+YAML
+prism_workflow:
+  step_1:
+    action: "创建或打开一个科研写作项目"
+    content: "LaTeX 源码、论文结构、引用、图表、公式"
+
+  step_2:
+    action: "在云端 LaTeX 工作区撰写"
+    user_experience: "左侧编辑 LaTeX，右侧查看编译预览"
+
+  step_3:
+    action: "多人协作"
+    features:
+      - "实时编辑"
+      - "评论"
+      - "即时预览"
+      - "减少版本冲突"
+
+  step_4:
+    action: "调用 AI 辅助"
+    possible_tasks:
+      - "总结"
+      - "校对"
+      - "查找文献"
+      - "检查推理"
+      - "优化结构"
+      - "修复格式或 LaTeX 错误"
+
+  step_5:
+    action: "处理引用和文献"
+    features:
+      - "Zotero 同步"
+      - "引用检索"
+      - "文献搜索结果"
+
+  step_6:
+    action: "持续修订"
+    ai_context:
+      - "完整稿件上下文"
+      - "历史草稿"
+      - "所有修订"
+
+官方页面明确说 Prism 支持云端 LaTeX 撰写、组织与协作，并且项目感知型 AI 能在完整稿件上下文、历史草稿与所有修订中工作。
+OpenAI
+
+4. 它如何与 ChatGPT/GPT 集成？
+
+官方页面说 Prism 将 GPT-5.2 无缝融入科研写作与协作流程。它不是把用户送到普通 ChatGPT 对话框，而是在 LaTeX 工作区里内置项目感知型 AI。这个 AI 能结合完整稿件上下文、历史草稿和修订，帮助用户检查推理、优化结构，并在研究推进时更新公式、表格、章节与参考文献。
+OpenAI
+
+所以它的集成方式大致是：
+
+YAML
+integration_model:
+  type: "workspace-embedded GPT"
+  model: "GPT-5.2"
+  context:
+    - "当前论文项目"
+    - "LaTeX 源码"
+    - "编译结果"
+    - "历史草稿"
+    - "修订记录"
+    - "引用/参考文献"
+  ai_actions:
+    - "校对"
+    - "结构优化"
+    - "推理检查"
+    - "引用管理"
+    - "文献检索"
+    - "LaTeX / 格式修复"
+
+这和你们当前系统最大的区别是：Prism 是 文档工作区内嵌 AI；你们现在是 本地管线 + 安全闸门 + GPT 审查摘要。
+
+5. 和我们当前论文系统对比
+Prism 也有、我们也有的能力
+YAML
+overlap:
+  long_document_support:
+    prism: "长篇科研写作工作区"
+    ours: "PDF 全文提取、模块分割、章节/段落诊断"
+
+  structure_support:
+    prism: "帮助检查推理、优化结构"
+    ours: "C4/C5/C6/C7 对章节结构、段落功能、论证链进行诊断"
+
+  revision_assistance:
+    prism: "校对、编辑优化、AI 智能修复"
+    ours: "修订策略生成、压缩建议、过渡模板、引用缺口提示"
+
+  collaboration_or_review:
+    prism: "协作者、评论、实时编辑"
+    ours: "Claude+GPT 协作审查、issue ledger、GPT review transaction"
+Prism 有、我们目前没有或较弱的能力
+YAML
+prism_advantages:
+  latex_workspace:
+    - "LaTeX 编辑、编译、预览一体化"
+    - "我们没有可视化 LaTeX 工作区"
+
+  collaboration_ui:
+    - "实时多人协作"
+    - "评论面板"
+    - "我们目前是报告和文件输出，不是多人编辑界面"
+
+  citation_integration:
+    - "Zotero 同步"
+    - "引用检索"
+    - "文献检索"
+    - "我们只能做 citation gap / citation function map，不能联网检索"
+
+  document_editing_experience:
+    - "原文、编译预览、AI 助手在同一界面"
+    - "我们是 pipeline + reports，没有统一交互式工作台"
+
+  latex_error_fix:
+    - "AI 智能修复 LaTeX、公式、格式"
+    - "我们主要面向中文教育学论文结构诊断，不是 LaTeX 编译修复"
+
+  multimodal_conversion:
+    - "图像转代码"
+    - "语音转代码"
+    - "我们没有这类输入转换能力"
+我们有、Prism 官方页面没有明确说有的能力
+YAML
+ours_advantages:
+  fail_closed_governance:
+    - "preflight"
+    - "privacy guard"
+    - "auth gate"
+    - "GO/NOGO"
+    - "dry run"
+    - "pre-GPT-review gate"
+    - "evidence-pack linter"
+    - "transaction runner"
+    - "verify_gpt_reply"
+
+  privacy_boundary:
+    - "全文不进 GPT 对话"
+    - "原文不写入 memory"
+    - "GPT 只看诊断摘要，不看正文"
+    - "本地临时读取章节正文"
+
+  evidence_first_review:
+    - "PACK_MANIFEST"
+    - "SAFETY_ATTESTATION"
+    - "TEST_OUTPUT"
+    - "CLOSURE_REPORT"
+    - "issue ledger"
+    - "loop hash 去重"
+
+  domain_specific_diagnosis:
+    - "教育学/CSSCI 论文结构诊断"
+    - "政策话语转学术问题诊断"
+    - "论证链断裂检测"
+    - "段落功能映射"
+    - "规范性段落比例警告"
+    - "引用缺口功能诊断"
+
+  political_sensitivity_boundary:
+    - "只做教育政策学术分析"
+    - "不做政治立场评论"
+
+Prism 更像科研写作平台；你们的系统更像本地可审计的论文诊断与修订策略引擎。
+
+6. 哪些不应该复制？哪些可以学习？
+不应该复制
+YAML
+do_not_copy:
+  default_cloud_full_text_workspace:
+    reason: "你们当前的核心边界是全文不进 GPT 对话、不写入 memory。不要改成默认全文云端工作区。"
+
+  full_document_autocomplete:
+    reason: "你们的学术诚信边界是不代写，不生成投稿终稿。"
+
+  black_box_ai_editing:
+    reason: "Prism 类工具可能更顺滑，但你们不能放弃 evidence-first 和 issue ledger。"
+
+  citation_autogeneration:
+    reason: "不能让系统自动编造文献。网络受限时尤其要避免。"
+
+  always_on_project_memory:
+    reason: "论文正文不应进入长期记忆，只能记录结构性结论和任务状态。"
+可以学习
+YAML
+learn_from_prism:
+  integrated_workspace:
+    - "把 C4/C5/C6/C7 输出整合成一个 paper dashboard"
+    - "按模块展示诊断、问题、策略、GPT 审查状态"
+
+  citation_workflow:
+    - "做 citation function map"
+    - "未来可接 Zotero 或本地文献库"
+    - "先标记需要什么类型的引用，再由用户补文献"
+
+  versioned_revision:
+    - "记录每条建议是否采纳"
+    - "生成作者修订计划"
+    - "跟踪一轮修改前后结构质量变化"
+
+  human_collaboration:
+    - "增加导师沟通版报告"
+    - "导出可读的修改说明"
+    - "把技术诊断转成用户可执行任务清单"
+
+  latex_or_format_support:
+    - "如果未来面向英文/LaTeX 论文，可增加格式/编译检查"
+    - "当前中文 CSSCI 论文阶段不是最高优先级"
+7. 缩小差距的最高优先级 3 个功能
+第一优先级：Paper Workspace Dashboard
+
+你们现在最缺的不是 AI 能力，而是把结果组织成用户能用的工作台。
+
+YAML
+priority_1:
+  task_id: PAPER-WORKSPACE-MODULE-DASHBOARD-A1
+  purpose: "汇总 12 个模块的 C4/C5/C6/C7 结果"
+  output:
+    - "每个模块的问题等级"
+    - "段落功能分布"
+    - "引用缺口"
+    - "修订策略"
+    - "GPT 审查状态"
+    - "下一步行动"
+
+这是最像 Prism 工作区的部分，但仍然保持本地、安全、可审计。
+
+第二优先级：Citation Function Map
+
+不要先做联网文献搜索，先做“引用功能地图”。
+
+YAML
+priority_2:
+  task_id: PAPER-CITATION-FUNCTION-MAP-A1
+  purpose: "标记每个模块需要哪类引用"
+  citation_types:
+    - "政策依据"
+    - "概念界定"
+    - "事实/数据支撑"
+    - "既有研究"
+    - "对立观点"
+    - "方法论依据"
+    - "治理路径依据"
+
+这能缩小和 Prism “引用管理/文献检索”的差距，同时不冒伪造文献风险。
+
+第三优先级：Revision Decision Ledger
+
+Prism 的优势是写作协作，你们可以做一个更适合个人论文修改的“建议决策账本”。
+
+YAML
+priority_3:
+  task_id: PAPER-REVISION-DECISION-LEDGER-A1
+  purpose: "把每条修改建议变成可追踪决策"
+  states:
+    - "accept"
+    - "reject"
+    - "revise"
+    - "needs_literature"
+    - "ask_advisor"
+    - "defer"
+  output:
+    - "AUTHOR_REVISION_PLAN.md"
+    - "REVISION_DECISION_LEDGER.json"
+
+这会让系统从“给诊断”变成“帮助用户完成真实修订管理”。
+
+最终建议
+YAML
+final_recommendation:
+  do_not_replace_with_prism: true
+  reason: "Prism 是强大的科研写作工作区，但你们的系统有更强的本地安全、证据审查和教育学论文诊断定制。"
+
+  next_build:
+    1: "PAPER-WORKSPACE-MODULE-DASHBOARD-A1"
+    2: "PAPER-CITATION-FUNCTION-MAP-A1"
+    3: "PAPER-REVISION-DECISION-LEDGER-A1"
+
+  strategic_position:
+    prism: "AI-native LaTeX research writing workspace"
+    ours: "local, auditable, fail-closed academic paper diagnosis and revision strategy system"
+
+一句话：Prism 更像一个强大的科研写作平台；你们现在的系统更像一个可控、安全、可审计的论文诊断引擎。下一步不要盲目复制 Prism，而是先补工作台、引用功能地图和建议决策账本。

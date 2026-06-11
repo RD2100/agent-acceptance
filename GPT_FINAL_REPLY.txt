@@ -1,0 +1,37 @@
+YAML
+review_queue:
+  verdict: accepted_with_limitation
+  basis: "Already accepted_with_limitation in prior reply, with targeted proof showing 10/10 PASS."
+
+paper_safety:
+  verdict: blocked
+  reason: >
+    The pilot runner requiring validator exit 0 is necessary, but not sufficient.
+    PAPER-SAFETY still needs proof that the positive synthetic pilot actually reaches PASS,
+    and that auth / go-nogo / dry-run gates validate result semantics rather than just file existence.
+  remaining_blockers:
+    - "Positive synthetic pilot PASS not proven."
+    - "Authorization gate still needs bounded/synthetic/metadata-only scope checks."
+    - "GO/NOGO must read result JSON semantics, not just check scripts or zip existence."
+    - "Negative fail-closed tests still needed for overbroad auth, raw_paper_text, private_user_text, external_upload, memory_write_with_paper_content."
+
+control_plane_bypass:
+  verdict: blocked_or_review_unverified
+  reason: >
+    Removing Temp auto-PASS fixes the main dangerous behavior, but acceptance still requires
+    targeted proof that the new bypass logic is fail-closed.
+  can_be_accepted_with_limitation_if:
+    - "BYPASS_TARGETED_TESTS.txt proves normal path without marker fails closed."
+    - "Valid .ai/bypass_approved marker passes only when intentionally present."
+    - "Generic Temp path no longer passes automatically."
+    - "DEVRAME_TEST_MODE or DEVFRAME_TEST_MODE behavior is explicitly tested and explained."
+    - ".ai/bypass_approved is excluded from commit or explicitly justified."
+
+final_verdict:
+  PAPER-SAFETY-INFRASTRUCTURE: blocked
+  CONTROL-PLANE-BYPASS-FIX: blocked_or_review_unverified
+  REVIEW-QUEUE: accepted_with_limitation
+
+So: no, those two should not be upgraded merely because those individual fixes were applied. PAPER-SAFETY remains blocked. CONTROL-PLANE-BYPASS is close, but still needs targeted bypass evidence before I would mark it accepted_with_limitation.
+
+END_OF_GPT_RESPONSE

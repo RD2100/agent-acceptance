@@ -1,0 +1,349 @@
+YAML
+overall_decision:
+  install_now: yes
+  recommended_task_id: THIRD-PARTY-SKILL-INTERFACE-AND-MEMORY-COMPILER-A1
+  install_location: "D:/agent-acceptance/.claude/skills/claude-memory-compiler"
+  memory_mode: "dual-track, not replacement"
+  reason: >
+    agent-acceptance 是规范验收层，governance / memory / review 工具应集中在项目级，
+    不能先散落到用户级 ~/.claude。先做项目级可审计安装，再决定是否加用户级 shim。
+
+我核对了仓库页面：claude-memory-compiler 的 README 明确说它通过 Claude Code hooks 捕获会话，在 session end / pre-compact 时调用 Claude Agent SDK 抽取决策、教训、模式，写入 daily log，再由 compile.py 编译为结构化 knowledge articles，并在 SessionStart 注入 index；它还提供 compile.py、query.py、lint.py 等命令。
+GitHub
+ 仓库结构中有 .claude、hooks、scripts、pyproject.toml、uv.lock 等文件，适合以第三方 skill 形式 vendored 到项目内。
+GitHub
+
+1. 安装位置裁决
+YAML
+install_location_decision:
+  chosen: "project_level"
+  path: "D:/agent-acceptance/.claude/skills/claude-memory-compiler"
+  reject_default_user_level: true
+  user_level_optional_later: "~/.claude/skills/claude-memory-compiler"
+  rationale:
+    - "agent-acceptance 是 governance 层，memory compiler 属于治理基础设施。"
+    - "项目级安装可被 git status / evidence pack / GPT review 审查。"
+    - "项目级 registry 能记录第三方 skill 的 URL、commit、安装时间、hook 状态。"
+    - "避免用户级 ~/.claude 被多个项目共享后产生不可审计副作用。"
+
+注意：该仓库 README 的 Quick Start 建议“clone into this project”并合并 .claude/settings.json hooks，而不是必须放到用户级。
+GitHub
+
+2. 与现有 memory/ 的整合
+
+不替换，双轨并行。
+
+YAML
+memory_integration:
+  existing_memory:
+    keep:
+      - "memory/index.md"
+      - "memory/tasks/**"
+      - "memory/knowledge/**"
+    role: "project operational memory / accepted task ledger / handoff memory"
+
+  claude_memory_compiler:
+    new_paths:
+      - ".claude/skills/claude-memory-compiler/daily/**"
+      - ".claude/skills/claude-memory-compiler/knowledge/**"
+      - ".claude/skills/claude-memory-compiler/index.md"
+    role: "conversation-derived compiled memory"
+
+  bridge:
+    add:
+      - "scripts/sync_compiled_memory.py"
+      - "_reports/third-party-skill-memory-compiler-a1/MEMORY_BRIDGE_REPORT.md"
+    behavior:
+      - "只同步结构性摘要、决策、教训、模式。"
+      - "不得同步论文原文、用户私密正文、raw transcript。"
+      - "不得覆盖现有 memory/index.md，只追加引用或生成 mirror index。"
+3. 通用第三方 Skill 接口
+
+需要新增一个标准接口：
+
+YAML
+skill_interface:
+  root: ".claude/skills/"
+  registry: ".claude/skills/registry.json"
+  installer: "scripts/install_skill.py"
+  verifier: "scripts/verify_skill_install.py"
+  hook_merger: "scripts/merge_claude_hooks.py"
+
+  install_command: >
+    python scripts/install_skill.py
+    --url https://github.com/coleam00/claude-memory-compiler
+    --name claude-memory-compiler
+    --target .claude/skills
+    --pin HEAD
+    --mode project
+    --register
+    --no-overwrite-settings
+
+关键规则：
+
+YAML
+skill_safety_rules:
+  - "clone 后先登记为 installed_pending_review。"
+  - "不得直接覆盖现有 .claude/settings.json。"
+  - "hooks 必须 merge，不得 replace。"
+  - "必须记录 commit SHA。"
+  - "必须生成 lock 文件。"
+  - "必须运行 skill 自带 lint / structural check。"
+  - "必须由 GPT review accepted 后再切换为 active。"
+TaskSpec
+YAML
+task_id: THIRD-PARTY-SKILL-INTERFACE-AND-MEMORY-COMPILER-A1
+task_name: "Install claude-memory-compiler and add third-party skill interface"
+task_type: memory_infrastructure_and_skill_integration
+primary_repo: agent-acceptance
+status: authorized
+
+objective:
+  - "安装 claude-memory-compiler 到项目级 .claude/skills/。"
+  - "新增通用第三方 skill 安装、注册、验证接口。"
+  - "将 claude-memory-compiler 与现有 memory/ 系统双轨整合。"
+  - "缓解当前 88% 上下文压力，建立自动记忆编译机制。"
+  - "保持 fail-closed、evidence-first、no raw private text 边界。"
+
+write_set:
+  allowed_paths:
+    skill_install:
+      - ".claude/skills/claude-memory-compiler/**"
+      - ".claude/skills/registry.json"
+      - ".claude/skills/claude-memory-compiler.lock.json"
+      - ".claude/settings.json"
+      - ".claude/settings.local.json"
+
+    scripts:
+      - "scripts/install_skill.py"
+      - "scripts/verify_skill_install.py"
+      - "scripts/merge_claude_hooks.py"
+      - "scripts/sync_compiled_memory.py"
+
+    schemas:
+      - "schemas/third_party_skill_registry.schema.json"
+      - "schemas/skill_install_result.schema.json"
+      - "schemas/memory_compiler_bridge.schema.json"
+
+    tests:
+      - "tests/test_install_skill.py"
+      - "tests/test_verify_skill_install.py"
+      - "tests/test_merge_claude_hooks.py"
+      - "tests/test_sync_compiled_memory.py"
+      - "tests/fixtures/skills/**"
+
+    reports:
+      - "_reports/third-party-skill-memory-compiler-a1/**"
+
+    evidence:
+      - "evidence_packs/third-party-skill-memory-compiler-a1/**"
+
+    optional_tracking:
+      - "PROJECT_HISTORY.md"
+      - "BOOT_CONTEXT.md"
+      - "memory/index.md"
+      - "memory/tasks/third-party-skill-memory-compiler-a1.md"
+
+  forbidden_paths:
+    - "memory/** containing raw conversation transcript"
+    - "memory/** containing paper full text"
+    - "BOOT_CONTEXT.md containing paper content"
+    - "PROJECT_HISTORY.md containing paper content"
+    - "runs/**"
+    - "archive/draft-hooks/**"
+    - ".tmpconfig/**"
+    - ".tmpdata/**"
+    - "**/__pycache__/**"
+    - "**/*.pyc"
+    - ".ai/bypass_approved"
+    - "tools/ai_guard.py"
+
+implementation_plan:
+  phase_1_skill_interface:
+    actions:
+      - "Create .claude/skills/ if missing."
+      - "Create .claude/skills/registry.json."
+      - "Implement scripts/install_skill.py."
+      - "Installer accepts GitHub URL, skill name, target path, pin mode."
+      - "Installer clones to .claude/skills/<skill_name>."
+      - "Installer records url, commit_sha, installed_at, status, hook_paths, scripts, pyproject presence."
+      - "Installer refuses overwrite unless --force is explicitly passed."
+      - "Installer writes .claude/skills/<skill>.lock.json."
+
+  phase_2_memory_compiler_install:
+    actions:
+      - "Clone https://github.com/coleam00/claude-memory-compiler into .claude/skills/claude-memory-compiler."
+      - "Pin exact commit SHA in lock file."
+      - "Run dependency setup in skill directory, preferably uv sync if uv is available."
+      - "If uv unavailable, record environment_unverified and do not activate hooks."
+      - "Do not modify user-level ~/.claude."
+
+  phase_3_hook_merge:
+    actions:
+      - "Read skill .claude/settings.json if present."
+      - "Merge hooks into project .claude/settings.json or .claude/settings.local.json."
+      - "Never overwrite existing hooks."
+      - "Add comments/metadata showing hook source skill."
+      - "Default hook state should be installed_pending_activation until verification passes."
+
+  phase_4_memory_bridge:
+    actions:
+      - "Keep existing memory/index.md and memory/tasks as authoritative operational memory."
+      - "Add sync_compiled_memory.py to generate a bridge report from compiler index."
+      - "Bridge must not copy raw transcripts or paper text."
+      - "Bridge may append links/summaries to memory/knowledge only after safety scan."
+
+  phase_5_activation:
+    actions:
+      - "Run verify_skill_install.py."
+      - "Run claude-memory-compiler structural lint if available: uv run python scripts/lint.py --structural-only."
+      - "Run compile.py dry-run/manual command if safe."
+      - "Only after verification set registry status to active."
+
+required_behavior:
+  install_skill_py:
+    must:
+      - "Accept --url, --name, --target, --pin, --register."
+      - "Validate GitHub URL."
+      - "Clone into .claude/skills/<name>."
+      - "Record exact commit SHA."
+      - "Fail if target exists unless --force."
+      - "Generate install result JSON."
+    must_not:
+      - "Modify ~/.claude by default."
+      - "Overwrite .claude/settings.json."
+      - "Activate hooks before verification."
+
+  verify_skill_install_py:
+    must_check:
+      - "skill directory exists"
+      - "pyproject.toml exists if expected"
+      - ".claude/hooks or .claude/settings exists if expected"
+      - "required scripts exist: compile.py, query.py, lint.py where present"
+      - "registry entry exists"
+      - "lock file exists"
+      - "commit SHA recorded"
+      - "hooks merged without replacing existing hooks"
+
+  merge_claude_hooks_py:
+    must:
+      - "Merge hook config deterministically."
+      - "Preserve existing project hooks."
+      - "Tag imported hooks with skill name."
+      - "Fail closed on conflicting hook keys unless --allow-conflict-resolution."
+
+  sync_compiled_memory_py:
+    must:
+      - "Read compiler index if present."
+      - "Generate bridge summary."
+      - "Reject raw transcripts."
+      - "Reject paper content markers."
+      - "Never overwrite memory/index.md."
+
+tests_required:
+  targeted:
+    - "pytest tests/test_install_skill.py"
+    - "pytest tests/test_verify_skill_install.py"
+    - "pytest tests/test_merge_claude_hooks.py"
+    - "pytest tests/test_sync_compiled_memory.py"
+
+  must_cover:
+    - "install creates .claude/skills/<name>"
+    - "existing skill path fails without --force"
+    - "registry entry validates against schema"
+    - "lock file contains url and commit_sha"
+    - "hook merge preserves existing hooks"
+    - "hook conflict fails closed"
+    - "verify fails when compile.py/query.py/lint.py missing"
+    - "sync bridge rejects raw transcript"
+    - "sync bridge rejects paper full text"
+    - "sync bridge does not overwrite memory/index.md"
+
+verification_required:
+  - "Fresh shell health check before install."
+  - "Clone claude-memory-compiler."
+  - "Record git commit SHA."
+  - "Run uv sync in skill directory if uv available."
+  - "Run skill structural lint if available."
+  - "Run installer targeted tests."
+  - "Run full pytest only if shared/core behavior changed."
+  - "Generate install verification report."
+
+required_outputs:
+  - "_reports/third-party-skill-memory-compiler-a1/SHELL_HEALTH_BEFORE.txt"
+  - "_reports/third-party-skill-memory-compiler-a1/SKILL_INSTALL_OUTPUT.txt"
+  - "_reports/third-party-skill-memory-compiler-a1/SKILL_VERIFY_OUTPUT.txt"
+  - "_reports/third-party-skill-memory-compiler-a1/HOOK_MERGE_OUTPUT.txt"
+  - "_reports/third-party-skill-memory-compiler-a1/MEMORY_BRIDGE_REPORT.md"
+  - "_reports/third-party-skill-memory-compiler-a1/TARGETED_TEST_OUTPUT.txt"
+  - "_reports/third-party-skill-memory-compiler-a1/FULL_TEST_OUTPUT.txt"
+  - "_reports/third-party-skill-memory-compiler-a1/CHANGED_FILES.txt"
+  - "_reports/third-party-skill-memory-compiler-a1/SAFETY_ATTESTATION.md"
+  - ".claude/skills/registry.json"
+  - ".claude/skills/claude-memory-compiler.lock.json"
+  - "evidence_packs/third-party-skill-memory-compiler-a1/closure-pack.zip"
+
+safety_constraints:
+  - "No raw conversation transcript committed."
+  - "No paper full text committed."
+  - "No user private text committed."
+  - "No memory overwrite."
+  - "No user-level ~/.claude modification by default."
+  - "No hook activation before verification."
+  - "No external upload except git clone from the approved GitHub URL."
+  - "No dirty baseline commit."
+  - "No bypass marker commit."
+
+success_criteria:
+  - ".claude/skills/claude-memory-compiler exists."
+  - "Exact source URL and commit SHA recorded."
+  - "registry.json contains claude-memory-compiler entry."
+  - "lock file exists."
+  - "hooks merged without overwriting existing settings."
+  - "verification script passes."
+  - "targeted tests pass."
+  - "existing memory/ remains intact."
+  - "memory compiler is active or installed_pending_activation with explicit reason."
+  - "No raw transcripts or paper text are committed."
+
+failure_handling:
+  - "If clone fails, mark network_unverified and do not fake install."
+  - "If uv sync fails, keep installed_pending_dependencies and do not activate hooks."
+  - "If hook merge conflicts, stop and report human_required."
+  - "If safety scan detects raw transcript or paper text, block commit."
+  - "If shell health degrades, stop and report environment_unstable."
+
+next_after_success:
+  recommended_task_id: MEMORY-COMPILER-FIRST-COMPILE-A2
+  condition: "Only after A1 install + verification accepted."
+  purpose: "Run first controlled memory compile and verify context compression benefit."
+安装成功的判定
+YAML
+install_success_checklist:
+  filesystem:
+    - ".claude/skills/claude-memory-compiler/README.md exists"
+    - ".claude/skills/claude-memory-compiler/scripts/compile.py exists"
+    - ".claude/skills/claude-memory-compiler/scripts/query.py exists"
+    - ".claude/skills/claude-memory-compiler/scripts/lint.py exists"
+
+  registry:
+    - ".claude/skills/registry.json has claude-memory-compiler"
+    - "status is active or installed_pending_activation"
+    - "url is https://github.com/coleam00/claude-memory-compiler"
+    - "commit_sha is recorded"
+
+  hooks:
+    - "project .claude/settings contains merged Stop/PreCompact/SessionStart hooks or documented equivalent"
+    - "existing hooks preserved"
+
+  commands:
+    - "uv sync succeeds or dependency status is explicitly recorded"
+    - "uv run python scripts/lint.py --structural-only succeeds in skill dir"
+    - "uv run python scripts/compile.py --help or safe dry-run succeeds"
+
+  safety:
+    - "no raw transcript committed"
+    - "no paper content committed"
+    - "existing memory/index.md unchanged except optional safe reference"
+
+最终裁决：装在项目级 .claude/skills/claude-memory-compiler；新增 scripts/install_skill.py 通用接口；现有 memory/ 不替换，采用双轨并行；安装后必须通过 registry、hook merge、structural lint、targeted tests 和 safety attestation。_

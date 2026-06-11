@@ -139,6 +139,7 @@ write_set:
   - "docs/**"
   - ".agent/*"
   - ".sadp/*"
+  - ".ai/tasks/*"
   - "_evidence/**"
   - "evidence_packs/**"
   - "_reports/**"

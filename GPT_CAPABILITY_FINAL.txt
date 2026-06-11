@@ -1,0 +1,318 @@
+YAML
+overall_recommendation:
+  A_full_text_structural_diagnosis: "放开，但只放开到单节全文、局部缓存、结构输出"
+  B_paragraph_level_diagnosis: "应该增加，这是下一步最高价值能力"
+  C_concrete_revision_suggestions: "部分放开，先做修改操作建议和句段级示例，不做整节重写"
+  still_forbidden:
+    - "整篇全文进入 GPT 对话"
+    - "全文或章节正文写入 memory / BOOT_CONTEXT / PROJECT_HISTORY"
+    - "外部上传"
+    - "政治评论"
+    - "自动生成投稿终稿"
+    - "虚构文献"
+一、两个限制是否应该放开？
+
+应该放开，但不能一次性从“脱敏元数据”跳到“全文自动改写”。
+
+最合理的升级路径是：
+
+YAML
+upgrade_path:
+  current:
+    mode: "sanitized metadata only"
+    capability: "结构诊断 + 修订蓝图"
+
+  next:
+    mode: "local ephemeral full-section reading"
+    capability: "单节全文结构诊断 + 段落级问题定位"
+
+  later:
+    mode: "bounded revision suggestions"
+    capability: "生成修改操作建议 + 少量示例句/过渡句"
+
+  not_now:
+    mode: "full section rewrite / full paper rewrite"
+    reason: "风险高，容易越过学术原创性和隐私边界"
+A）全文结构诊断：建议放开
+
+建议从“只读脱敏元数据”升级为：
+
+YAML
+new_mode_A:
+  name: "单节全文结构诊断"
+  input: "一次只读一个章节/小节的真实正文"
+  processing: "本地临时读取"
+  storage: "不保存原文"
+  output:
+    - "结构问题"
+    - "论证链断裂"
+    - "比例失衡"
+    - "政策话语是否转化为学术问题"
+    - "引用功能缺口"
+    - "与前后章节的衔接问题"
+  forbidden_output:
+    - "长段原文"
+    - "全文复现"
+    - "整节改写"
+
+你现在的系统已经能提取 19,506 字全文，说明技术瓶颈不在读取能力，而在治理边界。所以可以把限制 1 从“绝不读正文”改成“只读一个授权章节，临时分析，不留正文，只输出结构化诊断”。
+
+B）段落级诊断：应该增加
+
+这是比“全文结构诊断”更有价值的一步。因为用户真正修改论文时，需要知道：
+
+YAML
+paragraph_level_value:
+  - "哪一段承担背景铺垫功能"
+  - "哪一段承担概念界定功能"
+  - "哪一段承担论证推进功能"
+  - "哪一段只是重复政策表述"
+  - "哪一段缺少文献支撑"
+  - "哪一段与下一段衔接断裂"
+  - "哪一段应压缩、合并、前移或后置"
+
+但段落级诊断也必须采用“结构标签”方式，不要把原文整段输出到报告里。可以输出：
+
+YAML
+paragraph_diagnosis_output:
+  allowed:
+    - "P1: 背景铺垫过长，建议压缩"
+    - "P2: 概念界定不足，需明确提质与扩容的关系"
+    - "P3: 政策依据较多，但学术解释不足"
+    - "P4: 可作为过渡段，但需提前引出内在张力"
+  not_allowed:
+    - "复制 P1/P2/P3 原文"
+    - "输出整段重写稿"
+C）具体修改建议文本：部分增加
+
+建议增加，但分级开放。
+
+YAML
+revision_generation_policy:
+  allowed_now:
+    - "修改操作建议"
+    - "段落功能调整建议"
+    - "论证顺序调整建议"
+    - "过渡句示例"
+    - "主题句示例"
+    - "压缩/合并/补证建议"
+
+  not_allowed_now:
+    - "整节重写"
+    - "整篇重写"
+    - "自动生成最终投稿文本"
+    - "替用户补造文献"
+
+也就是说，可以从“诊断”升级到“可执行修改建议”，但不要直接进入“全文代写”。
+
+二、必须保留的边界
+YAML
+must_keep_boundaries:
+  privacy:
+    - "全文不进入 GPT 对话"
+    - "全文不写入 memory"
+    - "全文不写入 evidence pack"
+    - "全文不写入 BOOT_CONTEXT / PROJECT_HISTORY"
+    - "分析报告不复现长段原文"
+
+  scope:
+    - "一次只处理一个章节或一个小节"
+    - "每次处理前需要 authorization_ref"
+    - "处理完一节后必须 QA gate，再决定是否进入下一节"
+
+  academic_integrity:
+    - "系统只辅助诊断和提出修改方向"
+    - "最终正文由用户自己写"
+    - "不生成投稿终稿"
+    - "不虚构文献"
+    - "不替用户决定学术立场"
+
+  political_sensitivity:
+    - "教育强国只作为教育政策与高等教育研究语境处理"
+    - "不做政治立场评论"
+    - "不生成宣传性表述"
+    - "不评价现实政治人物或事件"
+三、建议新增的能力
+
+按优先级，建议加 3 个能力。
+
+YAML
+new_capabilities:
+  1:
+    id: REAL-PAPER-FULL-SECTION-STRUCTURAL-READER
+    priority: P0
+    purpose: "读取单节全文，生成结构诊断，不保存原文"
+
+  2:
+    id: REAL-PAPER-PARAGRAPH-FUNCTION-MAPPER
+    priority: P0
+    purpose: "生成段落功能图，指出每段承担什么论证功能、哪里断裂或重复"
+
+  3:
+    id: REAL-PAPER-BOUNDED-REVISION-SUGGESTER
+    priority: P1
+    purpose: "生成修改操作建议、主题句/过渡句示例，但不整节改写"
+四、下一步具体 TaskSpec
+YAML
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  recommended_task_id: REAL-PAPER-C5-FULL-SECTION-STRUCTURAL-READER-A1
+
+recommended_task_id: REAL-PAPER-C5-FULL-SECTION-STRUCTURAL-READER-A1
+
+taskspec:
+  task_id: REAL-PAPER-C5-FULL-SECTION-STRUCTURAL-READER-A1
+  task_name: "Local ephemeral full-section structural reader"
+  task_type: real_paper_capability_upgrade
+  primary_repo: agent-acceptance
+
+  objective:
+    - "允许系统在本地临时读取一个授权章节的真实正文。"
+    - "生成段落级结构诊断和章节级论证诊断。"
+    - "不保存原文，不输出长段原文。"
+    - "比较全文诊断与此前 metadata-only 诊断的差异。"
+    - "判断全文阅读是否显著提升诊断质量。"
+
+  input_scope:
+    allowed:
+      - "one authorized section full text"
+      - "paper title"
+      - "section title"
+      - "section order"
+      - "authorization_ref"
+    forbidden:
+      - "whole paper"
+      - "multiple sections at once"
+      - "raw full text in GPT conversation"
+      - "memory write with paper content"
+      - "external upload"
+      - "live CDP"
+      - "Web GPT runner"
+
+  write_set:
+    allowed_paths:
+      - ".ai/tasks/real-paper-c5-full-section-structural-reader-a1.yaml"
+      - "scripts/real_paper_full_section_structural_reader.py"
+      - "schemas/real_paper_full_section_diagnosis.schema.json"
+      - "tests/test_real_paper_full_section_structural_reader.py"
+      - "_reports/real-paper-c5-full-section-structural-reader-a1/**"
+      - "evidence_packs/real-paper-c5-full-section-structural-reader-a1/**"
+      - "PROJECT_HISTORY.md"
+      - "BOOT_CONTEXT.md"
+      - "memory/index.md"
+      - "memory/tasks/real-paper-c5-full-section-structural-reader-a1.md"
+
+    forbidden_paths:
+      - "memory/** containing paper text"
+      - "BOOT_CONTEXT.md containing paper text"
+      - "PROJECT_HISTORY.md containing paper text"
+      - "evidence_packs/** containing full section text"
+      - "runs/**"
+      - "archive/draft-hooks/**"
+      - ".tmpconfig/**"
+      - ".tmpdata/**"
+      - "**/__pycache__/**"
+      - "**/*.pyc"
+      - ".ai/bypass_approved"
+
+  processing_rules:
+    - "Read full section text locally."
+    - "Create temporary paragraph units in memory only."
+    - "Assign paragraph IDs: P1, P2, P3..."
+    - "Extract paragraph function labels."
+    - "Detect repetition, weak transitions, missing evidence, concept drift, and imbalance."
+    - "Discard raw section text after diagnosis."
+    - "Do not write original paragraphs into output files."
+
+  output_files:
+    - "_reports/real-paper-c5-full-section-structural-reader-a1/FULL_SECTION_STRUCTURAL_DIAGNOSIS.json"
+    - "_reports/real-paper-c5-full-section-structural-reader-a1/FULL_SECTION_STRUCTURAL_DIAGNOSIS.md"
+    - "_reports/real-paper-c5-full-section-structural-reader-a1/PARAGRAPH_FUNCTION_MAP.json"
+    - "_reports/real-paper-c5-full-section-structural-reader-a1/METADATA_VS_FULL_SECTION_COMPARISON.md"
+    - "_reports/real-paper-c5-full-section-structural-reader-a1/SAFETY_ATTESTATION.md"
+
+  diagnosis_dimensions:
+    - "section_function"
+    - "paragraph_function"
+    - "logic_chain"
+    - "argument_strength"
+    - "conceptual_clarity"
+    - "policy_to_academic_argument_conversion"
+    - "citation_function_gap"
+    - "proportion_balance"
+    - "transition_to_next_section"
+
+  forbidden_outputs:
+    - "full section text"
+    - "full paragraph text"
+    - "long quotations"
+    - "full rewrite"
+    - "political commentary"
+    - "invented citations"
+
+  tests_required:
+    - "valid one-section input produces diagnosis"
+    - "full paper input fails closed"
+    - "multi-section input fails closed"
+    - "output does not contain original long paragraphs"
+    - "memory write with paper content fails closed"
+    - "external_upload=true fails closed"
+    - "political commentary mode fails closed"
+    - "diagnosis schema validates"
+
+  success_criteria:
+    - "One section can be analyzed from full text."
+    - "Paragraph-level diagnosis is more precise than metadata-only diagnosis."
+    - "No raw section text is stored."
+    - "No long quotations appear in reports."
+    - "No external upload occurs."
+    - "No political commentary appears."
+五、关于 OpenAI Prism
+
+我没有找到可核验的 OpenAI 官方 Prism 产品页面。能找到的是第三方报道，而且报道之间存在明显不确定性：有报道说 Prism 是面向科研写作与协作的 AI 工作区，支持论文写作、引用管理和协作；也有报道说 Prism 后续被 sunset，并把能力并入 Codex 方向。由于这些不是 OpenAI 官方说明，不能把它当作稳定可用产品来规划你的工作流。
+The Times of India
++1
+
+如果 Prism 或类似产品真实可用，它可能比你现在系统强在这些方面：
+
+YAML
+prism_possible_strengths:
+  - "更好的长文档编辑界面"
+  - "多人协作"
+  - "引用/文献管理"
+  - "LaTeX 或科研写作工作区"
+  - "更低的使用门槛"
+
+但你现在这个系统强在：
+
+YAML
+your_system_strengths:
+  - "本地处理"
+  - "明确 fail-closed gate"
+  - "不把全文写入 memory"
+  - "evidence pack 审查"
+  - "pre-gate / linter / transaction / verify 链路"
+  - "针对教育学 CSSCI 论文结构诊断定制"
+  - "可控的政治敏感边界"
+  - "可审计的安全声明"
+
+所以结论是：
+
+YAML
+prism_comparison:
+  can_prism_do_all_this: "无法确认"
+  likely_can_do:
+    - "长文档写作"
+    - "协作"
+    - "草稿生成"
+    - "引用辅助"
+  uncertain_or_unproven:
+    - "本地-only"
+    - "不存全文"
+    - "fail-closed gate"
+    - "evidence-first review"
+    - "政治敏感学术边界"
+    - "按你的论文结构定制诊断"
+
+**最终建议：**现在不要换到 Prism。你的系统下一步应升级为“单节全文临时读取 + 段落级结构诊断”，再谨慎加入“有限修改建议”。Prism 即使存在，也更像通用科研写作产品；你现在做的是一个更可控、更适合真实论文安全试运行的专用审查系统。

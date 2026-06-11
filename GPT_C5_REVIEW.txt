@@ -1,0 +1,186 @@
+YAML
+overall_judgment: accepted_with_limitation
+formal_evidence_status: summary_based_review
+task_id: REAL-PAPER-C5-FULL-SECTION-STRUCTURAL-READER-A1
+
+verdict:
+  C5_reader: accepted_with_limitation
+  reason: >
+    C5 已经完成关键能力跃迁：从脱敏元数据诊断升级为本地临时读取真实章节正文，
+    并生成段落级论证功能映射。输出不包含原文、不入 memory、不入 evidence pack、
+    不外部上传、不调用 Web GPT，符合当前真实论文处理边界。
+    但 PDF 文本抽取破坏自然段落边界，会影响段落级诊断精度，因此不能作为无条件 accepted，
+    应标记为 accepted_with_limitation。
+
+accepted_parts:
+  - "能够读取真实论文 PDF 章节全文，而不是只依赖元数据。"
+  - "能够对段落进行论证功能标记：开场、定义、阐述、证据、转折、结论、规范性、引用密集等。"
+  - "输出只包含诊断，不输出段落原文。"
+  - "处理方式为临时读取，不写入 memory，不写入 evidence pack 原文。"
+  - "已在真实论文 3 节上运行：必然逻辑、内在张力、平衡之道。"
+  - "产生了有价值的跨节发现：阐述性段落占比偏高，主题句不足。"
+  - "296 PASS，已 committed + pushed。"
+
+limitations:
+  - "PDF 抽取把行断误识别为段断，导致段落数量偏多。"
+  - "展开不足检出率可能被伪段落放大。"
+  - "当前段落级诊断适合做结构扫描，不适合直接作为精确修改依据。"
+  - "C5 尚未稳定到可以直接驱动 C6 修订建议生成器。"
+
+decision_on_C6:
+  enter_C6_now: no
+  reason: >
+    不建议立刻进入 C6。C6 会根据段落单元生成修改建议，
+    如果当前段落切分仍受 PDF 行断干扰，生成的建议会过度碎片化，
+    甚至把一段内部的换行误判为多个论证单元。
+  required_before_C6:
+    - "先做段落切分校准。"
+    - "区分 PDF 行断、页眉页脚、标题、脚注、自然段。"
+    - "重新运行 C5，比较校准前后诊断差异。"
+    - "确认功能不明和展开不足不是主要由 PDF 抽取噪声造成。"
+
+recommended_next_task_id: PAPER-C5-PARAGRAPH-SEGMENTATION-CALIBRATION-A2
+
+taskspec:
+  task_id: PAPER-C5-PARAGRAPH-SEGMENTATION-CALIBRATION-A2
+  task_name: "Calibrate PDF paragraph segmentation for C5 full-section diagnosis"
+  task_type: real_paper_quality_infrastructure
+  primary_repo: agent-acceptance
+  status: authorized
+
+  objective:
+    - "校准 PDF 文本抽取后的段落边界。"
+    - "减少行断被误判为自然段的问题。"
+    - "为 C5 段落级诊断提供更可靠的段落单元。"
+    - "重新运行 C5 并比较校准前后结果。"
+    - "为后续 C6 修订建议生成器建立稳定输入基础。"
+
+  write_set:
+    allowed_paths:
+      - ".ai/tasks/paper-c5-paragraph-segmentation-calibration-a2.yaml"
+      - "scripts/paper_c5_paragraph_segmenter.py"
+      - "scripts/paper_c5_full_section_reader.py"
+      - "schemas/paper_c5_paragraph_segmentation.schema.json"
+      - "tests/test_paper_c5_paragraph_segmenter.py"
+      - "tests/fixtures/paper_c5_paragraph_segmenter/**"
+      - "_reports/paper-c5-paragraph-segmentation-calibration-a2/**"
+      - "evidence_packs/paper-c5-paragraph-segmentation-calibration-a2/**"
+      - "PROJECT_HISTORY.md"
+      - "BOOT_CONTEXT.md"
+      - "memory/index.md"
+      - "memory/tasks/paper-c5-paragraph-segmentation-calibration-a2.md"
+
+    forbidden_paths:
+      - "memory/** containing paper text"
+      - "BOOT_CONTEXT.md containing paper text"
+      - "PROJECT_HISTORY.md containing paper text"
+      - "evidence_packs/** containing full section text"
+      - "runs/**"
+      - "archive/draft-hooks/**"
+      - ".tmpconfig/**"
+      - ".tmpdata/**"
+      - "**/__pycache__/**"
+      - "**/*.pyc"
+      - ".ai/bypass_approved"
+      - "tools/ai_guard.py"
+
+  segmentation_rules:
+    must_handle:
+      - "PDF line wrapping within one paragraph"
+      - "page headers and footers"
+      - "page numbers"
+      - "section headings"
+      - "subheadings"
+      - "numbered lists"
+      - "citation-heavy lines"
+      - "short transition sentences"
+      - "Chinese punctuation-based paragraph continuation"
+      - "abnormally short extracted fragments"
+
+    must_not_do:
+      - "Do not store raw section text in reports."
+      - "Do not output full paragraphs."
+      - "Do not include long quotations."
+      - "Do not write paper content to memory."
+      - "Do not upload externally."
+
+  required_behavior:
+    - "Read section text locally and ephemerally."
+    - "Merge likely line-wrapped fragments into logical paragraphs."
+    - "Assign stable paragraph IDs after segmentation."
+    - "Record paragraph statistics without storing paragraph text."
+    - "Run C5 diagnosis before and after segmentation."
+    - "Generate comparison report showing which findings changed."
+
+  output_files:
+    - "_reports/paper-c5-paragraph-segmentation-calibration-a2/SEGMENTATION_RESULT.json"
+    - "_reports/paper-c5-paragraph-segmentation-calibration-a2/SEGMENTATION_REPORT.md"
+    - "_reports/paper-c5-paragraph-segmentation-calibration-a2/BEFORE_AFTER_DIAGNOSIS_COMPARISON.md"
+    - "_reports/paper-c5-paragraph-segmentation-calibration-a2/C5_RECALIBRATED_DIAGNOSIS.json"
+    - "_reports/paper-c5-paragraph-segmentation-calibration-a2/C5_RECALIBRATED_DIAGNOSIS.md"
+    - "_reports/paper-c5-paragraph-segmentation-calibration-a2/SAFETY_ATTESTATION.md"
+
+  diagnosis_comparison_must_include:
+    - "original_extracted_paragraph_count"
+    - "calibrated_logical_paragraph_count"
+    - "merged_fragment_count"
+    - "function_unclear_ratio_before"
+    - "function_unclear_ratio_after"
+    - "underdeveloped_ratio_before"
+    - "underdeveloped_ratio_after"
+    - "which findings are stable"
+    - "which findings were likely PDF-artifact-induced"
+
+  tests_required:
+    targeted:
+      - "pytest tests/test_paper_c5_paragraph_segmenter.py"
+
+    must_cover:
+      - "line-wrapped Chinese paragraph is merged correctly"
+      - "heading is preserved as heading, not merged into paragraph"
+      - "page number/header/footer is removed or ignored"
+      - "citation-heavy paragraph is not over-split"
+      - "short transition sentence is not automatically discarded"
+      - "forbidden full-paper input fails closed"
+      - "output does not contain raw paragraph text"
+      - "segmentation result validates against schema"
+
+  required_evidence:
+    - "_reports/paper-c5-paragraph-segmentation-calibration-a2/TARGETED_TEST_OUTPUT.txt"
+    - "_reports/paper-c5-paragraph-segmentation-calibration-a2/SEGMENTATION_RUN_OUTPUT.txt"
+    - "_reports/paper-c5-paragraph-segmentation-calibration-a2/BEFORE_AFTER_DIAGNOSIS_COMPARISON.md"
+    - "_reports/paper-c5-paragraph-segmentation-calibration-a2/SAFETY_ATTESTATION.md"
+    - "_reports/paper-c5-paragraph-segmentation-calibration-a2/CHANGED_FILES.txt"
+    - "_reports/paper-c5-paragraph-segmentation-calibration-a2/DIFF_PAPER_C5_SEGMENTATION_A2.patch"
+    - "evidence_packs/paper-c5-paragraph-segmentation-calibration-a2/closure-pack.zip"
+
+  safety_attestation:
+    must_assert:
+      full_paper_text_stored: false
+      full_section_text_stored: false
+      raw_paragraph_text_in_reports: false
+      long_quotes_in_output: false
+      external_upload_performed: false
+      web_gpt_called_by_runner: false
+      memory_write_with_paper_content: false
+      political_commentary_generated: false
+
+  success_criteria:
+    - "段落切分明显减少 PDF 行断造成的伪段落。"
+    - "C5 诊断在校准后更稳定。"
+    - "展开不足和功能不明比例不再主要由行断造成。"
+    - "输出仍不包含原文。"
+    - "296 PASS 或更新后的全量 green。"
+    - "可以判断是否进入 C6。"
+
+  next_after_success:
+    recommended_task_id: PAPER-C6-BOUNDED-REVISION-SUGGESTER-A1
+    condition: "Only if paragraph segmentation calibration shows stable paragraph units."
+    scope: "生成修改操作建议、主题句/过渡句示例，不做整节重写。"
+
+final_answer:
+  C5_reader: "accepted_with_limitation"
+  next_step: "先做段落切分校准，不直接进入 C6"
+  C6_status: "defer_until_segmentation_stable"
+
+END_OF_GPT_RESPONSE

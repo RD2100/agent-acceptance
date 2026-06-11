@@ -1,0 +1,438 @@
+可以做，但要把它设计成**“有上限的审查协作”**，不能设计成开放式对话循环。GPT 不应接触原文，只审查 Claude 生成的结构化诊断摘要、问题清单和修订策略。Claude 负责本地读文本、抽象、执行；GPT 负责第二视角审查、发现盲点、要求补证。
+
+YAML
+overall_judgment: approved_with_revision
+recommended_model: "Claude local reader + GPT abstract reviewer + bounded iteration ledger"
+core_rule: "GPT 永远只看诊断摘要和策略，不看论文原文。"
+1. 这个流程是否合理？
+
+合理，但建议改成三角色模型：
+
+YAML
+collaboration_model:
+  claude_local_worker:
+    role:
+      - "本地读取论文模块原文"
+      - "生成段落功能图"
+      - "生成结构诊断"
+      - "生成修订策略"
+    cannot:
+      - "把原文发给 GPT"
+      - "写完整论文正文"
+      - "把论文内容写入 memory"
+
+  gpt_reviewer:
+    role:
+      - "审查诊断是否充分"
+      - "指出遗漏的结构问题"
+      - "检查修订策略是否可执行"
+      - "要求 Claude 补充证据类型"
+    input_only:
+      - "模块摘要"
+      - "段落功能标签"
+      - "问题清单"
+      - "修订策略"
+      - "不含原文的 evidence map"
+
+  human_author:
+    role:
+      - "决定是否采纳"
+      - "确认学术判断"
+      - "最终写作和修改正文"
+      - "决定是否进入下一模块"
+
+更好的协作模式不是自由聊天，而是模块化审查事务：
+
+YAML
+module_transaction:
+  1_extract: "Claude 本地读模块原文，生成无原文诊断摘要"
+  2_review: "GPT 审查诊断摘要"
+  3_revise_strategy: "Claude 根据 GPT 意见修订策略"
+  4_final_review: "GPT 审查策略是否足够"
+  5_close_or_human: "达到终止条件则关闭，否则 human_required"
+2. 每个模块的迭代终止条件
+
+建议默认 最多 2 轮 GPT 审查，特殊情况最多 3 轮。不要用“直到 GPT 不再提问题”作为唯一条件，这会导致无限细化。
+
+YAML
+iteration_policy:
+  default_max_rounds: 2
+  hard_max_rounds: 3
+
+  close_as_pass_when:
+    - "没有 P0/P1 问题"
+    - "P2 问题不超过 1 个，且已记录为人工判断项"
+    - "GPT 新增问题数量为 0，或新增问题均为低价值表达微调"
+    - "Claude 已生成可执行修订策略"
+    - "无安全边界问题"
+    - "无原文泄露"
+
+  close_as_human_required_when:
+    - "GPT 与 Claude 对核心论证判断冲突"
+    - "同一问题连续两轮无法解决"
+    - "需要作者决定学术立场"
+    - "需要真实文献检索"
+    - "需要正文重写"
+
+  close_as_blocked_when:
+    - "出现原文泄露"
+    - "GPT 输入含长段原文"
+    - "模块超出授权范围"
+    - "输出开始替用户写正文"
+
+问题分级可以这样定：
+
+YAML
+issue_severity:
+  P0: "安全/隐私/越权问题"
+  P1: "核心论证断裂、章节功能错误、治理建议不回应问题"
+  P2: "论证支撑不足、引用功能缺口、段落比例不当"
+  P3: "表达顺序、标题细化、局部术语一致性"
+3. 如何避免无限循环？
+
+必须引入 issue ledger + novelty guard + round budget。
+
+YAML
+loop_prevention:
+  max_rounds:
+    default: 2
+    absolute: 3
+
+  issue_ledger:
+    rule: "每个问题必须有 issue_id，不允许反复换说法重提同一问题。"
+    fields:
+      - "issue_id"
+      - "severity"
+      - "source_round"
+      - "status: open|resolved|accepted_limitation|human_required"
+      - "resolution_note"
+
+  novelty_guard:
+    rule: "如果新一轮 GPT 只重复旧问题或提出低价值微调，不开启新一轮。"
+
+  contradiction_guard:
+    rule: "GPT 新意见若与前一轮 accepted 结论冲突，必须标记 human_required，而不是继续循环。"
+
+  no_reopen_rule:
+    rule: "已 resolved 的 issue 不得重新打开，除非有新的结构证据。"
+
+  loop_hash:
+    rule: "如果连续两轮 issue set hash 基本相同，自动停止并进入 human_required 或 accepted_with_limitation。"
+
+终止状态建议固定为四类：
+
+YAML
+module_final_status:
+  - "accepted"
+  - "accepted_with_limitation"
+  - "human_required"
+  - "blocked"
+4. 技术上如何实现？现有 CDP 桥 + paper pipeline 是否够用？
+
+够用，但需要加一个编排层。现有能力如下：
+
+YAML
+existing_capabilities:
+  paper_pipeline:
+    - "C4 metadata diagnosis"
+    - "C5 full-section structural reader"
+    - "C6 bounded revision suggester"
+
+  review_infra:
+    - "evidence pack linter"
+    - "pre-GPT-review gate"
+    - "GPT review transaction runner"
+    - "verify_gpt_reply"
+    - "CI gate"
+
+缺的是：
+
+YAML
+missing_layer:
+  name: "module iteration orchestrator"
+  purpose: "把 Claude 本地诊断、GPT 审查、Claude 策略修订、终止判定串成一个有限状态机。"
+
+现有 CDP 桥可以继续用，但必须通过 transaction runner，不允许 agent 自己手动提交、自己总结。
+
+YAML
+cdp_usage_rule:
+  allowed: "only through gpt_review_transaction.py"
+  forbidden:
+    - "直接 CDP 提交后不读回复"
+    - "未捕获 GPT 回复就报告状态"
+    - "把原文发给 GPT"
+5. 相比手动使用，自动化协作的真正增量价值
+
+真正增量不在“更会写”，而在：
+
+YAML
+automation_value:
+  consistency:
+    - "每个模块按同一标准审查"
+    - "不会漏掉固定检查项"
+
+  auditability:
+    - "每轮诊断、GPT 意见、修订策略都有记录"
+    - "可以追踪为什么接受或拒绝某个建议"
+
+  safety:
+    - "自动阻止原文进入 GPT"
+    - "自动阻止全文处理和越权扩展"
+
+  cross_module_memory_without_content_memory:
+    - "记录结构性问题，不记录论文原文"
+    - "可以汇总全文层面的结构趋势"
+
+  reviewer_second_opinion:
+    - "GPT 不读原文，但能审查 Claude 的诊断是否充分"
+    - "减少 Claude 单模型盲区"
+
+  workload_reduction:
+    - "用户不用手动把每一节诊断结果整理成修订计划"
+
+不应承诺的增量：
+
+YAML
+not_real_value:
+  - "替用户写论文"
+  - "替代导师审阅"
+  - "自动保证投稿成功"
+  - "自动完成文献检索"
+  - "自动做政治正确性判断"
+建议下一步 TaskSpec
+YAML
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: PAPER-C7-CLAUDE-GPT-MODULE-ITERATION-A1
+
+recommended_task_id: PAPER-C7-CLAUDE-GPT-MODULE-ITERATION-A1
+
+taskspec:
+  task_id: PAPER-C7-CLAUDE-GPT-MODULE-ITERATION-A1
+  task_name: "Bounded Claude-GPT module iteration workflow"
+  task_type: real_paper_review_orchestration
+  primary_repo: agent-acceptance
+  status: authorized
+
+  objective:
+    - "实现一个有上限的 Claude + GPT 模块审查迭代流程。"
+    - "Claude 本地读取论文模块并生成无原文诊断摘要。"
+    - "GPT 只审查摘要、问题清单和修订策略，不接触原文。"
+    - "通过 issue ledger、round budget 和 novelty guard 防止无限循环。"
+    - "每个模块生成最终修订策略和 closure decision。"
+
+  core_design:
+    module_unit:
+      allowed:
+        - "section"
+        - "subsection"
+        - "paragraph_group"
+      default: "section"
+      max_modules_per_run: 1
+
+    iteration_rounds:
+      default_max_rounds: 2
+      hard_max_rounds: 3
+
+    gpt_input:
+      allowed:
+        - "module metadata"
+        - "paragraph function labels"
+        - "diagnosis summary"
+        - "issue ledger"
+        - "revision strategy"
+        - "non-verbatim evidence map"
+      forbidden:
+        - "original paper text"
+        - "full paragraph text"
+        - "long quotations"
+        - "full section"
+        - "full paper"
+
+  write_set:
+    allowed_paths:
+      - ".ai/tasks/paper-c7-claude-gpt-module-iteration-a1.yaml"
+      - "scripts/paper_c7_module_iteration.py"
+      - "scripts/paper_c7_gpt_review_packet_builder.py"
+      - "scripts/paper_c7_iteration_ledger.py"
+      - "schemas/paper_c7_module_packet.schema.json"
+      - "schemas/paper_c7_gpt_review_packet.schema.json"
+      - "schemas/paper_c7_iteration_result.schema.json"
+      - "tests/test_paper_c7_module_iteration.py"
+      - "tests/test_paper_c7_gpt_review_packet_builder.py"
+      - "tests/test_paper_c7_iteration_ledger.py"
+      - "_reports/paper-c7-claude-gpt-module-iteration-a1/**"
+      - "evidence_packs/paper-c7-claude-gpt-module-iteration-a1/**"
+      - "PROJECT_HISTORY.md"
+      - "BOOT_CONTEXT.md"
+      - "memory/index.md"
+      - "memory/tasks/paper-c7-claude-gpt-module-iteration-a1.md"
+
+    forbidden_paths:
+      - "memory/** containing paper text"
+      - "BOOT_CONTEXT.md containing paper text"
+      - "PROJECT_HISTORY.md containing paper text"
+      - "evidence_packs/** containing original paper text"
+      - "runs/**"
+      - "archive/draft-hooks/**"
+      - ".tmpconfig/**"
+      - ".tmpdata/**"
+      - "**/__pycache__/**"
+      - "**/*.pyc"
+      - ".ai/bypass_approved"
+      - "tools/ai_guard.py"
+
+  required_behavior:
+    command_dry_run: >
+      python scripts/paper_c7_module_iteration.py
+      --module-diagnosis _reports/paper-c5-full-section-reader/SECTION1_DIAGNOSIS.json
+      --revision-strategy _reports/paper-c6-bounded-revision/SECTION1_REVISION_STRATEGY.json
+      --mode dry_run
+      --max-rounds 2
+      --json-output _reports/paper-c7-claude-gpt-module-iteration-a1/MODULE_ITERATION_RESULT.json
+      --report-output _reports/paper-c7-claude-gpt-module-iteration-a1/MODULE_ITERATION_REPORT.md
+
+    command_live_review:
+      allowed_only_after_dry_run_passes: true
+      must_use:
+        - "pre_gpt_review_gate.py"
+        - "gpt_review_transaction.py"
+        - "verify_gpt_reply.py"
+      must_not:
+        - "send original paper text to GPT"
+        - "bypass transaction runner"
+
+  workflow_steps:
+    - step: 1
+      name: "Claude local diagnosis"
+      actions:
+        - "Read one module locally if authorized."
+        - "Generate C5 diagnosis."
+        - "Generate C6 bounded revision strategy."
+        - "Strip all original text before GPT packet."
+
+    - step: 2
+      name: "Build GPT review packet"
+      actions:
+        - "Include diagnosis summary."
+        - "Include paragraph function labels only."
+        - "Include issue ledger."
+        - "Include revision strategy."
+        - "Confirm no original text."
+
+    - step: 3
+      name: "GPT review transaction"
+      actions:
+        - "Run pre-gate."
+        - "Run linter."
+        - "Submit through transaction runner only."
+        - "Capture GPT response."
+        - "Verify END_OF_GPT_RESPONSE."
+
+    - step: 4
+      name: "Claude strategy update"
+      actions:
+        - "Apply GPT review only to strategy layer."
+        - "Do not generate full rewritten prose."
+        - "Update issue ledger."
+
+    - step: 5
+      name: "Termination decision"
+      actions:
+        - "Check round budget."
+        - "Check unresolved P0/P1 issues."
+        - "Check new issue novelty."
+        - "Return accepted / accepted_with_limitation / human_required / blocked."
+
+  termination_policy:
+    close_as_accepted:
+      - "no P0/P1 issues"
+      - "all P2 issues resolved or converted to human decision"
+      - "revision strategy actionable"
+      - "no privacy violation"
+
+    close_as_accepted_with_limitation:
+      - "minor P2/P3 issues remain"
+      - "limitations explicitly recorded"
+      - "human author can still use output"
+
+    close_as_human_required:
+      - "core academic judgment conflict"
+      - "citation/literature verification needed"
+      - "same issue persists after 2 rounds"
+      - "GPT and Claude disagree on diagnosis"
+
+    close_as_blocked:
+      - "original text leaked to GPT packet"
+      - "authorization missing or expired"
+      - "module scope exceeded"
+      - "output attempts full rewrite"
+
+  loop_guards:
+    - "max_rounds default 2"
+    - "hard_max_rounds 3"
+    - "same issue set twice -> stop"
+    - "no new P1/P2 issues -> close"
+    - "reopened issue requires new evidence"
+    - "low-value expression-only comments do not trigger new round"
+
+  tests_required:
+    targeted:
+      - "pytest tests/test_paper_c7_module_iteration.py"
+      - "pytest tests/test_paper_c7_gpt_review_packet_builder.py"
+      - "pytest tests/test_paper_c7_iteration_ledger.py"
+
+    must_cover:
+      - "GPT packet contains no original text"
+      - "module iteration stops at max_rounds"
+      - "repeated issue set triggers stop"
+      - "P0 privacy issue blocks"
+      - "P1 unresolved issue triggers human_required"
+      - "accepted_with_limitation preserves limitations"
+      - "dry_run does not call CDP"
+      - "live mode requires transaction runner"
+      - "issue ledger deduplicates repeated issues"
+      - "full rewrite request fails closed"
+
+  required_outputs:
+    - "_reports/paper-c7-claude-gpt-module-iteration-a1/TARGETED_TEST_OUTPUT.txt"
+    - "_reports/paper-c7-claude-gpt-module-iteration-a1/DRY_RUN_ITERATION_OUTPUT.txt"
+    - "_reports/paper-c7-claude-gpt-module-iteration-a1/GPT_REVIEW_PACKET_SAMPLE.json"
+    - "_reports/paper-c7-claude-gpt-module-iteration-a1/ITERATION_LEDGER_SAMPLE.json"
+    - "_reports/paper-c7-claude-gpt-module-iteration-a1/MODULE_ITERATION_RESULT.json"
+    - "_reports/paper-c7-claude-gpt-module-iteration-a1/MODULE_ITERATION_REPORT.md"
+    - "_reports/paper-c7-claude-gpt-module-iteration-a1/SAFETY_ATTESTATION.md"
+    - "_reports/paper-c7-claude-gpt-module-iteration-a1/CHANGED_FILES.txt"
+    - "_reports/paper-c7-claude-gpt-module-iteration-a1/DIFF_PAPER_C7_MODULE_ITERATION_A1.patch"
+    - "evidence_packs/paper-c7-claude-gpt-module-iteration-a1/closure-pack.zip"
+
+  safety_attestation:
+    must_assert:
+      original_text_sent_to_gpt: false
+      full_paper_processed_in_one_run: false
+      memory_write_with_paper_content: false
+      external_upload_performed: false
+      web_gpt_called_outside_transaction_runner: false
+      full_rewrite_generated: false
+      political_commentary_generated: false
+      issue_loop_guard_enabled: true
+      max_rounds_enforced: true
+
+  success_criteria:
+    - "Dry-run module iteration completes."
+    - "GPT review packet is text-safe and contains no original prose."
+    - "Iteration ledger deduplicates issues."
+    - "Loop guard prevents infinite cycles."
+    - "Termination decision is machine-readable."
+    - "No full rewrite is generated."
+    - "Targeted tests pass."
+
+  next_after_success:
+    recommended_action: "Run one controlled live GPT review iteration on Section 1 diagnosis packet."
+    next_task_authorization:
+      authorized: "only after A1 accepted"
+      recommended_task_id: PAPER-C7-LIVE-ONE-MODULE-REVIEW-A2
+
+最终建议：这个 Claude+GPT 协作流程值得做，但第一版只做 dry-run orchestrator 和审查包构造，不直接上多模块 live 自动循环。先证明它能防泄露、防无限循环、防过度改写，再用一个模块做 live 试运行。

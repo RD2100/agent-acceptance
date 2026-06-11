@@ -1,0 +1,708 @@
+HANDOFF_V6.md — DevFrame / agent-acceptance 项目交接文档
+
+生成目的：当前 GPT 对话上下文已经膨胀，需要切换到新 GPT 对话继续工作。
+当前阶段：CONTEXT-COMPRESSION-A1 已经通过 GPT 审查 accepted，但落地提交阶段被 pre-commit gate 中的 ai_guard.py 阻塞。
+接手要求：新 Agent 阅读本文档后，应能直接理解项目身份、当前任务链、已完成任务、安全边界、当前阻塞和下一步处理方式。
+验证方式：新对话中应回复 handoff_understood=yes，并用中文说明已理解当前状态与下一步。
+
+1. 项目身份与三层架构
+
+本项目是 DevFrame / agent-acceptance / devframe-control-plane 组成的多层 Agent 工作流治理系统。它不是普通代码项目，而是一套围绕 evidence-first、GPT 审查、任务闭环、证据包、审查门禁、上下文压缩 建立的自动化治理框架。
+
+项目核心目标是：让多个编码 agent、GPT 审查、项目蓝本、工作流 runner、论文功能、上下文记忆和 evidence pack 之间形成可复核、可交接、可持续推进的开发流程。
+
+1.1 三层架构
+YAML
+architecture:
+  layer_1_spec_acceptance:
+    repo: agent-acceptance
+    role: "规范验收层"
+    responsibilities:
+      - "定义任务合约"
+      - "定义 evidence pack 结构"
+      - "维护 PROJECT_HISTORY.md / ledger"
+      - "维护 GPT review gate"
+      - "维护 paper privacy boundary"
+      - "维护 memory/context compression"
+      - "维护 dirty-worktree split governance"
+      - "维护 validator / schema / checker"
+
+  layer_2_control_plane:
+    repo: devframe-control-plane
+    role: "编排控制层"
+    responsibilities:
+      - "pipeline 编排"
+      - "stage executor"
+      - "reference paper workflow"
+      - "submission adapter"
+      - "workflow runner"
+      - "control-plane CLI"
+
+  layer_3_execution:
+    repo: dev-frame-opencode
+    role: "执行层"
+    responsibilities:
+      - "实际编码 agent 执行"
+      - "任务实现"
+      - "测试运行"
+      - "证据包生成"
+      - "提交前自检"
+
+当前主要工作集中在 agent-acceptance 仓库。devframe-control-plane 在 PAPER-B1 / PAPER-B2 阶段已参与，但当前 CONTEXT-COMPRESSION-A1 的 primary repo 是 agent-acceptance。
+
+2. 核心治理原则
+
+本项目必须始终遵守 Evidence-First 原则。
+
+2.1 Evidence-First 原则
+YAML
+evidence_first:
+  - "Agent 的自然语言陈述不是证据。"
+  - "GPT 的审查结论必须基于实际文件、测试输出、diff、manifest、hash、ledger 和 evidence pack。"
+  - "ready_for_review 不是 closed。"
+  - "closed = GPT accepted + ledger / PROJECT_HISTORY binding。"
+  - "测试通过不等于任务完成。"
+  - "commit + push 不等于任务完成。"
+  - "summary-only evidence pack 必须被拒绝。"
+  - "manifest / ZIP / SHA256 必须双向一致。"
+  - "stale test output / stale closure report 必须 blocked。"
+  - "如果 evidence 与 agent summary 矛盾，以 evidence 为准。"
+2.2 当前 closed 定义
+YAML
+closed_definition:
+  required:
+    - "GPT overall_judgment: accepted"
+    - "对应 GPT_REVIEW_RESULT.txt 已保存"
+    - "对应 WEB_GPT_SUBMISSION_RESULT.json 或等价提交结果已保存"
+    - "PROJECT_HISTORY.md 已追加 binding"
+    - "docs/WORKFLOW_AUDIT_LEDGER.yaml 已追加 binding"
+    - "implementation commit 已推送"
+    - "binding commit 已推送"
+  forbidden:
+    - "仅 tests pass 就声称 closed"
+    - "仅 commit/push 就声称 closed"
+    - "仅 CLOSURE_REPORT 写 accepted 就声称 closed"
+    - "未通过 GPT 审查就改 ledger 为 accepted"
+3. 已完成任务与 GPT 审查状态
+
+以下任务是当前上下文中需要新 Agent 重点理解的近期任务链。GROUP 系列来自 dirty worktree split；WorkQueue 系列来自工作队列修复；CONTEXT-COMPRESSION-A1 是当前最新主线任务。
+
+3.1 GROUP-01 — AA-FLOW-RUNNER-CONTRACT-BACKFILL
+YAML
+task_id: GROUP-01
+task_name: AA-FLOW-RUNNER-CONTRACT-BACKFILL
+status: accepted
+review_round: R4
+scope:
+  - "contracts/*.schema.json"
+  - "policies/*.md"
+  - "tests/fixtures/*.json"
+  - "tests/test_* schema/policy files"
+  - ".ai/tasks/group-01-contract-backfill.yaml"
+key_fixes:
+  - "负向测试由 return tuple 改为真实 assert / pytest.raises。"
+  - "GROUP-01 selected-files-only bypass 通过。"
+  - "不提交 whole dirty tree。"
+  - "不提交 historical evidence mutation。"
+evidence:
+  - "evidence_packs/group-01-contract-backfill/closure-pack-r4.zip"
+  - "evidence_packs/group-01-contract-backfill/GPT_REVIEW_RESULT_R4.txt"
+  - "evidence_packs/group-01-contract-backfill/WEB_GPT_SUBMISSION_RESULT_R4.json"
+implementation_commit: "fc2b2176"
+binding_commit: "a6fca74c"
+
+GROUP-01 的意义是把 flow / runner / task spec 相关早期约定补成机器可读 contract、policy 和测试。它不是新功能扩张，而是 historical/backfill。
+
+3.2 GROUP-02 — PAPER-A3-VALIDATOR-RESIDUAL
+YAML
+task_id: GROUP-02
+task_name: PAPER-A3-VALIDATOR-RESIDUAL
+status: accepted
+scope:
+  - "scripts/validate_paper_task.py"
+  - "tests/test_paper_task_validator.py"
+key_points:
+  - "两个文件与 PAPER-A3 R2 accepted deliverables hash 一致。"
+  - "这是 residual/backfill，不是新 validator functionality。"
+  - "synthetic validator pass。"
+  - "targeted tests pass。"
+evidence:
+  - "evidence_packs/group-02-paper-a3-validator-residual/"
+implementation_commit: "6304a632"
+binding_commit: "63005d95"
+
+GROUP-02 的意义是把 PAPER-A3 中已经被 GPT accepted 的两个关键文件正式补入仓库。
+
+3.3 GROUP-03 — MEMORY-A2-COMPILER-OUTPUT
+YAML
+task_id: GROUP-03
+task_name: MEMORY-A2-COMPILER-OUTPUT
+status: accepted
+scope:
+  - "memory/daily/2026-06-06.md"
+  - "memory/knowledge/index.md"
+nature: "generated/backfill output review"
+key_points:
+  - "不是新 memory compiler functionality。"
+  - "memory_lint pass。"
+  - "source references 存在。"
+  - "privacy scan 未发现直接 private paper/session/secret markers。"
+
+GROUP-03 是冻结生成物的 backfill 审查，不代表 memory compiler 新功能已经完成。
+
+3.4 GROUP-04 — AGENT-RUNTIME-CAPABILITY-CLEANUP
+YAML
+task_id: GROUP-04
+task_name: AGENT-RUNTIME-CAPABILITY-CLEANUP
+status: accepted
+scope:
+  - "docs/agent-runtime/capability-inventory.md"
+  - "docs/agent-runtime/routing-matrix-summary.md"
+  - "audit/blackboard-cleanup-audit-20260531.md"
+key_points:
+  - "Blackboard 不再作为 active capability。"
+  - "historical blackboard audit evidence 被保留，不删除。"
+  - "不包含 archive hook changes。"
+  - "不削弱 active guards。"
+
+GROUP-04 只是 capability inventory / routing summary 清理，不代表 archive hooks 修改被 accepted。
+
+3.5 GROUP-05 — CHAIN-EVIDENCE-HARDENING R3
+YAML
+task_id: GROUP-05
+task_name: CHAIN-EVIDENCE-HARDENING
+status: accepted
+accepted_round: R3
+scope:
+  - "schemas/agent-runtime/chain-evidence.schema.json"
+  - "tools/ai_guard.py"
+  - "tools/go_evidence.py"
+  - "tests/test_chain_evidence_hardening.py"
+key_points:
+  - "reviewer_role / reviewed_at / rerun_verified_at / rerun_summary covered。"
+  - "malformed chain-evidence fail closed。"
+  - "finalize writes rerun metadata。"
+  - "R3 修正 rerun timestamp semantics。"
+semantic_decision:
+  - "rerun_verified_at 必须 on or after created_at。"
+  - "rerun_verified_at 不要求 on or after reviewed_at。"
+  - "rerun_verified_at 与 rerun_summary 必须成对。"
+
+注意：GROUP-05 修改了 tools/ai_guard.py。这和当前 CONTEXT-COMPRESSION-A1 提交时被 pre-commit gate 阻塞有关。
+
+3.6 GROUP-06 — VALIDATE-WORKFLOW-CLOSURE-CONTROL-PLANE-PATTERN
+YAML
+task_id: GROUP-06
+task_name: VALIDATE-WORKFLOW-CLOSURE-CONTROL-PLANE-PATTERN
+status: accepted
+scope:
+  - "scripts/validate_workflow_closure.py"
+  - "tests/test_workflow_closure_validation.py"
+key_points:
+  - "新增 control_plane/ 为 actual deliverable pattern。"
+  - "测试证明 control_plane/stage_executor.py 被计为 actual deliverable。"
+3.7 WorkQueue integrity
+YAML
+task_id: t-workqueue-integrity-20260601
+status: accepted
+key_points:
+  - "missing batch-local-quality.json defect fixed。"
+  - "Test-WorkQueue passes。"
+  - "batch-local-quality batch passes。"
+  - "local-quality queue execution passes。"
+3.8 WorkQueue specialized batches + runner propagation
+YAML
+task_id: t-workqueue-specialized-batches-20260607
+status: accepted
+scope:
+  - "specialized batch JSONs for cleanup/recovery/release"
+  - "queue JSONs pointing to specialized active batch files"
+  - "Run-WorkQueue.ps1 exit/result propagation fix"
+key_points:
+  - "direct specialized batch runs pass。"
+  - "cleanup/recovery/release queue executions pass after runner fix。"
+  - "不扩展到 unrelated governance cleanup。"
+3.9 REPO-CODE-VERIFICATION-R3
+YAML
+task_id: REPO-CODE-VERIFICATION-R3
+status: accepted
+key_points:
+  - "GROUP-01 remote commit scope clean。"
+  - "GROUP-02 remote commit scope clean。"
+  - "未发现 __pycache__、*.pyc、.tmpconfig、.tmpdata 被追踪。"
+  - "本地 dirty worktree 仍存在，但未被 whole-dirty-tree commit。"
+3.10 CONTEXT-COMPRESSION-A1 — 当前最新主线任务
+YAML
+task_id: CONTEXT-COMPRESSION-A1
+task_name: Long Conversation Context Compression Layer
+status: GPT accepted R6
+reviewer_type: gpt
+overall_judgment: accepted
+latest_review_round: R6
+current_blocker: "commit 被 pre-commit gate / ai_guard.py 阻塞"
+
+CONTEXT-COMPRESSION-A1 的目标是解决长对话上下文膨胀问题，让新 Agent 不再每次读取完整 PROJECT_HISTORY / HANDOFF，而是优先读取：
+
+YAML
+context_reading_order:
+  - "BOOT_CONTEXT.md"
+  - "memory/index.md"
+  - "memory/tasks/*.md"
+  - "memory/knowledge/*.md"
+  - "必要时再读 PROJECT_HISTORY.md"
+4. CONTEXT-COMPRESSION-A1 已实现内容
+
+CONTEXT-COMPRESSION-A1 已经通过 GPT R6 审查 accepted。它实现了 privacy-safe context compression layer。
+
+4.1 主要交付物
+YAML
+deliverables:
+  contracts:
+    - "contracts/context_compression_contract.yaml"
+
+  schemas:
+    - "schemas/compressed_memory_entry.schema.json"
+    - "schemas/boot_context.schema.json"
+
+  scripts:
+    - "scripts/compress_project_context.py"
+    - "scripts/build_boot_context.py"
+    - "scripts/validate_context_memory.py"
+
+  generated_context:
+    - "BOOT_CONTEXT.md"
+    - "memory/index.md"
+    - "memory/tasks/*.md"
+    - "memory/knowledge/*.md"
+
+  tests:
+    - "tests/test_context_compression.py"
+    - "tests/test_boot_context_builder.py"
+    - "tests/test_context_memory_privacy.py"
+
+  task_spec:
+    - ".ai/tasks/context-compression-a1.yaml"
+4.2 R1–R6 审查历程
+
+CONTEXT-COMPRESSION-A1 经历多轮阻塞后 accepted：
+
+YAML
+review_history:
+  R1:
+    blocked:
+      - "缺少 full test suite 原始输出"
+      - "privacy guard 的 safety-doc 整文件豁免过宽"
+      - "selected files 与 actual_deliverables 不一致"
+
+  R2:
+    blocked:
+      - "证据仍 stale"
+      - "file_is_safety_doc 整文件豁免仍存在"
+      - "新增安全测试未实际出现"
+      - "actual_deliverables 路径仍不一致"
+      - "privacy guard scan 范围漂移未解释"
+
+  R3:
+    blocked:
+      - "safety bullet/header 中夹带 raw_paper_text/private_user_text/raw_transcript/博士论文正文 payload 仍可通过"
+
+  R4:
+    blocked:
+      - "PACK_MANIFEST.md 有重复且 stale 的自记录"
+      - "secret/token/api_key/cookie/session 在 safety context 中的 payload 仍可能被豁免"
+
+  R5:
+    blocked:
+      - "测试输出仍 stale"
+      - "新增 secret/token/api_key/cookie 测试没有被 raw output 证明执行"
+      - "缺少 session payload 负向测试"
+
+  R6:
+    accepted:
+      - "targeted tests 51 PASS"
+      - "full tests 232 PASS"
+      - "privacy guard 27 files ALL CLEAR"
+      - "PACK_MANIFEST 单一 self_excluded"
+      - "BOOT_CONTEXT 3035 chars"
+      - "secret/token/api_key/cookie/session payload fail closed"
+4.3 R6 accepted 结论
+
+GPT R6 结论：
+
+YAML
+overall_judgment: accepted
+task_id: CONTEXT-COMPRESSION-A1
+accepted_scope:
+  - "privacy-safe context compression layer"
+  - "BOOT_CONTEXT.md as cold-start short context"
+  - "memory/index.md, memory/tasks/*.md, memory/knowledge/*.md as structured compressed memory"
+  - "validate_context_memory.py fail-closed for paper/private/transcript/secret payload"
+not_authorized:
+  - "GPT-REVIEW-QUEUE-A1"
+  - "TDD-GOVERNANCE-A1"
+  - "PAPER-C3"
+  - "whole dirty worktree accepted"
+4.4 当前未完成动作
+
+R6 accepted 后，下一步本应是：
+
+YAML
+required_next_action:
+  - "将 CONTEXT-COMPRESSION-A1 accepted 结果绑定到 PROJECT_HISTORY.md"
+  - "将 accepted 结果绑定到 docs/WORKFLOW_AUDIT_LEDGER.yaml"
+  - "只提交 CONTEXT-COMPRESSION-A1 selected files 和 binding records"
+  - "推送到 origin/master"
+
+但是提交阶段被 pre-commit gate 阻塞。
+
+5. 当前阻塞：pre-commit gate / ai_guard.py 误报 dirty working tree
+5.1 阻塞状态
+YAML
+current_blocker:
+  task: "CONTEXT-COMPRESSION-A1-BINDING / commit"
+  stage: "pre-commit"
+  blocker_source: "ai_guard.py"
+  symptom: "ai_guard.py 扫描整个 working tree，而不是只扫描 staged / selected files"
+  effect: "7 个 dirty-worktree 文件未暂存，但被 pre-commit gate 误报，导致 commit 失败"
+5.2 阻塞本质
+
+当前不是 CONTEXT-COMPRESSION-A1 代码本身被 GPT blocked。它已经 R6 accepted。当前阻塞是 提交门禁实现问题：
+
+YAML
+problem:
+  expected_behavior:
+    - "pre-commit gate 应检查 staged files 或本任务 selected files。"
+    - "未暂存的 dirty baseline 文件不应阻塞已 accepted selected files 的提交。"
+
+  actual_behavior:
+    - "ai_guard.py 扫描整个 working tree。"
+    - "本地 dirty baseline 中的未暂存文件被误判为本次提交风险。"
+    - "commit 被阻塞。"
+
+  risk_if_wrongly_fixed:
+    - "不能直接删除 dirty baseline。"
+    - "不能直接把 dirty baseline 一起提交。"
+    - "不能粗暴关闭 ai_guard。"
+    - "不能弱化 active guard。"
+5.3 当前已知 dirty baseline
+
+根据此前仓库核验，本地 dirty worktree 一直存在，且不应 whole-dirty-tree commit。已知类别包括：
+
+YAML
+known_dirty_baseline:
+  tracked_modified_or_deleted:
+    - "HANDOFF_REPLY_V4.txt deletion"
+    - "archive/draft-hooks/pre-final.audit.ps1 modified"
+    - "archive/draft-hooks/pre-task.audit.ps1 modified"
+    - "archive/draft-hooks/pre-tool.audit.ps1 modified"
+    - "runs/project-history-gaps-v1/POST_REVIEW_ROUTE.json modified"
+    - "runs/repo-routing-a1-v1/POST_REVIEW_ROUTE.json modified"
+
+  untracked_noise:
+    - ".tmpconfig/"
+    - ".tmpdata/"
+    - "scripts/__pycache__/"
+    - "tests/__pycache__/"
+    - "tools/__pycache__/"
+    - "root scratch GPT files"
+
+用户明确说明本轮 pre-commit gate 中有 7 个 dirty-worktree 文件被误报。新 Agent 接手后必须读取实际 gate 输出确认这 7 个具体文件名。不要根据本交接文档猜测并删除文件。
+
+5.4 正确处理方向
+
+正确方向不是删除脏文件，也不是提交所有脏文件，而是修复或绕开当前 commit 的 gate 范围问题。
+
+推荐处理顺序：
+
+YAML
+first_step:
+  - "保存当前 pre-commit failure output。"
+  - "保存 git status --short。"
+  - "保存 staged files list。"
+  - "确认 CONTEXT-COMPRESSION-A1 staged files 与 SELECTED_FILES.txt 一致。"
+  - "确认 7 个 ai_guard 报错文件未被 staged。"
+
+preferred_fix:
+  - "让 pre-commit / ai_guard 对本次提交使用 staged-files-only 模式。"
+  - "或者在 commit 前调用 ai_guard 的 selected-files-only / staged-files-only 检查。"
+  - "不得关闭 ai_guard。"
+  - "不得忽略 staged selected files 中的真实风险。"
+
+if_code_change_needed:
+  - "如必须修改 ai_guard.py 或 pre-commit hook 行为，必须另开小任务。"
+  - "任务名建议：AI-GUARD-STAGED-SCOPE-A1。"
+  - "该任务需要 evidence pack 和 GPT review。"
+
+由于 tools/ai_guard.py 是 GROUP-05 已 accepted 的 governance tool，修改它属于高风险治理逻辑变更。不能顺手改。
+
+6. 安全边界
+6.1 永久禁止事项
+YAML
+permanent_forbidden:
+  historical_evidence:
+    - "不得删除历史 evidence。"
+    - "不得移动历史 evidence。"
+    - "不得重命名历史 evidence。"
+    - "不得清理 runs 目录。"
+    - "不得覆盖历史 evidence。"
+    - "不得直接修改 runs/*/POST_REVIEW_ROUTE.json，除非有单独 GPT accepted 修复任务。"
+
+  dirty_worktree:
+    - "不得 whole-dirty-tree commit。"
+    - "不得把本地 dirty baseline 顺手提交。"
+    - "不得把 untracked cache/tmp/root scratch files 加入 commit。"
+
+  guard:
+    - "不得关闭 ai_guard。"
+    - "不得弱化 active guard。"
+    - "不得删除 pre-commit/pre-push gate。"
+    - "不得将 blocker 改成 warning 来绕过。"
+
+  privacy:
+    - "不得处理真实论文全文。"
+    - "不得写入 raw_paper_text。"
+    - "不得写入 private_user_text。"
+    - "不得保存 raw transcript。"
+    - "不得把用户论文内容写入 memory。"
+    - "不得上传用户私密文本到外部服务。"
+
+  external:
+    - "不得默认开启 live CDP。"
+    - "不得默认 external upload。"
+    - "不得伪造 GPT accepted。"
+    - "不得伪造 evidence pack。"
+    - "不得伪造 PACK_MANIFEST / SHA256。"
+6.2 fail-closed 要求
+YAML
+fail_closed:
+  - "schema invalid → fail closed"
+  - "missing required evidence → fail closed"
+  - "stale test output → fail closed"
+  - "summary-only pack → fail closed"
+  - "manifest/hash mismatch → fail closed"
+  - "privacy marker with payload → fail closed"
+  - "raw transcript detected → fail closed"
+  - "real paper full text detected → fail closed"
+  - "unauthorized excerpt detected → fail closed"
+  - "GPT_REPLY missing END_OF_GPT_RESPONSE → fail closed"
+  - "HANDOFF missing END_OF_HANDOFF → fail closed"
+  - "closed without GPT accepted → fail closed"
+7. 关键教训
+7.1 不要把 ready_for_review 当 closed
+
+本项目早期多次出现“测试通过 + 生成报告 + commit/push”就被 agent 视为完成。现在必须坚持：只有 GPT accepted + ledger / PROJECT_HISTORY binding 才能 closed。
+
+7.2 不要提交 summary-only evidence pack
+
+多个任务早期被 blocked，原因是 evidence pack 只有 CLOSURE_REPORT / SAFETY_ATTESTATION / PACK_MANIFEST，没有 actual deliverables。现在每个 evidence pack 必须包含实际代码、schema、测试、diff、manifest 和输出。
+
+7.3 stale evidence 是高频问题
+
+CONTEXT-COMPRESSION-A1 多轮被 blocked，主要原因就是 CLOSURE_REPORT、TARGETED_TEST_OUTPUT、FULL_TEST_OUTPUT 与实际代码不同步。以后必须在最终打包前重新生成所有报告。
+
+7.4 隐私 guard 不能因为“安全文档”就整文件豁免
+
+CONTEXT-COMPRESSION-A1 反复修复了 safety-doc 豁免漏洞。最终规则是：纯 forbidden term list 可以 pass；但只要 marker 后带 payload，就必须 fail closed。
+
+示例：
+
+- raw_paper_text
+
+可以作为安全边界说明 pass。
+
+但：
+
+- raw_paper_text: ACTUAL CONTENT
+
+必须 fail closed。
+
+同理适用于：
+
+YAML
+markers:
+  - raw_paper_text
+  - private_user_text
+  - raw_transcript
+  - 博士论文正文
+  - 用户论文全文
+  - api_key
+  - token
+  - secret
+  - cookie
+  - session
+7.5 dirty worktree split 是当前仓库治理前提
+
+本地 dirty worktree 仍然存在。远程 origin/master 对已 accepted scope 是 clean 的，但本地不是 clean。后续任何 commit 都必须 selected-files-only。
+
+7.6 ai_guard 当前阻塞不是 CONTEXT-COMPRESSION-A1 审查失败
+
+CONTEXT-COMPRESSION-A1 已 accepted。当前只是提交门禁扫描范围不当。新 Agent 不能把这个误判为要重做 CONTEXT-COMPRESSION-A1。
+
+8. 新 Agent 接手第一步
+
+新 Agent 接手后第一步不要继续新功能，不要进入 GPT-REVIEW-QUEUE-A1，也不要清理 dirty worktree。第一步是解决 CONTEXT-COMPRESSION-A1 accepted 后的 commit 阻塞。
+
+8.1 具体第一步
+YAML
+new_agent_first_task:
+  task_id: CONTEXT-COMPRESSION-A1-COMMIT-BLOCKER
+  goal: "让 CONTEXT-COMPRESSION-A1 accepted selected files 和 binding records 能安全提交，不夹带 dirty baseline。"
+  immediate_actions:
+    - "读取 BOOT_CONTEXT.md。"
+    - "读取 PROJECT_HISTORY.md 最新 CONTEXT-COMPRESSION-A1 片段。"
+    - "读取 evidence_packs/context-compression-a1/closure-pack-r6.zip 或对应解包报告。"
+    - "读取 CONTEXT-COMPRESSION-A1 R6 GPT_REVIEW_RESULT。"
+    - "运行 git status --short。"
+    - "运行 git diff --cached --name-only。"
+    - "运行 git diff --name-only。"
+    - "重新触发 pre-commit 或查看最近 pre-commit ai_guard 输出。"
+    - "记录 ai_guard 报错的 7 个 dirty-worktree 文件。"
+8.2 判定规则
+YAML
+decision_rules:
+  if_dirty_files_not_staged:
+    action: "不得提交 dirty files；应证明它们不在 staged set。"
+
+  if_ai_guard_scans_entire_worktree:
+    action: "优先寻找 staged-files-only 执行方式。"
+
+  if_no_staged_only_mode_exists:
+    action: "停下，创建 AI-GUARD-STAGED-SCOPE-A1 小任务计划。"
+
+  if_modifying_ai_guard_needed:
+    action: "不能顺手改；必须 evidence pack + GPT review。"
+
+  if_pre_commit_can_be_invoked_with_selected_files_only:
+    action: "生成 proof，然后提交 CONTEXT-COMPRESSION-A1 selected files + binding。"
+8.3 不得做的事
+YAML
+do_not:
+  - "不要删除 HANDOFF_REPLY_V4.txt。"
+  - "不要恢复或提交 archive/draft-hooks 修改。"
+  - "不要提交 runs/*/POST_REVIEW_ROUTE.json 修改。"
+  - "不要提交 .tmpconfig/.tmpdata/__pycache__。"
+  - "不要 whole-dirty-tree commit。"
+  - "不要关闭 ai_guard。"
+  - "不要把 ai_guard blocker 改成 warning。"
+9. CONTEXT-COMPRESSION-A1 提交应包含的文件范围
+
+新 Agent 需要根据实际 SELECTED_FILES.txt 核对。根据任务设计，允许范围大致为：
+
+YAML
+context_compression_selected_paths:
+  - ".ai/tasks/context-compression-a1.yaml"
+  - "contracts/context_compression_contract.yaml"
+  - "schemas/compressed_memory_entry.schema.json"
+  - "schemas/boot_context.schema.json"
+  - "scripts/compress_project_context.py"
+  - "scripts/build_boot_context.py"
+  - "scripts/validate_context_memory.py"
+  - "BOOT_CONTEXT.md"
+  - "memory/index.md"
+  - "memory/tasks/*.md"
+  - "memory/knowledge/*.md"
+  - "tests/test_context_compression.py"
+  - "tests/test_boot_context_builder.py"
+  - "tests/test_context_memory_privacy.py"
+  - "_reports/context-compression-a1/*"
+  - "evidence_packs/context-compression-a1/*"
+
+绑定提交允许范围：
+
+YAML
+binding_allowed_paths:
+  - "PROJECT_HISTORY.md"
+  - "docs/WORKFLOW_AUDIT_LEDGER.yaml"
+  - "_reports/context-compression-a1-binding/CONTEXT_COMPRESSION_A1_BINDING_RECORD.yaml"
+
+如果 staged files 超出上述范围，必须停止。
+
+10. CDP 连接信息
+
+项目此前使用 Chrome CDP / Web GPT 提交审查。当前可用连接信息：
+
+YAML
+cdp:
+  chrome_remote_debugging_port: 9222
+  launch_flag: "--remote-debugging-port=9222"
+  expected_endpoint: "http://127.0.0.1:9222"
+  usage:
+    - "用于 Web GPT submission automation"
+    - "用于 capture GPT reply"
+    - "必须等待 END_OF_GPT_RESPONSE"
+  safety:
+    - "不得默认开启 live CDP 除非任务明确需要。"
+    - "不得上传真实论文全文。"
+    - "不得上传用户私密文本。"
+    - "不得绕过 submission_adapter / approved bridge。"
+
+当前 CONTEXT-COMPRESSION-A1 已经 GPT accepted，不需要重新提交 GPT，除非 commit-blocker 修复涉及新代码变更。
+
+11. 新对话交接验证格式
+
+新 GPT 对话打开后，用户可以粘贴本文档，并要求 GPT 按以下格式回复：
+
+YAML
+handoff_understood: yes|no
+project_identity_understood: yes|no
+three_layer_architecture_understood: yes|no
+current_stage_understood: yes|no
+context_compression_a1_status: "accepted_r6_pending_commit"
+current_blocker_understood: yes|no
+ai_guard_blocker_understood: yes|no
+dirty_worktree_boundary_understood: yes|no
+first_action: ""
+can_continue: yes|no
+notes: ""
+
+期望回复：
+
+YAML
+handoff_understood: yes
+context_compression_a1_status: "accepted_r6_pending_commit"
+first_action: "核对 staged files 与 ai_guard pre-commit 阻塞输出，解决 selected-files-only 提交问题，不提交 dirty baseline。"
+can_continue: yes
+12. 当前最重要的一句话
+
+CONTEXT-COMPRESSION-A1 已经 GPT accepted R6；现在不要重做这个任务，也不要开启新功能。新 Agent 第一件事是解决 pre-commit 中 ai_guard.py 扫描整个 working tree 导致的误报，确保只提交 CONTEXT-COMPRESSION-A1 selected files 和 binding records，不夹带任何 dirty baseline。
+
+13. 推荐的新 Agent 执行提示词
+
+以下提示词可直接复制给新 Agent：
+
+Markdown
+你是 DevFrame / agent-acceptance 项目的后续维护 agent。
+
+请先阅读 HANDOFF_V6.md、BOOT_CONTEXT.md、PROJECT_HISTORY.md 和 CONTEXT-COMPRESSION-A1 R6 evidence pack。
+
+当前状态：
+- CONTEXT-COMPRESSION-A1 已经 GPT accepted R6。
+- 需要将 accepted 结果绑定到 PROJECT_HISTORY.md 和 docs/WORKFLOW_AUDIT_LEDGER.yaml，并提交 selected files。
+- 但是 commit 被 pre-commit gate 中的 ai_guard.py 阻塞。
+- 阻塞原因不是 CONTEXT-COMPRESSION-A1 代码失败，而是 ai_guard.py 扫描整个 working tree，把 7 个未暂存 dirty baseline 文件误报。
+- 本地 dirty worktree 仍存在，绝对不能 whole-dirty-tree commit。
+
+你的第一步：
+1. 运行 git status --short。
+2. 运行 git diff --cached --name-only。
+3. 运行 git diff --name-only。
+4. 查看 pre-commit / ai_guard 输出，记录被误报的 7 个 dirty-worktree 文件。
+5. 核对 CONTEXT-COMPRESSION-A1 selected files 与 staged files 是否一致。
+6. 不要删除、移动、重命名、恢复或提交 dirty baseline。
+7. 不要关闭 ai_guard，不要把 blocker 改成 warning。
+8. 优先寻找 staged-files-only / selected-files-only 的 guard 执行方式。
+9. 如果必须修改 ai_guard.py 或 pre-commit hook，停止并生成 AI-GUARD-STAGED-SCOPE-A1 小任务计划，不要直接改。
+
+成功标准：
+- CONTEXT-COMPRESSION-A1 selected files 可以安全提交。
+- binding records 可以安全提交。
+- dirty baseline 未被提交。
+- ai_guard 仍然保持 fail-closed。
+- PROJECT_HISTORY.md 和 WORKFLOW_AUDIT_LEDGER.yaml 正确记录 CONTEXT-COMPRESSION-A1 accepted。
+14. 交接结束
+
+本文档为 HANDOFF_V6。
+新 Agent 应以本文档为冷启动上下文，并以 BOOT_CONTEXT.md 作为短上下文入口。
+不要在未解决当前 commit blocker 前推进 GPT-REVIEW-QUEUE-A1、TDD-GOVERNANCE-A1、PAPER-C3 或其他新任务。
+
+END_OF_HANDOFF

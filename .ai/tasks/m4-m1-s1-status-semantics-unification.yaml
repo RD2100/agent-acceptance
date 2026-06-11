@@ -1,0 +1,177 @@
+task_id: m4-m1-s1-status-semantics-unification
+title: M4-M1-S1 @go status semantics unification
+priority: P0
+status: ready
+mode: "@go edit"
+description: >
+  Eliminate fake-green risk in the @go main path by unifying the meanings of
+  guard result, evidence validity, reviewer verdict, and final batch status.
+
+goal:
+  user_visible_success: >
+    final-report.md expresses one authoritative final_batch_status, and
+    evidence pass alone can no longer be misread as batch success.
+  in_scope:
+    - Unify @go result semantics around guard_result, evidence_status, reviewer_verdict, and final_batch_status
+    - Add structured blocked_by entries with machine-readable origin and code
+    - Implement deterministic synthesis precedence for final status
+    - Verify with at least one positive and one negative case
+    - Replay against current run evidence where suitable
+  out_of_scope:
+    - Worktree baseline cleanup
+    - Reviewer / executor / finalizer templating
+    - TaskSpec boundary policy redesign
+    - Issue Contract v0 changes
+    - Ledger merge semantics changes
+    - General SADP redesign
+    - Unrelated governance refactors
+
+constraints:
+  token_strategy:
+    - Keep the implementation local and minimal
+    - Reuse current evidence runs for replay
+    - Add the smallest supporting fixture only if necessary
+  hard_stops:
+    - No fake green
+    - No widening into M4-M2 policy work
+    - No worktree cleanup in this slice
+    - No silent reinterpretation of reviewer authority
+
+allow_write:
+  - tools/ai_guard.py
+  - tools/go_evidence.py
+  - schemas/agent-runtime/*.json
+  - runs/t-chain-evidence-hardening-20260601/**
+  - runs/t-dirty-boundary-closure-20260601/**
+  - reports/m4-m1-s1-status-semantics-notes.md
+
+gate_0:
+  triggered: false
+  inventory_evidence:
+    queried_sources:
+      - reports/m4-readiness-snapshot.md
+      - runs/t-chain-evidence-hardening-20260601/final-report.md
+      - runs/t-chain-evidence-hardening-20260601/review.yaml
+      - runs/t-chain-evidence-hardening-20260601/test-output.md
+      - runs/t-dirty-boundary-closure-20260601/final-report.md
+      - tools/ai_guard.py
+      - tools/go_evidence.py
+    matched_capabilities:
+      - reviewer-evidence-validation
+      - go-evidence-finalizer
+      - status-synthesis
+    compared_against_request:
+      - "@go final status must not alias evidence pass"
+  sufficiency_decision: reuse_existing
+  decision: reuse
+
+conflict_registry:
+  read_set:
+    - reports/m4-readiness-snapshot.md
+    - runs/t-chain-evidence-hardening-20260601/**
+    - runs/t-dirty-boundary-closure-20260601/**
+    - tools/ai_guard.py
+    - tools/go_evidence.py
+    - schemas/agent-runtime/*.json
+  write_set:
+    - tools/ai_guard.py
+    - tools/go_evidence.py
+    - schemas/agent-runtime/*.json
+    - runs/t-chain-evidence-hardening-20260601/**
+    - runs/t-dirty-boundary-closure-20260601/**
+    - reports/m4-m1-s1-status-semantics-notes.md
+  protected_files_touched: false
+  conflict_level: low
+
+allowed_values:
+  guard_result:
+    - pass
+    - blocked
+    - failed
+  evidence_status:
+    - pass
+    - failed
+    - missing
+    - invalid
+  reviewer_verdict:
+    - accepted
+    - rejected
+    - blocked
+    - invalid
+    - timeout
+    - missing
+  final_batch_status:
+    - pass
+    - blocked
+    - failed
+    - human_required
+
+blocked_by_format:
+  required_fields:
+    - origin
+    - code
+  optional_fields:
+    - detail
+  origins:
+    - policy
+    - workspace
+    - artifact
+    - review
+  codes:
+    - TaskSpec_boundary
+    - human_required
+    - new_dirty_change
+    - schema_invalid
+    - evidence_missing
+    - review_artifact_missing
+    - reviewer_invalid
+    - reviewer_rejected
+    - reviewer_timeout
+
+synthesis_precedence:
+  - Missing or malformed required artifacts must fail closed
+  - guard_result=blocked forces final_batch_status=blocked
+  - reviewer_verdict=blocked or rejected or invalid or timeout forces final_batch_status=blocked unless malformed artifacts are already treated as failed
+  - human_required forces final_batch_status=human_required
+  - evidence_status=failed or invalid or missing prevents final_batch_status=pass
+  - final_batch_status=pass is allowed only when guard_result=pass, evidence_status=pass, and reviewer_verdict is accepted or pass-equivalent
+  - evidence_status=pass alone is never sufficient for final_batch_status=pass
+
+implementation_steps:
+  - Inspect current finalizer and evidence validator behavior in tools/ai_guard.py and tools/go_evidence.py
+  - Inspect current run examples in runs/t-chain-evidence-hardening-20260601 and runs/t-dirty-boundary-closure-20260601
+  - Implement a single authoritative final_batch_status synthesis path
+  - Make final-report.md surface final_batch_status, guard_result, evidence_status, reviewer_verdict, and blocked_by
+  - Keep changes local; avoid unrelated refactors
+  - Add minimal notes in reports/m4-m1-s1-status-semantics-notes.md if assumptions or migrations need explanation
+
+acceptance_criteria:
+  - final-report.md contains one authoritative final_batch_status
+  - final_batch_status is not an alias of evidence_status
+  - evidence_status=pass with reviewer or guard blocked yields final_batch_status=blocked
+  - blocked_by is structured as origin + code, not only free-form strings
+  - review.yaml, guard output, and final-report.md are mutually traceable
+  - No unrelated workflow/template/cleanup changes are introduced
+
+verification:
+  required_commands:
+    - python tools/ai_guard.py evidence runs/t-chain-evidence-hardening-20260601
+    - python tools/go_evidence.py finalize runs/t-chain-evidence-hardening-20260601
+    - python tools/ai_guard.py evidence runs/t-dirty-boundary-closure-20260601
+    - python tools/go_evidence.py finalize runs/t-dirty-boundary-closure-20260601
+  required_cases:
+    - positive case: no reviewer or guard blocker remains, final_batch_status=pass
+    - negative case: evidence_status=pass but reviewer_verdict or guard_result blocked, final_batch_status=blocked
+  expected_result:
+    - No fake-green path remains
+    - Current historical ambiguity is removed or explicitly documented
+
+risk_notes:
+  - Historical run replay may require documenting assumption changes
+  - Schema changes, if any, must stay minimal
+  - reviewer_invalid and reviewer_rejected must not collapse into the same machine-readable state without explanation
+
+rollback_or_failure:
+  - If deterministic synthesis cannot be implemented without broader redesign, stop and report the structural blocker
+  - If replay against historical runs becomes ambiguous, create one minimal fresh controlled run fixture and document why
+  - If schema changes are required, keep them minimal and explain the necessity in the notes artifact

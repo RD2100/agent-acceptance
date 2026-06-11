@@ -1,0 +1,92 @@
+你列的这三件事，确实比继续做 A7/A8 这类链式任务更有价值。现在应该把它们作为里程碑收口三件套处理。
+
+YAML
+overall_decision:
+  stop_new_feature_chain: true
+  focus: "收口真实阻塞与交付风险"
+  high_value_items:
+    - "devframe-control-plane 3 个预存测试失败诊断"
+    - "24 个本地提交推送到 GitHub"
+    - "CLAUDE.md 原始 TODO 中 CodeGraph Windows 清理"
+优先级建议
+YAML
+priority_order:
+  1:
+    task_id: CONTROL-PLANE-TEST-FAILURE-TRIAGE-A1
+    reason: "先弄清 devframe-control-plane 的 3 个失败测试是历史遗留、环境问题，还是最近 24 个提交引入的回归。否则直接 push 会留下质量不确定性。"
+    goal: "诊断，不默认扩大修复范围"
+
+  2:
+    task_id: LOCAL-COMMITS-PUSH-SYNC-A1
+    reason: "24 个本地提交未推送是交付风险。测试失败归因清楚后，应尽快 push，避免本地状态丢失或上下文断裂。"
+    goal: "安全推送，不夹带 dirty baseline"
+
+  3:
+    task_id: CODEGRAPH-WINDOWS-CLEANUP-A1
+    reason: "这是 CLAUDE.md 原始 TODO，属于明确历史债务；但它不是当前发布阻塞，放在测试归因和 push 后做。"
+    goal: "清理 Windows 相关 CodeGraph 残留，不做大重构"
+下一步应授权的任务
+YAML
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: CONTROL-PLANE-TEST-FAILURE-TRIAGE-A1
+给 agent 的任务指令
+Markdown
+请执行 CONTROL-PLANE-TEST-FAILURE-TRIAGE-A1。
+
+目标：
+诊断 devframe-control-plane 当前 3 个预存测试失败，判断它们属于：
+1. 历史遗留失败；
+2. 环境/路径/Windows 兼容问题；
+3. 最近本地提交引入的回归；
+4. 测试本身已经过期；
+5. 真实代码缺陷。
+
+要求：
+- 只做诊断和最小必要复现。
+- 不要直接大范围修复。
+- 不要继续新增功能。
+- 不要推进新的 PAPER / CONTROL-PLANE 链式任务。
+- 不要 whole-dirty-tree commit。
+- 不要提交 dirty baseline。
+- 不要修改 runs/*、archive hooks、HANDOFF_REPLY_V4.txt。
+- 不要清理本地未追踪文件，除非用户明确授权。
+
+必须生成：
+1. 失败测试完整名称；
+2. 失败命令；
+3. 失败堆栈；
+4. 失败归因；
+5. 是否阻塞 24 个本地提交 push；
+6. 最小修复建议；
+7. 若是历史/环境问题，给出 evidence；
+8. 若是最近提交引入，指出对应 commit 或文件范围。
+
+建议命令：
+```bash
+cd devframe-control-plane
+git status --short
+git log --oneline -n 30
+pytest
+pytest <失败测试文件> -vv
+
+输出报告：
+
+YAML
+task_id: CONTROL-PLANE-TEST-FAILURE-TRIAGE-A1
+overall_judgment: historical|environmental|regression|test_stale|real_bug|mixed|unverified
+failed_tests:
+  - name: ""
+    file: ""
+    error_summary: ""
+    suspected_cause: ""
+    blocks_push: yes|no|unclear
+required_fixes: []
+push_recommendation:
+  safe_to_push_now: yes|no|conditional
+  reason: ""
+next_recommended_task: LOCAL-COMMITS-PUSH-SYNC-A1|CONTROL-PLANE-TEST-FIX-A1|CODEGRAPH-WINDOWS-CLEANUP-A1
+
+一句话：**先诊断 3 个 control-plane 测试失败，再安全 push 24 个本地提交，最后处理 CodeGraph Windows 清理。**

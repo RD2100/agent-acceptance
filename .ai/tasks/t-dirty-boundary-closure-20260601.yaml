@@ -1,0 +1,144 @@
+task_id: t-dirty-boundary-closure-20260601
+title: Close ownership of current dirty governance boundary
+priority: P1
+status: ready
+mode: "@go edit"
+description: >
+  Remove the direct blocker for rerunning the required guard by resolving the
+  ownership and disposition of the current six no-touch dirty governance files
+  only. Do not mix reviewer-evidence logic into this batch.
+
+goal:
+  user_visible_success: >
+    The six target files are no longer unowned dirty changes, and the remaining
+    worktree dirt is explicitly classified as owned sidecar items or generated
+    artifacts instead of blocking the next guard rerun.
+  in_scope:
+    - Inspect and decide keep, fix, archive, or defer for each target file
+    - Make the smallest edits needed to close ownership on those six files
+    - Record sidecar dirty items that are not in this batch scope
+    - Produce run evidence under runs/t-dirty-boundary-closure-20260601/
+  out_of_scope:
+    - Any reviewer-evidence logic change
+    - Any write to tools/ai_guard.py or tools/go_evidence.py
+    - Any edit under .github/, hooks/, or rules/
+    - Any broad Blackboard follow-up outside the six target files
+
+constraints:
+  token_strategy:
+    - Reuse current git diff and existing audit/report files
+    - Keep this batch limited to dirty-boundary closure only
+    - Prefer classification and minimal edits over rewrite
+  hard_stops:
+    - No fake green
+    - No writes outside allow_write
+    - Do not expand into Batch 3 or Batch 4 work
+    - Executor/fixer must not create review.md or review.yaml
+    - Final pass requires reviewer evidence for this batch
+
+target_files:
+  - archive/draft-hooks/pre-final.audit.ps1
+  - archive/draft-hooks/pre-task.audit.ps1
+  - archive/draft-hooks/pre-tool.audit.ps1
+  - docs/agent-runtime/capability-inventory.md
+  - docs/agent-runtime/routing-matrix-summary.md
+  - audit/blackboard-cleanup-audit-20260531.md
+
+expected_disposition:
+  - archive/draft-hooks/pre-final.audit.ps1: fix
+  - archive/draft-hooks/pre-task.audit.ps1: keep
+  - archive/draft-hooks/pre-tool.audit.ps1: keep
+  - docs/agent-runtime/capability-inventory.md: fix
+  - docs/agent-runtime/routing-matrix-summary.md: keep
+  - audit/blackboard-cleanup-audit-20260531.md: archive
+
+sidecar_dirty_items:
+  owned_not_in_scope:
+    - tools/ai_guard.py
+    - .ai/tasks/t-chain-evidence-hardening-20260601.yaml
+    - .ai/tasks/t-review-chain-evidence-hardening-20260601.yaml
+  generated_artifacts_to_classify:
+    - tools/__pycache__/ai_guard.cpython-310.pyc
+    - tools/__pycache__/go_evidence.cpython-310.pyc
+
+allow_write:
+  - archive/draft-hooks/pre-final.audit.ps1
+  - archive/draft-hooks/pre-task.audit.ps1
+  - archive/draft-hooks/pre-tool.audit.ps1
+  - docs/agent-runtime/capability-inventory.md
+  - docs/agent-runtime/routing-matrix-summary.md
+  - audit/blackboard-cleanup-audit-20260531.md
+  - runs/t-dirty-boundary-closure-20260601/**
+
+gate_0:
+  triggered: false
+  inventory_evidence:
+    queried_sources:
+      - AGENTS.md
+      - docs/agent-runtime/tool-policy.md
+      - docs/agent-runtime/sub-agent-dispatch-protocol.md
+      - reports/go-orchestrator-plan-20260601.md
+      - git status --short
+      - git diff -- archive/draft-hooks/pre-final.audit.ps1 archive/draft-hooks/pre-task.audit.ps1 archive/draft-hooks/pre-tool.audit.ps1 docs/agent-runtime/capability-inventory.md docs/agent-runtime/routing-matrix-summary.md audit/blackboard-cleanup-audit-20260531.md
+    matched_capabilities:
+      - agent-acceptance
+      - ai_guard
+      - governance-diff-triage
+    compared_against_request:
+      - "close dirty ownership before rerunning required guard"
+  sufficiency_decision: reuse_existing
+  decision: reuse
+
+conflict_registry:
+  read_set:
+    - AGENTS.md
+    - docs/agent-runtime/tool-policy.md
+    - docs/agent-runtime/sub-agent-dispatch-protocol.md
+    - reports/go-orchestrator-plan-20260601.md
+    - archive/draft-hooks/pre-final.audit.ps1
+    - archive/draft-hooks/pre-task.audit.ps1
+    - archive/draft-hooks/pre-tool.audit.ps1
+    - docs/agent-runtime/capability-inventory.md
+    - docs/agent-runtime/routing-matrix-summary.md
+    - audit/blackboard-cleanup-audit-20260531.md
+  write_set:
+    - archive/draft-hooks/pre-final.audit.ps1
+    - archive/draft-hooks/pre-task.audit.ps1
+    - archive/draft-hooks/pre-tool.audit.ps1
+    - docs/agent-runtime/capability-inventory.md
+    - docs/agent-runtime/routing-matrix-summary.md
+    - audit/blackboard-cleanup-audit-20260531.md
+    - runs/t-dirty-boundary-closure-20260601/**
+  protected_files_touched: true
+  conflict_level: high
+
+implementation_plan:
+  - Read the six target files and their diffs before editing.
+  - Confirm a keep, fix, archive, or defer disposition for each target file.
+  - Apply only the smallest changes needed to make the six files owned and intentional.
+  - Capture sidecar dirty items and generated artifacts in test-output.md.
+  - Do not edit tools/ai_guard.py, tools/go_evidence.py, .github/, hooks/, or rules/.
+
+verification:
+  required_commands:
+    - git status --short
+    - git diff -- archive/draft-hooks/pre-final.audit.ps1 archive/draft-hooks/pre-task.audit.ps1 archive/draft-hooks/pre-tool.audit.ps1 docs/agent-runtime/capability-inventory.md docs/agent-runtime/routing-matrix-summary.md audit/blackboard-cleanup-audit-20260531.md
+    - rg -n "blackboard|mcp__blackboard|bb_solidify|bb_share_knowledge" archive/draft-hooks docs/agent-runtime audit/blackboard-cleanup-audit-20260531.md
+  expected_result:
+    - The six target files are no longer unowned dirty changes
+    - Remaining dirty items are explicitly classified as owned or generated
+    - No new governance files are added to the dirty set
+
+acceptance_criteria:
+  - Each target file receives a final keep, fix, archive, or defer disposition
+  - The six target files no longer block follow-up work as ownerless dirty changes
+  - No file outside allow_write is modified
+  - test-output.md records command, exit code, and verdict summaries
+  - The batch report states residual risk and next handoff point for Batch 3
+
+reviewer_requirements:
+  - Reviewer must be a separate role/session from executor
+  - Reviewer must read diff.patch, test-output.md, safety-report.json, and chain-evidence.json
+  - Reviewer must confirm the six-file disposition list is consistent with the diff
+  - Reviewer must create review.md and review.yaml
+  - Finalizer must run python tools/go_evidence.py finalize on the run evidence directory

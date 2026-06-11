@@ -1,0 +1,227 @@
+YAML
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: V0.3.0-RC1-RELEASE-CANDIDATE-A1
+
+recommended_task_id: V0.3.0-RC1-RELEASE-CANDIDATE-A1
+
+rationale: >
+  当前 296 tests PASS、3 repos 已 push、pre-gate chain operational、paper pipeline complete。
+  下一步不应继续扩展 PAPER 或 review infra，而应冻结当前成果为 v0.3.0-rc1。
+  该任务的价值是把当前稳定状态变成可复现、可审查、可回滚的 release checkpoint。
+
+taskspec:
+  task_id: V0.3.0-RC1-RELEASE-CANDIDATE-A1
+  task_name: "Create v0.3.0-rc1 release candidate for tri-repo stable milestone"
+  task_type: release_candidate_delivery
+  primary_repo: agent-acceptance
+  secondary_repos:
+    - devframe-control-plane
+    - dev-frame-opencode
+    - ai-workflow-hub
+  status: authorized
+
+  objective:
+    - "冻结当前 3 仓库全绿状态为 v0.3.0-rc1 release candidate。"
+    - "记录 296 PASS、3 repos pushed、pre-gate chain operational、PAPER-C4 pipeline complete。"
+    - "生成 release candidate manifest、release notes、test/smoke status、remote SHA 对账。"
+    - "创建并 push v0.3.0-rc1 tag。"
+    - "不得新增功能，不得修改 paper pipeline，不得扩展 infra 链。"
+
+  write_set:
+    agent_acceptance:
+      required:
+        - ".ai/tasks/v0.3.0-rc1-release-candidate-a1.yaml"
+        - "RELEASE_CANDIDATE_v0.3.0-rc1.json"
+        - "RELEASE_NOTES_v0.3.0-rc1.md"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/GIT_STATUS.txt"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/GIT_LOG.txt"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/REMOTE_SHA_VERIFY.txt"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/TEST_OUTPUT.txt"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/SMOKE_OUTPUT.txt"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/CAPABILITY_INVENTORY.md"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/PAPER_C4_STATUS.md"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/REVIEW_GATE_STATUS.md"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/TAG_VERIFY.txt"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/SAFETY_ATTESTATION.md"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/RELEASE_CANDIDATE_SHA256.txt"
+        - "evidence_packs/v0.3.0-rc1-release-candidate-a1/closure-pack.zip"
+      optional:
+        - "PROJECT_HISTORY.md"
+        - "BOOT_CONTEXT.md"
+        - "memory/index.md"
+        - "memory/tasks/v0.3.0-rc1-release-candidate-a1.md"
+
+    devframe_control_plane:
+      required_reports_only:
+        - "_reports/v0.3.0-rc1-release-candidate-a1/CONTROL_PLANE_REMOTE_SHA.txt"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/CONTROL_PLANE_STATUS.txt"
+
+    devframe_opencode_or_ai_workflow_hub:
+      required_reports_only:
+        - "_reports/v0.3.0-rc1-release-candidate-a1/OPENCODE_REMOTE_SHA.txt"
+        - "_reports/v0.3.0-rc1-release-candidate-a1/OPENCODE_SMOKE_STATUS.txt"
+
+  forbidden_paths:
+    - "runs/**"
+    - "archive/draft-hooks/**"
+    - "HANDOFF_REPLY_V4.txt"
+    - ".tmpconfig/**"
+    - ".tmpdata/**"
+    - "**/__pycache__/**"
+    - "**/*.pyc"
+    - ".ai/bypass_approved"
+    - "tools/ai_guard.py"
+    - "review_queue/**"
+    - "scripts/paper_*"
+    - "examples/paper_*"
+    - "scripts/evidence_pack_lint.py"
+    - "scripts/pre_gpt_review_gate.py"
+    - "scripts/gpt_review_transaction.py"
+    - "scripts/verify_gpt_reply.py"
+
+  required_checks:
+    local_state:
+      - "git status --short"
+      - "git log --oneline --decorate -n 30"
+      - "git rev-parse HEAD"
+      - "git tag --list v0.3.0-rc1"
+
+    remote_state:
+      - "git ls-remote origin HEAD"
+      - "git ls-remote --tags origin v0.3.0-rc1"
+      - "verify v0.3.0-rc1 does not already exist remotely before tagging"
+      - "verify local HEAD equals pushed remote HEAD"
+
+    tests:
+      - "run pytest and capture raw TEST_OUTPUT.txt"
+      - "expected: 296 passed or newer all-green equivalent"
+      - "run smoke if available and capture SMOKE_OUTPUT.txt"
+
+    capability_inventory:
+      paper_c4:
+        - "section packet validator operational"
+        - "forbidden fields use presence check: if field in data"
+        - "9 forbidden fields blocked"
+        - "synthetic mode operational"
+        - "sanitized mode operational"
+        - "section review operational"
+        - "revision blueprint operational"
+        - "utility evaluation operational"
+        - "two sanitized pilots passed"
+        - "no full-paper ingestion authorized"
+
+      review_gate_chain:
+        - "evidence-pack-linter operational"
+        - "pre-GPT-review-gate operational"
+        - "GPT-review-transaction-runner operational"
+        - "verify_gpt_reply operational"
+        - "dogfood proof complete"
+        - "no captured GPT reply, no verdict rule enforced"
+
+  release_manifest_required_fields:
+    - "release_id"
+    - "created_at"
+    - "repos"
+    - "branches"
+    - "local_heads"
+    - "remote_heads"
+    - "tag"
+    - "test_status"
+    - "smoke_status"
+    - "paper_c4_status"
+    - "review_gate_status"
+    - "known_limitations"
+    - "safety_boundaries"
+    - "dirty_baseline_status"
+    - "forbidden_files_status"
+    - "release_ready"
+    - "blocking_issues"
+    - "next_human_action"
+
+  execution_steps:
+    - step: 1
+      name: "Verify fresh shell and local repo state"
+      actions:
+        - "Run shell health check."
+        - "Record git status/log/head."
+        - "Confirm no critical commands are running in a saturated shell."
+
+    - step: 2
+      name: "Verify remote sync"
+      actions:
+        - "Capture remote HEAD SHAs for all 3 repos."
+        - "Confirm all pushed branches match expected local HEADs."
+
+    - step: 3
+      name: "Capture tests and smoke"
+      actions:
+        - "Run pytest and save raw output."
+        - "Run smoke if available."
+        - "Do not use summary-only status."
+
+    - step: 4
+      name: "Generate release artifacts"
+      actions:
+        - "Write RELEASE_CANDIDATE_v0.3.0-rc1.json."
+        - "Write RELEASE_NOTES_v0.3.0-rc1.md."
+        - "Write capability inventory and safety attestation."
+        - "Compute SHA256 for release manifest and notes."
+
+    - step: 5
+      name: "Tag and push"
+      actions:
+        - "If v0.3.0-rc1 does not exist, create annotated tag."
+        - "Push tag to origin."
+        - "Verify remote tag SHA."
+        - "If tag already exists, do not move it; stop and report human_required."
+
+    - step: 6
+      name: "Build evidence pack"
+      actions:
+        - "Run evidence-pack-linter."
+        - "Run pre-GPT-review-gate."
+        - "Package closure-pack.zip."
+        - "Use GPT transaction runner for review if submitting."
+
+  safety_constraints:
+    - "No new feature work."
+    - "No PAPER-C4 expansion."
+    - "No review infra expansion."
+    - "No real-paper ingestion."
+    - "No Web GPT/CDP execution by paper runners."
+    - "No memory write with paper content."
+    - "No force push."
+    - "No tag rewrite."
+    - "No dirty baseline commit."
+    - "No .ai/bypass_approved commit."
+    - "No cache/tmp commit."
+
+  success_criteria:
+    - "296 PASS or newer full green output captured."
+    - "3 repo remote SHAs recorded."
+    - "release candidate manifest generated."
+    - "release notes generated."
+    - "v0.3.0-rc1 tag created and pushed."
+    - "remote tag verification succeeds."
+    - "PAPER-C4 and review gate status recorded."
+    - "dirty baseline and forbidden files excluded."
+
+  failure_handling:
+    - "If tests fail, do not tag."
+    - "If remote SHA mismatch, do not tag."
+    - "If tag already exists at different SHA, stop and request human decision."
+    - "If push fails, preserve local tag and generate recovery instructions."
+    - "If shell health fails, stop and report environment_unstable."
+
+  next_after_success:
+    recommended_action: "pause for human release decision"
+    next_task_authorization:
+      authorized: no
+      execute_immediately: no
+      ask_before_starting: yes
+      recommended_task_id: NONE
+
+END_OF_GPT_RESPONSE

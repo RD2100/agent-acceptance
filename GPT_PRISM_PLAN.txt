@@ -1,0 +1,354 @@
+YAML
+overall_decision:
+  可以直接加:
+    - "引用功能地图 + 本地参考文献库检索"
+    - "AI 校稿的本地规则版：格式、标题、标点、引用占位、段落长度、政策话语过密"
+    - "LaTeX / Markdown / 参考文献格式检查，如果项目确实转向 LaTeX"
+  需要改造式实现:
+    - "引用搜索 + 文献检索"
+    - "项目感知型 AI"
+    - "全文结构诊断"
+    - "AI 校稿 + 修改建议"
+  当前不建议直接加:
+    - "默认全文上传云端"
+    - "默认让 GPT 读取整篇论文"
+    - "自动生成整节/整篇改写稿"
+
+Prism 官方定位是“原生支持 LaTeX 的免费工作空间”，把 GPT-5.2 融入科研写作与协作流程；它强调云端 LaTeX 工作区、AI 校对、引用管理、文献检索、格式调整、编辑优化、项目感知 AI、Zotero 同步、评论和多人协作等能力。
+OpenAI
+ 这说明用户想要的 1—4 确实是 Prism 类产品的核心体验，而不是无理需求。但直接照搬会冲突你们当前系统最重要的优势：本地处理、fail-closed、evidence-first、全文不进 GPT 对话。
+
+1. 哪些直接加、哪些改造加、哪些不该加
+YAML
+capability_decision:
+  citation_search_reference_retrieval:
+    decision: "改造式实现，优先做"
+    reason: "用户价值高，但本机网络受限，不能直接做自由联网检索。"
+    safe_version:
+      - "先做本地文献库 / BibTeX / Zotero export 检索"
+      - "再做 GitHub-hosted bibliography index"
+      - "最后再考虑远端检索代理"
+
+  ai_proofreading_format_latex:
+    decision: "可以加，但先本地规则 + 结构校稿"
+    reason: "对论文修改有直接价值，且不必立刻把全文交给云端 AI。"
+    safe_version:
+      - "中文学术表达检查"
+      - "标题层级/摘要/关键词/参考文献格式检查"
+      - "引用占位与参考文献一致性"
+      - "LaTeX 编译/格式纠错仅在有 LaTeX 项目时启用"
+
+  project_aware_ai:
+    decision: "改造式实现"
+    reason: "Prism 的项目感知 AI 能在完整稿件上下文中工作，但你们不能直接把全文放进云端。"
+    safe_version:
+      - "本地 Project Index"
+      - "只把结构摘要、issue ledger、revision ledger 发给 GPT"
+      - "GPT 不看原文，只看安全抽象"
+
+  full_text_cloud_upload:
+    decision: "不作为默认功能，不进入当前主线"
+    reason: "它直接冲突当前核心规则：全文不入 GPT 对话、不外部上传。"
+    possible_exception:
+      - "单独 experimental mode"
+      - "用户逐次授权"
+      - "明确风险提示"
+      - "只在用户主动选择 Prism/OpenAI 云端工作区时发生"
+      - "不由本地自动化默认执行"
+2. “全文上传云端 + 项目感知 AI”的折中方案
+
+不要做“默认全文上传”。建议设计成三档模式：
+
+YAML
+project_awareness_modes:
+  mode_1_local_strict:
+    status: "默认模式"
+    full_text_location: "local only"
+    gpt_input:
+      - "模块摘要"
+      - "段落功能标签"
+      - "问题清单"
+      - "修订策略"
+      - "引用功能缺口"
+    advantages:
+      - "保留当前安全优势"
+      - "不外传全文"
+      - "可审计"
+    limitation:
+      - "GPT 不是全文感知，只是结构感知"
+
+  mode_2_cloud_abstract_review:
+    status: "可实现"
+    full_text_location: "local only"
+    gpt_input:
+      - "全篇结构索引"
+      - "12 个模块摘要"
+      - "C5/C6/C7 结果"
+      - "不含原文的 paragraph map"
+    advantage:
+      - "GPT 具有项目级结构感知"
+      - "不上传全文"
+    recommended: true
+
+  mode_3_cloud_full_text_opt_in:
+    status: "不做默认，可作为用户手动外部选择"
+    full_text_location: "cloud"
+    requirements:
+      - "用户单独确认"
+      - "明确风险说明"
+      - "不通过当前自动化默认执行"
+      - "不写入本系统 evidence pack"
+      - "不声称仍满足 no-full-text-to-GPT 规则"
+    recommended_now: false
+
+“加密上传”不是好解法。客户端加密后云端 AI 不能读；如果云端解密再给模型读，本质上仍是全文上传给云端 AI。端侧模型可作为未来方向，但短期会遇到中文教育学论文质量、长上下文、引用判断能力和本地算力问题。因此务实方案是：本地全文感知 + 云端摘要审查。
+
+3. 引用搜索 + 参考文献检索的技术方案
+
+本机 TCP 网络被防火墙阻断，但 gh CLI 可联网，这里不要直接假设 gh 能访问 Crossref、CNKI 或 Semantic Scholar。gh CLI 主要可靠访问 GitHub。可行路径是：
+
+YAML
+citation_retrieval_architecture:
+  phase_1_local_first:
+    priority: "P0"
+    inputs:
+      - "用户已有参考文献 doc/bib/ris/endnote export"
+      - "Zotero 导出的 BibTeX/RIS/CSL-JSON"
+      - "本地 PDF 文献文件夹"
+    functions:
+      - "按关键词检索本地文献库"
+      - "按作者/年份/题名匹配"
+      - "建立 citation function map"
+      - "判断每个模块需要政策依据/概念依据/数据依据/研究依据"
+
+  phase_2_github_bibliography_index:
+    priority: "P1"
+    idea: "如果 gh CLI 可用，可把一个不含论文正文的 bibliography index 存在 GitHub 私有仓库。"
+    allowed_data:
+      - "文献题名"
+      - "作者"
+      - "年份"
+      - "期刊"
+      - "关键词"
+      - "摘要可选，但需用户确认"
+    forbidden_data:
+      - "论文正文"
+      - "用户手稿"
+      - "导师批注"
+    function:
+      - "通过 gh api 拉取 bibliography_index.json"
+      - "本地匹配引用需求"
+
+  phase_3_remote_fetch_proxy_optional:
+    priority: "P2"
+    idea: "通过 GitHub Actions 定时拉取 Crossref/OpenAlex 等公开 API，生成 bibliography artifact。"
+    risk:
+      - "需要把检索关键词发到 GitHub workflow"
+      - "不能传用户论文正文"
+      - "需要单独授权"
+    recommended_now: false
+
+下一步不要直接做“联网文献搜索”，而是做 Local Citation Workspace：先让系统知道“哪里需要哪类引用”，再从用户已有文献库中匹配。
+
+4. AI 校稿 + 格式修正怎么做？
+
+不建议一开始接入云端 GPT 做全文校稿。建议分层：
+
+YAML
+proofreading_architecture:
+  layer_1_rule_based_local:
+    priority: "P0"
+    checks:
+      - "标题层级"
+      - "摘要/关键词格式"
+      - "参考文献占位"
+      - "标点混用"
+      - "过长段落"
+      - "政策口号密度"
+      - "引用缺失"
+      - "章节标题与内容功能错位"
+    output: "proofreading issues, not rewritten text"
+
+  layer_2_bounded_ai_suggestions:
+    priority: "P1"
+    input_to_gpt:
+      - "问题摘要"
+      - "不含原文的局部表达问题标签"
+      - "短句模板"
+    output:
+      - "表达修改策略"
+      - "主题句模板"
+      - "过渡句模板"
+    forbidden:
+      - "整节重写"
+      - "整篇润色"
+
+  layer_3_latex_tools:
+    priority: "only_if_needed"
+    tools:
+      - "latexmk"
+      - "chktex"
+      - "bibtex/biber checks"
+    note: "你的中文 CSSCI 论文当前未必是 LaTeX，先不要为 Prism 式 LaTeX 工作区过度建设。"
+5. 优先级最高的 3 个功能
+YAML
+top_3_next_features:
+  1:
+    task_id: PAPER-PROJECT-INDEX-A1
+    name: "本地项目感知索引"
+    purpose: "在不上传全文的情况下，让系统知道整篇论文的结构、模块、诊断、问题、修订状态。"
+
+  2:
+    task_id: PAPER-CITATION-WORKSPACE-A1
+    name: "本地引用功能地图 + 文献库检索"
+    purpose: "补 Prism 的文献/引用能力，但先基于本地 Zotero/BibTeX/文献库，不做无边界联网。"
+
+  3:
+    task_id: PAPER-PROOFREADING-FORMAT-GATE-A1
+    name: "本地校稿与格式检查闸门"
+    purpose: "补 Prism 的 AI 校对/格式优化能力，但先做规则化、本地化、可审计版本。"
+
+我建议第一步先做 PAPER-PROJECT-INDEX-A1。它是“项目感知 AI”的安全替代基础；没有它，引用检索和校稿都会变成零散脚本。
+
+下一步 TaskSpec
+YAML
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: PAPER-PROJECT-INDEX-A1
+
+recommended_task_id: PAPER-PROJECT-INDEX-A1
+
+taskspec:
+  task_id: PAPER-PROJECT-INDEX-A1
+  task_name: "Local project-aware paper index without cloud full-text upload"
+  task_type: paper_workspace_infrastructure
+  primary_repo: agent-acceptance
+  status: authorized
+
+  objective:
+    - "建立一个本地项目感知索引，使系统掌握全文结构、模块状态、诊断结果和修订进度。"
+    - "不把全文上传云端，不把全文发给 GPT。"
+    - "把 C4/C5/C6/C7 的结果统一成 project-aware context。"
+    - "为后续引用检索、校稿、格式检查、修订决策账本提供统一输入。"
+
+  input_sources:
+    allowed:
+      - "PDF extraction metadata"
+      - "module list: 12 modules"
+      - "section titles"
+      - "module character counts"
+      - "citation counts"
+      - "C4 metadata diagnosis"
+      - "C5 paragraph function maps"
+      - "C6 revision strategies"
+      - "C7 GPT review issue ledgers"
+      - "safety attestations"
+    forbidden:
+      - "full paper text"
+      - "full section text"
+      - "raw paragraph text"
+      - "long quotations"
+      - "private notes"
+      - "导师批注"
+      - "memory write with paper content"
+
+  write_set:
+    allowed_paths:
+      - ".ai/tasks/paper-project-index-a1.yaml"
+      - "scripts/paper_project_index.py"
+      - "schemas/paper_project_index.schema.json"
+      - "tests/test_paper_project_index.py"
+      - "_reports/paper-project-index-a1/PAPER_PROJECT_INDEX.json"
+      - "_reports/paper-project-index-a1/PAPER_PROJECT_INDEX.md"
+      - "_reports/paper-project-index-a1/PAPER_PROJECT_CONTEXT_FOR_GPT.json"
+      - "_reports/paper-project-index-a1/SAFETY_ATTESTATION.md"
+      - "_reports/paper-project-index-a1/CHANGED_FILES.txt"
+      - "evidence_packs/paper-project-index-a1/**"
+      - "PROJECT_HISTORY.md"
+      - "BOOT_CONTEXT.md"
+      - "memory/index.md"
+      - "memory/tasks/paper-project-index-a1.md"
+
+    forbidden_paths:
+      - "memory/** containing paper text"
+      - "BOOT_CONTEXT.md containing paper text"
+      - "PROJECT_HISTORY.md containing paper text"
+      - "evidence_packs/** containing full paper text"
+      - "runs/**"
+      - "archive/draft-hooks/**"
+      - ".tmpconfig/**"
+      - ".tmpdata/**"
+      - "**/__pycache__/**"
+      - "**/*.pyc"
+      - ".ai/bypass_approved"
+
+  required_outputs:
+    paper_project_index_json:
+      fields:
+        - "paper_title"
+        - "keywords"
+        - "module_count"
+        - "modules"
+        - "diagnosis_summary"
+        - "revision_strategy_summary"
+        - "citation_gap_summary"
+        - "gpt_review_status"
+        - "safety_status"
+        - "next_actions"
+      must_not_include:
+        - "raw_text"
+        - "full_text"
+        - "paragraph_text"
+        - "long_quotes"
+
+    paper_project_context_for_gpt:
+      purpose: "safe project-aware context for GPT review"
+      allowed_content:
+        - "module IDs"
+        - "module functions"
+        - "issue counts"
+        - "issue summaries"
+        - "revision strategy summaries"
+        - "citation function gaps"
+        - "status"
+      forbidden_content:
+        - "original prose"
+        - "full section text"
+        - "raw paragraphs"
+
+  tests_required:
+    targeted:
+      - "pytest tests/test_paper_project_index.py"
+    must_cover:
+      - "builds index from synthetic module summaries"
+      - "rejects raw_paper_text"
+      - "rejects full_section_text"
+      - "rejects paragraph_text"
+      - "GPT context contains no original text"
+      - "index schema validates"
+      - "missing module diagnosis handled as warning, not crash"
+      - "safety status preserved"
+
+  safety_constraints:
+    - "No external upload."
+    - "No Web GPT call."
+    - "No cloud full-text."
+    - "No memory write with paper content."
+    - "No full rewrite generation."
+    - "No political commentary."
+
+  success_criteria:
+    - "PAPER_PROJECT_INDEX.json generated."
+    - "PAPER_PROJECT_CONTEXT_FOR_GPT.json generated and safe."
+    - "All modules represented."
+    - "No raw paper text included."
+    - "Targeted tests pass."
+    - "Full tests remain green."
+
+  next_after_success:
+    recommended_task_id: PAPER-CITATION-WORKSPACE-A1
+    rationale: "在 project index 基础上增加本地引用功能地图和文献库检索。"
+
+最终建议：不要直接做云端全文上传。先用 PAPER-PROJECT-INDEX-A1 建一个本地项目感知层，让 GPT 看到安全抽象而不是全文。然后做本地引用工作区，再做校稿/格式闸门。

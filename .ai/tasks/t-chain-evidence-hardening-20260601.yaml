@@ -1,0 +1,142 @@
+task_id: t-chain-evidence-hardening-20260601
+title: Harden reviewer evidence runtime validation
+priority: P1
+status: ready
+mode: "@go edit"
+description: >
+  Strengthen the existing reviewer evidence chain by adding runtime validation
+  for chain-evidence structure and tighter local consistency checks, without
+  touching current dirty files or restricted governance paths.
+
+goal:
+  user_visible_success: >
+    The coding agent delivers a minimal runtime hardening change on the existing
+    evidence chain and verifies it with positive and negative probes.
+  in_scope:
+    - Add chain-evidence structure validation in tools/ai_guard.py
+    - Tighten local consistency checks between review.yaml and chain-evidence.json
+    - Update tools/go_evidence.py only if needed to emit missing local fields
+    - Produce evidence artifacts for this run under runs/t-chain-evidence-hardening-20260601/
+  out_of_scope:
+    - Any edits to current dirty files
+    - Any edits under .github/, hooks/, or rules/
+    - Any external identity, signing, scheduler, or network-backed reviewer proof
+    - Blackboard cleanup completion work
+
+constraints:
+  token_strategy:
+    - Reuse existing protocol, helper scripts, and current repo evidence
+    - Prefer the smallest patch that hardens current runtime behavior
+    - Do not introduce new dependencies
+  hard_stops:
+    - No fake green
+    - No writes outside allow_write
+    - No edits to dirty files listed in no_touch_write_set
+    - Executor/fixer must not create review.md or review.yaml
+    - Final pass requires valid reviewer evidence
+
+no_touch_write_set:
+  - archive/draft-hooks/pre-final.audit.ps1
+  - archive/draft-hooks/pre-task.audit.ps1
+  - archive/draft-hooks/pre-tool.audit.ps1
+  - docs/agent-runtime/capability-inventory.md
+  - docs/agent-runtime/routing-matrix-summary.md
+  - audit/blackboard-cleanup-audit-20260531.md
+
+allow_write:
+  - tools/ai_guard.py
+  - tools/go_evidence.py
+  - runs/t-chain-evidence-hardening-20260601/**
+
+gate_0:
+  triggered: true
+  trigger_reason: >
+    Existing reviewer evidence flow is operational, but current repo evidence
+    shows a remaining runtime-proof-strength gap that can be reduced with a
+    minimal local hardening patch.
+  inventory_evidence:
+    queried_sources:
+      - AGENTS.md
+      - docs/agent-runtime/sub-agent-dispatch-protocol.md
+      - tools/ai_guard.py
+      - tools/go_evidence.py
+      - scripts/Test-ReviewerEvidence.ps1
+      - hooks/pre-push.governance.ps1
+      - .github/workflows/ai-guard.yml
+      - tasks/reviewer-node-audit-20260531.md
+      - runs/structural-governance-fix-20260531/review.yaml
+      - schemas/agent-runtime/chain-evidence.schema.json
+    matched_capabilities:
+      - agent-acceptance
+      - ai_guard
+      - go_evidence
+      - reviewer-evidence-validation
+    compared_against_request:
+      - "@go formal workflow with mandatory reviewer evidence"
+      - "minimal hardening on current runtime validation"
+  rules_checked:
+    - core-004
+    - core-005
+    - core-007
+    - review-001
+  lessons_checked:
+    - LL-009
+    - LL-010
+  sufficiency_decision: new_delta_required
+  decision: build_delta
+  delta_justification: >
+    The current repo already contains the evidence chain, so no new workflow is
+    needed. A small runtime validation delta is still justified because the
+    remaining gap is in proof strength, not in protocol existence.
+
+conflict_registry:
+  read_set:
+    - AGENTS.md
+    - docs/agent-runtime/sub-agent-dispatch-protocol.md
+    - tools/ai_guard.py
+    - tools/go_evidence.py
+    - scripts/Test-ReviewerEvidence.ps1
+    - hooks/pre-push.governance.ps1
+    - .github/workflows/ai-guard.yml
+    - tasks/reviewer-node-audit-20260531.md
+    - schemas/agent-runtime/chain-evidence.schema.json
+    - runs/structural-governance-fix-20260531/**
+  write_set:
+    - tools/ai_guard.py
+    - tools/go_evidence.py
+    - runs/t-chain-evidence-hardening-20260601/**
+  protected_files_touched: false
+  conflict_level: low
+
+implementation_plan:
+  - Read the listed protocol and runtime files before editing.
+  - Initialize run evidence with tools/go_evidence.py init.
+  - Make the smallest patch needed to validate chain-evidence structure and local consistency.
+  - Run targeted positive and negative validation commands.
+  - Write test-output.md with command summaries and exit codes.
+  - Do not write reviewer artifacts.
+
+verification:
+  required_commands:
+    - python tools/go_evidence.py init runs/t-chain-evidence-hardening-20260601 --run-id t-chain-evidence-hardening-20260601 --task .ai/tasks/t-chain-evidence-hardening-20260601.yaml --executor-id executor-t-chain-evidence-hardening-20260601
+    - python tools/go_evidence.py guard runs/t-chain-evidence-hardening-20260601 --task .ai/tasks/t-chain-evidence-hardening-20260601.yaml
+    - python tools/ai_guard.py evidence runs/structural-governance-fix-20260531
+  expected_positive:
+    - Existing structural-governance-fix evidence directory still passes
+    - New guard output is captured as safety-report.json
+  expected_negative:
+    - Malformed or incomplete chain-evidence sample is blocked by ai_guard.py evidence
+
+acceptance_criteria:
+  - ai_guard.py validates required chain-evidence structure fields, not just file existence
+  - ai_guard.py blocks inconsistent reviewer/chain local metadata when evidence is malformed
+  - No dirty file from no_touch_write_set is modified
+  - No restricted path under .github/, hooks/, or rules/ is modified
+  - The worker produces test-output.md with command, exit code, and verdict summaries
+  - The worker reports changed files and residual risk
+
+reviewer_requirements:
+  - Reviewer must be a separate role/session from executor
+  - Reviewer must read diff.patch, test-output.md, safety-report.json, and chain-evidence.json
+  - Reviewer must create review.md and review.yaml
+  - Finalizer must run python tools/go_evidence.py finalize on the run evidence directory

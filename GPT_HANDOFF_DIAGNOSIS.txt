@@ -1,0 +1,237 @@
+YAML
+overall_judgment: redesign_required
+handoff_workflow_status: blocked_by_design
+context_compression_a1_status: accepted_r6_pending_binding_commit
+primary_problem: "角色混淆 + CDP 自动化不稳定 + 交接成功标准不清"
+1. 自动化交接工作流是否需要重新设计？
+
+需要。当前流程应判定为 blocked，需要重构。
+
+根因不是某一次 CDP 操作失败，而是流程设计把三种角色混在了一起：
+
+YAML
+roles_confused:
+  Web_GPT:
+    correct_role: "审查者、裁决者、计划生成者"
+    wrong_role: "本地代码执行者"
+
+  Claude_Code_or_local_agent:
+    correct_role: "读取项目文件、执行 git、运行测试、生成 evidence pack、提交代码"
+    wrong_role: "等待 Web GPT 执行本地仓库操作"
+
+  CDP_automation:
+    correct_role: "辅助提交 review prompt / 捕获 GPT 回复"
+    wrong_role: "承担项目状态迁移和执行控制的核心通道"
+
+所以这次失败的核心教训是：handoff 不是把 Web GPT 变成执行 agent，而是把本地执行 agent 的上下文恢复到可继续工作的状态。
+
+2. 交接文档格式和提交方式应该是什么？
+
+后续不应再依赖“长篇 HANDOFF 文本塞进 Web GPT 对话框”作为主流程。
+
+推荐改成三层交接：
+
+YAML
+handoff_artifacts:
+  primary:
+    file: BOOT_CONTEXT.md
+    purpose: "新 agent 冷启动入口，短上下文，优先读取"
+
+  secondary:
+    file: PROJECT_HISTORY.md
+    purpose: "项目活蓝本，长期真相源"
+
+  memory_layer:
+    files:
+      - memory/index.md
+      - memory/tasks/*.md
+      - memory/knowledge/*.md
+    purpose: "按需读取任务生命周期和主题知识"
+
+  optional_snapshot:
+    file: HANDOFF_SNAPSHOT.md
+    purpose: "仅在人类手动开新对话时使用，不作为自动化主路径"
+
+提交方式应改成：
+
+YAML
+handoff_submission_method:
+  for_local_agent:
+    method: "文件路径 / 仓库文件"
+    action: "Claude Code 直接读取 BOOT_CONTEXT.md + PROJECT_HISTORY.md + memory/index.md"
+    no_cdp_required: true
+
+  for_web_gpt:
+    method: "只提交审查请求和 evidence pack"
+    action: "Web GPT 只做 review，不接管执行"
+    no_repo_execution_expected: true
+
+交接成功标准也要明确：
+
+YAML
+handoff_success_criteria:
+  local_agent:
+    - "能读取 BOOT_CONTEXT.md"
+    - "能读取 PROJECT_HISTORY.md"
+    - "能定位当前任务 CONTEXT-COMPRESSION-A1-BINDING"
+    - "能运行 git status / git diff --cached"
+    - "能继续执行本地命令"
+
+  web_gpt:
+    - "只需回复 handoff_understood=yes"
+    - "只确认当前状态和下一步计划"
+    - "不应被要求执行 git 操作"
+3. 新对话角色应该是谁？
+
+新执行者应该是 Claude Code / 本地 Agent，不是 Web GPT。
+
+YAML
+correct_next_conversation:
+  executor: "Claude Code / local coding agent"
+  reviewer: "Web GPT"
+  bridge: "CDP automation only for GPT review submission/capture"
+
+Web GPT 的正确用途是：
+
+YAML
+web_gpt_should:
+  - "审查 evidence pack"
+  - "给 accepted / blocked 判决"
+  - "给下一步授权"
+  - "诊断流程设计问题"
+  - "生成任务计划"
+
+web_gpt_should_not:
+  - "执行 git commit"
+  - "访问本地仓库"
+  - "修改文件"
+  - "运行 pytest"
+  - "替代 Claude Code 继续编码"
+
+因此，这次“新对话 GPT 无法执行 git 操作”不是 GPT 失败，而是流程把任务交给了错误角色。
+
+4. 当前 CONTEXT-COMPRESSION-A1 commit 阻塞如何解除？
+
+当前状态应这样判定：
+
+YAML
+context_compression_a1:
+  gpt_review: accepted_r6
+  code_status: ready_to_bind_and_commit
+  blocker_type: commit_gate_scope_bug
+  blocker_source: ai_guard.py
+  issue: "ai_guard 扫描整个 working tree，而不是 staged / selected files"
+
+正确处理方式不是重做 CONTEXT-COMPRESSION-A1，也不是关闭 guard，而是开一个很小的治理修复任务：
+
+YAML
+recommended_next_task:
+  task_id: AI-GUARD-STAGED-SCOPE-A1
+  goal: "让 pre-commit 阶段的 ai_guard 只阻塞 staged/selected files，不因未暂存 dirty baseline 误阻塞 accepted commit"
+  execute_by: "local Claude Code / coding agent"
+  reviewed_by: "Web GPT"
+
+最小修复原则：
+
+YAML
+ai_guard_fix_principles:
+  - "不得关闭 ai_guard"
+  - "不得把 blocker 改成 warning"
+  - "不得 whole-dirty-tree commit"
+  - "不得删除 7 个 dirty baseline 文件"
+  - "不得提交 archive hooks / runs 修改 / HANDOFF_REPLY_V4 deletion"
+  - "pre-commit 应检查 staged files"
+  - "repo-wide scan 可以保留为单独 audit 模式，但不应阻塞 unrelated unstaged dirty baseline"
+
+建议执行顺序：
+
+YAML
+next_action_order:
+  1:
+    action: "本地 agent 冻结现场"
+    commands:
+      - "git status --short"
+      - "git diff --cached --name-only"
+      - "git diff --name-only"
+      - "保存 pre-commit / ai_guard 报错输出"
+
+  2:
+    action: "确认 107 个 staged files 全部属于 CONTEXT-COMPRESSION-A1 selected files + binding files"
+
+  3:
+    action: "确认 7 个 ai_guard 报错文件未被 staged"
+
+  4:
+    action: "如果 ai_guard 已支持 staged-only 参数，则改 pre-commit 调用方式，并生成证据"
+
+  5:
+    action: "如果 ai_guard 不支持 staged-only，则创建 AI-GUARD-STAGED-SCOPE-A1 小任务"
+    required_deliverables:
+      - "修改 ai_guard 或 hook，使 commit mode 只检查 staged files"
+      - "保留 repo-audit mode 用于全仓扫描"
+      - "新增测试：unstaged dirty forbidden markers 不阻塞 clean staged commit"
+      - "新增测试：staged forbidden marker 必须 fail closed"
+      - "生成 evidence pack 给 Web GPT 审查"
+
+  6:
+    action: "AI-GUARD-STAGED-SCOPE-A1 accepted 后，再提交 CONTEXT-COMPRESSION-A1 binding"
+5. 结构化裁决
+YAML
+verdict:
+  handoff_workflow:
+    judgment: blocked
+    reason: "不应把 Web GPT 当作执行者；CDP 长文本提交也不可靠"
+
+  redesign_needed:
+    judgment: yes
+    recommendation: "以 BOOT_CONTEXT.md + PROJECT_HISTORY.md + memory/index.md 作为本地 agent 冷启动源，Web GPT 只负责审查"
+
+  handoff_document:
+    judgment: optional
+    recommendation: "只作为人工兜底 snapshot，不作为自动化主链路"
+
+  cdp_automation:
+    judgment: limited_use_only
+    recommendation: "仅用于提交 GPT review prompt 和捕获 END_OF_GPT_RESPONSE，不承担长文档交接"
+
+  current_commit_blocker:
+    judgment: real_blocker
+    recommended_fix: "AI-GUARD-STAGED-SCOPE-A1"
+
+  context_compression_a1:
+    judgment: accepted_but_not_closed
+    reason: "R6 已 GPT accepted，但 binding/commit 尚未完成"
+
+  next_executor:
+    role: "Claude Code / local agent"
+    not: "Web GPT"
+
+  next_reviewer:
+    role: "Web GPT"
+    responsibility: "审查 AI-GUARD-STAGED-SCOPE-A1 evidence pack 或 CONTEXT-COMPRESSION-A1 binding evidence"
+6. 给本地 Agent 的下一步指令
+Markdown
+当前不要再尝试把长交接文档塞进 Web GPT 新对话。
+
+请在本地继续执行：
+
+任务：AI-GUARD-STAGED-SCOPE-A1
+
+目标：
+修复 pre-commit gate 中 ai_guard.py 扫描整个 working tree 导致 CONTEXT-COMPRESSION-A1 accepted selected files 无法提交的问题。
+
+要求：
+1. 不得关闭 ai_guard。
+2. 不得把 blocker 改成 warning。
+3. 不得 whole-dirty-tree commit。
+4. 不得删除、移动、恢复或提交 dirty baseline。
+5. pre-commit commit-mode 应只检查 staged files。
+6. repo-wide audit 可以保留为单独命令或 pre-push/audit 模式。
+7. 增加测试：
+   - 未暂存 dirty 文件含 forbidden marker，不阻塞 clean staged commit。
+   - staged 文件含 forbidden marker，必须 fail closed。
+   - staged CONTEXT-COMPRESSION-A1 selected files 应通过。
+8. 生成 evidence pack，提交 Web GPT 审查。
+9. AI-GUARD-STAGED-SCOPE-A1 accepted 后，再完成 CONTEXT-COMPRESSION-A1 binding/commit。
+
+一句话结论：自动化交接流程需要重构；Web GPT 只做审查，本地 Agent 执行。当前最小下一步不是继续 handoff，而是修复 ai_guard 的 staged-files-only commit gate。
