@@ -3,6 +3,13 @@
 Validates _evidence/hook-output/latest.json against
 schemas/agent-runtime/evidence-capture.schema.json.
 
+NOTE: This is a bounded manual schema validator, not a full JSON Schema engine.
+It validates the following keywords: required fields, type checks (integer/null,
+string/null), enum membership, semver pattern, and array item counts.
+It does NOT implement $ref, allOf/anyOf, patternProperties, or other advanced
+JSON Schema keywords. For full JSON Schema validation, use a dedicated library
+such as `jsonschema`.
+
 Failure semantics (v2.3.0, fail-closed):
   - sadp-audit exit_code != 0 → overall_result must be BLOCKED
   - ai-guard exit_code != 0 → overall_result must be BLOCKED

@@ -32,8 +32,8 @@ gate_0:
 
 goal: >
   Construct real ai_guard failure and timeout fixtures, run hook dry-run to
-  validate PASS_WITH_WARNINGS path, add hook output validator, and produce
-  runtime evidence that the failure semantics work end-to-end.
+  validate PASS_WITH_WARNINGS is rejected in v2.3.0, add hook output validator,
+  and produce runtime evidence that the failure semantics work end-to-end.
 
 write_set:
   - ".ai/tasks/evidence-capture-hook-failure-runtime-validation-a1.yaml"

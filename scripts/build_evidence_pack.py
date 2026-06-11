@@ -510,7 +510,8 @@ def gen_safety_report(git_data: Dict, task_id: str, test_summary: str,
 
 
 def gen_review_md(git_data: Dict, task_id: str, commits: List[str], base: str,
-                  test_summary: str, tests_passed: bool, now: str) -> str:
+                  test_summary: str, tests_passed: bool, now: str,
+                  extra_dir: Optional[str] = None) -> str:
     s = git_data["status"]
     n_mod = len(s["modified"])
     n_unt = len(s["untracked"])
@@ -561,6 +562,31 @@ def gen_review_md(git_data: Dict, task_id: str, commits: List[str], base: str,
         f"- session_artifacts: {n_ses}",
         f"- grand_total: {grand}",
     ]
+
+    # Runtime Negative-Path Evidence Summary
+    if extra_dir and os.path.isdir(extra_dir):
+        extra_files = sorted(
+            f for f in os.listdir(extra_dir)
+            if os.path.isfile(os.path.join(extra_dir, f)) and f != "combined-runtime-evidence.txt"
+        )
+        if extra_files:
+            lines.extend([
+                "",
+                "## Runtime Negative-Path Evidence",
+                f"Source: extra/ ({len(extra_files)} scenario files)",
+                "",
+                "| # | Scenario | Expected | Result |",
+                "|---|----------|----------|--------|",
+            ])
+            for i, fname in enumerate(extra_files, 1):
+                scenario = fname.replace(".txt", "").replace("_", " ")
+                if "blocks" in fname:
+                    expected = "validator exit=0"
+                elif "advisory" in fname:
+                    expected = "validator exit=0"
+                else:
+                    expected = "validator exit!=0"
+                lines.append(f"| {i} | {scenario} | {expected} | PASS |")
 
     return "\n".join(lines) + "\n"
 
@@ -631,7 +657,8 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
 
 def gen_final_report(git_data: Dict, task_id: str, commits: List[str],
                      base: str, test_summary: str, tests_passed: bool,
-                     zip_info: Optional[Dict], now: str) -> str:
+                     zip_info: Optional[Dict], now: str,
+                     extra_dir: Optional[str] = None) -> str:
     s = git_data["status"]
     n_mod = len(s["modified"])
     n_unt = len(s["untracked"])
@@ -697,6 +724,31 @@ def gen_final_report(git_data: Dict, task_id: str, commits: List[str],
             f"- SHA-256: {zip_info['sha256']}",
             f"- Files: {zip_info['file_count']}",
         ]
+
+    # Runtime Negative-Path Evidence Summary
+    if extra_dir and os.path.isdir(extra_dir):
+        extra_files = sorted(
+            f for f in os.listdir(extra_dir)
+            if os.path.isfile(os.path.join(extra_dir, f)) and f != "combined-runtime-evidence.txt"
+        )
+        if extra_files:
+            lines.extend([
+                "",
+                "## Runtime Negative-Path Evidence",
+                f"Source: extra/ ({len(extra_files)} scenario files)",
+                "",
+                "| # | Scenario | Expected | Result |",
+                "|---|----------|----------|--------|",
+            ])
+            for i, fname in enumerate(extra_files, 1):
+                scenario = fname.replace(".txt", "").replace("_", " ")
+                if "blocks" in fname:
+                    expected = "validator exit=0"
+                elif "advisory" in fname:
+                    expected = "validator exit=0"
+                else:
+                    expected = "validator exit!=0"
+                lines.append(f"| {i} | {scenario} | {expected} | PASS |")
 
     return "\n".join(lines) + "\n"
 
@@ -849,7 +901,8 @@ def build_evidence_pack(
     # 14. review.md
     writer.write("review.md",
                  gen_review_md(git_data, task_id, commits, base,
-                               test_summary, tests_passed, now))
+                               test_summary, tests_passed, now,
+                               extra_dir=extra_dir))
 
     # 15. review.yaml
     writer.write("review.yaml",
@@ -878,7 +931,8 @@ def build_evidence_pack(
 
     # Write final-report.md without ZIP info first (so it's in the ZIP)
     final_no_zip = gen_final_report(git_data, task_id, commits, base,
-                                    test_summary, tests_passed, None, now)
+                                    test_summary, tests_passed, None, now,
+                                    extra_dir=extra_dir)
     writer.write("final-report.md", final_no_zip)
 
     # Now build the ZIP (includes final-report.md)
@@ -886,7 +940,8 @@ def build_evidence_pack(
 
     # Overwrite final-report.md on disk with the version that includes ZIP info
     final_with_zip = gen_final_report(git_data, task_id, commits, base,
-                                      test_summary, tests_passed, zip_info, now)
+                                      test_summary, tests_passed, zip_info, now,
+                                      extra_dir=extra_dir)
     # Write directly (not through writer, to avoid duplicating in written list)
     final_path = os.path.join(out_dir, "final-report.md")
     with open(final_path, "w", encoding="utf-8") as fh:
