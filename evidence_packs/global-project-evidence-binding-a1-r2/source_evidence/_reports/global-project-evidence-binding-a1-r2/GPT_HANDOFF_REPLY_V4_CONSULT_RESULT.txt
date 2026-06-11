@@ -1,0 +1,55 @@
+run_id: HANDOFF_REPLY_V4_RESTORE_SCOPE_CONSULT_20260609_083700_RD
+task_id: HANDOFF-REPLY-V4-RESTORE-SCOPE-CONSULT-A1
+overall_judgment: accepted_with_limitation
+consultation_verdict: restore_requires_human_confirmation
+recommendation:
+
+R2 不应在当前证据下声称 HANDOFF_REPLY_V4.txt deletion 已 resolved。
+
+HANDOFF_REPLY_V4.txt 是 tracked 文件，且已有多处证据提示“不要删除”或“不得提交删除”，因此不能轻率判定为 out-of-scope。
+
+从闭合 blocked issue 的角度看，恢复 HANDOFF_REPLY_V4.txt 很可能是最直接的闭合路径，但 git restore / 从 HEAD 恢复属于触碰 legacy 文件状态，必须先获得用户明确确认。
+
+如果不恢复，当前证据最多能证明它是既有 dirty deletion / excluded baseline，不能充分证明它 out-of-protected-scope。
+
+R2 当前最安全做法是先生成 human_required 决策记录，明确列出 tracked deletion、历史提交、现有证据、风险边界和需用户确认事项，而不是继续打包声称 resolved。
+restore_should_be_done: 不确定
+restore_requires_user_confirmation: 是
+scope_out_supported_by_current_evidence: 否
+safe_automatic_next_steps:
+
+生成 HANDOFF_REPLY_V4_HUMAN_REQUIRED_DECISION.md/json，记录 tracked deletion 状态、git ls-files、git log、grep 证据和 GPT blocking issue。
+
+更新 R2 execution report，明确该问题当前为 human_required，而非 resolved。
+
+更新 protected legacy status，将 HANDOFF_REPLY_V4.txt 标为 tracked_deleted_human_required，不得标为 pass。
+
+更新 safety attestation，删除或修正“legacy files were not deleted/moved/renamed/rewritten”的绝对表述，改为如实反映 HANDOFF_REPLY_V4.txt tracked deletion conflict。
+
+继续处理不涉及 restore/checkout/reset/clean/delete/move/rename 的 source binding 和 manifest 一致性修复。
+human_required_steps:
+
+用户明确确认是否允许恢复 HANDOFF_REPLY_V4.txt。
+
+若用户确认恢复，才可执行 git restore -- HANDOFF_REPLY_V4.txt 或等价恢复操作。
+
+若用户不允许恢复，则必须要求用户确认是否将 HANDOFF_REPLY_V4.txt 明确排除在 protected legacy scope 外，并提供或接受相应 P0/P1 证据记录。
+risk_controls:
+
+不得自动执行 git restore / git checkout / git reset / git clean。
+
+不得删除、移动、重命名、覆盖 HANDOFF_REPLY_V4.txt 或其他 legacy handoff 文件。
+
+不得把 tracked deletion conflict 包装成 pass。
+
+不得用 excluded baseline 证据替代 out-of-scope 证明。
+
+若证据不足，必须标记 human_required / needs_more_evidence。
+
+后续 R2 closure pack 必须保留该咨询结论和用户确认记录。
+next_task_authorization:
+task_id: GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+END_OF_GPT_RESPONSE

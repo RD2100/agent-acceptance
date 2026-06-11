@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-acceptance.local/schemas/changed-files-evidence/v1",
+  "title": "ChangedFilesEvidence",
+  "description": "pre/post 文件变更证明的标准格式。用于 evidence pack、审查报告、审计对账中描述文件系统变更。",
+  "type": "object",
+  "required": ["schema_version", "task_id", "snapshot_before", "snapshot_after", "changes"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Schema 版本号，当前为 1.0.0"
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "关联的任务 ID（如 PROCESS-STATE-MACHINE-DEFINE-A1）"
+    },
+    "run_id": {
+      "type": ["string", "null"],
+      "description": "关联的 run_id（如有），用于跨轮次追溯"
+    },
+    "snapshot_before": {
+      "type": "string",
+      "format": "date-time",
+      "description": "变更前快照时间戳 (ISO 8601)"
+    },
+    "snapshot_after": {
+      "type": "string",
+      "format": "date-time",
+      "description": "变更后快照时间戳 (ISO 8601)"
+    },
+    "changes": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": ["path", "change_type"],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "description": "文件路径（相对于项目根目录），使用正斜杠 /"
+          },
+          "change_type": {
+            "type": "string",
+            "enum": ["added", "modified", "deleted", "renamed", "permission_changed"],
+            "description": "变更类型"
+          },
+          "sha256_before": {
+            "type": ["string", "null"],
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "变更前文件 SHA-256 hash。added 类型必须为 null。"
+          },
+          "sha256_after": {
+            "type": ["string", "null"],
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "变更后文件 SHA-256 hash。deleted 类型必须为 null。"
+          },
+          "size_before": {
+            "type": ["integer", "null"],
+            "minimum": 0,
+            "description": "变更前文件大小（字节）。added 类型必须为 null。"
+          },
+          "size_after": {
+            "type": ["integer", "null"],
+            "minimum": 0,
+            "description": "变更后文件大小（字节）。deleted 类型必须为 null。"
+          },
+          "tracked": {
+            "type": "boolean",
+            "description": "文件是否在版本控制（git）跟踪范围内"
+          },
+          "rename_from": {
+            "type": ["string", "null"],
+            "description": "renamed 类型时的原路径。非 renamed 类型必须为 null。"
+          },
+          "permission_before": {
+            "type": ["string", "null"],
+            "pattern": "^[0-7]{3,4}$",
+            "description": "permission_changed 类型时的原权限（如 0644）。非 permission_changed 类型必须为 null。"
+          },
+          "permission_after": {
+            "type": ["string", "null"],
+            "pattern": "^[0-7]{3,4}$",
+            "description": "permission_changed 类型时的新权限。非 permission_changed 类型必须为 null。"
+          },
+          "evidence_ref": {
+            "type": ["string", "null"],
+            "description": "关联的证据引用（如 diff 文件路径、evidence pack 中的 section ID）"
+          },
+          "state_transition_ref": {
+            "type": ["string", "null"],
+            "description": "关联的状态机转换 ID（如 T01, T09），用于 PROCESS_STATE_MACHINE 集成"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "change_type": { "const": "added" } }
+            },
+            "then": {
+              "properties": {
+                "sha256_before": { "const": null },
+                "size_before": { "const": null },
+                "rename_from": { "const": null }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": { "change_type": { "const": "deleted" } }
+            },
+            "then": {
+              "properties": {
+                "sha256_after": { "const": null },
+                "size_after": { "const": null },
+                "rename_from": { "const": null }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": { "change_type": { "const": "renamed" } }
+            },
+            "then": {
+              "required": ["rename_from"],
+              "properties": {
+                "rename_from": { "type": "string", "minLength": 1 }
+              }
+            }
+          },
+          {
+            "if": {
+              "not": {
+                "properties": { "change_type": { "const": "renamed" } }
+              }
+            },
+            "then": {
+              "properties": {
+                "rename_from": { "const": null }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "total_added": { "type": "integer", "minimum": 0 },
+        "total_modified": { "type": "integer", "minimum": 0 },
+        "total_deleted": { "type": "integer", "minimum": 0 },
+        "total_renamed": { "type": "integer", "minimum": 0 },
+        "total_permission_changed": { "type": "integer", "minimum": 0 },
+        "total_changes": { "type": "integer", "minimum": 0 }
+      },
+      "required": ["total_added", "total_modified", "total_deleted", "total_renamed", "total_permission_changed", "total_changes"]
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "generator": {
+          "type": "string",
+          "description": "生成工具标识（如 changed_files_utils.py v1.0.0）"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "生成时间戳 (ISO 8601)"
+        },
+        "project_root": {
+          "type": "string",
+          "description": "项目根目录路径"
+        }
+      }
+    }
+  }
+}

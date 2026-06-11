@@ -1,0 +1,106 @@
+SHARED-CDP-V2-REVIEW-FINDINGS-FIX-A1
+CHANGED_FILES_EVIDENCE.txt
+Generated: 2026-06-10
+Executor: QoderWork Agent
+
+═══════════════════════════════════════════════════════════
+FILES MODIFIED IN THIS FIX ROUND
+═══════════════════════════════════════════════════════════
+
+SCRIPTS (4 files):
+  1. scripts/multi_project_router.py
+     - Added fail-closed gates in build_dispatch_packet():
+       tab_match_status != exact_match -> dispatchable=False
+       target_id missing -> dispatchable=False
+       target_url missing -> dispatchable=False
+     - Added validate_cdp_endpoint() (localhost/127.0.0.1/::1 only)
+     - _check_cdp() now validates endpoint before probing
+     - Removed private _list_cdp_pages and _find_tab_target
+     - Imports canonical resolve_tab_target and list_cdp_pages from tab_target_resolver
+
+  2. scripts/dry_run_dispatch_10.py
+     - Rewrote _classify_packet() from 4 to 6 priority levels:
+       Added blocked_ambiguous_tab, human_required_tab_unresolved,
+       human_required_missing_target_id
+     - Removed v1 per-project cdp_endpoint/cdp_port references
+     - Updated generate_report() summary with new classification counts
+     - Updated error reason mapping for all new categories
+     - Updated module docstring
+
+  3. scripts/gate0_preflight_10.py
+     - Removed private list_cdp_pages() and find_tab_target() functions
+     - Added canonical imports: _canonical_resolve_tab_target,
+       _canonical_list_cdp_pages, _canonical_validate_cdp_endpoint
+     - check_cdp_health() now validates localhost before probing
+     - run_preflight() uses _canonical_list_cdp_pages()
+     - _evaluate_project_v2() uses _canonical_resolve_tab_target()
+
+  4. scripts/tab_target_resolver.py
+     - Added validate_cdp_endpoint() (shared security gate)
+     - list_cdp_pages() now calls validate_cdp_endpoint() before HTTP request
+     - resolve_tab_target() redacts webSocketDebuggerUrl -> "[REDACTED]"
+     - Added has_webSocketDebuggerUrl boolean for presence-only checks
+
+TESTS (5 files):
+  5. tests/test_dispatch_packet_v2.py
+     - Removed test_no_target_id_still_dispatchable (v1 behavior)
+     - Added test_no_target_id_blocked_by_fail_closed
+     - Added test_no_target_id_exact_match_blocked
+     - Added test_no_target_url_blocked
+
+  6. tests/test_dry_run_dispatch_v2.py  [NEW FILE]
+     - 16 new tests covering:
+       TestClassifyPacket (11 tests): all classification paths,
+       priority ordering, edge cases
+       TestFindCollisionProjects (4 tests): conversation-only collision
+       TestHelpers (3 tests): utility functions
+       TestReportStructure (2 tests): v2 summary fields
+
+  7. tests/test_gate0_preflight_v2.py
+     - Updated mocks from list_cdp_pages to _canonical_list_cdp_pages
+     - Replaced find_tab_target tests with canonical resolver tests
+     - Fixed tab_unresolved assertion (cdp_unreachable vs no_match)
+
+  8. tests/test_router_10_project_stress.py
+     - _make_target helper now includes v2 fields:
+       target_id, target_url, tab_match_status
+     - Split test_dispatch_packet_for_active into:
+       test_dispatch_packet_fail_closed_when_cdp_down
+       test_dispatch_packet_for_active_with_cdp
+
+  9. tests/test_multi_project_isolation.py
+     - Added v2 fields (target_id, target_url, tab_match_status) to
+       test_packet_resolved_target and test_dispatch_packet_includes_all_routing_info
+
+REPORTS (1 file):
+  10. _reports/blocking_review_fix_report_v1.md
+      - Executor fix report documenting all claimed fixes
+
+═══════════════════════════════════════════════════════════
+CANONICAL RESOLVER USAGE AUDIT
+═══════════════════════════════════════════════════════════
+
+Module                      | Uses canonical resolver? | Private duplicate?
+multi_project_router.py     | YES (import from tab_target_resolver) | NONE
+gate0_preflight_10.py       | YES (import from tab_target_resolver) | NONE (removed)
+dry_run_dispatch_10.py      | YES (via router import)             | NONE
+tab_target_resolver.py      | IS the canonical resolver           | N/A
+
+═══════════════════════════════════════════════════════════
+FAIL-CLOSED GATE AUDIT
+═══════════════════════════════════════════════════════════
+
+build_dispatch_packet() gates (in order):
+  1. target.resolved == False -> dispatchable=False
+  2. tab_match_status != "exact_match" -> dispatchable=False, blocked_reason="tab_match_status_not_exact"
+  3. target_id is falsy -> dispatchable=False, blocked_reason="missing_target_id"
+  4. target_url is falsy -> dispatchable=False, blocked_reason="missing_target_url"
+
+_classify_packet() priority (in order):
+  1. binding_status == "pending_manual_binding" -> "non_dispatchable_pending"
+  2. resolved && project in collision_projects -> "non_dispatchable_collision"
+  3. tab_match_status == "ambiguous" -> "blocked_ambiguous_tab"
+  4. tab_match_status != "exact_match" -> "human_required_tab_unresolved"
+  5. resolved && no target_id -> "human_required_missing_target_id"
+  6. packet.dispatchable == False -> "human_required"
+  7. All clear -> "dispatchable"

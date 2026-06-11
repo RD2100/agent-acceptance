@@ -1,0 +1,55 @@
+YAML
+overall_judgment: proceed_minimal_binding
+reviewer_type: gpt
+task_id: PAPER-C1-CLOSURE-BINDING-CONFLICT
+recommended_action: >
+  允许执行最小闭合绑定，但只能做 append-only 追加，不得重写、整理、清理或覆盖
+  PROJECT_HISTORY.md 与 docs/WORKFLOW_AUDIT_LEDGER.yaml 中既有 dirty baseline 内容。
+  追加前必须记录 dirty baseline 的 git status、diff、sha256；追加后必须再次记录 diff，
+  证明本次只增加 PAPER-C1 accepted binding 条目。若无法做到 append-only 或无法区分本次变更与既有 dirty baseline，
+  则停止并改为 sidecar-only，不得直接写入主文件。
+allowed_files:
+  - PROJECT_HISTORY.md
+  - docs/WORKFLOW_AUDIT_LEDGER.yaml
+  - _reports/paper-c1-closure-binding/PAPER_C1_BINDING_RECORD.yaml
+  - _reports/paper-c1-closure-binding/BASELINE_STATUS_BEFORE.txt
+  - _reports/paper-c1-closure-binding/BASELINE_DIFF_BEFORE.patch
+  - _reports/paper-c1-closure-binding/BASELINE_HASHES_BEFORE.txt
+  - _reports/paper-c1-closure-binding/BINDING_DIFF_AFTER.patch
+  - _reports/paper-c1-closure-binding/SAFETY_ATTESTATION.md
+required_safeguards:
+  - "写入前保存 PROJECT_HISTORY.md 与 docs/WORKFLOW_AUDIT_LEDGER.yaml 的 sha256。"
+  - "写入前保存 git status 与 diff，明确 dirty baseline 是 pre-existing。"
+  - "只追加 PAPER-C1 accepted binding，不编辑既有条目。"
+  - "不得格式化全文，不得排序，不得重写 YAML 全文件。"
+  - "不得删除、移动、重命名、清理历史 evidence。"
+  - "不得把 dirty baseline 归因于 PAPER-C1。"
+  - "追加内容必须包含 review_run_id: paper-c1-real-paper-pilot-safety-protocol-review-v1。"
+  - "追加内容必须绑定 evidence_pack_sha256、task_id、reviewer_type、overall_judgment、accepted_time。"
+  - "追加后重新生成 diff，只允许出现 PAPER-C1 binding 相关新增行。"
+  - "若 append-only 校验失败，必须 fail-closed。"
+blocking_issues: []
+next_task_authorization:
+  authorized: yes
+  task_id: PAPER-C2
+  execute_immediately: yes
+
+同时复核你上传的 v7 PROJECT_HISTORY.md：v7 仍未完全修复，不能作为 sound 蓝本接受。 文件中 PAPER-C1 的 REVIEW_RUN_ID 已修正，但历史补充段仍位于第 6 节之后、第 7 节之前；第 6 节仍只到第 8 条，没有连续恢复第 9、10 条；第 12 节 bootstrap 仍写成“请阅读附件 HANDOFF.md（约 25KB，含”，没有补上 END_OF_HANDOFF。
+
+PROJECT_HISTORY
+
+YAML
+project_history_v7_review:
+  overall_judgment: blocked
+  fixed:
+    - "PAPER-C1 REVIEW_RUN_ID 已修正"
+  remaining_issues:
+    - "历史补充段仍未移动到第 14 节之后、END_OF_PROJECT_HISTORY 之前。"
+    - "第 6 节执行规则仍缺少连续的第 9 条：accepted 后必须包含 next_task_authorization。"
+    - "第 6 节执行规则仍缺少连续的第 10 条：blocked 后必须包含 required_fixes 和 resubmission_requirements。"
+    - "第 12 节 bootstrap prompt 仍缺 END_OF_HANDOFF 标记。"
+  next_required_fix: >
+    先修 PROJECT_HISTORY.md 结构，再做 PAPER-C1 最小闭合绑定；如果必须立即绑定，
+    则按上面的 proceed_minimal_binding 方案只追加，不重写 dirty baseline。
+
+END_OF_GPT_RESPONSE

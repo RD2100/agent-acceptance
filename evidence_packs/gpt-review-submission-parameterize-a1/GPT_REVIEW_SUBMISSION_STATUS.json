@@ -1,0 +1,15 @@
+{
+  "run_id": "PROCESS_STATE_MACHINE_DEFINE_A1_REVIEW_20260609T022432_RD",
+  "task_id": "TEMPLATE-TEST",
+  "scenario": "B",
+  "pack": "evidence_packs\\process-state-machine-define-a1\\PROCESS_STATE_MACHINE_DEFINE_A1_20260609T022432.zip",
+  "pack_exists": true,
+  "pack_size": 39596,
+  "pack_sha256": "1b008e264580609f919f95e25a7fc82b5ecc87a673fbc739d0fad8ab4706243f",
+  "prompt_chars": 2767,
+  "dry_run": true,
+  "sent": false,
+  "captured": false,
+  "upload_confirmed": false,
+  "status": "dry_run_complete"
+}

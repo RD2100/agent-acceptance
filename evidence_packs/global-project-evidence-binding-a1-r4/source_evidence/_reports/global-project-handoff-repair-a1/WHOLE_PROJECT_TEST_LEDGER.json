@@ -1,0 +1,28 @@
+{
+  "task_id": "GLOBAL-PROJECT-HANDOFF-REPAIR-A1",
+  "run_id": "GLOBAL_HANDOFF_REPAIR_A1_20260608_223700",
+  "generated_at": "2026-06-08T14:37:00.707873+00:00",
+  "verified_results": [
+    {
+      "label": "handoff targeted tests",
+      "result": "13 passed",
+      "source_type": "P0 evidence",
+      "evidence_file": "_reports/handoff-pipeline-refactor-a1/TARGETED_TEST_OUTPUT.txt"
+    },
+    {
+      "label": "A1 closure report stated tests",
+      "result": "12 passed",
+      "source_type": "P0 evidence conflict",
+      "evidence_file": "evidence_packs/handoff-pipeline-refactor-a1/CLOSURE_REPORT.md",
+      "note": "conflicts with targeted output; kept as limitation"
+    }
+  ],
+  "ledger_historical_results": "docs/WORKFLOW_AUDIT_LEDGER.yaml contains historical per-task results; these are not current global totals.",
+  "unverified_claims": [
+    {
+      "claim": "296 PASS",
+      "status": "unverified conversational claim",
+      "evidence_file": "HANDOFF_APPROVAL_RECORD.json limitation"
+    }
+  ]
+}

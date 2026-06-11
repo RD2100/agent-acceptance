@@ -1,0 +1,122 @@
+YAML
+review_role: independent_reviewer
+submission: SHARED-CDP-V2 Round 12 / SHARED-CDP-DRY-RUN-CLASSIFICATION-NORMALIZE-A1
+previous_verdict: ACCEPTED_WITH_LIMITATION
+task_verdict: ACCEPTED
+overall_shared_cdp_v2_status: ACCEPTED_WITH_LIMITATION
+dry_run_dispatch: AUTHORIZED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+code_level_blockers: NONE
+confidence: MEDIUM_HIGH
+Reviewer Verdict
+
+Round 12 通过。SHARED-CDP-DRY-RUN-CLASSIFICATION-NORMALIZE-A1 可以判定为 ACCEPTED。
+
+本轮准确修复了 Round 11 留下的两个 P2 limitation：
+
+1. pending_binding 分类漂移；
+2. dry-run report 路径归档不清晰。
+
+这两个问题都不是 P0 blocker，但会影响 10 项目 dry-run 报告的可读性和后续证据归档。现在已经修到位。
+
+1. Classification normalization
+YAML
+status: PASS
+severity: accepted
+
+原问题是：
+
+registry 使用 pending_binding
+classifier 只识别 pending_manual_binding
+导致 9 个 pending 项目落入 human_required
+
+本轮修改为：
+
+Python
+运行
+if binding_status in ("pending_manual_binding", "pending_binding"):
+    return "non_dispatchable_pending"
+
+这是正确修复。现在 dry-run 分类从：
+
+dispatchable: 1
+human_required: 9
+non_dispatchable_pending: 0
+
+修正为：
+
+dispatchable: 1
+non_dispatchable_pending: 9
+human_required: 0
+
+语义更准确：这些项目不是异常性 human_required，而是尚未完成 binding 的 pending 状态。
+
+2. Unknown binding status fallback
+YAML
+status: PASS
+severity: accepted
+
+新增测试：
+
+test_unknown_binding_status_falls_through
+
+这个测试是必要的。它确保只有明确的 pending 状态会归为 non_dispatchable_pending，未知状态不会被误吞掉，而是继续 fall through 到 human_required。这符合 fail-closed 思路。
+
+3. Report path fix
+YAML
+status: PASS
+severity: accepted
+
+报告路径从：
+
+_reports/multi-project-batch-init-a1/DRY_RUN_DISPATCH_10.json
+
+修正为：
+
+_evidence/SHARED-CDP-GPT-REVIEW-DRY-RUN-2-A1/DRY_RUN_DISPATCH_10.json
+
+这是正确的 evidence hygiene。当前 dry-run report 已归档到对应任务证据目录，不再混入旧的 batch-init 目录。
+
+4. Test evidence
+YAML
+full_suite: 1038 passed
+failed: 0
+warnings: 21
+new_tests: 2
+test_status: PASS
+
+测试增长路径合理：
+
+1036 → 1038
+
+两个新增测试正好覆盖本轮变更点，可以接受。
+
+Updated Verdict
+YAML
+verdict: ACCEPTED
+accepted:
+  - pending_binding normalized to non_dispatchable_pending
+  - pending_manual_binding remains supported
+  - unknown binding status falls through to human_required
+  - dry-run report moved to correct evidence directory
+  - re-run dry-run classification now semantically correct
+  - full suite 1038 passed
+
+remaining_limitations:
+  - only 1 active binding tested
+  - 2-active shared-CDP dry-run still requires human-bound second conversation
+  - live dispatch remains separately human-gated
+
+dry_run_dispatch: AUTHORIZED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+Project-level status after Round 12
+YAML
+shared_cdp_v2_code_status: ACCEPTED_WITH_LIMITATION
+sadp_runtime_enforcement: COMPLETE_WITH_PLATFORM_LIMITATION
+commit_time_audit_coverage: COMPLETE
+dry_run_10_project_status: ACCEPTED
+active_bindings_tested: 1
+pending_bindings_fail_closed: 9
+next_recommended_step: SHARED-CDP-GPT-REVIEW-DRY-RUN-2-ACTIVE-A1
+
+一句话结论：Round 12 通过；dry-run 分类与证据路径已经修正，10 项目 dry-run 可判 accepted。下一步若要继续推进，应人工绑定第二个真实 ChatGPT conversation，做 2-active shared-CDP dry-run；live dispatch 仍不授权。

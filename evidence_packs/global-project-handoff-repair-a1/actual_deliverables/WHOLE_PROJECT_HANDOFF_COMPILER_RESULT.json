@@ -1,0 +1,41 @@
+{
+  "task_id": "GLOBAL-PROJECT-HANDOFF-REPAIR-A1",
+  "run_id": "GLOBAL_HANDOFF_REPAIR_A1_20260608_223700",
+  "generated_at": "2026-06-08T14:37:00.707873+00:00",
+  "success": true,
+  "status": "ready_for_gpt_review",
+  "validator_status": "fail_closed_semantics_used; no full-handoff byte-size validator applied because this is whole-project repair layer, not legacy HANDOFF.md replacement",
+  "reused_existing_workflow": true,
+  "reused_components": [
+    "HANDOFF_SOURCE_OF_TRUTH.md",
+    "LEGACY_HANDOFF_INVENTORY.md",
+    "_reports/handoff-pipeline-refactor-a1/HANDOFF_EVIDENCE_MAP.json",
+    "_reports/handoff-pipeline-refactor-a1/HANDOFF_STALE_CHECK.md",
+    "_reports/handoff-pipeline-refactor-a1/HANDOFF_SAFETY_SCAN.md",
+    "_reports/handoff-pipeline-refactor-a1/HANDOFF_DRAFT_FOR_GPT.md",
+    "_reports/handoff-pipeline-refactor-a1/TARGETED_TEST_OUTPUT.txt",
+    "_reports/handoff-pipeline-refactor-a1/SAFETY_ATTESTATION.md",
+    "evidence_packs/handoff-pipeline-refactor-a1/PACK_MANIFEST.md",
+    "evidence_packs/handoff-pipeline-refactor-a1/CLOSURE_REPORT.md",
+    "docs/WORKFLOW_AUDIT_LEDGER.yaml",
+    "contracts/FLOW_OUTCOME.schema.json",
+    "contracts/DISPATCH_RESULT.schema.json",
+    "scripts/pre_gpt_review_gate.py",
+    "scripts/evidence_pack_linter.py",
+    "scripts/review_queue.py",
+    "scripts/verify_gpt_reply.py",
+    "scripts/handoff_compiler.py",
+    "scripts/handoff_source_map.py",
+    "scripts/handoff_stale_check.py",
+    "scripts/handoff_safety_scan.py",
+    "scripts/gpt_new_chat_attachment_submit.py"
+  ],
+  "limitations": [
+    "Do not promote to verified test count without P0 TEST_OUTPUT.",
+    "Preserve limitation; future closure report should be regenerated from TARGETED_TEST_OUTPUT.",
+    "Use this whole-project handoff layer for global status; do not use A1 draft alone.",
+    "Include PRE_GPT_GATE_OUTPUT in future pack manifests.",
+    "Use active bounded/privacy-gated status from P1/P0 sources.",
+    "Do not claim production promotion without explicit current P0/P1 approval."
+  ]
+}

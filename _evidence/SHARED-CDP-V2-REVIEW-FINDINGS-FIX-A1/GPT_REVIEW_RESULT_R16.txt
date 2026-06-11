@@ -1,0 +1,250 @@
+R16 Reviewer Verdict
+YAML
+verdict: PARTIAL_ACCEPTANCE_WITH_REMAINING_EVIDENCE_BLOCKERS
+task: OPERATIONS-MANUAL-CREATE-A1
+manual_content: ACCEPTED_WITH_LIMITATION
+manual_only_scope: SUBSTANTIALLY_PROVEN
+sadp_0r2_evidence_pack: NOT_FULLY_ACCEPTED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+governance_pattern_change: STILL_EXCLUDED_AND_HUMAN_GATED
+
+我已解压并核查 EVIDENCE_PACK_R16.zip。ZIP 可读，SHA256 为：
+
+f7d79d0d95fc42b4ea86d99fe996e8a343877c24440609f0b7f4ecb91c42cc2d
+
+解压后共有 48 个文件。R16 相比 R15 有明显进步，但还不能完全关闭所有 evidence integrity 问题。
+
+1. R15 四个 blocker 的关闭情况
+R15 Finding	R16 状态	Reviewer 裁定
+R15-BLOCKING-01：ZIP 路径非 repo-relative	已改为 scripts/、.sadp/、docs/agent-runtime/	CLOSED
+R15-BLOCKING-02：SADP 0.R.2 canonical files 不完整	已生成大部分 canonical files，但仍缺 review.md	PARTIALLY CLOSED
+R15-BLOCKING-03：JSON 不纯	safety-report.json、chain-evidence.json、DRY_RUN_DISPATCH_10_CURRENT.json、MANIFEST.json 均可 json.load()	CLOSED
+R15-BLOCKING-04：R14 manual-only split 未证明	manual-only-diff.patch 只包含 docs/agent-runtime/operations-manual.md	CLOSED_WITH_LIMITATION
+2. 仍然存在的关键问题
+R16-BLOCKING-01：review.md 仍缺失
+
+SADP 0.R.2 原要求包括：
+
+diff.patch
+test-output.md
+safety-report.json
+chain-evidence.json
+review.md
+review.yaml
+final-report.md
+
+R16 中实际存在：
+
+diff.patch
+test-output.md
+safety-report.json
+chain-evidence.json
+review.yaml
+final-report.md
+manual-only-diff.patch
+
+但没有：
+
+review.md
+
+所以“已满足 SADP 0.R.2 全部 canonical files”的说法还不能接受。
+
+R16-BLOCKING-02：SHA256 校验命令失败
+
+你提交的验证命令中包含：
+
+Bash
+python -c "
+import hashlib
+for line in open('hashes.sha256'):
+    expected, path = line.strip().split('  ', 1)
+    actual = hashlib.sha256(open(path,'rb').read()).hexdigest()
+    assert actual == expected, f'{path}: hash mismatch'
+print('All hashes verified')
+"
+
+我实际运行后发现两个 hash mismatch：
+
+MANIFEST.json
+hashes.sha256
+
+其余文件基本匹配，但这两个文件不匹配会导致整条验证命令失败。因此，当前不能说 “All hashes verified”。
+
+这通常是因为 MANIFEST.json 和 hashes.sha256 把自身也纳入 hash 后又被修改，导致自引用 hash 不稳定。解决方式是：从 hashes.sha256 中排除 MANIFEST.json 和 hashes.sha256，或使用 detached manifest checksum。
+
+R16-BLOCKING-03：ZIP 仍不能独立复现 1038 passed
+
+R16 的 test-output.md 记录了：
+
+cd D:\agent-acceptance
+python -m pytest tests/ -v --tb=short
+1038 passed, 0 failed, 21 warnings
+Exit code: 0
+
+但在 ZIP 解压目录中运行：
+
+Bash
+python -m pytest tests/ -q --tb=short
+
+实际结果是：
+
+205 passed, 47 failed
+
+主要失败原因包括：
+
+ModuleNotFoundError: No module named 'multi_cdp_launcher'
+.agent/CONVERSATION_BINDING.json missing
+TaskSpec missing
+registry missing
+
+这说明 R16 ZIP 不是完整 repo snapshot，也没有包含足以复现 1038 tests 的所有文件。这个问题不必阻止“手册内容”被接受，但会阻止“ZIP 已经完全独立可复现”的结论。
+
+R16-BLOCKING-04：canonical diff.patch 仍包含 manual-only scope 以外文件
+
+manual-only-diff.patch 是干净的，只包含：
+
+docs/agent-runtime/operations-manual.md
+
+这一点可以证明 manual-only split 的方向是成立的。
+
+但 _evidence/OPERATIONS-MANUAL-CREATE-A1/diff.patch 中仍包含：
+
+scripts/sadp_pre_task_enforcer.py
+scripts/qoderwork_task_runner.py
+scripts/dry_run_dispatch_10.py
+.sadp/SADP_POLICY.json
+.sadp/TRIGGER_RULES.json
+docs/agent-runtime/operations-manual.md
+
+这与 OPERATIONS-MANUAL-CREATE-A1 的 write_set：
+
+docs/agent-runtime/operations-manual.md
+
+不完全一致。
+
+因此，manual-only scope 可以基于 manual-only-diff.patch 实质证明，但 canonical diff.patch 仍不应作为该任务的 task-scoped diff。建议把当前 diff.patch 改名为：
+
+full-context-diff.patch
+
+然后把 manual-only-diff.patch 重命名或复制为 canonical：
+
+diff.patch
+3. 对 5 个问题的回答
+Q1. Does this evidence pack now meet SADP 0.R.2 requirements?
+
+不完全满足。
+
+它比 R15 明显更接近 SADP 0.R.2，但仍缺 review.md，hash 校验失败，且 canonical diff.patch 与 manual-only write_set 不一致。
+
+裁定：
+
+YAML
+sadp_0r2_status: PARTIAL
+required_before_full_acceptance:
+  - add review.md
+  - make hashes.sha256 verification pass
+  - make canonical diff.patch match task write_set
+Q2. Is the manual-only scope correctly isolated from the governance pattern change?
+
+基本可以接受。
+
+manual-only-diff.patch 只包含：
+
+docs/agent-runtime/operations-manual.md
+
+且未包含：
+
+scripts/sadp-audit.ps1
+.sadp/SADP_POLICY.json
+AGENTS.md
+
+所以 manual-only split 的关键证据已经成立。
+
+但 canonical diff.patch 仍包含非手册文件，因此我只能裁定：
+
+YAML
+manual_only_scope: ACCEPTED_WITH_LIMITATION
+limitation: canonical diff.patch still contains out-of-scope changes
+Q3. Are the JSON artifacts sufficiently pure and machine-parseable?
+
+是。
+
+我实际验证了以下文件均可被 json.load() 解析：
+
+_evidence/OPERATIONS-MANUAL-CREATE-A1/safety-report.json
+_evidence/OPERATIONS-MANUAL-CREATE-A1/chain-evidence.json
+DRY_RUN_DISPATCH_10_CURRENT.json
+MANIFEST.json
+.sadp/SADP_POLICY.json
+.sadp/TRIGGER_RULES.json
+
+裁定：
+
+YAML
+json_purity: ACCEPTED
+Q4. Is the retroactive R3-R14 erratum adequate?
+
+基本充分。
+
+REVIEWER_INDEX.md 中已经加入：
+
+YAML
+retroactive_erratum:
+  finding_id: R15-INTEGRITY-01
+  severity: P0_PROCESS
+  affected_rounds: [R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14]
+  status: CORRECTIVE_EVIDENCE_SUBMITTED_R16
+  prior_verdict_status: MAINTAINED_WITH_EVIDENCE_INTEGRITY_LIMITATION
+
+这符合 R15 的要求：不推翻 R3-R13 技术结论，但明确标记证据完整性缺口；R14 仍需保持 blocked 或 split 后重新裁定。
+
+建议将 R14 单独标注为：
+
+YAML
+R14:
+  status: BLOCKED_OR_SPLIT_REQUIRED
+  reason: self-protecting sadp-audit.ps1 change was mixed into documentation-only claim
+Q5. Any remaining blockers before OPERATIONS-MANUAL-CREATE-A1 can be accepted?
+
+有，但它们主要是 evidence packaging blockers，不是手册内容 blocker。
+
+我建议这样裁定：
+
+YAML
+OPERATIONS-MANUAL-CREATE-A1:
+  content_verdict: ACCEPTED_WITH_LIMITATION
+  closure_verdict: NOT_FULLY_CLOSED
+  remaining_required_fixes:
+    - add _evidence/OPERATIONS-MANUAL-CREATE-A1/review.md
+    - replace canonical diff.patch with manual-only diff
+    - rename current full diff to full-context-diff.patch
+    - regenerate MANIFEST.json and hashes.sha256 so submitted hash verification passes
+    - state clearly that 1038-test result was run in D:\agent-acceptance, not independently reproducible from ZIP alone
+Final R16 Decision
+YAML
+r16_decision:
+  verdict: PARTIAL_ACCEPTANCE_WITH_REMAINING_EVIDENCE_BLOCKERS
+
+  accepted:
+    - repo-relative ZIP structure
+    - JSON purity
+    - manual-only-diff.patch proves operations-manual.md can be isolated
+    - R3-R14 retroactive erratum is substantially adequate
+    - operations manual content may be retained
+
+  not_accepted_yet:
+    - full SADP 0.R.2 compliance
+    - hash integrity claim
+    - independent reproducibility claim
+    - canonical diff.patch as task-scoped evidence
+
+  required_next_action:
+    task_id: OPERATIONS-MANUAL-CREATE-A1-EVIDENCE-FINALIZE-A1
+    write_set:
+      - _evidence/OPERATIONS-MANUAL-CREATE-A1/review.md
+      - _evidence/OPERATIONS-MANUAL-CREATE-A1/diff.patch
+      - _evidence/OPERATIONS-MANUAL-CREATE-A1/full-context-diff.patch
+      - MANIFEST.json
+      - hashes.sha256
+
+一句话结论：R16 已经实质证明 operations manual 可以从 governance pattern change 中拆分出来，手册内容可接受；但证据包仍未完全达到 SADP 0.R.2，因为缺 review.md、hash 校验失败、canonical diff.patch 仍包含超出 manual-only write_set 的变更。

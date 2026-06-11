@@ -1,0 +1,40 @@
+run_id: GLOBAL_EVIDENCE_BINDING_A1_R3_REVIEW_20260609_085800_RD
+task_id: GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R3
+overall_judgment: blocked
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+R3 仍未真正修复 source binding / manifest 问题：附件 ZIP 内没有 source_evidence/evidence_packs/global-project-handoff-repair-a1/GLOBAL_PROJECT_HANDOFF_REPAIR_A1_20260608_223800.zip，PACK_MANIFEST.md 也未列出该旧 closure ZIP。
+
+actual_deliverables/EMBEDDED_ZIP_PRESENCE_CHECK.json 声称旧 closure ZIP present=true，但实际附件 ZIP 文件列表中不存在任何 .zip 条目，属于证据声明与附件内容不一致。
+
+SOURCE_MAP_EVIDENCE_BINDING_APPENDIX_R3.json 仍声明旧 closure ZIP embedded_in_pack: true，但对应 copy_path_in_pack 实际不存在。
+required_fixes:
+
+重新生成 R3/R4 evidence pack，确保旧 closure ZIP 真实复制到 source_evidence/evidence_packs/global-project-handoff-repair-a1/GLOBAL_PROJECT_HANDOFF_REPAIR_A1_20260608_223800.zip。
+
+将该旧 closure ZIP 明确写入 PACK_MANIFEST.md，并记录 SHA256 与字节数。
+
+修正 EMBEDDED_ZIP_PRESENCE_CHECK.json，使其由实际 ZIP 内容列表校验生成，而不是与附件内容不一致。
+
+重新生成 SOURCE_MAP_EVIDENCE_BINDING_APPENDIX、PACK_MANIFEST、closure ZIP，并重新提交 GPT 审查。
+limitations:
+
+HANDOFF_REPLY_V4.txt 已继续保留为 tracked_deleted_human_required，未伪装成 resolved/pass。
+
+safety attestation 声称未执行 git restore / checkout / reset / clean，且未声称所有 legacy 文件均 clean。
+
+whole-project/global status 仍保留 partial / needs_more_evidence。
+
+production promotion 未声称已批准。
+
+296 PASS 仍保留为 unverified conversational claim。
+
+safety scan 报告 pass，并说明扫描 27 个非 ZIP 文本文件，二进制 ZIP 由 manifest hash 覆盖，但由于旧 closure ZIP 实际未进入附件包，该覆盖声明不能闭合本轮核心问题。
+next_task_authorization:
+task_id: GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R4
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+END_OF_GPT_RESPONSE

@@ -1,0 +1,124 @@
+task_id: m4-m0-readiness-snapshot
+title: M4-M0 readiness snapshot
+priority: P1
+status: ready
+mode: "@go read"
+description: >
+  Create a lightweight M4 readiness snapshot that records the current milestone
+  state, distinguishes completed capabilities from contract-only or test-only
+  work, and identifies the concrete input gaps for M4-M1 and M4-M2.
+
+goal:
+  user_visible_success: >
+    A concise readiness snapshot exists and clearly answers what is done, what
+    is only tested, what is partially integrated, and what blocks @go from
+    becoming a stable daily-use main path.
+  in_scope:
+    - Inspect existing reports, slice outputs, run evidence, reviewer artifacts, and relevant docs
+    - Summarize current M4 capabilities by readiness level
+    - Identify blockers preventing @go from becoming a stable daily-use main path
+    - Identify boundary and verification policy gaps that should feed M4-M2
+    - Produce a concise readiness snapshot document
+  out_of_scope:
+    - Modify Issue Contract v0
+    - Modify ledger merge semantics
+    - Modify finalizer blocking rules
+    - Change reviewer authority boundaries
+    - Implement new boundary policy
+    - Fix @go behavior in this slice
+    - Expand this into a final M4 milestone report
+
+constraints:
+  token_strategy:
+    - Reuse existing reports, runs, and docs instead of broad repo exploration
+    - Prefer a compact fact table over long narrative
+    - Record current ambiguity rather than solving it in this slice
+  hard_stops:
+    - No code or rule implementation changes
+    - No silent reinterpretation of existing governance contracts
+    - No expansion into M4-M1 or M4-M2 implementation work
+    - No reviewer or finalizer artifact generation for this slice
+
+allow_write:
+  - reports/m4-readiness-snapshot.md
+
+gate_0:
+  triggered: false
+  inventory_evidence:
+    queried_sources:
+      - AGENTS.md
+      - reports/go-orchestrator-plan-20260601.md
+      - reports/go-dispatch-queue-20260601.md
+      - runs/t-chain-evidence-hardening-20260601/**
+      - runs/t-dirty-boundary-closure-20260601/**
+      - docs/agent-runtime/operating-model.md
+      - docs/agent-runtime/verification-gates.md
+      - docs/agent-runtime/sub-agent-dispatch-protocol.md
+      - docs/agent-runtime/reviewer-playbook.md
+      - docs/agent-runtime/runtime-v2-final-status.md
+    matched_capabilities:
+      - readiness-assessment
+      - reviewer-evidence-validation
+      - go-orchestration
+    compared_against_request:
+      - "M4 readiness snapshot for next slices"
+  sufficiency_decision: reuse_existing
+  decision: reuse
+
+conflict_registry:
+  read_set:
+    - AGENTS.md
+    - reports/go-orchestrator-plan-20260601.md
+    - reports/go-dispatch-queue-20260601.md
+    - runs/t-chain-evidence-hardening-20260601/**
+    - runs/t-dirty-boundary-closure-20260601/**
+    - docs/agent-runtime/operating-model.md
+    - docs/agent-runtime/verification-gates.md
+    - docs/agent-runtime/sub-agent-dispatch-protocol.md
+    - docs/agent-runtime/reviewer-playbook.md
+    - docs/agent-runtime/runtime-v2-final-status.md
+  write_set:
+    - reports/m4-readiness-snapshot.md
+  protected_files_touched: false
+  conflict_level: low
+
+required_sections:
+  - Current M4 capability inventory
+  - Readiness classification
+  - @go daily-use blockers
+  - M4-M1 input gaps
+  - M4-M2 input gaps
+  - Risks if skipped
+  - Recommended next slice
+
+required_table:
+  columns:
+    - Capability
+    - Evidence Source
+    - Current State
+    - Main-path Ready?
+    - Gap
+    - Feeds
+
+readiness_vocabulary:
+  required_terms:
+    - contract-level complete
+    - test-level complete
+    - integration-level complete
+    - main-path ready
+    - daily-use ready
+
+acceptance_criteria:
+  - The snapshot clearly answers what is done, what is only tested, and what is actually usable in the main flow
+  - It gives direct input to M4-M1 slice-1: @go status semantics unification
+  - It gives direct input to M4-M2: verification side-effect classification and boundary conflict matrix
+  - It does not introduce implementation changes
+  - It does not silently reinterpret existing governance contracts
+
+verification:
+  required_commands:
+    - git status --short
+    - rg -n "final_batch_status|reviewer verdict|blocked|TaskSpec_boundary|evidence" reports docs/agent-runtime runs
+  expected_result:
+    - Snapshot can cite current evidence and current ambiguity without changing code
+    - No file outside reports/m4-readiness-snapshot.md is modified

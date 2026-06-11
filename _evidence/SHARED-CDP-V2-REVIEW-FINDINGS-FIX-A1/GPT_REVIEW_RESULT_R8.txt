@@ -1,0 +1,131 @@
+YAML
+review_role: independent_reviewer
+submission: SHARED-CDP-V2 Round 8 / QODERWORK-TASK-RUNNER-SELF-PROTECT-A1 + SADP-POLICY-DRIFT-TEST-A1
+previous_verdict: ACCEPTED_WITH_LIMITATION
+updated_verdict: ACCEPTED_WITH_LIMITATION
+code_level_blockers: NONE
+governance_stack_status: COMPLETE_WITH_PLATFORM_LIMITATION
+dry_run_dispatch: AUTHORIZED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+confidence: MEDIUM_HIGH
+Reviewer Verdict
+
+Round 8 通过。
+
+这轮已经把 R7 留下的两个关键 limitation 补齐：
+
+1. qoderwork_task_runner.py 已加入 self-protecting files；
+2. SADP_POLICY.json 与 enforcer 常量之间已加入 drift tests。
+
+因此，当前可以确认：QoderWork 的 SADP 执行链路已经从“建议遵守”推进到“标准入口 + 自保护 + 策略漂移检测”的完整治理栈。
+
+1. Runner self-protection
+YAML
+status: PASS
+severity: accepted
+
+你们已经把：
+
+scripts/qoderwork_task_runner.py
+
+加入：
+
+SELF_PROTECTING_FILES
+.sadp/SADP_POLICY.json self_protecting_enforcer_files
+
+并且 CLI 证据显示：
+
+edit-check --file scripts/qoderwork_task_runner.py
+→ HUMAN_REQUIRED
+→ BLOCKED
+→ exit 1
+
+这解决了 R7 的主要缺口。此前 runner 是标准入口，但它自己还没有被保护；现在 runner、enforcer、commit-time audit 三者都进入 self-protecting 范围。
+
+当前状态可以改为：
+
+YAML
+runner_self_protection: COMPLETE
+2. Policy drift tests
+YAML
+status: PASS
+severity: accepted
+
+新增 TestPolicyDrift 的 4 个测试是必要且有效的：
+
+1. self_protecting_files no drift
+2. protected_files no drift
+3. governance_adjacent no drift
+4. scope_creep_by_priority P0-P3 present
+
+这解决了此前我指出的风险：Python enforcer 与 .sadp/SADP_POLICY.json 可能规则分叉。
+
+现在至少可以证明：
+
+enforcer 常量
+↔ SADP_POLICY.json
+
+之间不会静默漂移。
+
+如果 sadp-audit.ps1 也确实读取同一份 policy，那么治理栈的一致性已经比较稳固。下一步可以补一个 PowerShell 层面的 smoke，但不再是当前 blocker。
+
+3. Enforcement stack 复核
+
+当前 7 层治理栈成立：
+
+Layer 1: qoderwork_task_runner.py     → mandatory entry, self-protecting
+Layer 2: sadp_pre_task_enforcer.py    → validation logic, self-protecting
+Layer 3: sadp-audit.ps1               → commit-time audit, self-protecting
+Layer 4: .sadp/SADP_POLICY.json       → unified policy, protected
+Layer 5: .sadp/TRIGGER_RULES.json     → trigger rules, protected
+Layer 6: AGENTS.md Hard Stop #8       → governance mandate, protected
+Layer 7: policy drift tests           → prevents silent divergence
+
+这已经满足 QoderWork 环境下可实现的最高强度之一。由于 QoderWork 没有平台级 pre-edit hook，所以仍保留 limitation，但这个 limitation 已经从“代码缺口”变成“平台能力边界”。
+
+4. Test evidence
+YAML
+enforcer_tests: 49 passed
+runner_tests: 13 passed
+full_suite: 1022 passed
+failed: 0
+warnings: 21
+test_status: accepted
+
+测试增长路径清晰：
+
+938 → 955 → 960 → 987 → 1003 → 1016 → 1022
+
+本轮新增 6 个测试正好覆盖 R7 的两个 limitation，可以接受。
+
+Updated Verdict
+YAML
+verdict: ACCEPTED_WITH_LIMITATION
+accepted:
+  - runner added to self_protecting_files
+  - runner edit-check blocked with HUMAN_REQUIRED / exit 1
+  - all 3 enforcement scripts now self-protecting
+  - SADP_POLICY.json drift tests added
+  - protected/governance/self-protecting sets checked for drift
+  - full suite 1022 passed
+  - no code-level SADP enforcer blockers remain
+
+remaining_limitations:
+  - QoderWork still has no non-bypassable platform hook
+  - live dispatch remains separately human-gated
+  - optional future improvement: add direct sadp-audit.ps1 policy-read smoke test
+
+dry_run_dispatch: AUTHORIZED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+下一步建议
+
+现在可以把 SADP runtime enforcement 主线视为完成。下一步不需要继续加固 enforcer，除非要做 PowerShell audit smoke。
+
+优先级建议如下：
+
+P1: SHARED-CDP-GPT-REVIEW-DRY-RUN-2-A1
+P1: SADP-AUDIT-POLICY-SMOKE-A1
+P2: SHARED-CDP-V2-P2-CLEANUP-A1
+P2: human-gated SHARED-CDP-GPT-REVIEW-LIVE-2-A1
+
+一句话结论：Round 8 通过。QoderWork 的 SADP 执行栈已经闭合到当前平台能力上限；代码层面无 blocker，dry-run 可继续，live dispatch 仍需单独人工授权。

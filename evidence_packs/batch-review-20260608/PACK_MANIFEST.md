@@ -1,0 +1,19 @@
+| path | bytes | sha256 |
+|---|---:|---|
+| BATCH_REVIEW_SUMMARY.md | 825 | 4474a4f1dc00ac04c1c83d490d7844e6b481baaef837aea910dd229dca943d4f |
+| CHANGED_FILES.txt | 286 | c7428c3d10369a7f517f5f426f94843221c2f2f4b2ad4602bf71938842fa52ad |
+| GPT_REVIEW_RESULT.txt | 3047 | 8f2edae14e8aface56ae23d62de91b0e8ce3609927ce56089d72377c521305f4 |
+| GPT_REVIEW_RESULT_R2.txt | 4385 | 063e7b406d40b70aeb64839635b8b5c75546a2d73259ed14eb2c911f46d704cd |
+| KEY_DIFFS.patch | 1563 | 6cedd1a85cca1e6e796a69afc11dd7eaf2b10e5f04fa9c69c46dbce8d36e89a6 |
+| SAFETY_ATTESTATION.md | 112 | 18274d250c30d7c27bc56cff80971e3d6391d994ea799faef7e5f083e035a2e2 |
+| actual_deliverables/codegraph/vitest.config.ts | 287 | 4c5ac779e5b25fc8f027bf778b33bd96d3b8322fdafa0fdf6b8501bac7ff79da |
+| actual_deliverables/control-plane/check_submission_bypass.py | 588 | 8c122e30bc175203971d5d714c37df4717152db8257908fb42b7311776c0d0fd |
+| actual_deliverables/hub/issue_ledger.py | 3994 | 882271252269d37865c3d58683695c51c697269706a23d69be66b3674dea3e60 |
+| actual_deliverables/hub/run_governance.py | 4518 | 81176ae8eb3d48026af75dfff8e3adba4b3d90df762fb5db072e6fd378358b08 |
+| reports/AGENT_ACCEPTANCE_TESTS.txt | 11279 | f1b57f45d9ab48c44e14e3e6f63f4538dc87c80b12c0295e1a13605e3174306b |
+| reports/CODEGRAPH_NOTE.md | 563 | d1e1993f7d48d4bb8776b1e9e8af926204853f955cbc68cd2a63f839445e5f6b |
+| reports/CODEGRAPH_TEST_OUTPUT.txt | 16638 | c4eda0a91ac617e9262199acde30481daf3a6d98fe57c45d7429a62c881b01a0 |
+| reports/CONTROL_PLANE_TESTS.txt | 101 | 410e78e1e6dbd4e08edcc85e5b16b8e67e49a6dc5c7a21ab4492503309d637b2 |
+| reports/GIT_STATUS.txt | 2598 | ebe085eef79bca2863561fec36c7bf07bdd3413c33491d8e218500cee2aaa23c |
+| reports/smoke_report.txt | 5940 | 5a9aaa2a218d89ddfc5090ad00c4002bc42e509a3d933a893810d45def7b9809 |
+| PACK_MANIFEST.md | self | self_excluded |

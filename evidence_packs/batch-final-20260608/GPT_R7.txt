@@ -1,0 +1,64 @@
+overall_judgment: accepted_with_limitation
+task_id: PAPER-SAFETY-INFRASTRUCTURE
+evidence_pack_reviewed: true
+
+verdict:
+PAPER-SAFETY-INFRASTRUCTURE: accepted_with_limitation
+
+accepted_basis:
+
+"reports/PILOT_RUNNER_PASS.txt shows positive synthetic pilot path passes."
+
+"PILOT_RUNNER_PASS shows paper validator Exit: 0, PASS."
+
+"PILOT_RUNNER_PASS shows preflight PASS and privacy guard PASS."
+
+"PILOT_RUNNER_PASS shows auth gate CLOSED by default."
+
+"PILOT_RUNNER_PASS shows GO/NOGO = NOGO by default."
+
+"reports/TARGETED_13PLUS10_PASS.txt shows 23 passed."
+
+"paper_pilot_runner.py now requires validator returncode == 0 for validator_pass."
+
+"paper_go_nogo.py now enforces dry_run_packet from dr_ok rather than unconditional True."
+
+"paper_go_nogo.py now reads structured preflight JSON path rather than relying on old text search."
+
+"paper_auth_gate.py rejects the previously missing forbidden fields: paper_excerpt_allowed, paper_excerpt, raw_paper_text."
+
+"test_paper_auth_gate.py now covers 8 forbidden auth fields."
+
+limitations:
+
+"This acceptance is scoped to PAPER-SAFETY only, not the entire batch."
+
+"The current safe state is CLOSED/NOGO by default; this does not authorize real-paper execution."
+
+"The pack still contains unrelated stale review queue output showing 1 failed in reports/REVIEW_QUEUE_TESTS.txt, so it must not be used as whole-batch green evidence."
+
+"GIT_STATUS/GIT_DIFF_STAT still show dirty baseline and broad dirty diff; selected-files-only commit scope must be checked separately before committing."
+
+"actual_deliverables are still flattened rather than mirrored to original repo paths."
+
+blocking_issues: []
+
+required_fixes: []
+
+required_before_commit:
+
+"Do not commit dirty baseline files."
+
+"Do not treat this as authorization for real-paper pilot."
+
+"Do not use stale REVIEW_QUEUE_TESTS.txt as current batch status."
+
+"Commit only selected PAPER-SAFETY files if this task is being bound."
+
+summary:
+PAPER-SAFETY-INFRASTRUCTURE: accepted_with_limitation
+CONTROL-PLANE-BYPASS-FIX: accepted_with_limitation
+REVIEW-QUEUE: accepted_with_limitation based on separate targeted proof
+whole_final_batch: not_accepted_as_a_single_green_batch_due_to_stale_unrelated_outputs_and_dirty_scope_evidence
+
+END_OF_GPT_RESPONSE

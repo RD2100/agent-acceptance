@@ -1,0 +1,232 @@
+YAML
+overall_judgment: triage_only
+reviewer_type: gpt
+task_id: DIRTY-WORKTREE-REVIEW-20260607
+evidence_pack_reviewed: true
+review_scope: dirty_worktree_triage
+
+blocking_issues:
+  - issue_id: DWT-BLOCKER-01
+    title: "当前 dirty worktree 不可整体提交"
+    detail: "证据包同时包含 tracked governance edits、historical runs 修改、memory compiler 输出、archive hook 修改、untracked contracts/tests/policies、paper validator、旧 evidence/_reports/tmp/cache 目录清单。它们不是一个单一任务，不能打包成一次提交。"
+
+  - issue_id: DWT-BLOCKER-02
+    title: "runs/ 下历史 POST_REVIEW_ROUTE.json 被修改，属于 dirty-baseline hazard"
+    affected_files:
+      - "runs/project-history-gaps-v1/POST_REVIEW_ROUTE.json"
+      - "runs/repo-routing-a1-v1/POST_REVIEW_ROUTE.json"
+    detail: "这些是历史 run evidence。即使修正内容看起来合理，也不应直接改写历史 evidence。建议不要提交这些修改；如需纠偏，应写 sidecar correction 或在 PROJECT_HISTORY / ledger 追加说明。"
+
+  - issue_id: DWT-BLOCKER-03
+    title: "archive/draft-hooks 中移除 blackboard 禁止项，可能构成 guard weakening"
+    affected_files:
+      - "archive/draft-hooks/pre-final.audit.ps1"
+      - "archive/draft-hooks/pre-task.audit.ps1"
+      - "archive/draft-hooks/pre-tool.audit.ps1"
+    detail: "diff 显示移除了 bb_solidify_knowledge、bb_share_knowledge、bb_* forbidden audit 逻辑，或替换为 memory_bridge_sync。即使这些 hook 位于 archive/draft-hooks，也属于治理/安全规则变更。不能和其他修改混提，必须单独任务、单独证据、说明不是削弱当前有效 guard。"
+
+  - issue_id: DWT-BLOCKER-04
+    title: "tools/ai_guard.py 与 tools/go_evidence.py 是高风险治理逻辑变更"
+    affected_files:
+      - "tools/ai_guard.py"
+      - "tools/go_evidence.py"
+      - "schemas/agent-runtime/chain-evidence.schema.json"
+    detail: "这组修改涉及 chain evidence validation、reviewer fields、rerun verification、final_batch_status synthesis。属于核心治理路径，必须单独任务提交，并补充针对性测试与负向测试，不能仅凭全量 170 passed 放行。"
+
+  - issue_id: DWT-BLOCKER-05
+    title: "HANDOFF_REPLY_V4.txt 被删除，可能违反历史 evidence 不删除原则"
+    affected_files:
+      - "HANDOFF_REPLY_V4.txt"
+    detail: "tracked deleted 文件不应直接删除。除非有明确证据说明它是临时误提交文件，否则应恢复，或作为单独 archive-governance 任务处理。"
+
+  - issue_id: DWT-BLOCKER-06
+    title: "untracked all 中包含大量不应提交的缓存、临时、历史 evidence 包"
+    examples:
+      - ".tmpconfig/"
+      - ".tmpdata/"
+      - "scripts/__pycache__/"
+      - "tests/__pycache__/"
+      - "tools/__pycache__/"
+      - "evidence_packs/dirty-worktree-review-20260607/"
+      - "_reports/*"
+    detail: "这些不得进入正常功能提交。当前 selected pack 已排除大部分内容，但实际工作区仍需保持不提交这些噪音。"
+
+recommended_groups:
+  - group_id: GROUP-01
+    name: "AA-FLOW-RUNNER-CONTRACT-BACKFILL"
+    status: "coherent_candidate"
+    files:
+      - "contracts/DISPATCH_RESULT.schema.json"
+      - "contracts/FLOW_OUTCOME.schema.json"
+      - "contracts/RUNNER_CONTRACT.schema.json"
+      - "contracts/RUNNER_STATE.schema.json"
+      - "contracts/RUNNER_STEP_RESULT.schema.json"
+      - "contracts/TASKSPEC.schema.json"
+      - "contracts/README.md"
+      - "policies/*.md"
+      - "tests/test_dispatch_result_schema.py"
+      - "tests/test_flow_outcome_schema.py"
+      - "tests/test_taskspec_schema.py"
+      - "tests/test_runner_contract_schema.py"
+      - "tests/test_runner_state_schema.py"
+      - "tests/test_runner_step_result_schema.py"
+      - "tests/test_dispatcher_policy.py"
+      - "tests/test_next_taskspec_consumption_policy.py"
+      - "tests/test_run_until_terminal_policy.py"
+      - "tests/test_terminal_state_policy.py"
+      - "tests/fixtures/*.json"
+    rationale: "这些文件共同构成 flow/runner/task spec 合同、策略和测试回填，逻辑上属于一组。"
+    required_before_commit:
+      - "生成单独 evidence pack。"
+      - "运行对应 targeted tests。"
+      - "确认这些是否已由历史 AA-1/AA-2 accepted 覆盖；如果是历史补录，需标注 backfill，不得包装成新功能。"
+
+  - group_id: GROUP-02
+    name: "PAPER-A3-VALIDATOR-RESIDUAL"
+    status: "coherent_candidate_but_requires_hash_check"
+    files:
+      - "scripts/validate_paper_task.py"
+      - "tests/test_paper_task_validator.py"
+    rationale: "这两项属于 PAPER-A3 validator 代码与测试。若它们是 PAPER-A3 accepted evidence pack 中的实际产物，应补入仓库。"
+    required_before_commit:
+      - "与 PAPER-A3 R2 accepted evidence pack 中对应文件做 hash 或 diff 对照。"
+      - "确认没有真实论文文本、raw_paper_text、用户私密文本。"
+      - "单独运行 paper validator targeted tests。"
+      - "提交为 PAPER-A3 residual/binding cleanup，不要混入其他 governance 变更。"
+
+  - group_id: GROUP-03
+    name: "MEMORY-A2-COMPILER-OUTPUT"
+    status: "coherent_candidate_but_generated"
+    files:
+      - "memory/daily/2026-06-06.md"
+      - "memory/knowledge/index.md"
+    rationale: "这组是 memory compiler 生成结果，从 14 条更新到 15 条。可作为 generated memory update，但不应和代码改动混提。"
+    required_before_commit:
+      - "确认来源 review/ledger 记录存在。"
+      - "运行 memory_lint。"
+      - "确认没有论文正文、用户私密文本、raw transcript。"
+      - "如果只是生成物且可复现，优先由正式 memory task 重新生成。"
+
+  - group_id: GROUP-04
+    name: "AGENT-RUNTIME-CAPABILITY-CLEANUP"
+    status: "needs_separate_review"
+    files:
+      - "docs/agent-runtime/capability-inventory.md"
+      - "docs/agent-runtime/routing-matrix-summary.md"
+      - "audit/blackboard-cleanup-audit-20260531.md"
+    rationale: "这组围绕 Blackboard MCP 移除/降级和 capability inventory 更新。方向可能合理，但属于治理能力矩阵变更。"
+    required_before_commit:
+      - "补充明确决策依据：Blackboard MCP 是否永久移除，还是仅当前阶段禁用。"
+      - "确认不是删除现有 guard，而是更新能力目录。"
+      - "不要同时修改 archive hooks 的 forbidden logic。"
+
+  - group_id: GROUP-05
+    name: "CHAIN-EVIDENCE-HARDENING"
+    status: "high_risk_candidate"
+    files:
+      - "schemas/agent-runtime/chain-evidence.schema.json"
+      - "tools/ai_guard.py"
+      - "tools/go_evidence.py"
+      - ".ai/tasks/t-chain-evidence-hardening-20260601.yaml"
+      - ".ai/tasks/t-rerun-chain-evidence-guard-20260601.yaml"
+      - ".ai/tasks/t-review-chain-evidence-hardening-20260601.yaml"
+      - ".ai/tasks/t-review-rerun-chain-evidence-guard-20260601.yaml"
+    rationale: "这组涉及 chain evidence schema、guard 校验、go evidence synthesis 和 rerun 验证。它可能很重要，但必须作为单独高风险治理任务处理。"
+    required_before_commit:
+      - "新增/补齐 targeted tests 覆盖 reviewer_role、reviewed_at、rerun_verified_at、rerun_summary。"
+      - "补充负向测试：missing reviewer fields、invalid datetime、unexpected field、stale rerun、reviewer verdict missing/invalid。"
+      - "确认 ai_guard fail-closed，而不是 silently warn。"
+      - "提交 GPT review，不得仅凭 170 passed。"
+
+  - group_id: GROUP-06
+    name: "VALIDATE-WORKFLOW-CLOSURE-CONTROL-PLANE-PATTERN"
+    status: "small_coherent_candidate"
+    files:
+      - "scripts/validate_workflow_closure.py"
+    rationale: "只新增 control_plane/ 为 actual deliverable pattern，和此前 control-plane evidence pack 审查经验一致。"
+    required_before_commit:
+      - "补充或确认 test_workflow_closure_validation 覆盖 control_plane/ deliverable。"
+      - "可作为小型 validator hardening 任务单独提交。"
+
+  - group_id: GROUP-07
+    name: "AI-TASKS-BACKLOG"
+    status: "metadata_candidate"
+    files:
+      - ".ai/tasks/*.yaml"
+    rationale: "这些是 M4 / governance / review task backlog。可以保留为任务队列元数据，但不应和实现代码混提。"
+    required_before_commit:
+      - "确认每个 task spec 的当前状态：historical、active、superseded、ready_for_review。"
+      - "删除/移动不建议；如有过时项，标注 superseded，而不是清理。"
+      - "单独提交为 task registry/backlog update。"
+
+  - group_id: GROUP-08
+    name: "SUBMIT-PROPOSAL-TO-GPT"
+    status: "needs_path_decision"
+    files:
+      - "docs/submit_proposal_to_gpt.py"
+    rationale: "这是 Python 脚本但位于 docs/ 下，路径语义不清。"
+    required_before_commit:
+      - "决定它是文档示例还是可执行脚本。"
+      - "若可执行，应移动到 scripts/，但移动属于敏感操作，需单独授权。"
+      - "若只是历史示例，不建议提交到 docs/。"
+
+stale_or_noisy_or_generated_do_not_commit:
+  - ".tmpconfig/"
+  - ".tmpdata/"
+  - "__pycache__/"
+  - "*.pyc"
+  - "evidence_packs/dirty-worktree-review-20260607/"
+  - "old evidence pack directories unless explicitly part of an accepted closure binding"
+  - "_reports/* context packs unless task explicitly asks to preserve them"
+  - "GPT_REVIEW_RESULT.md at repo root unless tied to a specific evidence pack"
+  - "PROJECT_HISTORY_FINAL.md / HISTORY_ANALYSIS.md root-level scratch files"
+  - "HANDOFF_REPLY_V4.txt deletion until separately authorized"
+  - "runs/*/POST_REVIEW_ROUTE.json modifications"
+
+required_fixes:
+  - "不要整体提交 dirty worktree。先拆成至少 6 个任务组。"
+  - "恢复或隔离 HANDOFF_REPLY_V4.txt 删除；不得把历史 evidence 删除混入提交。"
+  - "恢复或 sidecar 化 runs/*/POST_REVIEW_ROUTE.json 修改；不得直接改写历史 run evidence。"
+  - "将 archive/draft-hooks blackboard 相关变更单独隔离，并证明不是 guard weakening。"
+  - "为 tools/ai_guard.py、tools/go_evidence.py、chain-evidence.schema.json 生成独立 targeted tests 和 evidence pack。"
+  - "对 scripts/validate_paper_task.py 与 tests/test_paper_task_validator.py 做 PAPER-A3 accepted pack hash/diff 对照。"
+  - "排除 .tmpconfig、.tmpdata、__pycache__、pyc、dirty-worktree review pack 本身、root scratch GPT files。"
+  - "每个后续提交必须有独立 TaskSpec、submission_target、TEST_OUTPUT、SAFETY_ATTESTATION、PACK_MANIFEST、GPT review。"
+
+next_concrete_action_order:
+  - order: 1
+    action: "冻结当前 dirty baseline"
+    detail: "保存 git status、tracked diff、untracked inventory、hash；不要清理或删除历史 evidence。"
+  - order: 2
+    action: "恢复/隔离不可提交项"
+    detail: "先处理 HANDOFF_REPLY_V4.txt 删除和 runs/* 修改。优先恢复到 HEAD；若不能恢复，则写 sidecar correction，不提交历史文件改写。"
+  - order: 3
+    action: "先提交低风险 backfill 组"
+    group: "AA-FLOW-RUNNER-CONTRACT-BACKFILL"
+    detail: "这是最完整、测试最多、边界最清楚的一组。"
+  - order: 4
+    action: "提交 PAPER-A3 residual 组"
+    group: "PAPER-A3-VALIDATOR-RESIDUAL"
+    detail: "前提是和 accepted PAPER-A3 evidence pack 对齐。"
+  - order: 5
+    action: "提交 memory generated update"
+    group: "MEMORY-A2-COMPILER-OUTPUT"
+    detail: "前提是 memory_lint pass 且无隐私内容。"
+  - order: 6
+    action: "单独审查 high-risk governance 组"
+    group: "CHAIN-EVIDENCE-HARDENING"
+    detail: "必须补 targeted tests 和负向 fail-closed tests。"
+  - order: 7
+    action: "最后处理 capability cleanup / blackboard cleanup"
+    detail: "必须明确这不是削弱 guard；archive hooks 改动尤其需要单独审查。"
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: no
+  ask_before_starting: yes
+  recommended_task_id: DIRTY-WORKTREE-SPLIT-A1
+  recommended_task_goal: "按本 triage 将 dirty worktree 拆分为可审查任务组，先生成不修改历史 evidence 的 staging plan 和每组 evidence requirements。"
+
+final_note: "本包测试显示 170 passed, 81 warnings，PACK_VALIDATE_RESULT pass，安全扫描未发现 secret-like 或 forbidden paper markers；这些只证明当前包可用于 triage，不证明所有 dirty changes 可合并。"
+
+END_OF_GPT_RESPONSE

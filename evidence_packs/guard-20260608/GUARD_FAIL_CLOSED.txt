@@ -1,0 +1,15 @@
+{
+  "valid": false,
+  "overall_judgment": null,
+  "errors": [
+    "reply file not found: /tmp/fake_no_end.txt"
+  ],
+  "checks": {},
+  "verdict_allowed": false,
+  "source": "captured_gpt_response",
+  "task_id": "TEST"
+}
+
+GUARD BLOCKED: GPT reply for TEST is not valid.
+Errors: ['reply file not found: /tmp/fake_no_end.txt']
+No binding, no commit, no status report allowed.

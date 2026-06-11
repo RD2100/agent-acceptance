@@ -1,6 +1,9 @@
 {
+  "task_id": "paper-c3-dry-run",
   "pilot": "PASS",
   "preflight": "PASS",
   "auth_gate": "CLOSED",
-  "timestamp": "2026-06-07T14:59:11.511034+00:00"
+  "timestamp": "2026-06-08T01:06:36.236295+00:00",
+  "warning": "auth_gate is CLOSED \u2014 this is a dry run, not a real-paper pilot.",
+  "all_gates_passed": false
 }

@@ -1,0 +1,350 @@
+#!/usr/bin/env python3
+"""test_cross_project_scaffold.py — Tests for AWSP v1.1.0 cross-project features.
+
+Covers:
+1. validate_run_id_consistency parameterization (config with evidence_pack_dir)
+2. Prompt-template validation (END_OF_GPT_RESPONSE marker, overall_judgment field)
+3. awsp_scaffold.py (create and validate scaffold)
+"""
+
+import json
+import sys
+from pathlib import Path
+
+import pytest
+
+SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
+sys.path.insert(0, str(SCRIPTS))
+
+from validate_run_id_consistency import validate_run_id_consistency
+from awsp_scaffold import create_scaffold, validate_scaffold, AWSP_DIRECTORIES
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _setup_full_consistent(tmp_path, run_id="TEST_TASK_A1_20260609T120000_RD"):
+    """Helper: create a fully consistent set of artifacts (AWSP v1.1.0)."""
+    report_dir = tmp_path / "test-task-a1"
+    report_dir.mkdir()
+
+    (report_dir / "run_id.txt").write_text(run_id, encoding="utf-8")
+    (report_dir / "R1_RUN_ID.txt").write_text(run_id, encoding="utf-8")
+    (report_dir / "GPT_REVIEW_PROMPT.md").write_text(
+        "## Review " + "{{TASK_ID}}" + "\nrun_id: " + "{{RUN_ID}}"
+        + "\noverall_judgment: accepted\n---END_OF_GPT_RESPONSE---\n",
+        encoding="utf-8",
+    )
+
+    # Create evidence pack dir and zip
+    pack_dir = tmp_path / "evidence_packs" / "test-task-a1"
+    pack_dir.mkdir(parents=True, exist_ok=True)
+    (pack_dir / f"{run_id}.zip").write_bytes(b"PK")
+
+    # Create PACK_MANIFEST.md with run_id
+    manifest = f"# PACK_MANIFEST\n\n| Field | Value |\n|-------|-------|\n| run_id | {run_id} |\n"
+    (pack_dir / "PACK_MANIFEST.md").write_text(manifest, encoding="utf-8")
+
+    return report_dir, run_id
+
+
+# ---------------------------------------------------------------------------
+# Tests: Cross-project parameterization
+# ---------------------------------------------------------------------------
+
+class TestCrossProjectParameterization:
+    """Tests for config-based evidence_pack_dir parameterization."""
+
+    def test_explicit_evidence_pack_dir(self, tmp_path):
+        """Config with explicit evidence_pack_dir finds the pack."""
+        report_dir, run_id = _setup_full_consistent(tmp_path)
+        # Use explicit path instead of default multi-level search
+        config = {"evidence_pack_dir": str(tmp_path / "evidence_packs" / "test-task-a1")}
+        result = validate_run_id_consistency(str(report_dir), config=config)
+        assert result["consistent"] is True
+        assert result["details"].get("evidence_pack_dir_source") == "config"
+
+    def test_explicit_evidence_pack_dir_not_found(self, tmp_path):
+        """Config with non-existent evidence_pack_dir fails."""
+        report_dir, run_id = _setup_full_consistent(tmp_path)
+        config = {"evidence_pack_dir": str(tmp_path / "nonexistent" / "pack")}
+        result = validate_run_id_consistency(str(report_dir), config=config)
+        assert result["consistent"] is False
+        assert any("does not exist" in e for e in result["errors"])
+
+    def test_cross_project_layout(self, tmp_path):
+        """Validator works with non-standard directory layout via config."""
+        # Create a non-standard layout: project/tasks/TASK-A1/ and project/packs/TASK-A1/
+        project = tmp_path / "my-project"
+        project.mkdir()
+        tasks_dir = project / "tasks" / "task-a1"
+        tasks_dir.mkdir(parents=True)
+        packs_dir = project / "packs" / "task-a1"
+        packs_dir.mkdir(parents=True)
+
+        run_id = "TASK_A1_20260609T120000_RD"
+        (tasks_dir / "run_id.txt").write_text(run_id, encoding="utf-8")
+        (tasks_dir / "GPT_REVIEW_PROMPT.md").write_text(
+            "Review " + "{{TASK_ID}}" + "\nrun_id: " + "{{RUN_ID}}"
+            + "\noverall_judgment: accepted\n---END_OF_GPT_RESPONSE---\n",
+            encoding="utf-8",
+        )
+        (packs_dir / f"{run_id}.zip").write_bytes(b"PK")
+        manifest = f"# PACK_MANIFEST\n\n| Field | Value |\n|-------|-------|\n| run_id | {run_id} |\n"
+        (packs_dir / "PACK_MANIFEST.md").write_text(manifest, encoding="utf-8")
+
+        config = {"evidence_pack_dir": str(packs_dir)}
+        result = validate_run_id_consistency(str(tasks_dir), config=config)
+        assert result["consistent"] is True
+
+
+# ---------------------------------------------------------------------------
+# Tests: Prompt-template validation (AWSP v1.1.0)
+# ---------------------------------------------------------------------------
+
+class TestPromptTemplateValidation:
+    """Tests for AWSP v1.1.0 prompt-template checks."""
+
+    def test_missing_end_marker(self, tmp_path):
+        """Prompt without END_OF_GPT_RESPONSE marker fails."""
+        report_dir, run_id = _setup_full_consistent(tmp_path)
+        (report_dir / "GPT_REVIEW_PROMPT.md").write_text(
+            "## Review " + "{{TASK_ID}}" + "\nrun_id: " + "{{RUN_ID}}"
+            + "\noverall_judgment: accepted\n",
+            encoding="utf-8",
+        )
+        result = validate_run_id_consistency(str(report_dir))
+        assert result["consistent"] is False
+        assert any("END_OF_GPT_RESPONSE" in e for e in result["errors"])
+
+    def test_missing_overall_judgment(self, tmp_path):
+        """Prompt without overall_judgment: field fails."""
+        report_dir, run_id = _setup_full_consistent(tmp_path)
+        (report_dir / "GPT_REVIEW_PROMPT.md").write_text(
+            "## Review " + "{{TASK_ID}}" + "\nrun_id: " + "{{RUN_ID}}"
+            + "\n---END_OF_GPT_RESPONSE---\n",
+            encoding="utf-8",
+        )
+        result = validate_run_id_consistency(str(report_dir))
+        assert result["consistent"] is False
+        assert any("overall_judgment" in e for e in result["errors"])
+
+    def test_verdict_instead_of_overall_judgment(self, tmp_path):
+        """Prompt using verdict: without overall_judgment: fails."""
+        report_dir, run_id = _setup_full_consistent(tmp_path)
+        (report_dir / "GPT_REVIEW_PROMPT.md").write_text(
+            "## Review " + "{{TASK_ID}}" + "\nrun_id: " + "{{RUN_ID}}"
+            + "\nverdict: accepted\n---END_OF_GPT_RESPONSE---\n",
+            encoding="utf-8",
+        )
+        result = validate_run_id_consistency(str(report_dir))
+        assert result["consistent"] is False
+        assert any("overall_judgment" in e for e in result["errors"])
+
+    def test_full_compliant_prompt(self, tmp_path):
+        """Fully AWSP v1.1.0 compliant prompt passes all checks."""
+        report_dir, run_id = _setup_full_consistent(tmp_path)
+        # The helper already creates a compliant prompt
+        result = validate_run_id_consistency(str(report_dir))
+        assert result["consistent"] is True
+        assert result["details"]["prompt_has_end_marker"] is True
+        assert result["details"]["prompt_has_overall_judgment"] is True
+
+
+# ---------------------------------------------------------------------------
+# Tests: AWSP scaffold
+# ---------------------------------------------------------------------------
+
+class TestAWSPScaffold:
+    """Tests for awsp_scaffold.py create and validate functions."""
+
+    def test_create_scaffold(self, tmp_path):
+        """create_scaffold creates all required directories and files."""
+        project = tmp_path / "new-project"
+        project.mkdir()
+        result = create_scaffold(str(project))
+        assert len(result["errors"]) == 0
+        for d in AWSP_DIRECTORIES:
+            assert (project / d).exists()
+            assert (project / d).is_dir()
+        assert (project / ".awsp.json").exists()
+        assert (project / "docs" / "AGENT_WORKFLOW_STANDARD.md").exists()
+
+    def test_create_scaffold_dry_run(self, tmp_path):
+        """Dry run previews without creating files."""
+        project = tmp_path / "dry-project"
+        project.mkdir()
+        result = create_scaffold(str(project), dry_run=True)
+        assert len(result["errors"]) == 0
+        assert len(result["created"]) > 0
+        # Files should NOT exist after dry run
+        for d in AWSP_DIRECTORIES:
+            assert not (project / d).exists()
+
+    def test_validate_valid_scaffold(self, tmp_path):
+        """validate_scaffold passes on a correctly scaffolded project."""
+        project = tmp_path / "valid-project"
+        project.mkdir()
+        create_scaffold(str(project))
+        result = validate_scaffold(str(project))
+        assert result["valid"] is True
+        assert result["errors"] == []
+
+    def test_validate_missing_dirs(self, tmp_path):
+        """validate_scaffold fails when directories are missing."""
+        project = tmp_path / "incomplete-project"
+        project.mkdir()
+        # Only create some directories
+        (project / "docs").mkdir()
+        (project / "scripts").mkdir()
+        result = validate_scaffold(str(project))
+        assert result["valid"] is False
+        assert any("Missing AWSP directories" in e for e in result["errors"])
+
+    def test_validate_missing_config(self, tmp_path):
+        """validate_scaffold fails when .awsp.json is missing."""
+        project = tmp_path / "no-config-project"
+        project.mkdir()
+        for d in AWSP_DIRECTORIES:
+            (project / d).mkdir()
+        (project / "docs" / "AGENT_WORKFLOW_STANDARD.md").write_text("# AWSP", encoding="utf-8")
+        result = validate_scaffold(str(project))
+        assert result["valid"] is False
+        assert any(".awsp.json" in e for e in result["errors"])
+
+    def test_scaffold_config_content(self, tmp_path):
+        """Generated .awsp.json contains correct AWSP version and project root."""
+        project = tmp_path / "config-project"
+        project.mkdir()
+        create_scaffold(str(project))
+        config = json.loads((project / ".awsp.json").read_text(encoding="utf-8"))
+        assert config["awsp_version"] == "1.1.0"
+        # Config stores POSIX-style paths (forward slashes)
+        assert config["project_root"] == str(project).replace("\\", "/")
+        assert "directories" in config
+        assert "validation" in config
+        assert config["validation"]["require_run_id_consistency"] is True
+
+    def test_scaffold_force_overwrite(self, tmp_path):
+        """Force mode overwrites existing template files."""
+        project = tmp_path / "force-project"
+        project.mkdir()
+        create_scaffold(str(project))
+        # Modify config file
+        config_path = project / ".awsp.json"
+        config_path.write_text("modified", encoding="utf-8")
+        # Force recreate
+        create_scaffold(str(project), force=True)
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        assert config["awsp_version"] == "1.1.0"
+
+    def test_create_scaffold_nonexistent_root(self, tmp_path):
+        """create_scaffold fails when project root doesn't exist."""
+        result = create_scaffold(str(tmp_path / "nonexistent"))
+        assert len(result["errors"]) > 0
+        assert "does not exist" in result["errors"][0]
+
+
+class TestValidateScaffoldContent:
+    """Tests for validate_scaffold .awsp.json content checks."""
+
+    def test_valid_scaffold_passes(self, tmp_path):
+        """A properly scaffolded project passes validation."""
+        create_scaffold(str(tmp_path))
+        result = validate_scaffold(str(tmp_path))
+        assert result["valid"] is True
+        assert result["errors"] == []
+
+    def test_version_mismatch_fails(self, tmp_path):
+        """Mismatched awsp_version in .awsp.json fails validation."""
+        create_scaffold(str(tmp_path))
+        config_path = tmp_path / ".awsp.json"
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        config["awsp_version"] = "0.0.1"
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+        result = validate_scaffold(str(tmp_path))
+        assert result["valid"] is False
+        assert any("mismatch" in e for e in result["errors"])
+
+    def test_missing_config_fields_fails(self, tmp_path):
+        """Missing required fields in .awsp.json fails validation."""
+        create_scaffold(str(tmp_path))
+        config_path = tmp_path / ".awsp.json"
+        # Write config with missing fields
+        config_path.write_text('{"awsp_version": "1.1.0"}', encoding="utf-8")
+        result = validate_scaffold(str(tmp_path))
+        assert result["valid"] is False
+        assert any("missing required fields" in e for e in result["errors"])
+
+    def test_missing_validation_section_fails(self, tmp_path):
+        """Missing validation config keys in .awsp.json fails validation."""
+        create_scaffold(str(tmp_path))
+        config_path = tmp_path / ".awsp.json"
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        config["validation"] = {}
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+        result = validate_scaffold(str(tmp_path))
+        assert result["valid"] is False
+        assert any("validation section missing" in e for e in result["errors"])
+
+    def test_false_validation_values_fails(self, tmp_path):
+        """Validation values set to false should fail validation (fail-closed)."""
+        create_scaffold(str(tmp_path))
+        config_path = tmp_path / ".awsp.json"
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        config["validation"]["require_run_id_consistency"] = False
+        config["validation"]["require_evidence_pack"] = False
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+        result = validate_scaffold(str(tmp_path))
+        assert result["valid"] is False
+        assert any("not all true" in e for e in result["errors"])
+
+    def test_directories_mismatch_fails(self, tmp_path):
+        """directories field not matching AWSP_DIRECTORIES fails validation."""
+        create_scaffold(str(tmp_path))
+        config_path = tmp_path / ".awsp.json"
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        config["directories"] = ["only_one_dir"]
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+        result = validate_scaffold(str(tmp_path))
+        assert result["valid"] is False
+        assert any("directories field mismatch" in e for e in result["errors"])
+
+
+class TestStrictVerdictCheck:
+    """Tests for strict verdict field checking in validate_run_id_consistency."""
+
+    def test_bare_verdict_with_overall_judgment_fails(self, tmp_path):
+        """Prompt with both overall_judgment and bare verdict: should fail."""
+        report_dir, run_id = _setup_full_consistent(tmp_path)
+        # Overwrite prompt with both overall_judgment and bare verdict
+        (report_dir / "GPT_REVIEW_PROMPT.md").write_text(
+            "## Review " + "{{TASK_ID}}" + "\nrun_id: " + "{{RUN_ID}}"
+            + "\noverall_judgment: accepted\nverdict: accepted\n"
+            + "---END_OF_GPT_RESPONSE---\n",
+            encoding="utf-8",
+        )
+        result = validate_run_id_consistency(str(report_dir))
+        assert result["consistent"] is False
+        assert any("bare verdict:" in e for e in result["errors"])
+
+    def test_overall_judgment_only_passes(self, tmp_path):
+        """Prompt with only overall_judgment (no bare verdict) passes."""
+        report_dir, run_id = _setup_full_consistent(tmp_path)
+        result = validate_run_id_consistency(str(report_dir))
+        assert result["consistent"] is True
+        assert result["details"]["prompt_has_bare_verdict"] is False
+
+    def test_indented_verdict_fails(self, tmp_path):
+        """Indented verdict: (with leading whitespace) should still be caught."""
+        report_dir, run_id = _setup_full_consistent(tmp_path)
+        (report_dir / "GPT_REVIEW_PROMPT.md").write_text(
+            "## Review " + "{{TASK_ID}}" + "\nrun_id: " + "{{RUN_ID}}"
+            + "\noverall_judgment: accepted\n  verdict: accepted\n"
+            + "---END_OF_GPT_RESPONSE---\n",
+            encoding="utf-8",
+        )
+        result = validate_run_id_consistency(str(report_dir))
+        assert result["consistent"] is False
+        assert any("bare verdict:" in e for e in result["errors"])

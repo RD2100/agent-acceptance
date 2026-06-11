@@ -1,0 +1,107 @@
+R17 Reviewer Verdict
+YAML
+verdict: ACCEPTED_WITH_LIMITATION
+task: OPERATIONS-MANUAL-CREATE-A1
+scope: manual-only evidence finalization
+sadp_0r2_status: ACCEPTED
+manual_only_scope: ACCEPTED
+json_purity: ACCEPTED
+hash_integrity: ACCEPTED
+r3_r14_erratum: ACCEPTED_WITH_LIMITATION
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+governance_pattern_change: NOT_ACCEPTED_IN_THIS_TASK
+
+我已核查 EVIDENCE_PACK_R17.zip。虽然你提交说明文本出现了乱码，但 ZIP 内容本身可读取，结构清楚。
+
+ZIP SHA256：
+
+8175c693999f8cfa74813b9a9bb050a70150597900ef9dab9c063e07455a72ed
+
+ZIP 内实际共有 50 个文件。其中 MANIFEST.json 和 hashes.sha256 被有意排除在 hash 清单之外，因此 hash 清单为 48 条，这一处理合理。
+
+1. R16 四个 blocker 关闭情况
+R16 Finding	R17 核查结果	裁定
+R16-BLOCKING-01：缺少 review.md	_evidence/OPERATIONS-MANUAL-CREATE-A1/review.md 已存在	CLOSED
+R16-BLOCKING-02：SHA256 自引用失败	hashes.sha256 排除 MANIFEST.json 与自身，48 条全部校验通过	CLOSED
+R16-BLOCKING-03：ZIP 无法独立复现 1038 tests	test-output.md 与 chain-evidence.json 已明确声明测试在完整仓库 D:\agent-acceptance 中运行，ZIP 是 curated subset	CLOSED
+R16-BLOCKING-04：canonical diff 越界	diff.patch 现在只包含 docs/agent-runtime/operations-manual.md	CLOSED
+2. SADP 0.R.2 canonical evidence
+
+R17 中 7 个 canonical files 均已存在：
+
+_evidence/OPERATIONS-MANUAL-CREATE-A1/diff.patch
+_evidence/OPERATIONS-MANUAL-CREATE-A1/test-output.md
+_evidence/OPERATIONS-MANUAL-CREATE-A1/safety-report.json
+_evidence/OPERATIONS-MANUAL-CREATE-A1/chain-evidence.json
+_evidence/OPERATIONS-MANUAL-CREATE-A1/review.md
+_evidence/OPERATIONS-MANUAL-CREATE-A1/review.yaml
+_evidence/OPERATIONS-MANUAL-CREATE-A1/final-report.md
+
+我实际验证了：
+
+JSON parse: PASS
+SHA256 verification: PASS
+canonical diff.patch file list: ['docs/agent-runtime/operations-manual.md']
+test-output evidence contains: 1038 passed + Exit Code 0
+
+因此，R17 可以认定为满足 OPERATIONS-MANUAL-CREATE-A1 的 SADP 0.R.2 evidence packaging 要求。
+
+3. Manual-only scope 是否成立？
+
+成立。
+
+diff.patch 的 diff header 只有：
+
+diff --git a/docs/agent-runtime/operations-manual.md b/docs/agent-runtime/operations-manual.md
+
+没有包含：
+
+scripts/sadp-audit.ps1
+.sadp/SADP_POLICY.json
+AGENTS.md
+
+full-context-diff.patch 中仍包含其他治理相关变更，但它已经被标注为 reference context，而不是 canonical task diff。这个处理可以接受。
+
+4. 需要保留的 limitation
+
+有两个限制需要写入最终记录：
+
+YAML
+limitations:
+  - test result 1038 passed was produced in full repo D:\agent-acceptance, not independently reproduced from ZIP alone
+  - full-context-diff.patch contains governance-related context, but those changes are not accepted under OPERATIONS-MANUAL-CREATE-A1
+
+另外，review.md 和 review.yaml 是 evidence pack 内的预生成审查文件，不应被视为 executor 自我批准。本条 ChatGPT reviewer verdict 才是 R17 的外部独立审核结论，建议归档为本轮 authoritative reviewer verdict。
+
+5. 对 5 个标准问题的裁定
+问题	裁定
+Q1. 是否满足 SADP 0.R.2？	是。 对 manual-only task 的 evidence packaging 已满足。
+Q2. manual-only scope 是否正确隔离？	是。 canonical diff.patch 只包含 operations manual。
+Q3. JSON artifacts 是否纯净？	是。 所有 .json 均可解析。
+Q4. R3-R14 追溯标注是否充分？	基本充分。 可维持 MAINTAINED_WITH_EVIDENCE_INTEGRITY_LIMITATION。R14 仍应保留 split/block 历史说明。
+Q5. 是否还有 blocker？	没有阻止 OPERATIONS-MANUAL-CREATE-A1 接受的 blocker。
+Final Decision
+YAML
+r17_decision:
+  verdict: ACCEPTED_WITH_LIMITATION
+  accepted_task: OPERATIONS-MANUAL-CREATE-A1
+  accepted_artifact:
+    - docs/agent-runtime/operations-manual.md
+
+  closed_r16_blockers:
+    - R16-BLOCKING-01
+    - R16-BLOCKING-02
+    - R16-BLOCKING-03
+    - R16-BLOCKING-04
+
+  not_accepted_in_this_task:
+    - scripts/sadp-audit.ps1 governance pattern change
+    - .sadp/SADP_POLICY.json changes
+    - live dispatch
+    - any protected/self-protecting file mutation
+
+  next_task_if_needed:
+    task_id: OPERATIONS-MANUAL-AUDIT-PATTERN-BIND-A1
+    status: HUMAN_REQUIRED
+
+一句话结论：R17 已修复 R16 的剩余证据问题，OPERATIONS-MANUAL-CREATE-A1 可以接受；但接受范围仅限 docs/agent-runtime/operations-manual.md，治理脚本和 protected policy 的任何绑定修改仍必须走独立 human-gated task。

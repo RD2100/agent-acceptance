@@ -1,0 +1,173 @@
+下面这条可以直接加入 docs/GPT_REVIEW_QUEUE_POLICY.md、docs/GPT_REVIEW_GATEWAY_RUNBOOK.md、CLAUDE.md 或 review queue 的 closure checklist。
+
+Markdown
+# GPT_REVIEW_RESPONSE_BINDING_RULE v1
+
+## Purpose
+
+Prevent premature agent summaries after submitting evidence packs to Web GPT.
+
+A GPT review is not complete when the evidence pack is submitted.  
+A GPT review is complete only after the actual GPT response has been captured, read, validated, and bound to the task record.
+
+## Core Rule
+
+No captured GPT response, no verdict.
+
+The agent must never report `accepted`, `blocked`, `pending fixed`, `closed`, or `ready to commit` based only on:
+- CDP submission success
+- shell command completion
+- agent expectation
+- previous blocker list
+- user summary
+- stale evidence pack
+- local assumptions
+- a response that may exist on the GPT page but has not been read
+
+The latest validated GPT response is the source of truth.
+
+## Mandatory Sequence
+
+For every Web GPT review submission, the agent must follow this exact sequence:
+
+1. Submit the evidence pack and review prompt to Web GPT.
+2. Wait for the GPT response to finish.
+3. Read the actual GPT response from the page.
+4. Confirm the response includes `END_OF_GPT_RESPONSE`.
+5. Save the full raw response as `GPT_REVIEW_RESULT.txt`.
+6. Compute and record the response SHA256.
+7. Parse:
+   - `overall_judgment`
+   - `blocking_issues`
+   - `required_fixes`
+   - `next_task_authorization`
+8. Verify the response belongs to the current `task_id` and review round.
+9. Only then report the verdict.
+10. Only after an accepted verdict may the task proceed to binding, commit, or next-task authorization.
+
+## Required State Machine
+
+```yaml
+gpt_review_states:
+  ready_for_submission:
+    verdict_allowed: false
+
+  submitted_to_gpt:
+    verdict_allowed: false
+    allowed_report: "submitted_not_reviewed"
+
+  response_pending:
+    verdict_allowed: false
+    allowed_report: "review_pending"
+
+  response_captured:
+    verdict_allowed: false
+    required_next_step: "validate_response"
+
+  response_validated:
+    verdict_allowed: true
+    required_checks:
+      - "END_OF_GPT_RESPONSE present"
+      - "overall_judgment parsed"
+      - "task_id matches"
+      - "review round matches"
+      - "raw response saved"
+      - "response sha256 recorded"
+
+  accepted:
+    source_required: "latest validated GPT response"
+    closure_allowed: true
+
+  accepted_with_limitation:
+    source_required: "latest validated GPT response"
+    closure_allowed: true
+    limitation_must_be_recorded: true
+
+  blocked:
+    source_required: "latest validated GPT response"
+    closure_allowed: false
+
+  review_unverified:
+    meaning: "GPT was submitted, but the final response was not captured or not validated"
+    closure_allowed: false
+Hard Failure Rules
+
+If the CDP command goes to background, times out, shell saturates, or the agent cannot read the GPT page, the status must be:
+
+YAML
+overall_judgment: review_unverified
+reason: "GPT response was not captured and validated"
+
+The agent must not infer the verdict.
+
+If the agent sees an older blocker but a newer GPT response says accepted, the newer validated GPT response wins.
+
+If the agent has not read the newest GPT response, it must not continue using the old blocker list as the current verdict.
+
+Forbidden Agent Behaviors
+
+The agent must not:
+
+write a closure summary before reading GPT’s response
+
+mark a task accepted based on submission success
+
+mark a task blocked based on stale blockers after a newer response exists
+
+proceed to commit/binding before saving GPT_REVIEW_RESULT.txt
+
+treat CDP completion as review completion
+
+treat its own summary as GPT verdict
+
+continue to the next task while the review response is unread
+
+report accepted or blocked without END_OF_GPT_RESPONSE
+
+Required Submission Result Fields
+
+Every Web GPT review submission result must include:
+
+YAML
+gpt_response_captured: true|false
+end_marker_present: true|false
+raw_response_path: "..."
+raw_response_sha256: "..."
+parsed_overall_judgment: accepted|accepted_with_limitation|blocked|review_unverified
+task_id_matched: true|false
+review_round_matched: true|false
+verdict_source: "captured_gpt_response"
+
+If gpt_response_captured: false, then:
+
+YAML
+parsed_overall_judgment: review_unverified
+task_may_close: false
+next_task_may_start: false
+Closure Binding Rule
+
+A task may be bound to PROJECT_HISTORY.md, WORKFLOW_AUDIT_LEDGER.yaml, or memory only when:
+
+YAML
+closure_binding_allowed: true
+requirements:
+  - "GPT_REVIEW_RESULT.txt exists"
+  - "END_OF_GPT_RESPONSE present"
+  - "overall_judgment is accepted or accepted_with_limitation"
+  - "response hash recorded"
+  - "task_id matches"
+  - "latest response reviewed"
+
+If any requirement is missing:
+
+YAML
+closure_binding_allowed: false
+status: review_unverified
+One-Line Rule
+
+No GPT response read, no verdict.
+No END_OF_GPT_RESPONSE, no closure.
+Latest validated GPT response wins.
+
+
+建议把这条规则作为 **P0 workflow rule**，优先级高于 agent summary、CDP submit status、旧 blocker、以及任何自动 next-task 推进逻辑。

@@ -1,0 +1,81 @@
+overall_judgment: blocked
+task_id: GPT-REVIEW-RESPONSE-BINDING-GUARD-A1
+evidence_pack_reviewed: true
+reviewed_pack: guard-pack(1).zip
+
+pack_level_findings:
+manifest_hash_integrity: pass
+actual_deliverables_present: partial
+raw_outputs_present: partial
+full_test_output_present: false
+targeted_pytest_output_present: false
+safety_attestation_present: false
+changed_files_or_diff_present: false
+
+accepted_parts:
+
+"actual_deliverables/verify_gpt_reply.py exists."
+
+"Missing reply file fails closed, as shown in GUARD_FAIL_CLOSED.txt."
+
+"END_OF_GPT_RESPONSE is checked."
+
+"overall_judgment is parsed."
+
+"accepted / accepted_with_limitation without next_task_authorization now fails closed, as shown in GUARD_TEST_OUTPUT.txt."
+
+"The tool is directionally aligned with the P0 rule: no captured GPT reply, no verdict."
+
+blocking_issues:
+
+issue_id: GUARD-R2-BLOCKER-01
+title: "No targeted pytest evidence"
+detail: >
+The pack still contains command outputs only. It does not include a targeted pytest file
+or TARGETED_TEST_OUTPUT.txt proving the required guard cases.
+
+issue_id: GUARD-R2-BLOCKER-02
+title: "Claimed 275 PASS is not evidenced"
+detail: >
+The user states 275 PASS, but the ZIP does not include TEST_OUTPUT.txt or equivalent raw full-suite output.
+
+issue_id: GUARD-R2-BLOCKER-03
+title: "task_id is not actually validated"
+detail: >
+verify_gpt_reply.py accepts an optional task_id argument and adds it to output, but it does not parse task_id
+from the GPT response and does not fail on mismatch.
+
+issue_id: GUARD-R2-BLOCKER-04
+title: "Closure readiness is not enforced"
+detail: >
+The pack includes only verify_gpt_reply.py. It does not include check_review_closure_ready.py or equivalent
+logic to prevent closure when a closure report claims accepted but the GPT response is blocked or review_unverified.
+
+issue_id: GUARD-R2-BLOCKER-05
+title: "Evidence pack too thin for P0 workflow guard"
+detail: >
+Missing CHANGED_FILES, diff, safety attestation, shell health before/after, fixtures, and full raw outputs.
+For a P0 workflow safety guard, this is not enough for closure.
+
+required_fixes:
+
+"Add tests/test_gpt_review_response_binding.py or equivalent targeted pytest coverage."
+
+"Add fixtures for valid accepted, accepted_with_limitation, blocked, missing reply, missing END marker, missing judgment, invalid judgment, and task_id mismatch."
+
+"Implement task_id parsing and mismatch fail-closed behavior."
+
+"Add closure readiness checker or explicitly narrow the task scope to response-file validation only."
+
+"Include TARGETED_TEST_OUTPUT.txt."
+
+"Include TEST_OUTPUT.txt if claiming 275 PASS."
+
+"Include CHANGED_FILES.txt, diff patch, SAFETY_ATTESTATION.md, and shell health before/after outputs."
+
+"Regenerate guard-pack-r3.zip."
+
+summary:
+GPT-REVIEW-RESPONSE-BINDING-GUARD-A1: blocked
+
+END_OF_GPT_RESPONSE

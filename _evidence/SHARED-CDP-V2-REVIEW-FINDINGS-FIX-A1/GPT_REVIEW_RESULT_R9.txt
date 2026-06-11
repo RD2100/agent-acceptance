@@ -1,0 +1,131 @@
+YAML
+review_role: independent_reviewer
+submission: SHARED-CDP-V2 Round 9 / SADP-AUDIT-POLICY-SMOKE-A1
+previous_verdict: ACCEPTED_WITH_LIMITATION
+updated_verdict: ACCEPTED_WITH_LIMITATION
+code_level_blockers: NONE
+audit_policy_smoke_status: PARTIAL_PASS
+dry_run_dispatch: AUTHORIZED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+confidence: MEDIUM_HIGH
+Reviewer Verdict
+
+Round 9 可以通过，但只能记为 ACCEPTED_WITH_LIMITATION，不能记为完全 ACCEPTED。
+
+本轮最有价值的成果是：smoke test 发现了真实路径错误，并修复了 capability-inventory.md 与 sub-agent-dispatch-protocol.md 的 protected file 路径。这说明测试不是形式化补丁，而是真的捕捉到了治理链路中的不一致。
+
+但你们同时暴露了一个仍未闭合的 audit gap：
+
+.sadp/SADP_POLICY.json
+.sadp/TRIGGER_RULES.json
+
+这两个文件在 Python pre-edit enforcer 中受保护，但在 sadp-audit.ps1 的 governance pattern 中不会触发 SADP-required flag。对于 commit-time audit 来说，这不是完全闭合。
+
+1. Protected file path fix
+YAML
+status: ACCEPTED
+severity: PASS
+
+把：
+
+capability-inventory.md
+sub-agent-dispatch-protocol.md
+
+修正为：
+
+docs/agent-runtime/capability-inventory.md
+docs/agent-runtime/sub-agent-dispatch-protocol.md
+
+这是正确修复。此前的路径如果保留，会导致 protected file policy 看似存在，实际无法覆盖真实文件。这个问题被 smoke test 发现，说明测试有效。
+
+2. Audit policy smoke tests
+YAML
+status: ACCEPTED_WITH_LIMITATION
+severity: PASS_WITH_LIMITATION
+
+新增 14 个测试覆盖：
+
+SADP_POLICY.json validity
+schema_version
+sadp-audit.ps1 existence
+PowerShell governance pattern parsing
+AGENTS.md / CLAUDE.md / rules/core.md 覆盖
+docs/agent-runtime 下关键治理文档覆盖
+protected files coverage report
+pre_task / post_task policy fields
+
+这批测试方向正确，尤其是能解析 $governancePatterns，这比只检查文件存在更有价值。
+
+但 limitation 在于：测试把 .sadp/SADP_POLICY.json 与 .sadp/TRIGGER_RULES.json 标成 warning，而不是 fail。由于这两个文件本身是 policy source 和 trigger source，它们如果在 commit-time audit 层不触发 SADP-required，仍然留下了绕过空间。
+
+3. “Cross-consumer consistency: VERIFIED” 需要降级
+
+你们报告里写：
+
+Cross-consumer consistency: VERIFIED
+Both consumers (PowerShell + Python) now enforce the same policy source.
+
+这个结论需要修正为：
+
+YAML
+cross_consumer_consistency: PARTIALLY_VERIFIED
+
+原因是：从你提交的证据看，Python enforcer 与 SADP_POLICY.json 的 drift tests 已经比较充分；但 PowerShell audit 这边仍是通过 $governancePatterns 覆盖验证，而不是明确证明 sadp-audit.ps1 直接读取并执行 SADP_POLICY.json 中的 protected_files / self_protecting_files / governance_adjacent_files。
+
+也就是说，当前更准确的表述是：
+
+Python enforcer 与 SADP_POLICY.json 已 verified no drift。
+PowerShell audit 的 governancePatterns 已覆盖大部分 protected files。
+PowerShell audit 尚未完全证明与 SADP_POLICY.json 同源执行。
+4. Known gaps 是否 blocking？
+YAML
+known_gaps:
+  sadp_policy_json_not_audit_pattern_matched: WARNING
+  trigger_rules_json_not_audit_pattern_matched: WARNING
+  scripts_sadp_audit_self_protecting_not_pattern_matched: ACCEPTABLE
+blocking: false
+
+我同意暂时不把它升级为 blocker，原因是：
+
+1. pre-edit enforcer 已经保护 .sadp/SADP_POLICY.json 与 .sadp/TRIGGER_RULES.json；
+2. runner 已经作为 P0/P1 mandatory entry point；
+3. sadp-audit.ps1 本身是 self-protecting；
+4. full suite 1036 passed，没有回归。
+
+但这两个 .sadp 文件不应长期只靠 warning 记录。后续应让 commit-time audit 也覆盖 .sadp/ policy 文件，至少触发 SADP-required，而不是仅靠 pre-edit 层保护。
+
+5. Updated Verdict
+YAML
+verdict: ACCEPTED_WITH_LIMITATION
+accepted:
+  - protected file path bug fixed
+  - SADP_POLICY.json and enforcer PROTECTED_FILES realigned
+  - TestAuditPolicySmoke added
+  - governancePatterns parseability tested
+  - critical governance docs covered by sadp-audit.ps1 patterns
+  - Python enforcer policy drift tests remain passing
+  - full suite 1036 passed
+
+limitations:
+  - .sadp/SADP_POLICY.json does not trigger sadp-audit.ps1 governance pattern
+  - .sadp/TRIGGER_RULES.json does not trigger sadp-audit.ps1 governance pattern
+  - PowerShell audit is pattern-coverage-verified, not fully proven to consume SADP_POLICY.json as source of truth
+  - report should downgrade "Cross-consumer consistency: VERIFIED" to "PARTIALLY_VERIFIED"
+
+dry_run_dispatch: AUTHORIZED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+6. Recommended follow-up
+
+建议下一步做一个很小的 hardening 任务：
+
+SADP-AUDIT-DOT-SADP-COVERAGE-A1
+
+最低要求：
+
+1. sadp-audit.ps1 governancePatterns 覆盖 .sadp/SADP_POLICY.json；
+2. sadp-audit.ps1 governancePatterns 覆盖 .sadp/TRIGGER_RULES.json；
+3. 新增测试：修改 .sadp/SADP_POLICY.json 会触发 SADP-required；
+4. 新增测试：修改 .sadp/TRIGGER_RULES.json 会触发 SADP-required；
+5. 把当前 warning 改为 pass 或 fail-closed test。
+
+一句话结论：Round 9 通过，但 audit-policy consistency 仍是 partial pass；路径 bug 修复有效，smoke test 有价值，dry-run 可继续，但 .sadp/ policy 文件的 commit-time audit 覆盖还应补齐。

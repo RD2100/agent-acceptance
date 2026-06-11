@@ -1,0 +1,10 @@
+task_id: SYNTHETIC-C4-001
+paper_project_type: dissertation
+paper_title: "Synthetic Dissertation on AI Ethics"
+target_section_name: "Literature Review — AI Fairness"
+section_purpose: "Survey existing fairness metrics and identify gaps"
+research_question: "What fairness metrics are most applicable to LLM-based hiring systems?"
+argument_outline: "1) Review statistical fairness metrics 2) Discuss individual vs group fairness 3) Identify gaps in LLM context 4) Propose evaluation framework"
+known_problems: "Metrics assume binary classification; LLM outputs are generative"
+desired_output: "Identify 3-5 key research gaps and recommend evaluation approach"
+privacy_mode: synthetic_only

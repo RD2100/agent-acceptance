@@ -1,0 +1,28 @@
+run_id: NEXT_AGENT_WORKFLOW_BOOTSTRAP_IMPLEMENT_REVIEW_20260608_235700_RD
+task_id: NEXT-AGENT-WORKFLOW-BOOTSTRAP-IMPLEMENT-A1
+overall_judgment: accepted_with_limitation
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+none
+required_fixes:
+
+none
+limitations:
+
+The pack creates a minimal repo-backed startup read gate with required-read files, SHA256 binding, and a startup read proof template.
+
+The pack reuses existing source-of-truth, runbook, verifier, pre-GPT gate, evidence pack linter, prior GPT review records, and evidence-binding artifacts instead of redesigning the GPT-agent workflow.
+
+The mechanism strongly guides and evidences startup reading, but it is not a hard harness-enforced gate unless future agents actually follow it or the caller enforces it.
+
+The repository worktree remains dirty, including D HANDOFF_REPLY_V4.txt; this bootstrap task does not resolve that issue and R2 must handle it under human-required safety constraints for restore/checkout/reset/clean/delete/move/rename.
+
+PACK_MANIFEST lists delivered artifacts but does not include PACK_MANIFEST.md itself as a manifest row.
+next_task_authorization:
+task_id: GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+END_OF_GPT_RESPONSE_

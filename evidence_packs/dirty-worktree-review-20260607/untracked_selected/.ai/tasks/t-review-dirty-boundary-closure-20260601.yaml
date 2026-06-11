@@ -1,0 +1,70 @@
+task_id: t-review-dirty-boundary-closure-20260601
+title: Review dirty boundary closure batch
+priority: P1
+status: ready
+mode: "@go read"
+description: >
+  Independent reviewer task for the dirty-boundary closure batch. Review the
+  existing evidence directory and produce review.md and review.yaml only.
+
+allow_write:
+  - runs/t-dirty-boundary-closure-20260601/review.md
+  - runs/t-dirty-boundary-closure-20260601/review.yaml
+
+no_touch_write_set:
+  - archive/draft-hooks/pre-final.audit.ps1
+  - archive/draft-hooks/pre-task.audit.ps1
+  - archive/draft-hooks/pre-tool.audit.ps1
+  - docs/agent-runtime/capability-inventory.md
+  - docs/agent-runtime/routing-matrix-summary.md
+  - audit/blackboard-cleanup-audit-20260531.md
+  - tools/ai_guard.py
+  - tools/go_evidence.py
+
+gate_0:
+  triggered: false
+  inventory_evidence:
+    queried_sources:
+      - runs/t-dirty-boundary-closure-20260601/diff.patch
+      - runs/t-dirty-boundary-closure-20260601/test-output.md
+      - runs/t-dirty-boundary-closure-20260601/safety-report.json
+      - runs/t-dirty-boundary-closure-20260601/chain-evidence.json
+    matched_capabilities:
+      - reviewer-evidence-validation
+    compared_against_request:
+      - "independent reviewer output for dirty boundary closure"
+  sufficiency_decision: reuse_existing
+  decision: reuse
+
+conflict_registry:
+  read_set:
+    - runs/t-dirty-boundary-closure-20260601/diff.patch
+    - runs/t-dirty-boundary-closure-20260601/test-output.md
+    - runs/t-dirty-boundary-closure-20260601/safety-report.json
+    - runs/t-dirty-boundary-closure-20260601/chain-evidence.json
+    - .ai/tasks/t-dirty-boundary-closure-20260601.yaml
+  write_set:
+    - runs/t-dirty-boundary-closure-20260601/review.md
+    - runs/t-dirty-boundary-closure-20260601/review.yaml
+  protected_files_touched: false
+  conflict_level: low
+
+review_instructions:
+  required_inputs:
+    - diff.patch
+    - test-output.md
+    - safety-report.json
+    - chain-evidence.json
+  fixed_facts:
+    - this batch is limited to the six listed governance files
+    - reviewer must verify keep/fix/archive/defer dispositions match the actual diff
+    - reviewer must block if the six files are still effectively unowned or if scope expanded
+  required_verdict: pass_or_blocked
+
+acceptance_criteria:
+  - review.md exists and explains whether the six-file boundary was successfully closed
+  - review.yaml exists with reviewer_role reviewer
+  - review.yaml reviewer_id differs from executor_id
+  - review.yaml reviewed_inputs lists diff.patch, test-output.md, safety-report.json, chain-evidence.json
+  - review.yaml verdict is pass or blocked only
+  - no file outside allow_write is modified

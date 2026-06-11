@@ -1,0 +1,259 @@
+R15 Reviewer Verdict
+YAML
+verdict: PARTIAL_ACCEPTANCE_WITH_BLOCKERS
+scope_accepted:
+  - R15 self-reported evidence degradation finding
+  - corrective intent
+  - presence of a materially richer evidence ZIP than R4-R14 text-only summaries
+  - operations manual content direction, provisionally
+scope_not_accepted:
+  - claim that ZIP fully satisfies SADP 0.R.2
+  - claim that the ZIP is independently reproducible as submitted
+  - R14 as a whole
+  - sadp-audit.ps1 governance pattern change without human_required approval
+blocking_findings:
+  - R15-BLOCKING-01: evidence pack is not SADP 0.R.2 complete
+  - R15-BLOCKING-02: verification command in submission does not reproduce
+  - R15-BLOCKING-03: packaged dry-run JSON is not valid pure JSON
+  - R15-BLOCKING-04: R14 manual-only split is not proven by clean diff
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+dry_run_dispatch: AUTHORIZED_ONLY_WITH_VALID_EVIDENCE
+
+我核查了上传的 EVIDENCE_PACK_R15(1).zip。ZIP 可读取，大小约 225KB，SHA256 为：
+
+d9dd7c23dbbc568a1012e72a727e75f61b71a466696036eb665b2d08ea091266
+
+ZIP 内确实有 77 个文件，包括 source/、tests/、governance/、tasks/、verdicts/、MANIFEST.md、DIFF_PATCH.txt、FULL_SUITE_OUTPUT_R15.txt、DRY_RUN_DISPATCH_10_CURRENT.json 等。这个包比 R4-R14 的 text-only summary 有明显改进，可以作为 R15 corrective evidence attempt 接受。
+
+但它还不能被认定为满足 SADP 0.R.2 的完整证据包标准。
+
+1. 是否满足 SADP 0.R.2？
+
+结论：不完全满足。
+
+SADP 0.R.2 要求每次 @go run 产生 run evidence directory，至少包括：
+
+diff.patch
+test-output.md
+safety-report.json
+chain-evidence.json
+review.md
+review.yaml
+final-report.md
+
+我在 ZIP 中按精确文件名检索，这些文件均不存在。当前包提供的是：
+
+DIFF_PATCH.txt
+FULL_SUITE_OUTPUT_R15.txt
+DRY_RUN_DISPATCH_10_CURRENT.json
+MANIFEST.md
+
+这属于“补充性证据归档”，不是 SADP 0.R.2 意义上的标准 run evidence directory。
+
+更关键的是，提交说明中的复现命令不能按原样通过：
+
+Bash
+python -m pytest tests/ -v --tb=short
+
+在解压目录直接运行后，测试收集阶段即失败，原因是测试文件导入 multi_project_router、dry_run_dispatch_10、sadp_pre_task_enforcer 等模块时找不到对应模块。即使我加上：
+
+Bash
+PYTHONPATH=source
+
+也只能收集到 252 个测试，并出现 58 个失败，因为测试期待真实仓库结构中的 .agent/、.sadp/、scripts/、multi_cdp_launcher.py 等路径和文件。
+
+因此，FULL_SUITE_OUTPUT_R15.txt 中的：
+
+1038 passed, 0 failed, 21 warnings
+
+只能证明它曾在 D:\agent-acceptance 的某个 Windows repo 环境中运行通过，不能证明这个 ZIP 本身是可独立复现的证据包。
+
+另外，DRY_RUN_DISPATCH_10_CURRENT.json 文件名是 JSON，但内容在 JSON 结束后追加了：
+
+--- DRY-RUN SUMMARY ---
+...
+
+所以它不是合法的纯 JSON 文件。这个问题不一定影响人工阅读，但会影响 evidence linter、CI 或 reviewer tooling 的机器校验。
+
+2. R14 operations manual 能否与 governance pattern change 分开接受？
+
+结论：可以分开，但当前 ZIP 还不足以完成 manual-only acceptance。
+
+我认可 R14 之前的判断：operations-manual.md 的方向、结构和 reuse-before-build 动机是成立的。它覆盖了项目架构、正式工具清单、SOP、测试流程和治理工具，作为项目操作手册本身可以 provisionally accepted。
+
+但是当前 ZIP 中仍有几个问题：
+
+operations-manual.md 位于：
+
+governance/operations-manual.md
+
+而 R14 讨论中的目标路径应是类似：
+
+docs/agent-runtime/operations-manual.md
+
+DIFF_PATCH.txt 只包含两个 diff：
+
+AGENTS.md
+scripts/sadp-audit.ps1
+
+并没有包含 operations-manual.md 的新增 diff。
+
+sadp-audit.ps1 仍然出现在 diff 中，且它是 self-protecting / protected governance script。
+
+所以，当前状态应这样裁定：
+
+YAML
+operations_manual_content: PROVISIONALLY_ACCEPTED
+operations_manual_task_closure: NOT_YET_ACCEPTED
+required_for_manual_only_acceptance:
+  - provide clean diff containing only docs/agent-runtime/operations-manual.md
+  - exclude scripts/sadp-audit.ps1 from manual-only task
+  - include TaskSpec write_set matching only manual path
+  - include test/output showing no governance script mutation
+governance_pattern_change: BLOCKED_HUMAN_GATED
+
+换句话说：手册内容可以保留并倾向接受；R14 整体仍然 BLOCKED；sadp-audit.ps1 的修改必须作为独立 human_required 任务处理。
+
+3. 后续提交还需要什么证据？
+
+后续每一轮最好恢复到严格的 evidence pack 结构。建议最低标准如下：
+
+_evidence/<TASK_ID>/
+├── diff.patch
+├── test-output.md
+├── safety-report.json
+├── chain-evidence.json
+├── review.md
+├── review.yaml
+├── final-report.md
+├── commands.md
+├── MANIFEST.json
+└── hashes.sha256
+
+其中要特别注意：
+
+diff.patch 应该是 git diff --binary 或至少完整 git diff，不能只放部分文件。
+test-output.md 应包含命令、cwd、Python/PowerShell 版本、exit code 和完整输出。
+safety-report.json 必须是机器可读 JSON。
+chain-evidence.json 要记录 executor、reviewer、task_id、input artifacts、output artifacts、hashes。
+review.yaml 要有明确 verdict、blocking_findings、accepted_components、limitations。
+涉及 self-protecting 文件时，必须提供 human_required decision record。
+所有 .json 文件必须是合法 JSON，不能在 JSON 后附加人工摘要文本。
+ZIP 内路径要尽量保留 repo 相对路径，例如 scripts/、.sadp/、docs/agent-runtime/，不要改放到 source/、governance/ 后再要求原命令复现。
+
+建议新增一个一键复现脚本：
+
+Bash
+python tools/verify_evidence_pack.py _evidence/<TASK_ID>
+
+它至少检查：
+
+required files exist
+all JSON parseable
+diff.patch non-empty
+test-output has exit code 0
+review.yaml verdict consistent
+chain-evidence references existing files
+no summary-only submission
+protected/self-protecting mutations have human_required record
+4. R3-R14 text-only submissions 是否应 retroactively flagged？
+
+结论：应该 retroactively flagged，但不必自动推翻所有技术 verdict。
+
+建议在 REVIEWER_INDEX.md 和 CONFLICT_REGISTRY.json 中追加一个 process erratum：
+
+YAML
+finding_id: R15-INTEGRITY-01
+severity: P0_PROCESS
+affected_rounds:
+  - R3
+  - R4
+  - R5
+  - R6
+  - R7
+  - R8
+  - R9
+  - R10
+  - R11
+  - R12
+  - R13
+  - R14
+status: CORRECTIVE_EVIDENCE_SUBMITTED_BUT_NOT_FULLY_SADP_0R2_COMPLIANT
+impact:
+  - prior text-only submissions are not independently verifiable as originally submitted
+  - existing technical verdicts may be maintained only as accepted_with_evidence_gap
+  - future claims must reference file-based evidence, not summaries
+
+对 R3-R13，我建议标记为：
+
+YAML
+prior_verdict_status: MAINTAINED_WITH_EVIDENCE_INTEGRITY_LIMITATION
+
+对 R14，保持：
+
+YAML
+prior_verdict_status: BLOCKED
+reason: self-protecting sadp-audit.ps1 modified without human_required approval
+
+R15 的 corrective ZIP 可以缓解证据缺口，但目前还不能完全关闭，因为它没有满足 SADP 0.R.2 的标准结构，也不能按提交命令独立复现。
+
+5. 防止未来 evidence degradation 的过程控制
+
+建议加入以下硬门禁：
+
+YAML
+pre_gpt_review_gate:
+  rule: submission must attach evidence ZIP or canonical evidence directory
+  block_if:
+    - summary_only_submission
+    - missing diff.patch
+    - missing test-output.md
+    - missing review.yaml
+    - missing chain-evidence.json
+    - invalid JSON artifacts
+    - protected file touched without human_required record
+
+evidence_pack_linter:
+  required_before_submission: true
+  output_required: true
+  fail_closed_on_SD_01_summary_only: true
+
+new_session_startup_gate:
+  required_reads:
+    - operations-manual.md
+    - SADP_POLICY.json
+    - REVIEWER_INDEX.md
+    - latest accepted verdict
+    - latest blocked finding list
+  block_if:
+    - prior evidence standard not loaded
+    - latest round status unknown
+
+path_preservation_rule:
+  requirement: evidence ZIP must preserve repo-relative paths
+  bad:
+    - source/sadp_pre_task_enforcer.py when repo path is scripts/sadp_pre_task_enforcer.py
+    - governance/SADP_POLICY.json when repo path is .sadp/SADP_POLICY.json
+  good:
+    - scripts/sadp_pre_task_enforcer.py
+    - .sadp/SADP_POLICY.json
+    - docs/agent-runtime/operations-manual.md
+
+json_purity_rule:
+  requirement: files ending .json must parse as JSON
+  block_if:
+    - appended console summary
+    - comments
+    - multiple JSON documents
+
+documentation_only_claim_guard:
+  rule: if diff touches scripts/, .sadp/, rules/, AGENTS.md, CLAUDE.md, hooks/, or docs/agent-runtime/protected files, submission cannot claim documentation-only
+Final Answer to the 5 Questions
+Question	Reviewer Answer
+1. Does ZIP meet SADP 0.R.2?	No. It is a useful corrective archive, but not a complete SADP 0.R.2 run evidence directory. Required canonical files are missing, and the verification command does not reproduce.
+2. Can R14 manual be accepted separately?	Yes, provisionally as content. But task closure requires a clean manual-only diff and no sadp-audit.ps1 mutation.
+3. Additional evidence needed?	Canonical evidence directory, exact file names, valid JSON, clean diff, reproducible test command, chain evidence, safety report, human_required record for protected changes.
+4. Retroactively flag R3-R14?	Yes. Mark as evidence-integrity-degraded. Maintain R3-R13 only with limitation; keep R14 blocked.
+5. Process controls?	Enforce attachment-required review gate, evidence_pack_linter, startup read gate, path-preserving ZIP, JSON purity, and documentation-only claim guard.
+
+一句话结论：R15 诚实识别了证据退化问题，并提供了比 text-only 强得多的补救材料；但当前 ZIP 仍未达到 SADP 0.R.2 的完整、可独立复现证据标准。R14 的 operations manual 内容可保留并单独推进，sadp-audit.ps1 修改仍必须 human-gated。

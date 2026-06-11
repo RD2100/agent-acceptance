@@ -1,0 +1,204 @@
+overall_judgment: mixed_blocked
+evidence_pack_reviewed: true
+
+pack_level_findings:
+manifest_hash_integrity: pass
+actual_deliverables_present: pass
+raw_test_outputs_present: partial
+safety_attestation_present: pass_but_not_sufficient
+scope_verification: blocked
+notes:
+- "PACK_MANIFEST.md 与 ZIP 内容一致，hash 可复核。"
+- "reports/TEST_OUTPUT.txt 显示 agent-acceptance: 269 passed, 21 warnings。"
+- "reports/TASKSPEC_OUTPUT.txt 显示 ALL OK: 25 TaskSpecs valid。"
+- "reports/PILOT_OUTPUT.txt 存在，但其中 paper validator exit=1/result=fail，pilot runner 最终仍 PASS。"
+- "没有单独的 control-plane 72 PASS 原始输出、CodeGraph vitest 34/37 原始输出、monorepo 5/5 smoke 原始输出。"
+- "GIT_DIFF_STAT.txt 是大范围 dirty diff，包含 .ai/bypass_approved、HANDOFF_REPLY_V4.txt 删除、runs/、archive hooks 等历史 dirty baseline；该包不能证明 selected-files-only scope。"
+- "actual_deliverables 扁平化存放，未镜像原始仓库路径，例如 actual_deliverables/scripts/*.py。"
+
+verdicts:
+
+task_id: CODEGRAPH-FORK-POOL-FIX
+verdict: review_unverified
+rationale: >
+actual_deliverables/vitest.config.ts 确实包含 pool: 'forks'，方向上符合 Windows worker crash 修复。
+但包内没有 CodeGraph/vitest 原始测试输出，无法验证 34/37 pass、0 worker errors 或 OOM/Windows symlink 归因。
+blocking_issues:
+
+"缺少 CODEGRAPH_TEST_OUTPUT.txt 或等价 vitest 原始输出。"
+
+"缺少剩余 3 项未通过测试的名称、归因和平台限制说明。"
+
+"只有 summary 声明 CodeGraph 34/37，不能 evidence-first accepted。"
+required_fixes:
+
+"补充 CodeGraph/vitest 原始输出。"
+
+"补充 3 个剩余项的 classification。"
+
+"若 34/37 是可接受状态，必须证明剩余项为环境/OOM/Windows symlink 限制，而非真实代码回归。"
+
+task_id: CONTROL-PLANE-BYPASS-FIX
+verdict: blocked
+rationale: >
+check_submission_bypass.py 存在，但实现仍然因为 cwd 字符串包含 pytest 或 Temp 就直接 PASS。
+这会使普通 Temp 路径绕过 .ai/bypass_approved，属于过宽 bypass。
+blocking_issues:
+
+"check_submission_bypass.py 的 Temp/pytest 自动 PASS 规则过宽，不满足 fail-closed。"
+
+"GIT_DIFF_STAT.txt 显示 .ai/bypass_approved 被纳入 diff，存在全局 bypass marker 被提交风险。"
+
+"缺少 bypass checker targeted tests，不能证明正常目录无 marker 时 fail closed、有 marker 才 pass。"
+
+"缺少 control-plane 72 PASS 的原始测试输出。"
+required_fixes:
+
+"移除 cwd contains Temp 的自动 PASS。"
+
+"pytest 例外若需要，必须使用显式测试环境变量或受控 fixture，而不是路径字符串。"
+
+"补充 targeted tests：normal path no marker fail、valid marker pass、generic Temp path fail、controlled test exception pass。"
+
+"明确 .ai/bypass_approved 不得提交，或提供单独授权。"
+
+task_id: PAPER-SAFETY-INFRASTRUCTURE
+verdict: blocked
+rationale: >
+该组仍不满足 fail-closed 安全闭环。PILOT_OUTPUT.txt 明确显示 validate_paper_task.py Exit: 1/result: fail，
+但 paper_pilot_runner.py 只判断 validator_ran=true，最终 PILOT RESULT: PASS。
+blocking_issues:
+
+"pilot runner 在 validator exit=1/result=fail 时仍 PASS。"
+
+"paper_auth_gate.py 只检查 authorized/token/expires_at，未禁止 real_paper_full_text、paper_excerpt、external_upload、live_cdp、memory_write_with_paper_content，且默认 reason/scope 为 full pilot。"
+
+"paper_go_nogo.py 只检查脚本/zip 是否存在，不读取 preflight/pilot/auth/dry-run result JSON 的语义。"
+
+"paper_dry_run_packet.py 在 auth_gate=CLOSED 时仍写 All gates passed。"
+
+"paper_pilot_preflight.py 主要检查文件/字符串存在，未做机器可读协议验证，且 memory 检查过弱。"
+
+"缺少完整 negative targeted test outputs。"
+required_fixes:
+
+"pilot runner 必须要求 validator exit 0 且 result PASS。"
+
+"auth gate 必须限定 bounded/synthetic/metadata-only，并显式禁止高风险授权。"
+
+"go/nogo 必须读取并验证 result JSON 语义。"
+
+"dry-run packet 不得在 auth_gate=CLOSED 时写 All gates passed。"
+
+"补充 missing/expired/overbroad auth、raw_paper_text、private_user_text、external_upload、memory_write_with_paper_content、validator fail 等负向测试。"
+
+task_id: REVIEW-QUEUE
+verdict: blocked
+rationale: >
+review_queue.py 有基础队列实现和 SHA256 长度/匹配检查，但生命周期和 GPT reply 校验仍存在关键缺口。
+blocking_issues:
+
+"record_gpt_reply() 没有调用 validate_gpt_reply()，缺少 END_OF_GPT_RESPONSE 的回复仍可能进入 gpt_replied。"
+
+"accept_ticket() 不校验 accepted 回复中必须包含 next_task_authorization。"
+
+"blocked 在 ACTIVE_STATES 中，但不在 TERMINAL_STATES 中，会永久占用 active slot。"
+
+"缺少 review_unverified/cancelled/superseded 等状态。"
+
+"缺少该组 targeted raw output；summary 称 9 tests，但包内只提供整体 269 passed 输出。"
+required_fixes:
+
+"将 validate_gpt_reply() 接入 record_gpt_reply()。"
+
+"accepted 必须校验 next_task_authorization。"
+
+"blocked 必须成为 terminal 或通过明确 supersede/retry 机制释放 active slot。"
+
+"补充 review queue targeted output。"
+
+task_id: TASKSPEC-VALIDATOR
+verdict: accepted_with_limitation
+rationale: >
+actual_deliverables/validate_taskspec.py 存在，reports/TASKSPEC_OUTPUT.txt 显示 ALL OK: 25 TaskSpecs valid。
+该项可按“基础 YAML 结构验证 + 腐坏 TaskSpec 修复验证”接受。
+limitations:
+
+"validate_taskspec.py 是基础结构/YAML validator，不是完整 TASKSPEC.schema.json 级验证。"
+
+"包内没有展示 3 个 corrupted YAML 的 before/after diff。"
+
+"actual deliverables 未包含被修复的 3 个 YAML 文件本体。"
+blocking_issues: []
+required_fixes: []
+
+task_id: CONTROL-PLANE-SCRIPTS
+verdict: blocked
+rationale: >
+包含 generic_workflow.py、workflow_registry.py、workflow_artifacts.py、run_history.py、devframe_cli.py 等，
+但关键 CLI/registry 实现存在明显逻辑错误，且缺少 control-plane targeted raw output。
+blocking_issues:
+
+"workflow_registry.py 中 elif cmd in REGISTRY 分支使用 info = REGISTRY[name]，name 未定义；直接运行 workflow 会失败。"
+
+"devframe_cli.py run <workflow> 没有正确传递 workflow id，实际调用 registry_main() 会把 cmd 识别为 run，而不是具体 workflow。"
+
+"generic_workflow.py 仍把 verify_control exit=1 作为 KNOWN_ISSUES，但当前声称 control-plane 已 72 PASS，逻辑已 stale。"
+
+"多处硬编码 D:/agent-acceptance、D:/devframe-control-plane，移植性弱。"
+
+"缺少 control-plane 72 PASS 原始输出和 CLI targeted output。"
+required_fixes:
+
+"修复 workflow_registry.py 的 name 未定义问题。"
+
+"修复 devframe_cli.py run workflow 的参数传递。"
+
+"移除或更新 stale KNOWN_FAILURES 逻辑。"
+
+"补充 control-plane targeted tests/output。"
+
+task_id: INFRASTRUCTURE-SCRIPTS
+verdict: accepted_with_limitation
+rationale: >
+smoke_suite.py、pre_push_verify.py、run_demo.py、ci_matrix.py、test_impact_map.py、cross_repo_verify.py、multi_repo_smoke.py 等实际存在，
+且整体 agent-acceptance TEST_OUTPUT 显示 269 passed。作为“实用基础设施脚本集合”可以有限接受。
+limitations:
+
+"缺少每个脚本的 targeted raw output，例如 smoke 9/9、pre-push 5 checks、monorepo 5/5。"
+
+"multi_repo_smoke.py 仍包含 devframe-control-plane known failures=3 的 stale 逻辑。"
+
+"多处硬编码 D:/ 路径，不是通用跨环境实现。"
+
+"ci_matrix.py/test_impact_map.py 规则较粗糙，适合作为 lightweight utility，不应包装为成熟 CI 系统。"
+blocking_issues: []
+required_fixes:
+
+"后续若作为 release-critical 工具使用，应补充 targeted outputs、移除 stale known-failure 逻辑、降低硬编码路径依赖。"
+
+accepted_summary:
+accepted:
+- "TASKSPEC-VALIDATOR accepted_with_limitation"
+- "INFRASTRUCTURE-SCRIPTS accepted_with_limitation"
+blocked:
+- "CONTROL-PLANE-BYPASS-FIX"
+- "PAPER-SAFETY-INFRASTRUCTURE"
+- "REVIEW-QUEUE"
+- "CONTROL-PLANE-SCRIPTS"
+review_unverified:
+- "CODEGRAPH-FORK-POOL-FIX"
+
+required_next_action:
+
+"不要把 final batch 整体标记为 accepted。"
+
+"可单独绑定 TASKSPEC-VALIDATOR 与 INFRASTRUCTURE-SCRIPTS 的 limited acceptance。"
+
+"CONTROL-PLANE-BYPASS-FIX、PAPER-SAFETY-INFRASTRUCTURE、REVIEW-QUEUE、CONTROL-PLANE-SCRIPTS 必须修复后重审。"
+
+"CODEGRAPH-FORK-POOL-FIX 需要补充真实 vitest/CodeGraph 输出后再判定。"
+
+"不得提交 .ai/bypass_approved、HANDOFF 删除、runs/*、archive hooks 或其他 dirty baseline。"
+
+END_OF_GPT_RESPONSE

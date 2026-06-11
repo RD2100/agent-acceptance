@@ -1,0 +1,7 @@
+{
+  "dispatch_status": "ready_to_dispatch",
+  "next_task_spec_path": "_reports/test/s4_task_spec.json",
+  "terminal": true,
+  "should_execute_next": false,
+  "reason": "Ready to dispatch — treating as final"
+}

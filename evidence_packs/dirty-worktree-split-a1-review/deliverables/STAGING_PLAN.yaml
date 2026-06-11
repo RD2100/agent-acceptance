@@ -1,0 +1,54 @@
+task_id: DIRTY-WORKTREE-SPLIT-A1
+source_review: evidence_packs/dirty-worktree-review-20260607/GPT_REVIEW_RESULT_PASTED.txt
+review_verdict: triage_only
+status: ready_for_group_execution
+commit_policy:
+  whole_dirty_tree_commit_allowed: false
+  delete_historical_evidence_allowed: false
+  modify_runs_history_directly_allowed: false
+  include_tmp_cache_or_pyc_allowed: false
+recommended_first_group: GROUP-01
+groups:
+  - group_id: GROUP-01
+    name: AA-FLOW-RUNNER-CONTRACT-BACKFILL
+    risk: medium
+    status: coherent_candidate
+  - group_id: GROUP-02
+    name: PAPER-A3-VALIDATOR-RESIDUAL
+    risk: medium
+    status: coherent_candidate_requires_hash_check
+  - group_id: GROUP-03
+    name: MEMORY-A2-COMPILER-OUTPUT
+    risk: medium
+    status: generated_output_candidate
+  - group_id: GROUP-04
+    name: AGENT-RUNTIME-CAPABILITY-CLEANUP
+    risk: high
+    status: needs_separate_review
+  - group_id: GROUP-05
+    name: CHAIN-EVIDENCE-HARDENING
+    risk: high
+    status: high_risk_candidate
+  - group_id: GROUP-06
+    name: VALIDATE-WORKFLOW-CLOSURE-CONTROL-PLANE-PATTERN
+    risk: low
+    status: small_coherent_candidate
+  - group_id: GROUP-07
+    name: AI-TASKS-BACKLOG
+    risk: medium
+    status: metadata_candidate
+  - group_id: GROUP-08
+    name: SUBMIT-PROPOSAL-TO-GPT
+    risk: medium
+    status: needs_path_decision
+do_not_commit_patterns:
+  - .tmpconfig/**
+  - .tmpdata/**
+  - '**/__pycache__/**'
+  - '*.pyc'
+  - evidence_packs/dirty-worktree-review-20260607/**
+  - GPT_REVIEW_RESULT.md
+  - PROJECT_HISTORY_FINAL.md
+  - HISTORY_ANALYSIS.md
+  - runs/*/POST_REVIEW_ROUTE.json
+  - HANDOFF_REPLY_V4.txt deletion

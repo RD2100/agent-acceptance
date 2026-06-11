@@ -1,0 +1,10 @@
+# Synthetic Paper Task Input
+# synthetic_only: true; contains_real_user_paper: false; contains_private_data: false
+task_id: "PAPER-SYNTH-A2-001"
+task_type: "cssci_review"
+paper_data_classification: "synthetic"
+user_authorization: "synthetic"
+input_materials: ["synthetic_paper_title", "synthetic_paper_abstract", "synthetic_paper_outline"]
+privacy_constraints: ["no_real_paper", "no_user_identity", "no_external_upload"]
+memory_policy: "redacted_workflow_lesson_only"
+expected_outputs: ["overall_assessment", "main_contribution", "major_problems", "revision_priorities", "publishability_judgment"]

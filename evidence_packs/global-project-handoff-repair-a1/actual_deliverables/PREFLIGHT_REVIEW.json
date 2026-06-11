@@ -1,0 +1,162 @@
+{
+  "task_id": "GLOBAL-PROJECT-HANDOFF-REPAIR-A1",
+  "run_id": "GLOBAL_HANDOFF_REPAIR_A1_20260608_223700",
+  "generated_at": "2026-06-08T14:37:00.707873+00:00",
+  "existing_workflow_components_found": [
+    {
+      "path": "HANDOFF_SOURCE_OF_TRUTH.md",
+      "exists": true,
+      "sha256": "6fac2b229a4207a05bf45719ae3d78a252fe21e18e6285851be53b809674e3c2",
+      "source_type": "P1 GPT-approved artifact"
+    },
+    {
+      "path": "LEGACY_HANDOFF_INVENTORY.md",
+      "exists": true,
+      "sha256": "551f0486fc56d838fd763b6125a4c7cc80b7c6c0aa9c1a86b2476fb8e4353867",
+      "source_type": "P1 GPT-approved artifact"
+    },
+    {
+      "path": "_reports/handoff-pipeline-refactor-a1/HANDOFF_EVIDENCE_MAP.json",
+      "exists": true,
+      "sha256": "7ef588971d0c404f8c97497855e4dbef7e1f932c09862e984b44a6633f05a810",
+      "source_type": "P0/P1 evidence map artifact"
+    },
+    {
+      "path": "_reports/handoff-pipeline-refactor-a1/HANDOFF_STALE_CHECK.md",
+      "exists": true,
+      "sha256": "4221a8c934151911be297958a27ec8f62bec14bcad15866385cae8b9b545a9b2",
+      "source_type": "P0 generated stale-check report"
+    },
+    {
+      "path": "_reports/handoff-pipeline-refactor-a1/HANDOFF_SAFETY_SCAN.md",
+      "exists": true,
+      "sha256": "0f591705562d6229e560916282f13dd08f336d277f3bf7dab13e07924c89fba4",
+      "source_type": "P0 generated safety-scan report"
+    },
+    {
+      "path": "_reports/handoff-pipeline-refactor-a1/HANDOFF_DRAFT_FOR_GPT.md",
+      "exists": true,
+      "sha256": "148aef802d08a184235a40a41e497680a4aa57f53fa1ff994707c6de145b020a",
+      "source_type": "P1 draft artifact with limitation"
+    },
+    {
+      "path": "_reports/handoff-pipeline-refactor-a1/TARGETED_TEST_OUTPUT.txt",
+      "exists": true,
+      "sha256": "296ee6237d571fafa8da36eb0a78af60d696a6dc9f5fcf856afe687020ea6de1",
+      "source_type": "P0 targeted test output"
+    },
+    {
+      "path": "_reports/handoff-pipeline-refactor-a1/SAFETY_ATTESTATION.md",
+      "exists": true,
+      "sha256": "3cd68f58bbcc29760eff529f04c0e8cf3dbdc0c71bb6076a3c6cf9910e14f5eb",
+      "source_type": "P0 attestation"
+    },
+    {
+      "path": "evidence_packs/handoff-pipeline-refactor-a1/PACK_MANIFEST.md",
+      "exists": true,
+      "sha256": "e0d9929c4100b4f88289bb57d64ffebea8e1ca6afe74cf8d29c0d29623c2fa70",
+      "source_type": "P0 evidence manifest"
+    },
+    {
+      "path": "evidence_packs/handoff-pipeline-refactor-a1/CLOSURE_REPORT.md",
+      "exists": true,
+      "sha256": "d919ac84ae4111a6a146e9f74f6dcc1841c66beae9a571e7f0d445b5c665068e",
+      "source_type": "P0 closure report with limitation"
+    },
+    {
+      "path": "docs/WORKFLOW_AUDIT_LEDGER.yaml",
+      "exists": true,
+      "sha256": "d536a5b7cc8d1e2ca7bf64e09418996a505c55033656495e4c251860456e0e0f",
+      "source_type": "P0/P3 workflow audit ledger"
+    },
+    {
+      "path": "contracts/FLOW_OUTCOME.schema.json",
+      "exists": true,
+      "sha256": "7cb68f6af4fff0565cd80b683e1ad7e857efa026b7c13d2b5c4b56cce2e95abd",
+      "source_type": "P0 contract"
+    },
+    {
+      "path": "contracts/DISPATCH_RESULT.schema.json",
+      "exists": true,
+      "sha256": "e13fc14e87a2bde51c645c435feebac9113c8d29fc0952a3c2374275552f162e",
+      "source_type": "P0 contract"
+    },
+    {
+      "path": "scripts/pre_gpt_review_gate.py",
+      "exists": true,
+      "sha256": "71ad725f1f32a715952e382a235f1e71af69781b5f8504ddd962b94784d33569",
+      "source_type": "P0 reusable gate script"
+    },
+    {
+      "path": "scripts/evidence_pack_linter.py",
+      "exists": true,
+      "sha256": "e560844a599f0731e94503611bd9806c00e1efac9092093a104ddad7a8c552a8",
+      "source_type": "P0 reusable pack linter"
+    },
+    {
+      "path": "scripts/review_queue.py",
+      "exists": true,
+      "sha256": "340d74364310a8aa6febfa4a9c7e20831fd6ff40c45e5a59c96f1d48c2f28ed4",
+      "source_type": "P0 reusable review queue"
+    },
+    {
+      "path": "scripts/verify_gpt_reply.py",
+      "exists": true,
+      "sha256": "68571359abb8cd424607da275f12a693b98f6e5eed23ac46ebe0c2916d284fe8",
+      "source_type": "P0 reusable GPT reply verifier"
+    },
+    {
+      "path": "scripts/handoff_compiler.py",
+      "exists": true,
+      "sha256": "c5ab399074a07403c0c5062dd3decaaf43e25cb30cfbf7be87e300bb75440bea",
+      "source_type": "P0 reusable handoff compiler wrapper"
+    },
+    {
+      "path": "scripts/handoff_source_map.py",
+      "exists": true,
+      "sha256": "4c027c7c6c611ac6fdf6e1c7936df43742a9729e809e37f0abe01824ca3707e9",
+      "source_type": "P0 reusable source-map builder"
+    },
+    {
+      "path": "scripts/handoff_stale_check.py",
+      "exists": true,
+      "sha256": "096dd506de2f5956c62ab3ba593626ca85d08a869d943977a2e575d0fbf87837",
+      "source_type": "P0 reusable stale checker"
+    },
+    {
+      "path": "scripts/handoff_safety_scan.py",
+      "exists": true,
+      "sha256": "d526b0fc4cc2c48591149f599f3cf6c399b1f872d9585229f2b019f58a5fba5d",
+      "source_type": "P0 reusable safety scanner"
+    },
+    {
+      "path": "scripts/gpt_new_chat_attachment_submit.py",
+      "exists": true,
+      "sha256": "01a2638f73e5bfffe9e4bb5eb12d42652cbde11ebe267c3676a4d2c5bf51c62d",
+      "source_type": "P0 reusable attachment-backed GPT submitter"
+    }
+  ],
+  "directly_reused": [
+    "scripts/handoff_source_map.py",
+    "scripts/handoff_stale_check.py",
+    "scripts/handoff_safety_scan.py",
+    "scripts/evidence_pack_linter.py",
+    "scripts/pre_gpt_review_gate.py",
+    "scripts/verify_gpt_reply.py",
+    "HANDOFF_SOURCE_OF_TRUTH.md",
+    "HANDOFF_APPROVAL_RECORD.json",
+    "docs/WORKFLOW_AUDIT_LEDGER.yaml"
+  ],
+  "minimal_patches": [
+    "Generated whole-project/global artifacts only; no governance framework rewrite."
+  ],
+  "legacy_reference_only": [
+    "PROJECT_HISTORY.md",
+    "PROJECT_HISTORY_FINAL.md",
+    "HANDOFF.md",
+    "HANDOFF_V5.md",
+    "HANDOFF_V6.md",
+    "HISTORY_ANALYSIS.md",
+    "root GPT_*.txt unless verified and bound"
+  ]
+}

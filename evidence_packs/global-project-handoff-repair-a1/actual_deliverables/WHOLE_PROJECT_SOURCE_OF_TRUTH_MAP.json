@@ -1,0 +1,111 @@
+{
+  "task_id": "GLOBAL-PROJECT-HANDOFF-REPAIR-A1",
+  "run_id": "GLOBAL_HANDOFF_REPAIR_A1_20260608_223700",
+  "generated_at": "2026-06-08T14:37:00.707873+00:00",
+  "claims": [
+    {
+      "claim_id": "handoff_pipeline_a1_status",
+      "claim": "HANDOFF-PIPELINE-REFACTOR-A1 was GPT reviewed as accepted_with_limitation, not accepted.",
+      "source_type": "P1 GPT-approved artifact",
+      "evidence_file": "HANDOFF_APPROVAL_RECORD.json",
+      "confidence": "high",
+      "status": "accepted_with_limitation"
+    },
+    {
+      "claim_id": "a1_not_whole_project_handoff",
+      "claim": "A1 closure proves the handoff pipeline, but does not itself constitute complete whole-project handoff.",
+      "source_type": "P1 GPT-approved artifact",
+      "evidence_file": "HANDOFF_APPROVAL_RECORD.json",
+      "confidence": "high",
+      "status": "limitation"
+    },
+    {
+      "claim_id": "source_truth_hierarchy",
+      "claim": "P0/P1/P2/P3 authority hierarchy exists and memory compiler is recall only.",
+      "source_type": "P1 GPT-approved artifact",
+      "evidence_file": "HANDOFF_SOURCE_OF_TRUTH.md",
+      "confidence": "high",
+      "status": "active"
+    },
+    {
+      "claim_id": "legacy_handoff_inventory",
+      "claim": "Legacy handoff/history files are inventoried as reference and were not deleted/moved/renamed.",
+      "source_type": "P1 GPT-approved artifact",
+      "evidence_file": "LEGACY_HANDOFF_INVENTORY.md",
+      "confidence": "high",
+      "status": "active"
+    },
+    {
+      "claim_id": "paper_workflow_active_bounded",
+      "claim": "Paper workflow is active in bounded, local, privacy-gated mode; no paper full text enters GPT/memory.",
+      "source_type": "P1 GPT-approved artifact + P0 paper index",
+      "evidence_file": "HANDOFF_SOURCE_OF_TRUTH.md; _reports/PAPER_PROJECT_INDEX.json",
+      "confidence": "medium",
+      "status": "active_with_privacy_boundary"
+    },
+    {
+      "claim_id": "paper_project_index_status",
+      "claim": "Paper project index has 12 modules and overall_status in_progress.",
+      "source_type": "P0 evidence",
+      "evidence_file": "_reports/PAPER_PROJECT_INDEX.json",
+      "confidence": "high",
+      "status": "in_progress"
+    },
+    {
+      "claim_id": "296_pass",
+      "claim": "296 PASS is not verified by local P0 evidence and must remain an unverified conversational claim.",
+      "source_type": "unverified conversational claim",
+      "evidence_file": "HANDOFF_APPROVAL_RECORD.json",
+      "confidence": "high",
+      "status": "do_not_promote"
+    },
+    {
+      "claim_id": "targeted_handoff_tests",
+      "claim": "Handoff targeted tests passed 13 tests.",
+      "source_type": "P0 evidence",
+      "evidence_file": "_reports/handoff-pipeline-refactor-a1/TARGETED_TEST_OUTPUT.txt",
+      "confidence": "high",
+      "status": "13_passed"
+    },
+    {
+      "claim_id": "closure_report_test_mismatch",
+      "claim": "A1 CLOSURE_REPORT states 12 passed while TARGETED_TEST_OUTPUT states 13 passed.",
+      "source_type": "P0 evidence conflict",
+      "evidence_file": "evidence_packs/handoff-pipeline-refactor-a1/CLOSURE_REPORT.md; _reports/handoff-pipeline-refactor-a1/TARGETED_TEST_OUTPUT.txt",
+      "confidence": "high",
+      "status": "nonblocking_inconsistency"
+    },
+    {
+      "claim_id": "pre_gate_manifest_gap",
+      "claim": "PRE_GPT_GATE_OUTPUT exists but may be omitted from A1 PACK_MANIFEST.",
+      "source_type": "P0 evidence",
+      "evidence_file": "_reports/handoff-pipeline-refactor-a1/PRE_GPT_GATE_OUTPUT.txt; evidence_packs/handoff-pipeline-refactor-a1/PACK_MANIFEST.md",
+      "confidence": "high",
+      "status": "missing_from_a1_manifest"
+    },
+    {
+      "claim_id": "s3_lineage",
+      "claim": "S3/B2/B3 are historical lineage and must not be treated as current production promotion.",
+      "source_type": "P3 legacy reference",
+      "evidence_file": "HISTORY_ANALYSIS.md; PROJECT_HISTORY.md",
+      "confidence": "medium",
+      "status": "legacy_reference_only"
+    },
+    {
+      "claim_id": "production_promotion",
+      "claim": "Production promotion is not proven as final approved in current P0/P1 evidence.",
+      "source_type": "needs_more_evidence",
+      "evidence_file": "HISTORY_ANALYSIS.md; evidence_packs/ci-release-20260608/GPT_RESULT_R3.txt",
+      "confidence": "medium",
+      "status": "needs_more_evidence"
+    },
+    {
+      "claim_id": "governance_tasks",
+      "claim": "Governance task state exists in .ai/tasks with 25 task files; no single global closed state is inferred.",
+      "source_type": "P0 local task ledger",
+      "evidence_file": ".ai/tasks/",
+      "confidence": "medium",
+      "status": "partial_index"
+    }
+  ]
+}

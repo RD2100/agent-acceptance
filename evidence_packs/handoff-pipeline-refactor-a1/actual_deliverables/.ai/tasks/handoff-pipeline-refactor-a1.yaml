@@ -1,0 +1,74 @@
+task_id: HANDOFF-PIPELINE-REFACTOR-A1
+title: Refactor GPT and coding-agent handoff pipeline with source-of-truth hierarchy
+priority: P0
+status: in_progress
+mode: "evidence-first handoff pipeline"
+
+goal:
+  user_visible_success: >
+    GPT and coding-agent handoff materials are source-of-truth bound, stale-checked,
+    safety-scanned, and not treated as approved until verified GPT review exists.
+  in_scope:
+    - Define P0/P1/P2/P3 handoff source hierarchy
+    - Inventory legacy handoff/history files without modifying them
+    - Add minimal TDD-backed handoff compiler, stale check, source map, and safety scan wrappers
+    - Generate draft handoff reports and evidence pack
+    - Establish Minimax M3 observation logging mechanism without final capability judgment
+  out_of_scope:
+    - Deleting, moving, renaming, or rewriting legacy files
+    - Appending SUPERSEDED notices to legacy files
+    - Writing paper full text or raw paragraphs to any artifact
+    - Generating approved handoff artifacts before GPT review
+    - Auto-commit or auto-push
+
+source_of_truth:
+  p0:
+    - verified captured GPT verdicts
+    - evidence_packs/**
+    - TEST_OUTPUT / TARGETED_TEST_OUTPUT
+    - _reports/PAPER_PROJECT_INDEX.json
+    - .ai/module_ledger/
+    - .ai/tasks/
+  p1:
+    - GPT-approved BOOT_CONTEXT / HANDOFF / PASTE_BLOCK
+  p2:
+    - claude-memory-compiler knowledge
+    - memory/index.md
+  p3:
+    - legacy PROJECT_HISTORY
+    - old HANDOFF files
+    - old paste blocks
+
+write_set:
+  - HANDOFF_SOURCE_OF_TRUTH.md
+  - LEGACY_HANDOFF_INVENTORY.md
+  - .ai/tasks/handoff-pipeline-refactor-a1.yaml
+  - memory/tasks/handoff-pipeline-refactor-a1.md
+  - scripts/handoff_compiler.py
+  - scripts/handoff_stale_check.py
+  - scripts/handoff_source_map.py
+  - scripts/handoff_safety_scan.py
+  - schemas/handoff_compiler_result.schema.json
+  - schemas/handoff_evidence_map.schema.json
+  - schemas/minimax_m3_observation.schema.json
+  - tests/test_handoff_compiler.py
+  - tests/test_handoff_stale_check.py
+  - tests/test_handoff_safety_scan.py
+  - tests/test_handoff_source_map.py
+  - _reports/handoff-pipeline-refactor-a1/**
+  - _reports/minimax-m3-observation/**
+  - evidence_packs/handoff-pipeline-refactor-a1/**
+
+forbidden:
+  - delete_move_rename_any_file
+  - modify_legacy_handoff_history_body
+  - append_superseded_notice_without_explicit_authorization
+  - write_paper_full_text_or_raw_paragraphs
+  - generate_approved_handoff_before_verified_gpt_review
+  - auto_commit
+  - auto_push
+
+gate_0:
+  triggered: true
+  result_path: _reports/handoff-pipeline-refactor-a1/GATE0_REUSE_CHECK.md
+  decision: reuse_existing_where_possible

@@ -1,0 +1,83 @@
+overall_judgment: mixed
+
+evidence_pack_reviewed: true
+
+pack_level_findings:
+manifest_hash_integrity: pass
+actual_deliverables_present: pass
+targeted_tests_present: pass
+note:
+- "reports/TARGETED_TESTS.txt shows 12 passed."
+- "BYPASS targeted coverage is present: normal path fail-closed, valid marker pass, Temp no auto-pass, DEVRAME_TEST_MODE pass."
+- "reports/TEST_OUTPUT.txt is stale/non-green for review_queue, but this review is scoped to PAPER-SAFETY and CONTROL-PLANE-BYPASS."
+
+verdicts:
+
+task_id: CONTROL-PLANE-BYPASS-FIX
+verdict: accepted_with_limitation
+rationale: >
+The key unsafe behavior has been fixed. Temp auto-PASS is removed. The bypass checker now passes only with
+an explicit .ai/bypass_approved marker or DEVRAME_TEST_MODE=SYNTHETIC_ONLY. reports/TARGETED_TESTS.txt proves
+4 targeted cases pass: normal path without marker fails closed, valid marker passes, generic Temp path does not
+auto-pass, and synthetic test mode passes.
+limitations:
+
+".ai/bypass_approved still appears in reports/GIT_DIFF_STAT.txt, so it must not be committed as a persistent global bypass marker unless separately authorized."
+
+"The env var is named DEVRAME_TEST_MODE, not DEVFRAME_TEST_MODE. This can be accepted only as the current tested contract, not silently assumed to be a typo."
+
+"reports/BYPASS_OUTPUT.txt only proves one pass path; the acceptance relies on reports/TARGETED_TESTS.txt for fail-closed coverage."
+blocking_issues: []
+required_fixes_before_commit:
+
+"Ensure .ai/bypass_approved is excluded from commit or explicitly authorized."
+
+"Record that DEVRAME_TEST_MODE is the tested env var name, or rename it in a separate reviewed change."
+
+task_id: PAPER-SAFETY-INFRASTRUCTURE
+verdict: blocked
+blocking_issues:
+
+issue_id: PAPER-SAFETY-R4-BLOCKER-01
+title: "pilot runner still treats validator exit 1 as acceptable"
+detail: >
+actual_deliverables/paper_pilot_runner.py sets validator_ran = r.returncode in (0, 1), then ok &= validator_ran.
+reports/PILOT_OUTPUT.txt confirms validate_paper_task.py Exit: 1, but the runner still reports PILOT RESULT: PASS.
+This contradicts the claimed fix that validator exit 0/PASS is required.
+
+issue_id: PAPER-SAFETY-R4-BLOCKER-02
+title: "GO/NOGO gate still checks file existence rather than result semantics"
+detail: >
+actual_deliverables/paper_go_nogo.py checks auth plus existence of scripts/paper_pilot_preflight.py,
+scripts/paper_pilot_runner.py, and evidence_packs/paper-c3-dry-run/dry-run-packet.zip. It does not read
+and validate preflight/pilot/auth/dry-run result JSON semantics.
+
+issue_id: PAPER-SAFETY-R4-BLOCKER-03
+title: "auth gate scope is improved but not fully field-safe"
+detail: >
+paper_auth_gate.py now restricts scope to synthetic_only, metadata_only, bounded_pilot, or dry_run, which is an improvement.
+But it still does not explicitly reject separate high-risk boolean fields such as real_paper_full_text_allowed,
+external_upload_allowed, live_cdp_allowed, or memory_write_with_paper_content if present in the authorization file.
+
+issue_id: PAPER-SAFETY-R4-BLOCKER-04
+title: "positive synthetic safety path is not actually proven"
+detail: >
+PILOT_OUTPUT proves operational gates with auth CLOSED and GO/NOGO NOGO by default, but it does not prove a positive
+synthetic validator PASS path. The validator exits 1 in the provided run.
+required_fixes:
+
+"Change paper_pilot_runner.py so validate_paper_task.py must return exit 0 and a PASS result for the validator step."
+
+"Add or capture a positive synthetic PILOT_OUTPUT where validator exit is 0 and the intended synthetic path passes."
+
+"Update paper_go_nogo.py to validate actual result JSON semantics, not script/zip existence."
+
+"Update auth gate to explicitly reject high-risk authorization fields if present."
+
+"Add targeted negative tests for overbroad auth fields and validator fail."
+
+summary:
+CONTROL-PLANE-BYPASS-FIX: accepted_with_limitation
+PAPER-SAFETY-INFRASTRUCTURE: blocked
+
+END_OF_GPT_RESPONSE

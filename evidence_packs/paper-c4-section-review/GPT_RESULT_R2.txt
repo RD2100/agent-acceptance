@@ -1,0 +1,74 @@
+overall_judgment: blocked
+task_id: PAPER-C4-BOUNDED-SECTION-REVIEW-A1
+evidence_pack_reviewed: true
+
+pack_level_findings:
+manifest_hash_integrity: pass
+examples_present: pass
+sanitized_output_present: pass
+targeted_tests_present: pass
+full_tests_present: pass
+actual_deliverables_present: pass
+
+accepted_parts:
+
+"PACK_MANIFEST.md hashes match the ZIP contents."
+
+"Example inputs are included."
+
+"Validator now blocks forbidden fields by presence using if field in data."
+
+"FORBIDDEN_FIELDS includes 9 fields."
+
+"reports/TARGETED_TEST_OUTPUT.txt shows 9 passed."
+
+"reports/TEST_OUTPUT.txt shows 296 passed, 21 warnings."
+
+"reports/SYNTHETIC_OUTPUT.txt and reports/SANITIZED_OUTPUT.txt are present."
+
+"Synthetic and sanitized modes are demonstrated."
+
+"No Web GPT / CDP / external upload behavior is evident."
+
+blocking_issues:
+
+issue_id: PAPER-C4-R2-BLOCKER-01
+title: "Generated result still does not conform to included result schema"
+detail: >
+paper_c4_section_review_result.schema.json has additionalProperties: false
+and does not define generated_at, but paper_c4_section_review.py emits
+generated_at in PASS and BLOCKED results. I checked the generated synthetic
+output against the included schema: schema validation fails because
+generated_at is an unexpected additional property.
+
+issue_id: PAPER-C4-R2-BLOCKER-02
+title: "Claimed result-schema test is still not actual schema validation"
+detail: >
+The targeted test TestResultSchema::test_result_has_required_fields only checks
+that required keys exist and that list fields are lists. It does not load
+paper_c4_section_review_result.schema.json and validate generated output
+against it. Therefore the schema-contract proof is still missing.
+
+issue_id: PAPER-C4-R2-BLOCKER-03
+title: "Evidence still lacks CHANGED_FILES and diff patch"
+detail: >
+This does not block the workflow logic itself, but it still prevents clean
+selected-files-only scope verification before commit/binding.
+
+required_fixes:
+
+"Either add generated_at to paper_c4_section_review_result.schema.json or remove generated_at from generated results."
+
+"Add an actual JSON Schema validation test for PASS and BLOCKED results."
+
+"Regenerate TARGETED_TEST_OUTPUT.txt from the updated tests."
+
+"Regenerate TEST_OUTPUT.txt after the schema fix."
+
+"Add CHANGED_FILES.txt and a diff patch if this will be committed/bound."
+
+summary:
+PAPER-C4-BOUNDED-SECTION-REVIEW-A1: blocked
+reason: "The functional workflow is close, but the machine-readable result schema still contradicts the actual generated JSON."
+
+END_OF_GPT_RESPONSE

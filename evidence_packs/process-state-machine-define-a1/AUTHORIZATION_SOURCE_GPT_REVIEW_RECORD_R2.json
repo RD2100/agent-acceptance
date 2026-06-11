@@ -1,0 +1,84 @@
+{
+  "task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1-R2",
+  "run_id": "HANDOFF_WORKFLOW_HARDENING_PLAN_A1_R2_REVIEW_20260609T021002_RD",
+  "round": "R2",
+  "verdict": {
+    "overall_judgment": "accepted_with_limitation",
+    "evidence_pack_reviewed": true,
+    "attachment_reviewed": true,
+    "task_id_matches": true,
+    "has_end_marker": true,
+    "has_next_task_auth": true,
+    "blocking_issues": "none",
+    "required_fixes": "none"
+  },
+  "verifier": {
+    "valid": true,
+    "closure_ready": true,
+    "exit_code": 0,
+    "output_path": "_reports/handoff-workflow-hardening-plan-a1/VERIFY_GPT_REPLY_OUTPUT_R2.txt"
+  },
+  "submission": {
+    "sent": true,
+    "upload_confirmed": true,
+    "upload_method": "input[0]",
+    "send_button": "button[data-testid=\"send-button\"]",
+    "send_confirmed": true,
+    "send_confirm_reason": "user_message_bubble_appeared",
+    "sent_at": "2026-06-09T10:11:34",
+    "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+    "status_path": "_reports/handoff-workflow-hardening-plan-a1/GPT_REVIEW_SUBMISSION_STATUS_R2.json"
+  },
+  "capture_reconciliation": {
+    "before_user_count": 12,
+    "before_assistant_count": 6,
+    "after_user_count": 13,
+    "after_assistant_count": 7,
+    "selected_index": 6,
+    "last_index": 6,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match",
+    "reconciliation_path": "_reports/handoff-workflow-hardening-plan-a1/GPT_CAPTURE_RECONCILIATION_R2.json"
+  },
+  "evidence_pack": {
+    "zip_path": "evidence_packs/handoff-workflow-hardening-plan-a1/HANDOFF_WORKFLOW_HARDENING_PLAN_A1_R2_20260609T021002.zip",
+    "zip_size": 49780,
+    "zip_sha256": "539b477e4d647ebd950a639a3548b8c235ff511c0af27461f5d0fb62538d34f0"
+  },
+  "captured_reply": {
+    "result_path": "_reports/handoff-workflow-hardening-plan-a1/GPT_REVIEW_RESULT_R2.txt",
+    "reply_chars": 1225,
+    "reply_sha256": "66e082d26fd748a10d11a40134c4da90da1a77decc7f3a6d1031f8cacf7cf837",
+    "run_id_in_reply": true,
+    "has_end_marker": true,
+    "has_overall_judgment": true,
+    "parsed_overall_judgment": "accepted_with_limitation"
+  },
+  "r1_fixes_verified": [
+    "source-of-truth layer corrected to match HANDOFF_SOURCE_OF_TRUTH.md",
+    "gpt_new_chat_attachment_submit.py capability description unified",
+    "startup proof files included in pack and manifest",
+    "HANDOFF_REPLY_V4.txt explicitly documented as tracked_deleted_human_required"
+  ],
+  "limitations": [
+    "本轮仍是 hardening plan，不是硬化机制实现",
+    "PROCESS_STATE_MACHINE、changed-files schema 等仍需后续任务实现",
+    "SAFETY_ATTESTATION 应进一步精确表述以避免与 HANDOFF_REPLY_V4.txt 状态歧义",
+    "部分报告元数据仍沿用原始 A1 run_id，后续 pack 应强化 round/run_id 一致性"
+  ],
+  "next_task_authorization": {
+    "task_id": "PROCESS-STATE-MACHINE-DEFINE-A1",
+    "authorized": "已授权",
+    "execute_immediately": "是",
+    "ask_before_starting": "否"
+  },
+  "r2_improvements_over_r1": [
+    "Capture logic upgraded: before_assistant_count baseline + run_id authoritative matching",
+    "capture_mismatch: false (R1 had capture_mismatch: true)",
+    "GPT_CAPTURE_RECONCILIATION_R2.json generated per submission",
+    "GAP-010 capture_mechanism_hardening added based on R1 incident"
+  ],
+  "created_at": "2026-06-09T10:12:30+08:00",
+  "method": "playwright_cdp_9222",
+  "script": "_reports/handoff-workflow-hardening-plan-a1/_submit_gpt_review_r2.py"
+}

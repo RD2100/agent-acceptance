@@ -1,0 +1,126 @@
+可以。建议把这两条写成 P0 工作流规则，优先级高于 agent summary、旧 blocker、CDP 提交状态和自动 next task。
+
+Markdown
+# P0 Workflow Rules: GPT Review Binding + Full Test Evidence
+
+## Rule 1: GPT Review Response Binding
+
+After CDP submission, agent MUST read the actual GPT reply before reporting status.
+
+The agent must never report task status from:
+- memory
+- assumption
+- prior blocker list
+- CDP submission success
+- shell completion
+- its own summary
+- user-side paraphrase
+- stale evidence pack
+
+A GPT review is not complete until all of the following are true:
+
+1. The GPT reply has been read from the page.
+2. The full reply is saved as `GPT_REVIEW_RESULT.txt`.
+3. `END_OF_GPT_RESPONSE` is present.
+4. `overall_judgment` is parsed.
+5. `task_id` and review round match the current submission.
+6. The response SHA256 is recorded.
+
+If the GPT reply cannot be read or validated, the only allowed status is:
+
+```yaml
+overall_judgment: review_unverified
+task_may_close: false
+next_task_may_start: false
+
+One-line rule:
+
+No GPT reply read, no verdict.
+No END_OF_GPT_RESPONSE, no closure.
+Latest validated GPT response wins.
+Rule 2: Full Test Output for Verification
+
+A task may not be reported as fully verified based only on summary test counts.
+
+The agent must preserve raw test output for any claim such as:
+
+“full tests pass”
+
+“targeted tests pass”
+
+“monorepo smoke pass”
+
+“control-plane 72 PASS”
+
+“agent-acceptance 269 PASS”
+
+“CodeGraph 34/37 pass”
+
+“no worker errors”
+
+“all green”
+
+Required evidence files:
+
+YAML
+required_test_evidence:
+  targeted_tests:
+    required_when: "task changes code, tests, validators, gates, queues, CLI, workflow, or scripts"
+    file: "TARGETED_TEST_OUTPUT.txt"
+
+  full_tests:
+    required_when: "task claims full-suite green or changes shared/core behavior"
+    file: "FULL_TEST_OUTPUT.txt or TEST_OUTPUT.txt"
+
+  smoke_tests:
+    required_when: "task claims smoke pass"
+    file: "SMOKE_OUTPUT.txt or MONOREPO_SMOKE_OUTPUT.txt"
+
+  specialized_tests:
+    required_when: "task claims subsystem-specific status"
+    examples:
+      - "REVIEW_QUEUE_TESTS.txt"
+      - "CODEGRAPH_TEST_OUTPUT.txt"
+      - "CONTROL_PLANE_TESTS.txt"
+      - "BYPASS_TARGETED_TESTS.txt"
+      - "PILOT_OUTPUT.txt"
+
+Test summaries are allowed only as an index. They do not replace raw output.
+
+Invalid:
+
+YAML
+tests: "269 PASS"
+
+Valid:
+
+YAML
+tests:
+  summary: "269 passed, 21 warnings"
+  raw_output_path: "reports/TEST_OUTPUT.txt"
+  command: "pytest"
+  exit_code: 0
+  generated_at: "..."
+
+If raw output is missing, the status must be downgraded:
+
+YAML
+overall_judgment: review_unverified
+reason: "test result was summarized but raw test output was not provided"
+Closure Rule
+
+A task may be closed only when both are true:
+
+YAML
+closure_allowed: true
+requirements:
+  - "latest GPT reply was captured and validated"
+  - "required raw test outputs are present and match the claimed status"
+
+If either condition is missing:
+
+YAML
+closure_allowed: false
+status: review_unverified
+
+这两条应写入 review queue policy、CDP submission runbook、closure checklist，以及 agent 的 cold-start instructions。

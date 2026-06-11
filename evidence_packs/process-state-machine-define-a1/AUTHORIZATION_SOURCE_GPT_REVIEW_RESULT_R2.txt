@@ -1,0 +1,27 @@
+run_id: HANDOFF_WORKFLOW_HARDENING_PLAN_A1_R2_REVIEW_20260609T021002_RD
+task_id: HANDOFF-WORKFLOW-HARDENING-PLAN-A1-R2
+overall_judgment: accepted_with_limitation
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+none
+required_fixes:
+
+none
+limitations:
+
+R1 的 4 个 blocking issues 已基本修复：source-of-truth 层级已与 HANDOFF_SOURCE_OF_TRUTH.md 对齐；gpt_new_chat_attachment_submit.py 能力描述已统一为 pointer_only / 委托实现 / 尚未参数化；startup proof 与 startup read summary 已纳入 pack 和 manifest；HANDOFF_REPLY_V4.txt 已明确为 tracked_deleted_human_required，不得自动 git restore / checkout。
+
+新增 GAP-010 capture_mechanism_hardening 合理，已将 R1 延续性对话中 msgs.last 误取旧 assistant 的经验固化为 before_assistant_count + exact run_id/task_id + END_OF_GPT_RESPONSE 的 capture 原则。
+
+本轮仍是 hardening plan，不是硬化机制实现；PROCESS_STATE_MACHINE、changed-files schema、GPT capture reconciliation、回归测试、human_required 决策记录和 dashboard 仍需后续任务实现。
+
+SAFETY_ATTESTATION 中“legacy 文件未被删除”为本轮未新增删除的安全声明，但后续应进一步改写为更精确表述，避免与既有 HANDOFF_REPLY_V4.txt tracked_deleted_human_required 状态产生歧义。
+
+部分报告元数据仍沿用原始 A1 run_id / generated_at，而不是完整区分 R2 修复轮次；当前不影响计划审查结论，但后续 pack 应强化 round/run_id 一致性。
+next_task_authorization:
+task_id: PROCESS-STATE-MACHINE-DEFINE-A1
+authorized: 已授权
+execute_immediately: 是
+ask

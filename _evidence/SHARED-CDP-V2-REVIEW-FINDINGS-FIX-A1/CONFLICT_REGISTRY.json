@@ -1,0 +1,42 @@
+{
+  "task_id": "SHARED-CDP-V2-REVIEW-FINDINGS-FIX-A1",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-06-10",
+  "conflict_registry": {
+    "read_set": [
+      "scripts/tab_target_resolver.py",
+      "scripts/multi_project_router.py",
+      "scripts/dry_run_dispatch_10.py",
+      "scripts/gate0_preflight_10.py",
+      "tests/test_dispatch_packet_v2.py",
+      "tests/test_gate0_preflight_v2.py",
+      "tests/test_router_10_project_stress.py",
+      "tests/test_multi_project_isolation.py",
+      ".agent/MULTI_PROJECT_RESOURCE_POLICY.json",
+      ".agent/PROJECT_REGISTRY.json",
+      ".agent/CONVERSATION_BINDING.json"
+    ],
+    "write_set": [
+      "scripts/tab_target_resolver.py",
+      "scripts/multi_project_router.py",
+      "scripts/dry_run_dispatch_10.py",
+      "scripts/gate0_preflight_10.py",
+      "tests/test_dispatch_packet_v2.py",
+      "tests/test_dry_run_dispatch_v2.py",
+      "tests/test_tab_target_resolver.py",
+      "tests/test_gate0_preflight_v2.py",
+      "tests/test_router_10_project_stress.py",
+      "tests/test_multi_project_isolation.py",
+      ".agent/MULTI_PROJECT_RESOURCE_POLICY.json"
+    ],
+    "protected_files_touched": false,
+    "conflict_level": "medium",
+    "conflict_notes": "4 source files + 6 test files + 1 policy file modified. No governance files (rules/, SADP protocol) touched. All changes are additive hardening + bug fixes + port policy alignment.",
+    "governance_adjacent_files_modified": [
+      ".agent/MULTI_PROJECT_RESOURCE_POLICY.json"
+    ],
+    "governance_adjacent_notes": "Resource policy modified intentionally for port range alignment; protected governance files (rules/core.md, SADP protocol) not modified.",
+    "governance_files_touched": [],
+    "concurrent_task_conflicts": false
+  }
+}

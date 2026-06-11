@@ -1,0 +1,178 @@
+YAML
+review_role: independent_reviewer
+submission: SHARED-CDP-V2 Round 14 / Operations Manual Creation
+task_verdict: BLOCKED
+manual_content_status: PROVISIONALLY_ACCEPTED_WITH_LIMITATION
+governance_integration_status: BLOCKED
+reason: >
+  The operations manual itself is valuable and directionally correct, but the submission
+  claims "documentation-only" while also modifying scripts/sadp-audit.ps1, which was
+  previously declared self-protecting. No human_required approval record is provided.
+dry_run_dispatch: AUTHORIZED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+Reviewer Verdict
+
+Round 14 不能直接 accepted，正式判定为 BLOCKED。
+
+不是因为 operations manual 本身不好，而是因为这次提交存在一个治理层面的硬冲突：
+
+你们说这是 documentation-only change，
+但实际修改了 scripts/sadp-audit.ps1。
+
+而在 Round 8 中，scripts/sadp-audit.ps1 已经被列为 self-protecting enforcement script：
+
+scripts/sadp_pre_task_enforcer.py
+scripts/sadp-audit.ps1
+scripts/qoderwork_task_runner.py
+
+规则是：
+
+self-protecting files cannot be modified by automated tasks;
+requires human approval + independent reviewer.
+
+所以，哪怕这次只是给 sadp-audit.ps1 增加一个 governance pattern，也仍然属于 self-protecting file mutation。没有 human_required decision record，就不能接受。
+
+1. Operations Manual 本体评价
+YAML
+component: docs/agent-runtime/operations-manual.md
+status: PROVISIONALLY_ACCEPTED_WITH_LIMITATION
+
+manual 的方向是正确的，尤其是它回应了 core-008 Reuse-before-Build：
+
+1. 146 scripts inventory；
+2. formal scripts vs workspace prototypes 区分；
+3. 8 类功能分组；
+4. 6 个 SOP；
+5. workspace prototype cross-reference；
+6. reuse checklist + decision tree；
+7. duplicate utilities 清理建议。
+
+这类文档对后续 agent 很重要，可以减少重复造轮子。
+
+但有两个 limitation：
+
+1. 146 scripts inventory 的准确性还没有 evidence-backed 逐项验证；
+2. manual 会快速过期，需要后续维护机制。
+
+建议后续增加：
+
+scripts/generate_operations_inventory.py
+
+自动生成脚本清单，避免手工 inventory 失真。
+
+2. Governance integration 存在硬问题
+YAML
+component: sadp-audit.ps1 governance pattern update
+status: BLOCKED
+severity: P0_GOVERNANCE
+
+你们做了：
+
+Added docs\\agent-runtime\\operations-manual to sadp-audit.ps1 governancePatterns array
+
+这个目标本身合理，但修改对象是 scripts/sadp-audit.ps1，它是 self-protecting file。
+
+因此需要提供：
+
+1. human_required decision record；
+2. TaskSpec write_set 明确包含 scripts/sadp-audit.ps1；
+3. Conflict Registry 标记 self-protecting modification；
+4. 独立 reviewer 对该修改的专项批准；
+5. test evidence 证明 audit pattern 生效。
+
+当前提交没有这些证据，所以不能接受。
+
+3. “documentation-only” 表述不成立
+YAML
+finding_id: R14-BLOCKING-01
+severity: P0_GOVERNANCE
+status: FAIL
+
+你们写道：
+
+This is a documentation-only change with governance audit integration.
+No code logic was modified.
+
+这句话需要改。
+
+更准确应为：
+
+This is primarily a documentation change, plus a governance audit-pattern update
+to scripts/sadp-audit.ps1. Because sadp-audit.ps1 is self-protecting, this
+requires human_required approval and independent review.
+
+即使只是 pattern，不是业务逻辑，也属于治理脚本修改。
+
+4. Audit pattern 也需要更精确
+
+当前 pattern：
+
+docs\\agent-runtime\\operations-manual
+
+建议明确为：
+
+docs\\agent-runtime\\operations-manual\.md$
+
+或者如果 PowerShell pattern 是 regex，需要确认 escaping 正确。否则可能出现两类问题：
+
+1. 匹配太宽，误伤 operations-manual-backup.md 等文件；
+2. 匹配不完整，路径规范化后无法覆盖目标文件。
+
+这不是主 blocker，但建议补测试：
+
+docs/agent-runtime/operations-manual.md -> matched
+docs/agent-runtime/operations-manual-draft.md -> intended behavior明确
+docs/agent-runtime/other.md -> not matched
+5. Test evidence 评价
+YAML
+full_regression: 1038 passed
+audit_smoke_tests: 14 passed
+status: INSUFFICIENT_FOR_GOVERNANCE_CHANGE
+
+Full suite 通过是好事，但对本轮最关键的问题不够：你们需要证明的是 operations-manual pattern 被 audit 捕获，以及 self-protecting file 修改经过 human_required 流程。
+
+目前只说 audit smoke tests 14/14 passed，没有说明新增了针对 operations manual 的 smoke test。
+
+Required Fix
+
+建议拆成两个小任务处理。
+
+A. Manual-only acceptance record
+OPERATIONS-MANUAL-CREATE-A1
+
+要求：
+
+1. 只提交 docs/agent-runtime/operations-manual.md；
+2. 不修改 self-protecting 文件；
+3. 提供 inventory 生成依据或最少抽样核验；
+4. 标记 manual_content accepted_with_limitation。
+B. Governance pattern update
+OPERATIONS-MANUAL-AUDIT-PATTERN-BIND-A1
+
+要求：
+
+1. Human Required Decision Record；
+2. TaskSpec write_set 包含 scripts/sadp-audit.ps1；
+3. Conflict Registry 标记 self_protecting_file_modified=true；
+4. reviewer 明确批准修改 sadp-audit.ps1；
+5. 新增 smoke test：operations-manual.md 被 governancePatterns 覆盖；
+6. full suite pass。
+Updated Verdict
+YAML
+verdict: BLOCKED
+accepted_components:
+  - operations manual direction and content structure
+  - reuse-before-build motivation
+  - SOP and inventory design
+blocked_components:
+  - sadp-audit.ps1 modification without human_required approval
+  - documentation-only claim contradicts self-protecting script change
+required_before_acceptance:
+  - provide human_required decision record for sadp-audit.ps1 modification
+  - update TaskSpec and Conflict Registry to include self-protecting change
+  - add audit smoke test for operations-manual.md pattern coverage
+  - correct report language from documentation-only to documentation + governance-pattern update
+dry_run_dispatch: AUTHORIZED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+
+一句话结论：operations manual 本身可以保留并倾向接受，但 Round 14 作为整体提交必须 BLOCKED，因为它修改了 self-protecting 的 sadp-audit.ps1 却没有提供 human_required 审批与专项证据。

@@ -1,0 +1,33 @@
+{
+  "task_id": "GLOBAL-PROJECT-HANDOFF-REPAIR-A1",
+  "run_id": "GLOBAL_HANDOFF_REPAIR_REVIEW_20260608_225353_EEUAEQ",
+  "gpt_review_result_path": "D:\\agent-acceptance\\evidence_packs\\global-project-handoff-repair-a1\\GPT_REVIEW_RESULT.txt",
+  "verify_output_path": "D:\\agent-acceptance\\_reports\\global-project-handoff-repair-a1\\VERIFY_GPT_REPLY_OUTPUT.txt",
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "generated_at": "2026-06-08T15:04:52.683418+00:00",
+  "approval_basis": "captured_and_verified_attachment_backed_gpt_reply",
+  "attachment_reviewed": true,
+  "evidence_pack_reviewed": true,
+  "required_fixes": [
+    "Include explicit git status / changed-files evidence in the next closure pack to independently verify that no legacy PROJECT_HISTORY / HANDOFF / PASTE_BLOCK files were deleted, moved, renamed, or rewritten."
+  ],
+  "limitations": [
+    "Whole-project/global status is correctly marked partial / needs_more_evidence, not fully closed.",
+    "Production promotion is not proven by current P0/P1 evidence and must not be claimed.",
+    "296 PASS remains an unverified conversational claim and is not promoted to source-of-truth.",
+    "12 passed vs 13 passed is preserved as a nonblocking limitation.",
+    "Source-of-truth map references several external repo evidence files by path and hash, but not all underlying historical evidence files are embedded in this ZIP.",
+    "Safety scan passed and no sensitive paper text/tokens/secrets were evident in the reviewed pack, but the included scanner report checked 6 selected files rather than every file in the ZIP."
+  ],
+  "next_task_authorization": {
+    "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1",
+    "authorized": "已授权",
+    "execute_immediately": "是",
+    "ask_before_starting": "否"
+  },
+  "sha256": {
+    "GPT_REVIEW_RESULT.txt": "415bb729d1642c3f01aaea83786b82badd99d9e0e86210ad7dce8820cd1c6d6b",
+    "VERIFY_GPT_REPLY_OUTPUT.txt": "c260c4d4bdf131df08070fe8d33392812254d5d7246a0035ede457087d5b8955",
+    "GPT_REVIEW_RUN_ID_CHECK.json": "21f85b38cb88d8404e14a634f8d7375bd105b68f366b8d23d9b5045dbbfa99de"
+  }
+}

@@ -1,0 +1,24 @@
+run_id: GPT_REVIEW_SUBMISSION_PARAMETERIZE_A1_REVIEW_20260609T023631_RD
+task_id: GPT-REVIEW-SUBMISSION-PARAMETERIZE-A1
+evidence_pack_reviewed: true
+attachment_reviewed: true
+
+overall_judgment: accepted_with_limitation
+
+blocking_issues:
+
+none
+
+required_fixes:
+
+none
+
+limitations:
+
+gpt_new_chat_attachment_submit.py 已实现主要 CLI 参数：--task-id、--pack-path、--run-id-path、--output-path、--prompt-template、--dry-run、--timeout，并额外支持 --chat-url、--report-dir、--cdp-url。
+
+模板变量实现使用硬化计划中的双大括号形式 {{TASK_ID}}、{{RUN_ID}}、{{PACK_MANIFEST}}、{{TIMESTAMP}}；若未来 prompt 模板使用单大括号 {TASK_ID} 形式，需要另行兼容或在文档中明确只支持双大括号。
+
+Scenario A / Scenario B 已区分：指定具体 --chat-url 时作为延续性对话，否则打开新 ChatGPT 对话；但真实 UI 提交仍依赖已登录 Chrome CDP 环境与页面结构稳定性。
+
+hardened capture 已实现 before_assistant_count baseline + run_id + overall_judgment + END_OF_GPT_RESPONSE 匹配，并生成 GPT_CAPTURE_RECONCILIATION.json；但候选选择尚未强制同时校验 task_id，后续可作为 capture hardening

@@ -1,0 +1,30 @@
+run_id: EXISTING_WORKFLOW_DISCOVERY_SMOKE_REVIEW_20260608_234600_RD
+task_id: EXISTING-WORKFLOW-DISCOVERY-SMOKE-A1
+overall_judgment: accepted_with_limitation
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+none
+required_fixes:
+
+none
+limitations:
+
+The smoke pack demonstrates concrete discovery of existing workflow components, runbook, verifier, pre-GPT gate, source-of-truth files, prior GPT verdict files, and evidence-binding blocked artifacts.
+
+The pack maps the prior GLOBAL-PROJECT-EVIDENCE-BINDING-A1 blocked issues to concrete evidence files and minimal future fixes.
+
+The pack preserves blocked / accepted_with_limitation / partial / needs_more_evidence semantics and does not promote 296 PASS or production promotion.
+
+Current git status still shows D HANDOFF_REPLY_V4.txt, so R2 must treat this as an unresolved legacy deletion/scope issue and must not use restoration, checkout, reset, clean, delete, move, or rename without user confirmation.
+
+The pack reports no dangerous git operations and no intentional legacy modification in this smoke task, but it does not provide pre/post changed-files proof isolating the smoke task from the pre-existing dirty worktree.
+
+PACK_MANIFEST lists delivered pack contents but does not list itself as a manifest entry.
+next_task_authorization:
+task_id: GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+END_OF_GPT_RESPONSE

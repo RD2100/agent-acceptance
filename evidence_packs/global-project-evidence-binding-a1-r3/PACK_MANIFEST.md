@@ -1,0 +1,41 @@
+# Pack Manifest R3
+
+- task_id: GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R3
+- run_id: GLOBAL_EVIDENCE_BINDING_A1_R3_20260609_085653
+- generated_at: 2026-06-09T00:56:53.582254+00:00
+- note: PACK_MANIFEST.md self-hash omitted to avoid self-referential drift; all other pack files are listed.
+
+| Path | SHA256 | Bytes |
+|---|---|---:|
+| `actual_deliverables/EMBEDDED_ZIP_PRESENCE_CHECK.json` | `7ea5b2634dcc6867502eaf13847b4287095d8b9b1fd3bc609439914edffdc0c6` | 371 |
+| `actual_deliverables/HANDOFF_REPLY_V4_HUMAN_REQUIRED_DECISION_R3.json` | `ff6ff535c65b69340f1ae22672ff81d7fa9a5a742dfd10ad9b994e1c3e6910b6` | 1459 |
+| `actual_deliverables/SOURCE_MAP_EVIDENCE_BINDING_APPENDIX_R3.json` | `3952b5af3e533c9cbddb22c2e7a71017f45d49a28d62f4adb262ecfac62f0b1f` | 8755 |
+| `actual_deliverables/SOURCE_MAP_EVIDENCE_BINDING_APPENDIX_R3.md` | `6e10a62168bee1c8a1711bd5a1c892d2fa345960658530bc9a03c7d172173062` | 8814 |
+| `CLOSURE_REPORT.md` | `9e2c8def143102261f6a04e61cc1a9382ced27e56c75a67933ce096a13653429` | 288 |
+| `GPT_REVIEW_PROMPT.md` | `9020b07353735656374c70669a85366f79549fe566c9211656f04317c793ed8b` | 963 |
+| `reports/EXECUTION_REPORT.md` | `8e3a737d5778828cf6e60ef9012161b1bcd4e71dd3883c35f2df03cbee54ce87` | 735 |
+| `reports/EXPANDED_ZIP_SAFETY_SCAN_R3.json` | `bb5459e1232e0633917c6b702e54319b037c4de726e27b61aa95fd94507a4431` | 7569 |
+| `reports/EXPANDED_ZIP_SAFETY_SCAN_R3.md` | `162a53b45f6a25f6db412afb0ad34fb07d23b6d1902e66dc037d48d37de21a37` | 150 |
+| `reports/SAFETY_ATTESTATION.md` | `1ee1792f8f81d6597360078b7d7095345fc497a8d8882833a8d98e4aac7757db` | 686 |
+| `reports/TARGETED_TEST_OUTPUT.txt` | `9d381a4768fbbe43618bae9e198884e71596bd343689a49ec27c884a1b069063` | 9103 |
+| `reports/TEST_OUTPUT.txt` | `9d381a4768fbbe43618bae9e198884e71596bd343689a49ec27c884a1b069063` | 9103 |
+| `SAFETY_ATTESTATION.md` | `1ee1792f8f81d6597360078b7d7095345fc497a8d8882833a8d98e4aac7757db` | 686 |
+| `source_evidence/_reports/global-project-evidence-binding-a1/CHANGED_FILES_EVIDENCE.json` | `083e028484498ed549d853effcfd6b42b661fc13c93a12a777bf8247dcec9959` | 10337 |
+| `source_evidence/_reports/global-project-evidence-binding-a1/GPT_REVIEW_RESULT.txt` | `211d3f1e37d46a7c59bae055726ac865418877a5302b6a6b2eb486759a5a2509` | 2422 |
+| `source_evidence/_reports/global-project-evidence-binding-a1/PROTECTED_LEGACY_FILES_STATUS.json` | `ff5c0547f99e93c09878fcfa7b91dfcc1b845dc82c609c14f803bfcfee5090ad` | 7317 |
+| `source_evidence/_reports/global-project-evidence-binding-a1/SOURCE_MAP_EVIDENCE_BINDING_APPENDIX.json` | `d5dfbb5ef15c20a966ff3e1fe205e5feedb59e5854cec54373c49da697831f28` | 5875 |
+| `source_evidence/_reports/global-project-evidence-binding-a1/VERIFY_GPT_REPLY_OUTPUT.txt` | `d1159c64752016ca794e79769bd3019574b6abdcf6cc0b5c94cf6b0c962e3237` | 1327 |
+| `source_evidence/_reports/global-project-evidence-binding-a1-r2/GPT_HANDOFF_REPLY_V4_CONSULT_RESULT.txt` | `803902de08abbec680f2c5945863585378a4ec74efddc48d7df3439bdb449de6` | 2900 |
+| `source_evidence/_reports/global-project-evidence-binding-a1-r2/GPT_REVIEW_RESULT.txt` | `d8683c546acaa32ad1e8f082bd999f856ddc89ad063f3ec8b9886386ca84d3ef` | 1869 |
+| `source_evidence/_reports/global-project-evidence-binding-a1-r2/HANDOFF_REPLY_V4_HUMAN_REQUIRED_DECISION.json` | `6c7d6b6fbbc1442c7f6529885c0606981d25157a432e34efecc9ce74a993af91` | 1343 |
+| `source_evidence/_reports/global-project-evidence-binding-a1-r2/VERIFY_GPT_HANDOFF_REPLY_V4_CONSULT_OUTPUT.txt` | `b3fc62ea6626393d12d534402955c9229dbeeb3c87be3bc0735a7c4e1824d4b3` | 1426 |
+| `source_evidence/_reports/global-project-evidence-binding-a1-r2/VERIFY_GPT_REPLY_OUTPUT.txt` | `183f464ae63f8c0b61058a6dde02c46560c0600fcec15ab3ed47fc7830d693c7` | 1339 |
+| `source_evidence/_reports/global-project-handoff-repair-a1/EXECUTION_REPORT.md` | `592ceab088aa76dd3c06219f605f23365af4d33081927b6bceeafe87f0cbcdd4` | 3028 |
+| `source_evidence/_reports/global-project-handoff-repair-a1/GPT_REVIEW_RECORD.json` | `d3bdf606b2c89d47fc67b08da2118bfe41af2d3f24e525288b1e28ae3bdb53d8` | 2151 |
+| `source_evidence/_reports/global-project-handoff-repair-a1/PRE_GPT_GATE_OUTPUT.txt` | `930565ffbc91c755f47ce260cdd232b678030a13d9d919347e8258a757395527` | 426 |
+| `source_evidence/_reports/global-project-handoff-repair-a1/VERIFY_GPT_REPLY_OUTPUT.txt` | `c260c4d4bdf131df08070fe8d33392812254d5d7246a0035ede457087d5b8955` | 1388 |
+| `source_evidence/_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_SOURCE_OF_TRUTH_MAP.json` | `19905e67827cbd7689b9cd3040b55c6ac11d59997caf676c7114b831a1e9cb72` | 4798 |
+| `source_evidence/_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_STALE_CLAIMS_REGISTER.json` | `a8c52279844639ba7773d2008f8e7ce5b5694dfa3b00a463d2fa070397a09230` | 1430 |
+| `source_evidence/_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_TEST_LEDGER.json` | `7bb6bdda9e792707bde09453ded1f70cadc90db96f30af5568337e9bde441166` | 1042 |
+| `source_evidence/HANDOFF_APPROVAL_RECORD.json` | `1a008db43ecb45826c8166d181095613143aabe26cf40f94386798b3bdb8dc9f` | 1757 |
+| `source_evidence/HANDOFF_SOURCE_OF_TRUTH.md` | `6fac2b229a4207a05bf45719ae3d78a252fe21e18e6285851be53b809674e3c2` | 3119 |

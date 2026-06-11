@@ -1,0 +1,119 @@
+task_id: t-rerun-chain-evidence-guard-20260601
+title: Rerun required guard for chain-evidence hardening batch
+priority: P1
+status: ready
+mode: "@go read"
+description: >
+  After Batch 2 closes the current dirty boundary, rerun the blocked required
+  verification for t-chain-evidence-hardening-20260601 without changing the
+  implementation again.
+
+goal:
+  user_visible_success: >
+    The existing evidence run for t-chain-evidence-hardening-20260601 is
+    rechecked under a clean enough boundary to determine whether Batch 1 can be
+    promoted from blocked to pass.
+  in_scope:
+    - Reuse runs/t-chain-evidence-hardening-20260601
+    - Rerun the required guard command
+    - Rerun ai_guard evidence validation on the same run directory
+    - Classify any remaining failure as TaskSpec-boundary or new-dirty-change
+  out_of_scope:
+    - Any new implementation change
+    - Any write to tools/ai_guard.py or tools/go_evidence.py
+    - Any new reviewer-evidence design work
+    - Any change under .github/, hooks/, or rules/
+
+constraints:
+  token_strategy:
+    - Reuse the existing run directory and TaskSpec
+    - Do not regenerate implementation evidence unless a command requires it
+    - Keep this batch verification-only
+  hard_stops:
+    - No fake green
+    - No writes outside allow_write
+    - Do not expand into Batch 4 logic
+    - Final pass requires reviewer evidence and a non-blocked required guard
+
+depends_on:
+  - t-dirty-boundary-closure-20260601
+
+allow_write:
+  - runs/t-chain-evidence-hardening-20260601/safety-report.json
+  - runs/t-chain-evidence-hardening-20260601/test-output.md
+  - runs/t-chain-evidence-hardening-20260601/final-report.md
+  - runs/t-chain-evidence-hardening-20260601/chain-evidence.json
+  - runs/t-chain-evidence-hardening-20260601/review.md
+  - runs/t-chain-evidence-hardening-20260601/review.yaml
+
+no_touch_write_set:
+  - tools/ai_guard.py
+  - tools/go_evidence.py
+  - archive/draft-hooks/pre-final.audit.ps1
+  - archive/draft-hooks/pre-task.audit.ps1
+  - archive/draft-hooks/pre-tool.audit.ps1
+  - docs/agent-runtime/capability-inventory.md
+  - docs/agent-runtime/routing-matrix-summary.md
+  - audit/blackboard-cleanup-audit-20260531.md
+
+gate_0:
+  triggered: false
+  inventory_evidence:
+    queried_sources:
+      - reports/go-orchestrator-plan-20260601.md
+      - .ai/tasks/t-chain-evidence-hardening-20260601.yaml
+      - runs/t-chain-evidence-hardening-20260601/test-output.md
+      - runs/t-chain-evidence-hardening-20260601/safety-report.json
+      - runs/t-chain-evidence-hardening-20260601/review.yaml
+    matched_capabilities:
+      - agent-acceptance
+      - ai_guard
+      - go_evidence
+      - reviewer-evidence-validation
+    compared_against_request:
+      - "rerun required guard after dirty-boundary closure"
+  sufficiency_decision: reuse_existing
+  decision: reuse
+
+conflict_registry:
+  read_set:
+    - reports/go-orchestrator-plan-20260601.md
+    - .ai/tasks/t-chain-evidence-hardening-20260601.yaml
+    - runs/t-chain-evidence-hardening-20260601/**
+  write_set:
+    - runs/t-chain-evidence-hardening-20260601/safety-report.json
+    - runs/t-chain-evidence-hardening-20260601/test-output.md
+    - runs/t-chain-evidence-hardening-20260601/final-report.md
+    - runs/t-chain-evidence-hardening-20260601/chain-evidence.json
+    - runs/t-chain-evidence-hardening-20260601/review.md
+    - runs/t-chain-evidence-hardening-20260601/review.yaml
+  protected_files_touched: false
+  conflict_level: low
+
+implementation_plan:
+  - Read the existing Batch 1 TaskSpec and run evidence first.
+  - Run the required go_evidence guard command on the existing run directory.
+  - Run ai_guard evidence validation on the same run directory.
+  - Update test-output.md with the rerun result and exact failure classification.
+  - If the guard passes, rerun reviewer/finalizer only as needed to refresh verdict artifacts.
+
+verification:
+  required_commands:
+    - python tools/go_evidence.py guard runs/t-chain-evidence-hardening-20260601 --task .ai/tasks/t-chain-evidence-hardening-20260601.yaml
+    - python tools/ai_guard.py evidence runs/t-chain-evidence-hardening-20260601
+  expected_result:
+    - The required guard no longer fails due to pre-existing dirty files outside allow_write
+    - If blocked, the failure reason is classified as TaskSpec boundary or new dirty change
+
+acceptance_criteria:
+  - Batch 1 can be promoted to pass only if the required guard exits 0 and reviewer evidence remains valid
+  - If the guard still fails, the report names the exact blocking class
+  - No implementation file outside the run evidence directory is modified
+  - test-output.md records the rerun commands, exit codes, and verdicts
+
+reviewer_requirements:
+  - Reviewer must be a separate role/session from executor
+  - Reviewer must re-check diff.patch, test-output.md, safety-report.json, and chain-evidence.json
+  - Reviewer must confirm whether the batch verdict changes from blocked to pass
+  - Reviewer must create or refresh review.md and review.yaml if verdict changes
+  - Finalizer must run python tools/go_evidence.py finalize on the run evidence directory

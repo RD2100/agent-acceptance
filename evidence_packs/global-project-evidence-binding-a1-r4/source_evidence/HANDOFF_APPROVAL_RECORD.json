@@ -1,0 +1,24 @@
+{
+  "task_id": "HANDOFF-PIPELINE-REFACTOR-A1",
+  "run_id": "HANDOFF_A1_ATTACHCHAT_20260608_220428_CHL0ZX",
+  "new_gpt_chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+  "gpt_review_result_path": "evidence_packs\\handoff-pipeline-refactor-a1\\GPT_REVIEW_RESULT_ATTACHCHAT.txt",
+  "verify_output_path": "_reports\\handoff-pipeline-refactor-a1\\VERIFY_GPT_REPLY_OUTPUT_ATTACHCHAT.txt",
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "generated_at": "2026-06-08T14:07:56.071538+00:00",
+  "approval_basis": "captured_and_verified_attachment_backed_gpt_reply",
+  "attachment_reviewed": true,
+  "limitations": [
+    "CLOSURE_REPORT says 12 passed while TARGETED_TEST_OUTPUT says 13 passed; preserve as nonblocking reporting inconsistency.",
+    "PRE_GPT_GATE_OUTPUT is not listed in PACK_MANIFEST.",
+    "Handoff draft is draft_only and proves the handoff pipeline, but is not yet a final full project-state handoff because closed_modules and human_required_modules are empty.",
+    "296 PASS remains an unverified conversational claim and must not be promoted to source-of-truth.",
+    "HANDOFF_COMPILER_RESULT marks the generated draft handoff validation as false because the draft is shorter than the full handoff validator threshold."
+  ],
+  "sha256": {
+    "HANDOFF_APPROVED_FOR_NEW_GPT.md": "f63f43b3f886de1cc5d6226f146150b9498c062f161bb75061a18746705e156d",
+    "PASTE_BLOCK_APPROVED_FOR_NEW_GPT.txt": "bf3cfe48e98240785d0f6c17616bb4ded48666b52c03f0aa19445f38f31db2c7",
+    "GPT_REVIEW_RESULT_ATTACHCHAT.txt": "cb40da81ffc994e487384b7516f09fb7aa12fe2fe0ec2330f322ddb12ed5f270",
+    "VERIFY_GPT_REPLY_OUTPUT_ATTACHCHAT.txt": "9c25ffbb6b512741b36dc89b346d4a9e8a1a6fc366246a9f5cedbb6cc87c00ae"
+  }
+}

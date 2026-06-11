@@ -1,0 +1,34 @@
+{
+  "task_id": "HUMAN-REQUIRED-DECISION-RECORD-TEMPLATE-A1",
+  "run_id": "HUMAN_REQUIRED_DECISION_RECORD_TEMPLATE_A1_20260609T125734_RD",
+  "round": "R1",
+  "verdict": "accepted_with_limitation",
+  "overall_judgment": "accepted_with_limitation",
+  "valid": true,
+  "closure_ready": true,
+  "verified_at": "2026-06-09T13:02:22.959140+08:00",
+  "source": "manual_recapture",
+  "gpt_reply_sha256": "98cb76b860a4b477de56bcbd115c699f",
+  "gpt_reply_size": 1394,
+  "checks": {
+    "has_end_marker": true,
+    "evidence_pack_reviewed": false,
+    "run_id_in_reply": "HUMAN_REQUIRED_DECISION_RECORD_TEMPLATE_A1_20260609T210000_RD",
+    "has_next_task_auth": true,
+    "verdict_allowed": true
+  },
+  "findings": [
+    "scripts/human_decision_record.py implements human_required state decision record management",
+    "create_record and validate_record with CLI support",
+    "T10 guard enforcement: human_decision_recorded AND decision_evidence_attached",
+    "validate_record checks missing records, invalid JSON, missing fields, invalid decision_type, missing evidence",
+    "Record schema includes schema_version, task_id, decision_type, decision_reason, decision_maker, decision_timestamp, evidence_files, gpt_verdict_context, exit_conditions_met"
+  ],
+  "limitations": [
+    "human decision record not yet integrated with state_machine_runtime.py T10 runtime guard - currently template/tool implementation only, not full path execution state machine",
+    "decision_maker is currently just a string identifier without signature confirmation, user collection confirmation record binding - could add user confirmation pathway hash in high-risk scenarios",
+    "evidence pack file run_id and manifest run_id differ from prompt run_id - not affecting review but should unify pack run_id, review run_id, and report metadata"
+  ],
+  "next_task_authorization": "HUMAN-DECISION-RECORD-INTEGRATE-T10-A1",
+  "reply_path": "_reports/human-required-decision-record-template-a1/GPT_REVIEW_RESULT_R1.txt"
+}

@@ -1,0 +1,47 @@
+run_id: GLOBAL_EVIDENCE_BINDING_REVIEW_20260608_233200_RD
+task_id: GLOBAL-PROJECT-EVIDENCE-BINDING-A1
+overall_judgment: blocked
+safety_verdict: pass
+git_evidence_verdict: pass
+protected_legacy_verdict: fail
+source_binding_verdict: fail
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+changed-files evidence shows tracked deletion of HANDOFF_REPLY_V4.txt, so the pack cannot independently verify that all legacy HANDOFF-related files were not deleted.
+
+SAFETY_ATTESTATION claims legacy files were not deleted/moved/renamed/rewritten, but git changed-files evidence contains D HANDOFF_REPLY_V4.txt.
+
+SOURCE_MAP_EVIDENCE_BINDING_APPENDIX claims the prior GLOBAL_PROJECT_HANDOFF_REPAIR_A1 ZIP is embedded in the pack, but the referenced copy_path is not present in the attached ZIP or PACK_MANIFEST.
+required_fixes:
+
+Resolve HANDOFF_REPLY_V4.txt by either restoring it if it is a protected legacy handoff artifact or providing P0 evidence that it is out of protected scope; update protected legacy status accordingly.
+
+Reconcile SAFETY_ATTESTATION with actual git status / changed-files evidence.
+
+Correct SOURCE_MAP_EVIDENCE_BINDING_APPENDIX and EXECUTION_REPORT so embedded evidence claims match actual ZIP contents, or embed the missing prior closure ZIP and include it in PACK_MANIFEST.
+
+Rerun expanded safety scan, manifest generation, and evidence-binding closure after the above fixes.
+limitations:
+
+Core tracked protected files HANDOFF.md, HANDOFF_V5.md, PROJECT_HISTORY.md, and BOOT_CONTEXT.md are reported clean in worktree/index.
+
+Approved P1 handoff/paste artifacts are hash-bound to HANDOFF_MANIFEST.sha256.
+
+Untracked legacy files without prior manifest are appropriately reported as needs_human_review rather than fake pass.
+
+Whole-project/global status remains partial / needs_more_evidence.
+
+Production promotion is not approved.
+
+296 PASS remains an unverified conversational claim.
+
+accepted_with_limitation is not flattened to accepted.
+next_allowed_action: Run GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2 to fix the HANDOFF_REPLY_V4 deletion evidence conflict, reconcile safety attestation, and correct or complete source evidence embedding before resubmitting for GPT review.
+next_task_authorization:
+task_id: GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+END_OF_GPT_RESPONSE

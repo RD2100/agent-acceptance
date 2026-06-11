@@ -1,0 +1,98 @@
+overall_judgment: blocked
+task_id: PAPER-SAFETY-INFRASTRUCTURE
+evidence_pack_reviewed: true
+
+pack_level_findings:
+manifest_hash_integrity: pass
+actual_deliverables_present: pass
+targeted_tests_present: pass
+positive_pilot_output_present: pass
+contradictory_or_stale_outputs_present: true
+note:
+- "reports/PILOT_PASS_OUTPUT.txt shows validator Exit: 0, PASS and PILOT RESULT: PASS."
+- "reports/FULL_TARGETED_TESTS.txt shows 22 targeted tests passed."
+- "reports/PILOT_OUTPUT.txt still contains the old contradictory run where validator Exit: 1 but PILOT RESULT: PASS."
+- "reports/TEST_OUTPUT.txt is stale/non-green because review_queue still shows 1 failed there; this does not directly block PAPER-SAFETY if scoped, but the pack should not present it as current full green evidence."
+
+verdict:
+PAPER-SAFETY-INFRASTRUCTURE: blocked
+
+fixed_from_previous:
+
+"paper_pilot_runner.py now requires validate_paper_task.py exit 0 for validator_pass."
+
+"reports/PILOT_PASS_OUTPUT.txt proves a positive synthetic run with validator Exit: 0, PASS."
+
+"paper_dry_run_packet.py no longer claims all_gates_passed=true when auth_gate is CLOSED."
+
+"paper_auth_gate.py now limits scope to synthetic_only, metadata_only, bounded_pilot, dry_run."
+
+"paper_auth_gate.py rejects some high-risk fields, including real_paper_full_text_allowed, external_upload_allowed, live_cdp_allowed, and memory_write_with_paper_content."
+
+blocking_issues:
+
+issue_id: PAPER-SAFETY-R5-BLOCKER-01
+title: "GO/NOGO still does not correctly validate dry-run result semantics"
+detail: >
+actual_deliverables/paper_go_nogo.py computes dr_ok, but then sets checks["dry_run_packet"] = True unconditionally.
+This means the dry-run semantic result is not actually enforced. A malformed or unsafe dry-run result could still
+satisfy the dry_run_packet check as long as the code path reaches that assignment.
+
+issue_id: PAPER-SAFETY-R5-BLOCKER-02
+title: "GO/NOGO still partially relies on text/file checks instead of structured result semantics"
+detail: >
+paper_go_nogo.py checks preflight by reading _reports/paper_pilot_preflight_output.txt and searching for
+the string 'PREFLIGHT: PASS'. It does not validate a structured preflight result JSON. The requirement was
+to read and validate result JSON semantics, not text snippets or file existence.
+
+issue_id: PAPER-SAFETY-R5-BLOCKER-03
+title: "Authorization gate still misses some high-risk fields"
+detail: >
+paper_auth_gate.py rejects several high-risk fields, but it does not explicitly reject paper_excerpt_allowed
+or raw_paper_text. These were part of the earlier safety boundary concerns. The field set should be complete,
+especially because this gate is intended to prevent future real-paper pilot escalation.
+
+issue_id: PAPER-SAFETY-R5-BLOCKER-04
+title: "Targeted tests do not prove high-risk auth fields fail closed"
+detail: >
+FULL_TARGETED_TESTS.txt shows paper_auth_gate tests for no auth, expired auth, structure, and JSON output.
+It does not show tests for overbroad auth fields such as real_paper_full_text_allowed, paper_excerpt_allowed,
+external_upload_allowed, live_cdp_allowed, memory_write_with_paper_content, raw_paper_text, or private_user_text.
+
+issue_id: PAPER-SAFETY-R5-BLOCKER-05
+title: "Pack still contains stale contradictory PILOT_OUTPUT"
+detail: >
+PILOT_PASS_OUTPUT.txt is the useful fresh positive proof, but PILOT_OUTPUT.txt still shows the older behavior:
+validator Exit: 1 while PILOT RESULT: PASS. The evidence pack should remove or clearly label stale output,
+otherwise downstream agents can bind the wrong result.
+
+required_fixes:
+
+"Fix paper_go_nogo.py so dry-run semantic validation is actually enforced, e.g. checks['dry_run_packet'] = dr_ok."
+
+"Have GO/NOGO validate structured JSON result artifacts for preflight, pilot, auth, and dry-run, rather than relying on a text file string check."
+
+"Extend paper_auth_gate.py forbidden fields to include paper_excerpt_allowed, raw_paper_text, paper_excerpt, and any equivalent high-risk content flags."
+
+"Add targeted tests proving overbroad/high-risk authorization fields fail closed."
+
+"Remove stale PILOT_OUTPUT.txt or relabel it as BEFORE/negative evidence; provide only fresh positive PILOT_PASS_OUTPUT as the current pass proof."
+
+"Regenerate the pack with fresh PAPER targeted outputs."
+
+accepted_parts:
+
+"Positive synthetic validator PASS path is now demonstrated in PILOT_PASS_OUTPUT.txt."
+
+"Pilot runner now correctly requires validator exit 0 for the pass path."
+
+"Dry-run packet no longer says all gates passed when auth is closed."
+
+"Auth scope is improved and narrower than prior versions."
+
+summary:
+CONTROL-PLANE-BYPASS-FIX: accepted_with_limitation
+REVIEW-QUEUE: accepted_with_limitation based on pasted targeted proof, pending full fresh output if closing entire batch
+PAPER-SAFETY-INFRASTRUCTURE: blocked
+
+END_OF_GPT_RESPONSE

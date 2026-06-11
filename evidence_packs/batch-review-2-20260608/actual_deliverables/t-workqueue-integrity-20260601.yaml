@@ -1,0 +1,168 @@
+task_id: t-workqueue-integrity-20260601
+title: Restore WorkQueue module integrity
+priority: P0
+status: closed
+mode: "@go edit"
+description: >
+  Repair the WorkQueue module as a complete project-integrity slice. Align queue
+  JSONs, example batch files, command docs, and self-test behavior so that
+  Test-WorkQueue becomes a trustworthy project-level signal again.
+
+goal:
+  user_visible_success: >
+    The WorkQueue module is coherent end to end: queue specs reference real task
+    files, command docs match the active files, and the self-test can pass or
+    block only for real reasons rather than broken references.
+  in_scope:
+    - Fix broken queue -> task_file references
+    - Align WorkQueue docs/cheatsheets with actual active example batch files
+    - Decide whether batch-local-quality is active, replaced, or future-only and make all references consistent
+    - Update self-test expectations if needed to match the corrected module
+    - Produce dedicated executor evidence under runs/t-workqueue-integrity-20260601/
+  out_of_scope:
+    - External project bootstrap
+    - Full business-code changes
+    - Commit/push/merge
+    - Governance blackboard cleanup module
+
+constraints:
+  token_strategy:
+    - Planner stays lean; worker resolves the module holistically
+    - Prefer one coherent WorkQueue story over isolated doc or JSON fixes
+    - Reuse existing future/active distinctions already documented in repo
+  hard_stops:
+    - No fake green
+    - No destructive git
+    - No reviewer artifact writes by executor
+    - If WorkQueue still cannot pass, report exact residual blockers
+
+allow_write:
+  - agent-workqueue/cleanup-dryrun.queue.json
+  - agent-workqueue/local-quality.queue.json
+  - agent-workqueue/recovery-regression.queue.json
+  - agent-workqueue/release-readiness.queue.json
+  - docs/COMMAND_CHEATSHEET.md
+  - docs/SINGLE_PROJECT_ADOPTION.md
+  - docs/RUNBOOK.md
+  - docs/AGENT_WORKQUEUE_RULES.md
+  - scripts/Test-WorkQueue.ps1
+  - scripts/examples/batch-docs-quality.json
+  - scripts/examples/batch-local-quality.json
+  - reports/go-orchestrator-plan-20260601.md
+  - PROJECT_HISTORY.md
+  - docs/WORKFLOW_AUDIT_LEDGER.yaml
+  - _reports/t-workqueue-integrity-20260601-binding/**
+  - runs/t-workqueue-integrity-20260601/**
+
+gate_0:
+  triggered: true
+  trigger_reason: >
+    WorkQueue is a large completeness module with a real failing self-test in
+    current repo state. This is a stronger project-integrity target than
+    continuing detail-level governance patching.
+  inventory_evidence:
+    queried_sources:
+      - reports/project-completeness-report-final-20260528.md
+      - reports/session-summary-20260528.md
+      - docs/AGENT_WORKQUEUE_RULES.md
+      - docs/COMMAND_CHEATSHEET.md
+      - docs/SINGLE_PROJECT_ADOPTION.md
+      - scripts/Run-WorkQueue.ps1
+      - scripts/Test-WorkQueue.ps1
+      - agent-workqueue/cleanup-dryrun.queue.json
+      - agent-workqueue/local-quality.queue.json
+      - agent-workqueue/recovery-regression.queue.json
+      - agent-workqueue/release-readiness.queue.json
+      - tasks/root-cause-analysis-20260530.md
+    matched_capabilities:
+      - workqueue
+      - scripts
+      - governance-drift
+    compared_against_request:
+      - "project completeness first"
+      - "big module before detail patches"
+      - "let coding agent do the heavy work"
+  rules_checked:
+    - core-004
+    - core-005
+    - review-001
+  lessons_checked:
+    - LL-008
+    - LL-010
+  sufficiency_decision: new_delta_required
+  decision: build_delta
+  delta_justification: >
+    The WorkQueue module is not complete in current state: four queues point to
+    a missing batch file and the self-test fails. This is an active integrity
+    defect, not a speculative enhancement.
+
+conflict_registry:
+  read_set:
+    - reports/project-completeness-report-final-20260528.md
+    - reports/session-summary-20260528.md
+    - docs/AGENT_WORKQUEUE_RULES.md
+    - docs/COMMAND_CHEATSHEET.md
+    - docs/SINGLE_PROJECT_ADOPTION.md
+    - docs/RUNBOOK.md
+    - scripts/Run-WorkQueue.ps1
+    - scripts/Test-WorkQueue.ps1
+    - scripts/examples/batch-docs-quality.json
+    - agent-workqueue/cleanup-dryrun.queue.json
+    - agent-workqueue/local-quality.queue.json
+    - agent-workqueue/recovery-regression.queue.json
+    - agent-workqueue/release-readiness.queue.json
+    - tasks/root-cause-analysis-20260530.md
+  write_set:
+    - agent-workqueue/cleanup-dryrun.queue.json
+    - agent-workqueue/local-quality.queue.json
+    - agent-workqueue/recovery-regression.queue.json
+    - agent-workqueue/release-readiness.queue.json
+    - docs/COMMAND_CHEATSHEET.md
+    - docs/SINGLE_PROJECT_ADOPTION.md
+    - docs/RUNBOOK.md
+    - docs/AGENT_WORKQUEUE_RULES.md
+    - scripts/Test-WorkQueue.ps1
+    - scripts/examples/batch-docs-quality.json
+    - scripts/examples/batch-local-quality.json
+    - reports/go-orchestrator-plan-20260601.md
+    - runs/t-workqueue-integrity-20260601/**
+  protected_files_touched: false
+  conflict_level: medium
+
+implementation_plan:
+  - Read the active queue JSONs, WorkQueue docs, and root-cause notes first.
+  - "Preferred convergence decision: restore `scripts/examples/batch-local-quality.json` as an active current-repo batch, instead of leaving four queues and multiple docs pointed at a missing file."
+  - "Make the restored active batch match this repository's current reality; do not copy the future-only batch verbatim if it depends on non-existent `src/`, `tasks.yaml`, or unavailable external commands."
+  - Make queue files, self-test, and docs tell one consistent story.
+  - Initialize evidence with go_evidence.py init.
+  - Run WorkQueue self-test and any focused queue/batch checks needed.
+  - Write test-output.md with command, exit code, and verdict summaries.
+  - Do not write reviewer artifacts.
+
+verification:
+  required_commands:
+    - python tools/go_evidence.py init runs/t-workqueue-integrity-20260601 --run-id t-workqueue-integrity-20260601 --task .ai/tasks/t-workqueue-integrity-20260601.yaml --executor-id executor-t-workqueue-integrity-20260601
+    - powershell -ExecutionPolicy Bypass -File scripts/Test-WorkQueue.ps1
+  conditional_commands:
+    - powershell -ExecutionPolicy Bypass -File scripts/Run-WorkQueue.ps1 -QueueFile agent-workqueue/local-quality.queue.json
+    - powershell -ExecutionPolicy Bypass -File scripts/Run-Batch.ps1 -TaskFile scripts/examples/batch-local-quality.json
+  expected_positive:
+    - queue task_file references point to real active batch files
+    - self-test no longer fails on missing batch-local-quality.json
+    - docs and queue examples no longer contradict future/active status
+  expected_negative:
+    - if some queue must remain future-only, docs and self-test must reflect that explicitly instead of silently failing
+
+acceptance_criteria:
+  - Test-WorkQueue no longer fails because of missing scripts/examples/batch-local-quality.json
+  - WorkQueue queue JSONs reference valid active task files
+  - COMMAND_CHEATSHEET, SINGLE_PROJECT_ADOPTION, and RUNBOOK match the active WorkQueue reality
+  - "scripts/examples/batch-local-quality.json` exists and is runnable for this repository's intended Tier 0 checks"
+  - Dedicated run evidence exists under runs/t-workqueue-integrity-20260601/
+  - Executor reports exact remaining blockers if full pass is not reached
+
+reviewer_requirements:
+  - Reviewer must be separate from executor
+  - Reviewer must read diff.patch, test-output.md, safety-report.json, and chain-evidence.json
+  - Reviewer must produce review.md and review.yaml
+  - Finalizer must run python tools/go_evidence.py finalize on runs/t-workqueue-integrity-20260601

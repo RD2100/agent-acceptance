@@ -1,0 +1,87 @@
+overall_judgment: mixed_review_unverified
+evidence_pack_reviewed: true
+
+pack_level_findings:
+manifest_hash_integrity: pass
+actual_deliverables_present: pass
+raw_outputs_present: partial
+reviewed_pack: "ci-release-pack(1).zip"
+notes:
+- "PACK_MANIFEST.md hashes match the ZIP contents."
+- "actual_deliverables include ci.yml, stage_executor.py, two xfail test files, and RELEASE_CANDIDATE_v0.2.0-rc1.json."
+- "reports/TEST_OUTPUT.txt shows 275 passed, 21 warnings."
+- "reports/REMOTE_SHA.txt, CP_REMOTE_SHA.txt, and DEVFRAME_REMOTE_SHA.txt are present."
+- "No raw devframe-control-plane CI output showing 68 passed, 3 xfail, 0 failed is included."
+- "No raw v0.2.0-rc1 tag verification output is included."
+- "No raw smoke 9/9 output is included."
+- "reports/GIT_STATUS.txt still shows local dirty baseline, but release scope should be judged from remote SHA/tag evidence, not the local dirty worktree."
+
+verdicts:
+
+task_id: CONTROL-PLANE-CI-FIX
+verdict: review_unverified
+accepted_parts:
+
+".github/workflows/ci.yml is present and checks out devframe-control-plane plus RD2100/agent-acceptance as a sibling repo."
+
+"stage_executor.py now records a warning when the bypass checker is unavailable."
+
+"The two paper validator/template mismatch tests are marked xfail with explicit pre-existing mismatch reasons."
+
+"The change direction is plausible for resolving CI failures caused by missing sibling agent-acceptance checkout."
+unverified_issues:
+
+issue_id: CP-CI-FIX-R2-UNVERIFIED-01
+title: "Missing raw control-plane CI output"
+detail: "The pack does not contain GitHub Actions or local devframe-control-plane pytest output showing 68 passed, 3 xfail, 0 failed. The included TEST_OUTPUT.txt shows 275 passed, which verifies agent-acceptance, not control-plane CI."
+
+issue_id: CP-CI-FIX-R2-UNVERIFIED-02
+title: "bypass_passed=None warning behavior is only partially proven"
+detail: "stage_executor.py appends a warning when the bypass checker is unavailable, but check_result still fails unless bypass_passed is truthy. This may be fine if CI now always checks out agent-acceptance, but the pack does not prove the intended CI path with raw output."
+required_for_acceptance:
+
+"Add raw control-plane CI or local pytest output showing 68 passed, 3 xfail, 0 failed."
+
+"If claiming bypass checker absence is warning-only, provide a targeted test or output proving that exact path is non-blocking; otherwise state that CI avoids the missing-checker path by cloning agent-acceptance."
+likely_verdict_if_evidence_matches: accepted_with_limitation
+
+task_id: V0.2.0-RC1-RELEASE
+verdict: accepted_with_limitation
+accepted_basis:
+
+"RELEASE_CANDIDATE_v0.2.0-rc1.json exists and records remote SHAs for agent-acceptance, devframe-control-plane, and dev-frame-opencode."
+
+"Remote HEAD verification files are present for the three repos."
+
+"reports/TEST_OUTPUT.txt shows 275 passed, 21 warnings."
+
+"The manifest preserves limitations: CODEGRAPH-FORK-POOL-FIX remains review_unverified, and several items remain accepted_with_limitation rather than being flattened into fully accepted."
+
+"Safety section records dirty_baseline_protected=true, whole_dirty_tree_committed=false, guard_disabled=false, bypass_approved_committed=false, push_successful=true, ci_green=true."
+limitations:
+
+"The pack does not include raw git ls-remote --tags origin v0.2.0-rc1 output, so the pushed tag itself is not independently verified here."
+
+"The pack does not include raw clean-room clone / checkout output."
+
+"The pack does not include raw smoke 9/9 output."
+
+"The release candidate should not be described as 10/10 fully accepted unless the manifest’s review_unverified / accepted_with_limitation labels are preserved."
+
+"Local GIT_STATUS remains dirty; acceptable only because release state is judged from pushed remote SHAs and the release manifest, not local worktree contents."
+required_before_final_release_promotion:
+
+"Provide tag verification output for v0.2.0-rc1."
+
+"Provide clean-room clone / checkout output."
+
+"Provide raw smoke 9/9 output."
+
+"Keep CODEGRAPH-FORK-POOL-FIX as review_unverified unless a later accepted GPT verdict exists."
+blocking_issues: []
+
+summary:
+CONTROL-PLANE-CI-FIX: review_unverified
+V0.2.0-RC1-RELEASE: accepted_with_limitation
+
+END_OF_GPT_RESPONSE

@@ -1,0 +1,23 @@
+{
+  "valid": false,
+  "overall_judgment": "accepted_with_limitation",
+  "errors": [
+    "accepted verdict missing next_task_authorization"
+  ],
+  "checks": {
+    "has_end_marker": true,
+    "overall_judgment": "accepted_with_limitation",
+    "evidence_pack_reviewed": true,
+    "has_blocking_issues": true,
+    "has_next_task_auth": false
+  },
+  "sha256": "5cc71b1cda21e0ef0bdc04644559b35f...",
+  "size": 2242,
+  "verdict_allowed": false,
+  "source": "captured_gpt_response",
+  "task_id": "TEST"
+}
+
+GUARD BLOCKED: GPT reply for TEST is not valid.
+Errors: ['accepted verdict missing next_task_authorization']
+No binding, no commit, no status report allowed.

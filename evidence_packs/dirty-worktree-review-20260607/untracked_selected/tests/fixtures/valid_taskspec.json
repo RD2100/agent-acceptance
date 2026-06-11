@@ -1,0 +1,24 @@
+{
+  "task_id": "TEST-TS-001",
+  "stage": "S3",
+  "goal": "Run integration tests for module X",
+  "description": "Execute the integration test suite and report results.",
+  "inputs": [
+    {"path": "tests/integration/test_x.py", "purpose": "Integration test file", "required": true}
+  ],
+  "allowed_actions": ["run_tests", "write_reports", "read_files"],
+  "forbidden_actions": ["delete_files", "move_files", "rename_files", "clean_worktree", "overwrite_evidence"],
+  "required_outputs": ["_reports/test_output.md", "_reports/integration_result.json"],
+  "review_required": true,
+  "review_by": "gpt",
+  "next_on_accepted": "S4",
+  "next_on_blocked": "RECONCILIATION",
+  "next_on_human_required": "HUMAN_REQUIRED",
+  "terminal_conditions": {
+    "terminal": false,
+    "reason": "More stages follow",
+    "allowed_terminal_reasons": ["accepted_done", "human_required", "blocked_unresolvable", "technical_failure", "max_rounds_reached", "high_risk_required"]
+  },
+  "high_risk": false,
+  "schema_version": "1.0.0"
+}

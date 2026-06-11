@@ -1,0 +1,148 @@
+=== ChatGPT Reply (4738 chars) ===
+YAML
+review_role: independent_reviewer
+executor: QoderWork Agent
+submission: SHARED-CDP-V2-REVIEW-FINDINGS-FIX-A1
+review_basis: inline evidence pack manifest + key code proofs + reported test evidence
+previous_verdict: BLOCKED
+new_verdict: ACCEPTED_WITH_LIMITATION
+live_dispatch_authorization: NOT_AUTHORIZED
+confidence: MEDIUM
+
+我可以把代码层面的 BLOCKED 改判为 ACCEPTED_WITH_LIMITATION，但不能把整个任务判为完全 ACCEPTED。原因是：你这次提交的关键修复方向与此前 blocking findings 一一对应，并且测试数量从 915 增至 938，通过结果为 0 failed；但我没有直接读取到你本地 D:\agent-acceptance\...\EVIDENCE_PACK.zip 的完整文件内容，因此这仍是基于 inline evidence 的 reviewer 判定，而不是 attachment-backed 全量复核。
+
+此前 BLOCKED 的核心问题是 router 和 dry-run 没有落实 “No dispatch without tab target_id resolution”，这在旧代码证据中确实成立：build_dispatch_packet() 可以在 target_id=None 时返回 dispatchable=True，dry_run_dispatch_10.py 也没有检查 tab_match_status。
+
+粘贴的文本 (1)
+
+1. Blocking findings 复核结论
+P0-BLOCKING-01：build_dispatch_packet() 允许 target_id=None -> dispatchable=True
+YAML
+status: RESOLVED_BY_INLINE_EVIDENCE
+severity_after_fix: PASS
+
+你提交的新代码证明显示，build_dispatch_packet() 已在构建 packet 前增加三道 fail-closed gate：
+
+tab_match_status != exact_match -> dispatchable=false
+missing target_id -> dispatchable=false
+missing target_url -> dispatchable=false
+
+这已经满足此前要求。只要实际文件与该片段一致，原 P0 blocker 可以解除。
+
+P0-BLOCKING-02：dry_run._classify_packet() 不检查 tab_match_status / target_id
+YAML
+status: RESOLVED_BY_INLINE_EVIDENCE
+severity_after_fix: PASS
+
+新 _classify_packet() 已增加：
+
+ambiguous -> blocked_ambiguous_tab
+tab_match_status != exact_match -> human_required_tab_unresolved
+resolved but no target_id -> human_required_missing_target_id
+
+这解决了此前 Gate0 与 dry-run 可能矛盾的问题。尤其是新增 tests/test_dry_run_dispatch_v2.py 的 16 个测试，说明这部分已经进入测试覆盖。
+
+P3-BLOCKING-03：tab_target_resolver 没有成为 canonical resolver
+YAML
+status: RESOLVED_WITH_LIMITATION
+severity_after_fix: WARNING
+
+你提交的证据显示：
+
+multi_project_router.py imports canonical resolve_tab_target/list_cdp_pages
+gate0_preflight_10.py imports canonical resolve_tab_target/list_cdp_pages/validate_cdp_endpoint
+gate0 private list_cdp_pages/find_tab_target deleted
+
+这足以解除 P3 blocking。保留 limitation 是因为报告仍说明 multi_project_router.py 有自己的 validate_cdp_endpoint()，说明公共安全工具还没有完全收敛到单一实现。
+
+Code Duplication
+YAML
+status: PARTIALLY_RESOLVED
+severity_after_fix: P2_WARNING
+
+最危险的重复，即 tab target resolution 重复，已经修掉。剩余重复包括：
+
+load_registry
+load_binding
+validate_cdp_endpoint duplicate in router
+部分 CDP helper
+
+这些不再阻断 shared-CDP v2 的安全主链路，但应进入后续 P2 cleanup。
+
+2. 安全检查结论
+YAML
+P0_security: PASS_WITH_LIMITATION
+P1_performance: PASS_WITH_LIMITATION
+P2_quality: WARNING
+P3_architecture: WARNING
+已解决的安全点
+1. 无 target_id 不再 dispatchable；
+2. tab_match_status 非 exact_match 不再 dispatchable；
+3. ambiguous tab 被 blocked；
+4. webSocketDebuggerUrl 已 redacted；
+5. CDP endpoint 加入 localhost 限制；
+6. dry-run 不再只信任 packet.dispatchable；
+7. target_id / target_url / tab_match_status 已进入 packet 与分类链路。
+仍需注意的安全与质量问题
+
+你自己的 security checklist 显示 48 checks 中仍有 10 fail，虽然标记为 P2/P3，但不能忽略。尤其这些项要进入后续任务：
+
+1. conversation_id 出现在 reports；
+2. message_text persistence；
+3. is_chatgpt_page substring match；
+4. no port range restriction；
+5. validate_cdp_endpoint 缺少直接测试；
+6. router 仍重复 validate_cdp_endpoint；
+7. resolve_target() 没有在传给 resolver 前过滤 ChatGPT pages；
+8. load_registry/load_binding 重复。
+
+这些不再构成当前代码层面的 BLOCKED，但会影响后续 live dispatch 授权。
+
+3. 测试证据评估
+YAML
+targeted_tests: 152 passed
+full_suite: 938 passed, 0 failed
+new_tests: 23
+test_evidence_status: ACCEPTED_WITH_LIMITATION
+
+测试结果足以支持“blocking fix 已进入测试覆盖”。但有两个 limitation：
+
+1. validate_cdp_endpoint 仍无直接测试；
+2. 当前没有看到原始 FULL_SUITE_OUTPUT.txt 全文，只看到 inline 摘要。
+
+所以不能给 fully accepted。
+
+4. 正式 Reviewer Verdict
+YAML
+verdict: ACCEPTED_WITH_LIMITATION
+blocking_findings:
+  - none remaining based on submitted inline evidence
+warnings:
+  - validate_cdp_endpoint duplicated in router
+  - validate_cdp_endpoint has no direct tests
+  - load_registry/load_binding duplicated
+  - security checklist still has 10 P2/P3 failed items
+  - SADP retroactive compliance still required
+live_dispatch_authorization: NOT_AUTHORIZED
+dry_run_dispatch_authorization: AUTHORIZED_FOR_DRY_RUN_ONLY
+next_allowed_step: SADP_RETROACTIVE_COMPLIANCE_REPAIR_AND_SECURITY_CLEANUP
+5. 不能授权 live dispatch 的原因
+
+即使代码 blocker 解除，仍不能进入 live dispatch：
+
+1. 这批 P0 任务最初跳过 SADP；
+2. executor/reviewer 分离是事后补做；
+3. security checklist 仍有 10 个 fail；
+4. live dispatch 必须单独 human-gated；
+5. 还需要真实 2-project shared-CDP live pilot 的 Gate0 PASS evidence。
+6. 下一步建议
+
+下一步不要马上做 live dispatch，建议按这个顺序：
+
+1. QODERWORK-SADP-RETROACTIVE-COMPLIANCE-REPAIR-A1
+2. SHARED-CDP-V2-SECURITY-CLEANUP-A1
+3. SHARED-CDP-V2-VALIDATE-CDP-ENDPOINT-TESTS-A1
+4. SHARED-CDP-GPT-REVIEW-DRY-RUN-2-A1
+5. human-gated SHARED-CDP-GPT-REVIEW-LIVE-2-A1
+
+一句话结论：代码层面的 BLOCKED 可以解除，改判 ACCEPTED_WITH_LIMITATION；但这不是 live dispatch 授权，后续必须补 SADP 合规和安全清理。

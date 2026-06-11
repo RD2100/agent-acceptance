@@ -1,0 +1,21 @@
+{
+  "task_id": "DIRTY-WORKTREE-SPLIT-A1",
+  "target_url": "https://chatgpt.com/c/6a23dd8c-4550-83a8-bdee-76ca5a982edb",
+  "zip_path": "D:\\agent-acceptance\\evidence_packs\\dirty-worktree-split-a1-review\\dirty-worktree-split-a1-review-pack.zip",
+  "file_uploaded": true,
+  "prompt_filled": true,
+  "send_clicked": true,
+  "reply_complete": true,
+  "overall_judgment_seen": true,
+  "reply_saved": true,
+  "errors": [],
+  "started_at": "2026-06-07T07:19:21+0800",
+  "actual_url_before_submit": "https://chatgpt.com/c/6a23dd8c-4550-83a8-bdee-76ca5a982edb",
+  "assistant_messages_before": 5,
+  "user_messages_before": 46,
+  "composer_selector": "div[contenteditable=\"true\"]",
+  "clicked_selector": "button[data-testid=\"send-button\"]",
+  "actual_url_after_click": "https://chatgpt.com/c/6a23dd8c-4550-83a8-bdee-76ca5a982edb",
+  "end_marker_seen": true,
+  "finished_at": "2026-06-07T07:20:12+0800"
+}

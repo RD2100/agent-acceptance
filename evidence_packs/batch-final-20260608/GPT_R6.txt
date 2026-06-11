@@ -1,0 +1,72 @@
+overall_judgment: blocked
+task_id: PAPER-SAFETY-INFRASTRUCTURE
+evidence_pack_reviewed: true
+
+pack_level_findings:
+manifest_hash_integrity: pass
+actual_deliverables_present: pass
+r6_targeted_tests: "13 passed"
+positive_pilot_output: "R6_PILOT_PASS.txt shows validator Exit: 0, PASS and PILOT RESULT: PASS"
+blocking_note: "R6 fixes several major issues, but the evidence pack still contains unresolved safety/evidence problems."
+
+fixed_from_r5:
+
+"GO/NOGO dry_run_packet is now assigned from dr_ok rather than unconditional True."
+
+"GO/NOGO now reads structured preflight JSON instead of searching text output."
+
+"paper_auth_gate.py now rejects paper_excerpt_allowed and raw_paper_text."
+
+"R6_TARGETED_TESTS.txt shows 13/13 PASS."
+
+"R6_PILOT_PASS.txt proves positive synthetic validator exit 0/PASS."
+
+remaining_blocking_issues:
+
+issue_id: PAPER-R6-BLOCKER-01
+title: "Auth gate still misses paper_excerpt content field"
+detail: >
+paper_auth_gate.py rejects paper_excerpt_allowed and raw_paper_text, but it does not reject
+a direct paper_excerpt field. Earlier safety boundary included paper_excerpt as a prohibited
+content marker, not only paper_excerpt_allowed.
+
+issue_id: PAPER-R6-BLOCKER-02
+title: "Overbroad auth negative test is too narrow"
+detail: >
+test_overbroad_auth_fields_blocked only proves one high-risk field path
+(real_paper_full_text_allowed). It does not prove fail-closed behavior for
+paper_excerpt_allowed, raw_paper_text, paper_excerpt, external_upload_allowed,
+live_cdp_allowed, or memory_write_with_paper_content.
+
+issue_id: PAPER-R6-BLOCKER-03
+title: "Stale contradictory PILOT_OUTPUT.txt remains in the pack"
+detail: >
+reports/R6_PILOT_PASS.txt is the correct fresh positive proof, but reports/PILOT_OUTPUT.txt
+still shows the old contradictory behavior: validator Exit: 1 while PILOT RESULT: PASS.
+This stale file is not clearly labeled as BEFORE/obsolete and can mislead downstream binding.
+
+issue_id: PAPER-R6-BLOCKER-04
+title: "Full TEST_OUTPUT in pack is stale and non-green"
+detail: >
+reports/TEST_OUTPUT.txt still shows 1 failed, 267 passed from the earlier review_queue failure.
+This does not directly invalidate scoped R6 paper targeted tests, but it must not be presented
+as current full-suite evidence.
+
+required_fixes:
+
+"Add paper_excerpt to the forbidden auth fields."
+
+"Expand auth gate targeted tests to cover at least: paper_excerpt_allowed, paper_excerpt, raw_paper_text, external_upload_allowed, live_cdp_allowed, memory_write_with_paper_content."
+
+"Remove stale reports/PILOT_OUTPUT.txt or rename/label it clearly as BEFORE_STALE_NEGATIVE_OUTPUT."
+
+"Remove stale non-green TEST_OUTPUT.txt from the R6 paper evidence pack, or replace it with fresh full output if claiming full-suite green."
+
+"Regenerate the pack with fresh targeted outputs and a clear current-pass evidence set."
+
+near_acceptance_note: >
+The core paper-safety implementation is close: positive synthetic pass is now demonstrated,
+GO/NOGO semantics are improved, and auth scope is narrower. I would accept this after the
+remaining evidence hygiene and auth-field coverage fixes above.
+
+END_OF_GPT_RESPONSE

@@ -1,0 +1,27 @@
+{
+  "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R4",
+  "run_id": "GLOBAL_EVIDENCE_BINDING_A1_R4_REVIEW_20260609_090100_RD",
+  "gpt_review_result_path": "D:/agent-acceptance/_reports/global-project-evidence-binding-a1-r4/GPT_REVIEW_RESULT.txt",
+  "verify_output_path": "D:/agent-acceptance/_reports/global-project-evidence-binding-a1-r4/VERIFY_GPT_REPLY_OUTPUT.txt",
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "approval_basis": "captured_and_verified_attachment_backed_gpt_reply",
+  "attachment_reviewed": true,
+  "evidence_pack_reviewed": true,
+  "closure_ready": true,
+  "blocking_issues": [],
+  "required_fixes": [],
+  "limitations": [
+    "HANDOFF_REPLY_V4.txt remains tracked_deleted_human_required, not resolved/pass.",
+    "Whole-project/global status remains partial / needs_more_evidence.",
+    "Production promotion is not approved.",
+    "296 PASS remains unverified conversational claim.",
+    "PACK_MANIFEST self-hash omitted to avoid self-referential drift.",
+    "Embedded old closure ZIP covered by manifest hash, not unpacked and scanned file-by-file."
+  ],
+  "next_task_authorization": {
+    "task_id": "none",
+    "authorized": "未授权",
+    "execute_immediately": "否",
+    "ask_before_starting": "是"
+  }
+}

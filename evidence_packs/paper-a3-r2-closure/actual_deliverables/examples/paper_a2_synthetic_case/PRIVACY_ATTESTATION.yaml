@@ -1,0 +1,15 @@
+# Privacy Attestation — PAPER-A2 Synthetic Case
+task_id: "PAPER-SYNTH-A2-001"
+contains_real_paper_full_text: false
+contains_user_private_text: false
+contains_raw_transcript: false
+contains_memory_write: false
+contains_external_upload: false
+redaction_applied: true
+manual_review_required: false
+memory_write_policy: "redacted_workflow_lesson_only"
+safety:
+  live_cdp_enabled: false
+  cookies_or_session_read: false
+  historical_evidence_modified: false
+  gpt_review_forged: false

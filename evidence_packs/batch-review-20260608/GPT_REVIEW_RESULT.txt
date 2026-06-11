@@ -1,0 +1,89 @@
+overall_judgment: blocked
+evidence_pack_reviewed: true
+pack_level_findings:
+manifest_hash_integrity: pass
+summary_only_risk: fail
+raw_test_outputs_present: false
+actual_deliverables_present: false
+changed_files_present: false
+git_status_present: false
+safety_attestation_present: true
+
+verdicts:
+
+task_id: AI-WORKFLOW-HUB-RESTORE
+verdict: blocked
+blocking_issues:
+
+"缺少原始测试输出，无法验证 23 failures → 147 PASS。"
+
+"缺少 actual deliverables：未包含完整 run_governance.py、issue_ledger.py 或相关测试文件。"
+
+"KEY_DIFFS.patch 只包含片段，且 BATCH_REVIEW_SUMMARY.md 中关键函数/模块名称为空白，无法确认 restored render_full_governance_md() 与 issue_ledger.py 的实际内容。"
+
+"缺少 git status、changed files、完整 diff，无法确认是否只改了预期文件。"
+required_fixes:
+
+"补充完整 TEST_OUTPUT.txt。"
+
+"补充 actual_deliverables/ 中的 run_governance.py、issue_ledger.py、相关测试文件。"
+
+"补充 CHANGED_FILES、完整 diff、git status。"
+
+task_id: CODEGRAPH-FORK-POOL-FIX
+verdict: blocked
+blocking_issues:
+
+"缺少原始 CodeGraph 测试输出，无法验证 0 worker errors 或 34/37 pass。"
+
+"KEY_DIFFS.patch 只显示 vitest.config.ts 设置 pool: forks，缺少 actual_deliverables/codegraph/vitest.config.ts。"
+
+"34/37 仍非全绿；证据包未列出剩余 3 项的名称、归因、Windows symlink gating 证据。"
+
+"缺少 monorepo smoke 原始输出，无法验证 5/5。"
+required_fixes:
+
+"补充 CODEGRAPH_TEST_OUTPUT.txt 与 WORKER_ERROR_BEFORE/AFTER 证据。"
+
+"补充 REMAINING_3_CLASSIFICATION.md。"
+
+"补充 actual_deliverables/codegraph/vitest.config.ts。"
+
+"补充 MONOREPO_SMOKE_OUTPUT.txt。"
+
+task_id: CONTROL-PLANE-BYPASS-FIX
+verdict: blocked
+blocking_issues:
+
+"缺少 control-plane 原始测试输出，无法验证 72 PASS。"
+
+"缺少 actual_deliverables/scripts/check_submission_bypass.py 与相关测试文件。"
+
+"当前 patch 中 check_submission_bypass.py 对包含 pytest 或 Temp 的 cwd 直接 PASS，规则可能过宽，存在绕过风险；需要测试证明只在受控测试环境生效。"
+
+"缺少 bypass_check_failed 失败前证据和修复后 pipeline 输出。"
+required_fixes:
+
+"补充 CONTROL_PLANE_TEST_OUTPUT.txt。"
+
+"补充 BYPASS_BEFORE_FAILURE_OUTPUT.txt 与 BYPASS_AFTER_PASS_OUTPUT.txt。"
+
+"补充 check_submission_bypass.py 的 targeted tests，证明正常环境无 .ai/bypass_approved 时 fail closed，测试环境例外不会影响生产路径。"
+
+"补充 actual_deliverables 和完整 diff。"
+
+required_pack_fixes:
+
+"将 evidence pack 从 summary-only 扩展为可复核 closure pack。"
+
+"加入 actual_deliverables/。"
+
+"加入每项 fix 的 raw test outputs。"
+
+"加入 CHANGED_FILES、完整 diff、git status、smoke output。"
+
+"修正 BATCH_REVIEW_SUMMARY.md 中缺失的函数/模块名称。"
+
+"重新生成 PACK_MANIFEST.md 与 batch-review-pack-r2.zip。"
+
+END_OF_GPT_RESPONSE

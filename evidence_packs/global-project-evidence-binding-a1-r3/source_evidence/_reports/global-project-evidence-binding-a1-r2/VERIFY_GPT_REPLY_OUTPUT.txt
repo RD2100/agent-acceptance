@@ -1,0 +1,45 @@
+{
+  "verify": {
+    "valid": true,
+    "overall_judgment": "blocked",
+    "errors": [],
+    "checks": {
+      "has_end_marker": true,
+      "overall_judgment": "blocked",
+      "evidence_pack_reviewed": true,
+      "task_id_in_reply": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+      "task_id_matches": true,
+      "has_next_task_auth": true
+    },
+    "sha256": "9d6a995eac63b6001fa21550618dd027...",
+    "size": 1474,
+    "verdict_allowed": true,
+    "source": "captured_gpt_response",
+    "task_id": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2"
+  },
+  "closure_ready": {
+    "closure_ready": false,
+    "reason": "GPT blocked ¡ª fix required before closure",
+    "verdict": {
+      "valid": true,
+      "overall_judgment": "blocked",
+      "errors": [],
+      "checks": {
+        "has_end_marker": true,
+        "overall_judgment": "blocked",
+        "evidence_pack_reviewed": true,
+        "task_id_in_reply": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2",
+        "task_id_matches": true,
+        "has_next_task_auth": true
+      },
+      "sha256": "9d6a995eac63b6001fa21550618dd027...",
+      "size": 1474,
+      "verdict_allowed": true,
+      "source": "captured_gpt_response"
+    }
+  }
+}
+
+GUARD OK: GPT reply for GLOBAL-PROJECT-EVIDENCE-BINDING-A1-R2 is valid.
+Verdict: blocked
+Closure ready: False

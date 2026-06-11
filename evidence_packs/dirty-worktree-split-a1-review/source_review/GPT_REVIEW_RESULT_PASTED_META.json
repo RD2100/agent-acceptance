@@ -1,0 +1,7 @@
+﻿{
+    "destination":  "evidence_packs\\dirty-worktree-review-20260607\\GPT_REVIEW_RESULT_PASTED.txt",
+    "sha256":  "7d84470e79ce822ae53c975db403743d821338da127192ab0226cb48bd1f7b8b",
+    "source":  "C:\\Users\\RD\\.codex\\attachments\\1afdb411-9e00-4912-b8db-27badd1520be\\pasted-text.txt",
+    "captured_as":  "user_pasted_gpt_review_result",
+    "note":  "Browser automation was interrupted before local WEB_GPT_SUBMISSION_RESULT could be produced; this file records the user-pasted GPT response."
+}

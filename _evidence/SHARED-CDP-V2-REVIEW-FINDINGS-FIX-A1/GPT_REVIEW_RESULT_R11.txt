@@ -1,0 +1,157 @@
+YAML
+review_role: independent_reviewer
+submission: SHARED-CDP-V2 Round 11 / SHARED-CDP-GPT-REVIEW-DRY-RUN-2-A1
+task_verdict: ACCEPTED_WITH_LIMITATION
+dry_run_dispatch: ACCEPTED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+code_level_blockers: NONE
+confidence: MEDIUM_HIGH
+Reviewer Verdict
+
+Round 11 通过，但判定为 ACCEPTED_WITH_LIMITATION。
+
+这次 dry-run 的核心目标是验证 Shared CDP v2 在真实 Chrome CDP 环境下能否做到 fail-closed。根据你提交的结果，结论是：可以。
+
+10 个注册项目中，只有 agent-acceptance 具备 active binding、真实 conversation、exact tab match 和 target_id，因此被判定为 dispatchable；其余 9 个 pending 项目没有 active agent、没有 target_id、没有 tab resolution，没有生成 dispatch packet，也没有发送。这符合 “No dispatch without tab target_id resolution” 的核心约束。
+
+1. Dry-run dispatch 结果审核
+YAML
+registered_projects: 10
+dispatchable: 1
+non_dispatchable: 9
+false_positive_dispatchable: 0
+collision: 0
+ambiguous_tab: 0
+status: PASS
+
+agent-acceptance 的 packet 具备关键字段：
+
+cdp_active: true
+conversation_id: redacted
+target_id: present
+target_url: present
+tab_match_status: exact_match
+dispatch_mode: dry_run
+isolation_model: conversation_target_bound
+dispatchable: true
+
+这说明唯一 dispatchable 项目满足 v2 隔离模型要求。
+
+9 个 pending 项目没有 packet built，这一点也正确。pending binding 不应被构造 dispatch packet，更不应被送入真实 GPT conversation。
+
+2. Fail-closed gates 审核
+YAML
+tab_match_status_gate: PASS
+target_id_gate: PASS
+false_positive_dispatchable_check: PASS
+collision_check: PASS
+ambiguous_tab_check: PASS
+
+本轮最关键的结论是：
+
+pending projects -> no active binding -> no target_id -> no packet -> non-dispatchable
+
+这说明此前 Round 2/3 修复的 fail-closed 逻辑已经在真实 CDP dry-run 中生效。
+
+3. Classification label mismatch
+YAML
+finding_id: R11-L1
+severity: P2_WARNING
+status: NEEDS_NORMALIZATION
+blocking: false
+
+你报告中提到：
+
+Registry uses binding_status = pending_binding
+Classifier checks pending_manual_binding
+Result falls through to human_required
+
+这个行为在安全上是可接受的，因为最终仍然是 non-dispatchable。但从报告语义看，它会造成分类漂移：
+
+TaskSpec 预期：non_dispatchable_pending
+实际结果：human_required
+
+这不是 blocker，但应该修。否则后续 10 项目报表会把“尚未绑定”与“需要人工处理的异常状态”混在一起。
+
+建议下一步做一个小修：
+
+pending_binding 和 pending_manual_binding 都归一到 non_dispatchable_pending
+
+并补测试：
+
+binding_status=pending_binding -> non_dispatchable_pending
+binding_status=pending_manual_binding -> non_dispatchable_pending
+unknown inactive binding -> human_required
+4. Report path limitation
+YAML
+finding_id: R11-L2
+severity: P2_WARNING
+status: NEEDS_EVIDENCE_PATH_CLEANUP
+blocking: false
+
+你提交的 report path 是：
+
+_reports/multi-project-batch-init-a1/DRY_RUN_DISPATCH_10.json
+
+这个路径看起来仍挂在旧的 multi-project-batch-init-a1 目录下，而当前任务是：
+
+SHARED-CDP-GPT-REVIEW-DRY-RUN-2-A1
+
+这不影响本次 dry-run 结论，但 evidence 归档不够清晰。建议复制或生成到当前任务目录：
+
+_evidence/SHARED-CDP-GPT-REVIEW-DRY-RUN-2-A1/DRY_RUN_DISPATCH_10.json
+
+或：
+
+_reports/shared-cdp-gpt-review-dry-run-2-a1/DRY_RUN_DISPATCH_10.json
+5. 测试证据审核
+YAML
+full_regression: 1036 passed
+failed: 0
+warnings: 21
+status: PASS_WITH_LIMITATION
+
+Full regression 维持 1036 passed，说明 dry-run 执行没有引入回归。由于本轮主要是执行型任务，没有新增代码测试也可以接受。
+
+但如果后续修 pending label normalization，应补对应单测。
+
+Updated Verdict
+YAML
+verdict: ACCEPTED_WITH_LIMITATION
+accepted:
+  - live Chrome CDP dry-run executed
+  - 10 registered projects evaluated
+  - only active exact-match project classified dispatchable
+  - 9 pending projects failed closed
+  - no packet built for pending bindings
+  - no false-positive dispatchable projects
+  - no conversation collisions
+  - no ambiguous tabs
+  - full regression 1036 passed
+
+limitations:
+  - pending_binding falls through to human_required instead of non_dispatchable_pending
+  - report path should be moved under current task evidence/report directory
+  - only 1 active binding tested; this does not prove 2-active shared-CDP dry-run
+
+dry_run_dispatch: AUTHORIZED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+Next allowed step
+
+建议下一步是：
+
+SHARED-CDP-DRY-RUN-CLASSIFICATION-NORMALIZE-A1
+
+目标很小：
+
+1. pending_binding / pending_manual_binding 统一归类为 non_dispatchable_pending；
+2. 当前任务 report path 归档到正确目录；
+3. 补 2-3 个分类单测；
+4. 保持 full suite pass。
+
+之后再进入：
+
+SHARED-CDP-GPT-REVIEW-DRY-RUN-2-ACTIVE-A1
+
+前提是人工绑定第二个真实 ChatGPT conversation。
+live dispatch 仍不授权。

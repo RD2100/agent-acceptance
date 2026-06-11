@@ -1,0 +1,311 @@
+{
+  "task_id": "HANDOFF-WORKFLOW-HARDENING-PLAN-A1",
+  "agent_session_id": "qoderwork_20260609_012204",
+  "generated_at": "2026-06-09T01:23:28+00:00",
+  "workflow_understanding_claim_allowed": false,
+  "blocked_if_any_required_read_missing_or_unreviewed": true,
+  "must_preserve_semantics": [
+    "blocked",
+    "accepted_with_limitation",
+    "partial",
+    "needs_more_evidence",
+    "unverified"
+  ],
+  "fresh_shell_check": {
+    "command": "cd \"D:/agent-acceptance\" && pwd && date && echo FRESH_SHELL_OK && git rev-parse --is-inside-work-tree",
+    "exit_code": 0,
+    "stdout_excerpt": "/d/agent-acceptance 20260609T012204Z FRESH_SHELL_OK true"
+  },
+  "files": [
+    {
+      "index": 1,
+      "path": "HANDOFF_SOURCE_OF_TRUTH.md",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "6fac2b229a4207a05bf45719ae3d78a252fe21e18e6285851be53b809674e3c2",
+      "level": "P1",
+      "purpose": "P0/P1/P2/P3 权威层级与 approval rule",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 2,
+      "path": "HANDOFF_APPROVAL_RECORD.json",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "1a008db43ecb45826c8166d181095613143aabe26cf40f94386798b3bdb8dc9f",
+      "level": "P1",
+      "purpose": "HANDOFF-PIPELINE-REFACTOR-A1 verified GPT verdict 与限制",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 3,
+      "path": "_reports/handoff-pipeline-refactor-a1/ATTACHMENT_BACKED_GPT_REVIEW_RUNBOOK.md",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "3f4e6348d9c71662e6ab8af43162119aa74ff8fc7ad9a96b6511cfa088c4fd03",
+      "level": "P1",
+      "purpose": "附件版 GPT 审查 SOP",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 4,
+      "path": "scripts/verify_gpt_reply.py",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "68571359abb8cd424607da275f12a693b98f6e5eed23ac46ebe0c2916d284fe8",
+      "level": "P0",
+      "purpose": "GPT 回复 fail-closed verifier",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 5,
+      "path": "scripts/gpt_new_chat_attachment_submit.py",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "01a2638f73e5bfffe9e4bb5eb12d42652cbde11ebe267c3676a4d2c5bf51c62d",
+      "level": "P0",
+      "purpose": "附件提交入口及 strict submitter 指向",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 6,
+      "path": "scripts/pre_gpt_review_gate.py",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "71ad725f1f32a715952e382a235f1e71af69781b5f8504ddd962b94784d33569",
+      "level": "P0",
+      "purpose": "pre-GPT gate",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 7,
+      "path": "scripts/evidence_pack_linter.py",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "e560844a599f0731e94503611bd9806c00e1efac9092093a104ddad7a8c552a8",
+      "level": "P0",
+      "purpose": "evidence pack linter",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 8,
+      "path": "_reports/global-project-handoff-repair-a1/GPT_REVIEW_RECORD.json",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "d3bdf606b2c89d47fc67b08da2118bfe41af2d3f24e525288b1e28ae3bdb53d8",
+      "level": "P0",
+      "purpose": "global handoff repair GPT verdict 与 required fix",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 9,
+      "path": "_reports/global-project-handoff-repair-a1/VERIFY_GPT_REPLY_OUTPUT.txt",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "c260c4d4bdf131df08070fe8d33392812254d5d7246a0035ede457087d5b8955",
+      "level": "P0",
+      "purpose": "global repair verifier 输出",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 10,
+      "path": "_reports/global-project-handoff-repair-a1/PRE_GPT_GATE_OUTPUT.txt",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "930565ffbc91c755f47ce260cdd232b678030a13d9d919347e8258a757395527",
+      "level": "P0",
+      "purpose": "global repair pre-GPT gate 输出",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 11,
+      "path": "_reports/global-project-handoff-repair-a1/EXECUTION_REPORT.md",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "592ceab088aa76dd3c06219f605f23365af4d33081927b6bceeafe87f0cbcdd4",
+      "level": "P0",
+      "purpose": "global repair 执行报告与限制",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 12,
+      "path": "_reports/global-project-handoff-repair-a1/PACK_MANIFEST.md",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "01eab1792f5bae1f73ff9c610056059589511a9e0fdd3716ebcc6d9ec23d1b9c",
+      "level": "P0",
+      "purpose": "global repair pack manifest",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 13,
+      "path": "_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_SOURCE_OF_TRUTH_MAP.json",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "19905e67827cbd7689b9cd3040b55c6ac11d59997caf676c7114b831a1e9cb72",
+      "level": "P0",
+      "purpose": "whole-project claims/evidence map",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 14,
+      "path": "_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_STALE_CLAIMS_REGISTER.json",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "a8c52279844639ba7673d2008f8e7ce5b5694dfa3b00a463d2fa070397a09230",
+      "level": "P0",
+      "purpose": "stale/unverified claims",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 15,
+      "path": "_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_TEST_LEDGER.json",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "7bb6bdda9e792707bde09453ded1f70cadc90db96f30af5568337e9bde441166",
+      "level": "P0",
+      "purpose": "test ledger 与 296 PASS 未验证限制",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 16,
+      "path": "_reports/global-project-evidence-binding-a1/GPT_REVIEW_RESULT.txt",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "211d3f1e37d46a7c59bae055726ac865418877a5302b6a6b2eb486759a5a2509",
+      "level": "P0",
+      "purpose": "GLOBAL-PROJECT-EVIDENCE-BINDING-A1 blocked verdict",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 17,
+      "path": "_reports/global-project-evidence-binding-a1/VERIFY_GPT_REPLY_OUTPUT.txt",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "d1159c64752016ca794e79769bd3019574b6abdcf6cc0b5c94cf6b0c962e3237",
+      "level": "P0",
+      "purpose": "blocked verdict verifier 输出",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 18,
+      "path": "_reports/global-project-evidence-binding-a1/PACK_MANIFEST.md",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "12b3debefba391834fecf7325f2527a23ae482ae5494ef351fd094078ba862c6",
+      "level": "P0",
+      "purpose": "blocked pack manifest",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 19,
+      "path": "_reports/global-project-evidence-binding-a1/EXECUTION_REPORT.md",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "f67bd04eb26afa548eac593c5d8b6a9da02f2df33b0aa7df0a8e73331991cf5e",
+      "level": "P0",
+      "purpose": "evidence-binding 执行报告",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 20,
+      "path": "_reports/global-project-evidence-binding-a1/CHANGED_FILES_EVIDENCE.json",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "083e028484498ed549d853effcfd6b42b661fc13c93a12a777bf8247dcec9959",
+      "level": "P0",
+      "purpose": "HANDOFF_REPLY_V4 deletion conflict",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 21,
+      "path": "_reports/global-project-evidence-binding-a1/PROTECTED_LEGACY_FILES_STATUS.json",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "ff5c0547f99e93c09878fcfa7b91dfcc1b845dc82c609c14f803bfcfee5090ad",
+      "level": "P0",
+      "purpose": "protected legacy status",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 22,
+      "path": "_reports/global-project-evidence-binding-a1/SOURCE_MAP_EVIDENCE_BINDING_APPENDIX.json",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "d5dfbb5ef15c20a966ff3e1fe205e5feedb59e5854cec54373c49da697831f28",
+      "level": "P0",
+      "purpose": "source binding appendix 与旧 ZIP 嵌入声明",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 23,
+      "path": "_reports/global-project-evidence-binding-a1-r4/GPT_REVIEW_RESULT.txt",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "9fa6ed33e66488a6a1da4889abe6e0791d5323bc319e2b208cec2f6865449d8a",
+      "level": "P0",
+      "purpose": "R4 accepted_with_limitation verdict",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 24,
+      "path": "_reports/global-project-evidence-binding-a1-r4/EXECUTION_REPORT.md",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "ee4f24eb8d6c5f04f155ab6a899afac270d46e6c3e1bbf3df851c2599005b57d",
+      "level": "P0",
+      "purpose": "R4 执行报告",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 25,
+      "path": "_reports/global-project-evidence-binding-a1-r4/GPT_REVIEW_RECORD.json",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "a487188c5846ab816321a6256f23e17d13c3f94b454865f1d0e00547aa5763d7",
+      "level": "P0",
+      "purpose": "R4 GPT review record",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 26,
+      "path": "_reports/global-project-evidence-binding-a1-r4/PACK_MANIFEST.md",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "26da206b4d7926766fe35b49d1c4f6ac1f1b6e0b721fe82790d85a992d89c1ae",
+      "level": "P0",
+      "purpose": "R4 pack manifest",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 27,
+      "path": "_reports/next-agent-workflow-bootstrap-a1/NEXT_AGENT_STARTUP_READ_GATE.md",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "6a9fdb3e1fb78bfa688047cf390c169094d9e49392fe699a77b4ef2aaf9d55ae",
+      "level": "P1",
+      "purpose": "startup read gate 流程定义",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 28,
+      "path": "_reports/next-agent-workflow-bootstrap-a1/NEXT_AGENT_REQUIRED_READS.json",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "9eb27e0565e6726511ee9c778a747a335cd90244bb562dc5f968f6a664960d54",
+      "level": "P1",
+      "purpose": "startup 必读文件清单",
+      "can_use_as_basis": true
+    },
+    {
+      "index": 29,
+      "path": "_reports/next-agent-workflow-bootstrap-a1/STARTUP_READ_PROOF_TEMPLATE.json",
+      "exists": true,
+      "reviewed": true,
+      "sha256": "865317e0b587579eb619cfc20ee842365783b98408df11fdab4a40e3c8abe1d9",
+      "level": "P1",
+      "purpose": "startup proof 模板",
+      "can_use_as_basis": true
+    }
+  ]
+}

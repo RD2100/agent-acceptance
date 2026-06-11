@@ -1,0 +1,3 @@
+whole_dirty_tree_committed: false
+no_real_paper_content: true
+all_gates_fail_closed: true

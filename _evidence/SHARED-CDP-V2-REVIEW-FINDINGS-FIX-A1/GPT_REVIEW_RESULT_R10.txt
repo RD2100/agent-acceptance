@@ -1,0 +1,120 @@
+YAML
+review_role: independent_reviewer
+submission: SHARED-CDP-V2 Round 10 / SADP-AUDIT-DOT-SADP-COVERAGE-A1
+task_verdict: ACCEPTED
+overall_shared_cdp_v2_verdict: ACCEPTED_WITH_LIMITATION
+code_level_blockers: NONE
+audit_policy_smoke_status: PASS
+dry_run_dispatch: AUTHORIZED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+confidence: MEDIUM_HIGH
+Reviewer Verdict
+
+Round 10 通过。SADP-AUDIT-DOT-SADP-COVERAGE-A1 可以判定为 ACCEPTED。
+
+这一轮准确补上了 Round 9 留下的 .sadp/ commit-time audit 覆盖缺口。现在 .sadp/SADP_POLICY.json 和 .sadp/TRIGGER_RULES.json 不再只是由 Python pre-edit enforcer 保护，也会被 sadp-audit.ps1 的 governance pattern 捕获，从而触发 SADP-required flag。
+
+1. .sadp/ governance pattern
+YAML
+status: PASS
+severity: accepted
+
+新增：
+
+PowerShell
+"\.sadp\\"
+
+用于匹配 Windows normalized path 中的：
+
+.sadp\SADP_POLICY.json
+.sadp\TRIGGER_RULES.json
+
+这个修复是正确的。你特别说明没有使用 "\\.sadp\\"，理由也成立：如果路径开头就是 .sadp\...，前面没有额外反斜杠，那么 \\.sadp\\ 会误要求 .sadp 前存在一个 \。
+
+前提是：sadp-audit.ps1 内部确实把路径统一为 Windows-style backslash。按照你提交的说明，这一点已通过 debug verification 确认，因此可以接受。
+
+2. Smoke tests 从 warning 升级为 strict assertion
+YAML
+status: PASS
+severity: accepted
+
+这是本轮最重要的质量提升。Round 9 的问题不在于测试不存在，而在于 .sadp/ gap 被作为 warning 放过。现在：
+
+test_all_protected_files_coverage_report
+test_sadp_directory_pattern_coverage
+
+已经从 warning 升级为 assertion，并且 14 个 smoke tests 全部通过、0 warnings。这说明 commit-time audit 覆盖缺口被正式纳入 fail-closed 测试，不再依靠人工记忆。
+
+3. Cross-consumer consistency
+YAML
+previous_status: PARTIALLY_VERIFIED
+updated_status: VERIFIED_FOR_COVERAGE
+
+这里我建议措辞稍微保守一点：可以说 coverage consistency 已 verified，但不要过度表述为 “PowerShell audit 完全执行同一份 policy source”。
+
+更精确的结论是：
+
+Python enforcer 与 SADP_POLICY.json：通过 drift tests 证明 no drift。
+PowerShell audit 与 protected files：通过 governancePatterns smoke tests 证明覆盖所有 protected files。
+
+因此，本轮可以把 R9 的 PARTIALLY_VERIFIED 升级为：
+
+YAML
+cross_consumer_coverage_consistency: VERIFIED
+
+但如果要说：
+
+YAML
+cross_consumer_policy_source_consistency: FULLY_VERIFIED
+
+还需要进一步证明 sadp-audit.ps1 不是只靠 $governancePatterns，而是直接读取 .sadp/SADP_POLICY.json。不过这不是当前任务的 blocker，因为当前任务目标是补齐 .sadp/ audit coverage，而这个目标已经完成。
+
+4. Test evidence
+YAML
+smoke_tests: 14 passed
+smoke_warnings: 0
+full_suite: 1036 passed
+failed: 0
+warnings: 21
+test_status: PASS
+
+测试结果可接受。尤其是 coverage map 已经从：
+
+.sadp/SADP_POLICY.json -> WARN
+.sadp/TRIGGER_RULES.json -> WARN
+
+变成：
+
+.sadp/SADP_POLICY.json -> PASS
+.sadp/TRIGGER_RULES.json -> PASS
+
+这正好对应 Round 9 的 limitation。
+
+Updated Verdict
+YAML
+verdict: ACCEPTED
+accepted:
+  - .sadp/ governance pattern added to sadp-audit.ps1
+  - SADP_POLICY.json now covered by commit-time audit pattern
+  - TRIGGER_RULES.json now covered by commit-time audit pattern
+  - smoke tests upgraded from warnings to strict assertions
+  - all protected files now have governance pattern coverage
+  - smoke tests 14 passed with 0 warnings
+  - full suite 1036 passed
+
+remaining_non_blocking_note:
+  - PowerShell audit coverage is verified by patterns; direct JSON policy consumption by sadp-audit.ps1 is still optional future hardening
+
+dry_run_dispatch: AUTHORIZED
+live_dispatch: NOT_AUTHORIZED_HUMAN_GATED
+Project-level status after Round 10
+YAML
+shared_cdp_v2_status: ACCEPTED_WITH_LIMITATION
+sadp_runtime_enforcement: COMPLETE_WITH_PLATFORM_LIMITATION
+commit_time_audit_coverage: COMPLETE
+code_level_blockers: NONE
+remaining_limitations:
+  - no non-bypassable QoderWork platform hook
+  - live dispatch requires explicit human approval
+
+一句话结论：Round 10 通过，.sadp/ audit 覆盖缺口已闭合；SADP runtime + commit-time governance 栈现在基本完整。dry-run 可继续，live dispatch 仍需单独人工授权。

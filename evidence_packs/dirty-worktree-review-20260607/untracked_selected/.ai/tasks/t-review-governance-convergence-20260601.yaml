@@ -1,0 +1,60 @@
+task_id: t-review-governance-convergence-20260601
+title: Review governance convergence module
+priority: P1
+status: ready
+mode: "@go read"
+description: >
+  Independent reviewer task for the governance convergence module. Review the
+  executor evidence directory and produce reviewer artifacts only.
+
+allow_write:
+  - runs/t-governance-convergence-20260601/review.md
+  - runs/t-governance-convergence-20260601/review.yaml
+
+gate_0:
+  triggered: false
+  inventory_evidence:
+    queried_sources:
+      - runs/t-governance-convergence-20260601/diff.patch
+      - runs/t-governance-convergence-20260601/test-output.md
+      - runs/t-governance-convergence-20260601/safety-report.json
+      - runs/t-governance-convergence-20260601/chain-evidence.json
+    matched_capabilities:
+      - reviewer-evidence-validation
+    compared_against_request:
+      - "independent review for governance convergence module"
+  sufficiency_decision: reuse_existing
+  decision: reuse
+
+conflict_registry:
+  read_set:
+    - runs/t-governance-convergence-20260601/diff.patch
+    - runs/t-governance-convergence-20260601/test-output.md
+    - runs/t-governance-convergence-20260601/safety-report.json
+    - runs/t-governance-convergence-20260601/chain-evidence.json
+  write_set:
+    - runs/t-governance-convergence-20260601/review.md
+    - runs/t-governance-convergence-20260601/review.yaml
+  protected_files_touched: false
+  conflict_level: low
+
+review_instructions:
+  required_inputs:
+    - diff.patch
+    - test-output.md
+    - safety-report.json
+    - chain-evidence.json
+  default_reviewer_id: reviewer-t-governance-convergence-20260601
+  default_executor_id: executor-t-governance-convergence-20260601
+  decision_rule:
+    - pass only if executor evidence and required validations support full module convergence
+    - blocked if the module still fails required validation or leaves unresolved P0/P1 findings
+    - human_required if the module reaches a decision boundary needing explicit human judgment
+
+acceptance_criteria:
+  - review.md exists and summarizes module-level findings
+  - review.yaml exists with reviewer_role reviewer
+  - review.yaml reviewer_id differs from executor_id
+  - review.yaml reviewed_inputs lists diff.patch, test-output.md, safety-report.json, chain-evidence.json
+  - verdict matches reviewed evidence
+  - no file outside allow_write is modified

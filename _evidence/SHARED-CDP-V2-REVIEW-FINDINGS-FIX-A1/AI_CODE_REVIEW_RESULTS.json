@@ -1,0 +1,291 @@
+{
+  "review_id": "AI-CODE-REVIEW-SHARED-CDP-V2-FIX-A1",
+  "generated_at": "2026-06-10T12:21:53Z",
+  "review_scope": {
+    "architecture": "AWSP v2 Shared CDP (single Chrome, tab-level target resolution)",
+    "source_files": [
+      "scripts/multi_project_router.py",
+      "scripts/dry_run_dispatch_10.py",
+      "scripts/gate0_preflight_10.py",
+      "scripts/tab_target_resolver.py"
+    ],
+    "test_files": [
+      "tests/test_dispatch_packet_v2.py",
+      "tests/test_dry_run_dispatch_v2.py",
+      "tests/test_gate0_preflight_v2.py",
+      "tests/test_router_10_project_stress.py"
+    ],
+    "reviewer": "Qoder AI Code Review Agent"
+  },
+  "levels": [
+    {
+      "level": 1,
+      "name": "Correctness",
+      "verdict": "PASS",
+      "summary": "Fail-closed gates are logically correct and properly ordered. Classification priority is sound. All critical edge cases (empty URL, CDP unreachable, no match, ambiguous match, missing target_id/url) are handled. Three P2 issues found: docstring count mismatch, inconsistent chatgpt page filtering in resolve_target, and OR-fallback pattern that could mask discrepancies.",
+      "findings": [
+        {
+          "id": "C-001",
+          "severity": "P2",
+          "category": "docstring",
+          "description": "Docstring says 'six categories' but the classification actually defines 7 categories (non_dispatchable_pending, non_dispatchable_collision, blocked_ambiguous_tab, human_required_tab_unresolved, human_required_missing_target_id, human_required, dispatchable). Misleads maintainers about the full set.",
+          "file": "scripts/dry_run_dispatch_10.py",
+          "line": 74,
+          "evidence": "def _classify_packet(...) -> str:\n    \"\"\"Classify a dispatch packet into one of six categories.\n\n    Priority order:\n      1. non_dispatchable_pending\n      2. non_dispatchable_collision\n      3. blocked_ambiguous_tab\n      4. human_required_tab_unresolved\n      5. human_required_missing_target_id\n      6. human_required\n      7. dispatchable",
+          "recommendation": "Change 'six categories' to 'seven categories' in the docstring.",
+          "status": "open"
+        },
+        {
+          "id": "C-002",
+          "severity": "P2",
+          "category": "correctness",
+          "description": "resolve_target() in multi_project_router.py passes ALL CDP pages to _canonical_resolve_tab_target() without filtering to ChatGPT pages first. In contrast, resolve_all_targets() and resolve_project_target() in tab_target_resolver.py both filter with [p for p in cdp_pages if is_chatgpt_page(p)] before calling resolve_tab_target(). This inconsistency means a non-ChatGPT page with a URL coincidentally matching the chat_url could produce a false exact_match in the router path, leading to dispatch to a non-ChatGPT tab.",
+          "file": "scripts/multi_project_router.py",
+          "line": 121,
+          "evidence": "cdp_pages = _canonical_list_cdp_pages(cdp_endpoint) if cdp_active else []\n# ... later:\ntab_result = _canonical_resolve_tab_target(chat_url, cdp_pages)  # cdp_pages includes ALL page types",
+          "cross_reference": "tab_target_resolver.py lines 228, 336 filter: chatgpt_pages = [p for p in cdp_pages if is_chatgpt_page(p)]",
+          "recommendation": "Add chatgpt page filtering in resolve_target() before calling _canonical_resolve_tab_target, or move the is_chatgpt_page filter inside resolve_tab_target() itself to make it canonical.",
+          "status": "open"
+        },
+        {
+          "id": "C-003",
+          "severity": "P2",
+          "category": "correctness",
+          "description": "In _classify_packet() (dry_run_dispatch_10.py lines 99-100), the pattern 'target.get(\"target_id\") or packet.get(\"target_id\")' uses Python OR-fallback. If target has target_id=None and packet has a different non-None target_id (e.g., from a different resolution path), the classifier would silently use the packet's value, masking a real discrepancy between the target resolution and the packet build. The same pattern applies to tab_match_status.",
+          "file": "scripts/dry_run_dispatch_10.py",
+          "line": 99,
+          "evidence": "tab_status = target.get(\"tab_match_status\") or packet.get(\"tab_match_status\")\ntarget_id = target.get(\"target_id\") or packet.get(\"target_id\")",
+          "recommendation": "Use target values as the authoritative source. Only fall back to packet values when target key is entirely missing (KeyError-safe), not when the value is falsy. Consider: target.get('target_id') if 'target_id' in target else packet.get('target_id').",
+          "status": "open"
+        },
+        {
+          "id": "C-004",
+          "severity": "P3",
+          "category": "correctness",
+          "description": "resolve_target() manually constructs a tab result dict when CDP is down (line 156-159) instead of delegating to the canonical resolver. If the canonical resolver's behavior for empty page lists changes, this manual path would diverge. Currently both return match_status='cdp_unreachable', so this is not a bug but a maintenance risk.",
+          "file": "scripts/multi_project_router.py",
+          "line": 156,
+          "evidence": "tab_result = _canonical_resolve_tab_target(chat_url, cdp_pages) if cdp_active else {\n    \"target_id\": None, \"target_url\": None, \"match_status\": \"cdp_unreachable\",\n    \"issues\": [\"CDP endpoint unreachable\"],\n}",
+          "recommendation": "Always call _canonical_resolve_tab_target() — it already handles empty cdp_pages correctly by returning cdp_unreachable. Remove the conditional branch.",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "name": "Security",
+      "verdict": "PASS",
+      "summary": "CDP endpoint validation correctly restricts to localhost only (localhost, 127.0.0.1, ::1) with HTTP/HTTPS scheme and mandatory port. webSocketDebuggerUrl is properly redacted to '[REDACTED]' in all outputs. No injection vectors found — no user-controlled strings are used in shell commands or SQL. One P3 finding on substring-based domain matching.",
+      "findings": [
+        {
+          "id": "S-001",
+          "severity": "P3",
+          "category": "security",
+          "description": "is_chatgpt_page() and is_chatgpt_conversation_page() use substring matching ('chatgpt.com' in url). A hypothetical domain like 'evil-chatgpt.com' or 'chatgpt.com.evil.com' would match. In practice, the risk is very low because these functions only filter pages returned by the local Chrome CDP endpoint (localhost-validated), and an attacker would need to control a tab in the user's Chrome instance. However, for defense-in-depth, proper domain parsing would be more robust.",
+          "file": "scripts/tab_target_resolver.py",
+          "line": 110,
+          "evidence": "def is_chatgpt_page(page: dict) -> bool:\n    url = page.get(\"url\", \"\")\n    return \"chatgpt.com\" in url or \"chat.openai.com\" in url",
+          "recommendation": "Use urlparse() to extract the hostname and check for exact domain match: parsed.hostname in ('chatgpt.com', 'chat.openai.com'). This prevents subdomain/suffix attacks.",
+          "status": "open"
+        },
+        {
+          "id": "S-002",
+          "severity": "INFO",
+          "category": "security",
+          "description": "webSocketDebuggerUrl is correctly redacted to '[REDACTED]' in resolve_tab_target() output. The boolean flag has_webSocketDebuggerUrl exposes presence only, which is appropriate. No full WebSocket URLs leak into dispatch packets, reports, or test assertions.",
+          "file": "scripts/tab_target_resolver.py",
+          "line": 196,
+          "evidence": "\"webSocketDebuggerUrl\": \"[REDACTED]\" if ws_url else None,\n\"has_webSocketDebuggerUrl\": ws_url is not None,",
+          "recommendation": "No action needed. This is correctly implemented.",
+          "status": "resolved"
+        },
+        {
+          "id": "S-003",
+          "severity": "INFO",
+          "category": "security",
+          "description": "validate_cdp_endpoint() correctly restricts connections to localhost only. Allowed hostnames: localhost, 127.0.0.1, ::1. Scheme must be http or https. Port is required. This prevents SSRF to remote Chrome instances which could leak CDP credentials or allow remote command execution via the DevTools protocol.",
+          "file": "scripts/tab_target_resolver.py",
+          "line": 51,
+          "evidence": "if parsed.hostname not in (\"localhost\", \"127.0.0.1\", \"::1\"):\n    return False, \"cdp_endpoint_must_be_localhost\"\nif parsed.port is None:\n    return False, \"cdp_endpoint_missing_port\"",
+          "recommendation": "No action needed. This is correctly implemented.",
+          "status": "resolved"
+        },
+        {
+          "id": "S-004",
+          "severity": "INFO",
+          "category": "security",
+          "description": "No shell injection vectors found. All network calls use urllib.request.urlopen() with constructed URLs (not user input). File I/O uses Path.read_text() with explicit encoding. JSON parsing uses json.loads() (not eval). No subprocess calls with user-controlled arguments.",
+          "file": "scripts/multi_project_router.py",
+          "line": null,
+          "recommendation": "No action needed.",
+          "status": "resolved"
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "name": "Architecture",
+      "verdict": "WARNING",
+      "summary": "The canonical tab_target_resolver module is properly imported and used by both multi_project_router and gate0_preflight_10, which is good. However, there is significant code duplication: validate_cdp_endpoint is duplicated in multi_project_router.py despite being available from the canonical resolver; load_registry and load_binding are each duplicated across 3 files; _utc_now() is duplicated across 4 files. Field naming is inconsistent between modules (tab_match_status vs match_status). These duplications create maintenance burden and divergence risk.",
+      "findings": [
+        {
+          "id": "A-001",
+          "severity": "P2",
+          "category": "duplication",
+          "description": "validate_cdp_endpoint() is duplicated in multi_project_router.py (lines 45-60) despite being available as the canonical version in tab_target_resolver.py (lines 51-69). gate0_preflight_10.py correctly imports the canonical version as _canonical_validate_cdp_endpoint. multi_project_router.py should do the same instead of maintaining its own copy. If the validation rules change, the router copy could diverge.",
+          "file": "scripts/multi_project_router.py",
+          "line": 45,
+          "evidence": "multi_project_router.py defines its own validate_cdp_endpoint (lines 45-60)\ngate0_preflight_10.py imports canonical: from tab_target_resolver import validate_cdp_endpoint as _canonical_validate_cdp_endpoint",
+          "recommendation": "Remove the local validate_cdp_endpoint from multi_project_router.py. Import and use the canonical version from tab_target_resolver, consistent with how gate0_preflight_10.py does it.",
+          "status": "open"
+        },
+        {
+          "id": "A-002",
+          "severity": "P2",
+          "category": "duplication",
+          "description": "load_registry() is duplicated in 3 files: tab_target_resolver.py (lines 72-76), multi_project_router.py (lines 75-79), gate0_preflight_10.py (lines 61-65). All three implementations are identical. This creates a maintenance burden — if the registry path or loading logic changes, all 3 copies must be updated.",
+          "file": "scripts/multi_project_router.py",
+          "line": 75,
+          "cross_reference": "tab_target_resolver.py:72, gate0_preflight_10.py:61",
+          "recommendation": "Create a shared utility module (e.g., scripts/shared_utils.py or import from tab_target_resolver) and have all modules import load_registry() from a single source.",
+          "status": "open"
+        },
+        {
+          "id": "A-003",
+          "severity": "P2",
+          "category": "duplication",
+          "description": "load_binding() is duplicated in 3 files: tab_target_resolver.py (lines 79-84), multi_project_router.py (lines 82-87), gate0_preflight_10.py (lines 68-73). All three implementations are identical.",
+          "file": "scripts/multi_project_router.py",
+          "line": 82,
+          "cross_reference": "tab_target_resolver.py:79, gate0_preflight_10.py:68",
+          "recommendation": "Consolidate into a single shared implementation.",
+          "status": "open"
+        },
+        {
+          "id": "A-004",
+          "severity": "P2",
+          "category": "duplication",
+          "description": "_utc_now() is duplicated in 4 files: tab_target_resolver.py (line 47), multi_project_router.py (line 41), dry_run_dispatch_10.py (line 46), gate0_preflight_10.py (line 57). All return the same format string.",
+          "file": "scripts/multi_project_router.py",
+          "line": 41,
+          "cross_reference": "tab_target_resolver.py:47, dry_run_dispatch_10.py:46, gate0_preflight_10.py:57",
+          "recommendation": "Extract to a shared utility or use datetime.now(timezone.utc).isoformat() consistently.",
+          "status": "open"
+        },
+        {
+          "id": "A-005",
+          "severity": "P2",
+          "category": "naming",
+          "description": "Field naming inconsistency: the canonical resolver (tab_target_resolver.py) returns match_status in its result dict, but consumers (multi_project_router.py, gate0_preflight_10.py) rename it to tab_match_status in their output dicts. This means downstream code must know which name to use depending on which module produced the dict. The dry_run classifier accesses both names via OR-fallback (line 99).",
+          "file": "scripts/tab_target_resolver.py",
+          "line": 204,
+          "evidence": "tab_target_resolver.py returns: \"match_status\": \"exact_match\"\nmulti_project_router.py exposes: \"tab_match_status\": tab_result.get(\"match_status\")\ngate0_preflight_10.py exposes: \"tab_match_status\": tab_result.get(\"match_status\", \"skipped\")",
+          "recommendation": "Standardize on one field name across all modules. Either the canonical resolver should output tab_match_status, or all consumers should use match_status consistently.",
+          "status": "open"
+        },
+        {
+          "id": "A-006",
+          "severity": "P2",
+          "category": "architecture",
+          "description": "Inconsistent chatgpt page filtering creates a behavioral split: tab_target_resolver.py's own batch functions (resolve_all_targets, resolve_project_target) filter CDP pages to chatgpt-only before calling resolve_tab_target(), but multi_project_router.py's resolve_target() and gate0_preflight_10.py's _evaluate_project_v2() pass unfiltered page lists. This means the same URL could resolve differently depending on which code path is used.",
+          "file": "scripts/multi_project_router.py",
+          "line": 121,
+          "cross_reference": "tab_target_resolver.py:228,336 (filtered) vs multi_project_router.py:121, gate0_preflight_10.py:164 (unfiltered)",
+          "recommendation": "Move the is_chatgpt_page() filter inside resolve_tab_target() itself so all callers get consistent behavior, OR require all callers to pre-filter and document this contract in the function's docstring.",
+          "status": "open"
+        },
+        {
+          "id": "A-007",
+          "severity": "P3",
+          "category": "architecture",
+          "description": "gate0_preflight_10.py has its own check_cdp_health() (lines 76-87) that is functionally identical to multi_project_router.py's _check_cdp() (lines 63-72). Both validate the endpoint and make the same /json/version request with a 3s timeout. This is another duplication that could diverge.",
+          "file": "scripts/gate0_preflight_10.py",
+          "line": 76,
+          "cross_reference": "multi_project_router.py:63-72",
+          "recommendation": "Consolidate CDP health checking into a single shared function.",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "name": "Test Coverage",
+      "verdict": "WARNING",
+      "summary": "Test coverage is solid for the core fail-closed paths. All 6 blocked_reason codes are tested, priority ordering has 2 dedicated tests, and all gate0 verdicts (PASS/PARTIAL_PASS/BLOCKED) are exercised. The 10-project stress test validates registry structure and isolation at scale. However, there are notable gaps: no direct test for build_dispatch_packet with ambiguous tab_match_status, no CDP endpoint validation tests (remote host rejection, missing port), no URL normalization edge case tests, and no test verifying non-ChatGPT pages are excluded from matching.",
+      "findings": [
+        {
+          "id": "T-001",
+          "severity": "P2",
+          "category": "test_gap",
+          "description": "No direct test for build_dispatch_packet() when tab_match_status='ambiguous'. The ambiguous case is tested in dry_run classification (test_ambiguous_tab_blocked) and gate0 preflight (test_ambiguous_tab_match_is_blocked), but the underlying build_dispatch_packet gate (which returns blocked_reason='tab_match_status_not_exact') is not tested with ambiguous status. This means the packet-level behavior for ambiguous tabs is only verified indirectly.",
+          "file": "tests/test_dispatch_packet_v2.py",
+          "line": null,
+          "recommendation": "Add a test in TestNonDispatchable: test_ambiguous_tab_blocked_by_fail_closed() that verifies build_dispatch_packet returns dispatchable=False with blocked_reason='tab_match_status_not_exact' when tab_match_status='ambiguous'.",
+          "status": "open"
+        },
+        {
+          "id": "T-002",
+          "severity": "P2",
+          "category": "test_gap",
+          "description": "No tests for CDP endpoint validation in any test file. validate_cdp_endpoint() is a critical security function that rejects remote hosts, non-HTTP schemes, and missing ports, but has zero test coverage. An undetected regression here could allow connections to remote Chrome instances.",
+          "file": "tests/test_dispatch_packet_v2.py",
+          "line": null,
+          "recommendation": "Add a TestCDPEndpointValidation class with tests for: (1) valid localhost, (2) valid 127.0.0.1, (3) valid ::1, (4) rejected remote host, (5) rejected ftp:// scheme, (6) rejected missing port, (7) rejected malformed URL.",
+          "status": "open"
+        },
+        {
+          "id": "T-003",
+          "severity": "P2",
+          "category": "test_gap",
+          "description": "No tests for URL normalization edge cases in resolve_tab_target(). The function strips trailing slashes and query parameters (line 159), but no tests verify that 'https://chatgpt.com/c/abc/' matches 'https://chatgpt.com/c/abc', or that 'https://chatgpt.com/c/abc?foo=bar' matches correctly. A regression in normalization could silently break tab matching.",
+          "file": "tests/test_gate0_preflight_v2.py",
+          "line": null,
+          "recommendation": "Add tests in tab_target_resolver or gate0 test file for: trailing slash normalization, query parameter stripping, and combined trailing slash + query params.",
+          "status": "open"
+        },
+        {
+          "id": "T-004",
+          "severity": "P3",
+          "category": "test_gap",
+          "description": "No test verifying that non-ChatGPT pages are excluded from tab matching when the chatgpt page filter is applied. The is_chatgpt_page() function exists but has no test coverage. If the filter breaks, non-ChatGPT tabs could be incorrectly matched.",
+          "file": "tests/test_gate0_preflight_v2.py",
+          "line": null,
+          "recommendation": "Add a test that provides a mixed CDP page list (ChatGPT + non-ChatGPT pages) and verifies only ChatGPT pages are considered for matching.",
+          "status": "open"
+        },
+        {
+          "id": "T-005",
+          "severity": "P3",
+          "category": "test_gap",
+          "description": "test_partial_pass_stale in test_gate0_preflight_v2.py (line 315) asserts verdict is in ('PARTIAL_PASS', 'BLOCKED') rather than asserting the exact expected value. This weakens the test — it would pass even if the verdict logic is wrong, as long as it returns one of two values. The test should assert the specific expected verdict.",
+          "file": "tests/test_gate0_preflight_v2.py",
+          "line": 315,
+          "evidence": "assert result[\"overall\"][\"verdict\"] in (\"PARTIAL_PASS\", \"BLOCKED\")",
+          "recommendation": "Determine the exact expected verdict for this scenario (active project + CDP down = stale = PARTIAL_PASS) and assert it explicitly. If the verdict depends on other factors, add separate tests for each outcome.",
+          "status": "open"
+        },
+        {
+          "id": "T-006",
+          "severity": "INFO",
+          "category": "test_quality",
+          "description": "Positive coverage highlights: (1) All 6 blocked_reason codes tested in test_dispatch_packet_v2.py and test_dry_run_dispatch_v2.py. (2) Priority ordering tested with 2 dedicated tests (pending>collision, collision>tab_check). (3) All 3 gate0 verdicts tested. (4) 10-project stress test validates registry structure, resolve_all, and isolation at scale. (5) Conversation-only collision model verified (shared CDP is not a collision). (6) Canonical resolver integration tested.",
+          "file": "tests/",
+          "line": null,
+          "recommendation": "No action needed. This is an observation of good coverage.",
+          "status": "resolved"
+        }
+      ]
+    }
+  ],
+  "overall_verdict": "CONDITIONAL_PASS",
+  "summary": "The AWSP v2 Shared CDP architecture fix is architecturally sound with correct fail-closed semantics. The three-layer defense (tab_match_status gate -> target_id gate -> target_url gate) properly prevents dispatch without full tab resolution. Classification priority ordering is logical and tested. Security controls (localhost-only CDP, webSocketDebuggerUrl redaction) are correctly implemented.\n\nCONDITIONAL_PASS rationale:\n- 0 P0 findings (no correctness or security blockers)\n- 0 P1 findings (no urgent issues)\n- 12 P2 findings (6 architectural duplication, 3 correctness concerns, 3 test gaps)\n- 5 P3 findings (minor risks and weak assertions)\n- 4 INFO findings (all resolved, confirming correct implementation)\n\nThe P2 findings are primarily architectural debt (code duplication across 3-4 files) and test coverage gaps. None represent immediate correctness or security failures, but the duplication creates divergence risk that should be addressed before the next feature iteration.\n\nKey strengths:\n1. Fail-closed design is correctly implemented at every layer\n2. v2 isolation model (conversation_id + tab target_id) is clean and well-documented\n3. Canonical tab_target_resolver is properly imported by consumers\n4. Test suite covers all blocked_reason codes and priority orderings\n5. Security redaction of sensitive WebSocket URLs is consistent\n\nRequired actions before unconditional PASS:\n1. Fix docstring 'six categories' -> 'seven categories' (C-001, trivial)\n2. Add chatgpt page filtering in resolve_target() or move filter into canonical resolver (C-002 + A-006)\n3. Consolidate validate_cdp_endpoint, load_registry, load_binding, _utc_now to single sources (A-001 through A-004)\n4. Add missing tests for: ambiguous dispatch_packet (T-001), CDP endpoint validation (T-002), URL normalization (T-003)",
+  "finding_counts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 12,
+    "P3": 5,
+    "INFO": 4,
+    "total_open": 17,
+    "total_resolved": 4
+  }
+}

@@ -1,0 +1,36 @@
+run_id: GLOBAL_HANDOFF_REPAIR_REVIEW_20260608_225353_EEUAEQ
+task_id: GLOBAL-PROJECT-HANDOFF-REPAIR-A1
+overall_judgment: accepted_with_limitation
+safety_verdict: pass
+source_of_truth_verdict: pass
+whole_project_handoff_verdict: pass
+stale_claims_verdict: pass
+test_ledger_verdict: pass
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+none
+required_fixes:
+
+Include explicit git status / changed-files evidence in the next closure pack to independently verify that no legacy PROJECT_HISTORY / HANDOFF / PASTE_BLOCK files were deleted, moved, renamed, or rewritten.
+limitations:
+
+Whole-project/global status is correctly marked partial / needs_more_evidence, not fully closed.
+
+Production promotion is not proven by current P0/P1 evidence and must not be claimed.
+
+296 PASS remains an unverified conversational claim and is not promoted to source-of-truth.
+
+12 passed vs 13 passed is preserved as a nonblocking limitation.
+
+Source-of-truth map references several external repo evidence files by path and hash, but not all underlying historical evidence files are embedded in this ZIP.
+
+Safety scan passed and no sensitive paper text/tokens/secrets were evident in the reviewed pack, but the included scanner report checked 6 selected files rather than every file in the ZIP.
+next_allowed_action: Use this accepted_with_limitation whole-project handoff repair layer as the current global status layer, then run a targeted evidence-binding pass to attach missing underlying P0/P1 evidence and git status/change-proof before any production-promotion review.
+next_task_authorization:
+task_id: GLOBAL-PROJECT-EVIDENCE-BINDING-A1
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+END_OF_GPT_RESPONSE

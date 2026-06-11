@@ -1,0 +1,367 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "PROCESS-STATE-MACHINE-DEFINE-A1",
+  "run_id": "PROCESS_STATE_MACHINE_DEFINE_A1_20260609T110000_RD",
+  "generated_at": "2026-06-09T11:00:00+08:00",
+  "title": "GPT-Agent 交接流程状态机",
+  "description": "GPT-Agent automated handoff workflow process state machine. Defines task lifecycle states, transitions, guards, and invariants.",
+  "hardening_plan_ref": "HANDOFF_WORKFLOW_HARDENING_PLAN.md section 5.1",
+  "states": [
+    {
+      "name": "draft",
+      "description": "任务初始化，evidence pack 尚未完成",
+      "is_initial": true,
+      "is_final": false,
+      "entry_conditions": [
+        "任务首次创建",
+        "从 blocked 状态回退（fixes_applied AND evidence_pack_rebuilt）"
+      ],
+      "exit_conditions": [
+        "evidence_pack_linter_pass",
+        "evidence_pack_complete",
+        "startup_read_gate_pass"
+      ],
+      "allowed_operations": [
+        "create_evidence_pack",
+        "modify_evidence_pack",
+        "run_linter",
+        "generate_manifest"
+      ],
+      "forbidden_operations": [
+        "submit_gpt_review",
+        "run_pre_gpt_review_gate"
+      ]
+    },
+    {
+      "name": "gate_passing",
+      "description": "正在通过 pre-GPT 门禁检查",
+      "is_initial": false,
+      "is_final": false,
+      "entry_conditions": [
+        "evidence_pack_linter_pass",
+        "evidence_pack_complete",
+        "startup_read_gate_pass"
+      ],
+      "exit_conditions": [
+        "pre_gpt_review_gate_all_pass",
+        "attachment_uploaded",
+        "prompt_ready"
+      ],
+      "allowed_operations": [
+        "run_pre_gpt_review_gate",
+        "upload_attachment",
+        "prepare_prompt"
+      ],
+      "forbidden_operations": [
+        "skip_gate_and_submit",
+        "modify_evidence_pack"
+      ]
+    },
+    {
+      "name": "gpt_reviewing",
+      "description": "已提交 GPT 审查，等待响应",
+      "is_initial": false,
+      "is_final": false,
+      "entry_conditions": [
+        "pre_gpt_review_gate_all_pass",
+        "attachment_uploaded_and_confirmed",
+        "prompt_sent",
+        "user_bubble_confirmed"
+      ],
+      "exit_conditions": [
+        "gpt_response_received",
+        "verify_gpt_reply_pass"
+      ],
+      "allowed_operations": [
+        "wait_for_response",
+        "capture_response",
+        "run_verifier"
+      ],
+      "forbidden_operations": [
+        "resubmit_before_completion",
+        "modify_evidence_pack"
+      ],
+      "max_review_rounds": 3
+    },
+    {
+      "name": "accepted",
+      "description": "GPT 审查无条件通过",
+      "is_initial": false,
+      "is_final": false,
+      "entry_conditions": [
+        "verdict=accepted",
+        "verify_gpt_reply_pass"
+      ],
+      "exit_conditions": [
+        "closure_conditions_met",
+        "next_task_authorization_generated"
+      ],
+      "allowed_operations": [
+        "generate_next_task_authorization",
+        "execute_closure_binding"
+      ],
+      "forbidden_operations": [
+        "rollback_to_reviewing",
+        "modify_evidence_pack"
+      ]
+    },
+    {
+      "name": "accepted_with_limitation",
+      "description": "GPT 审查有条件通过",
+      "is_initial": false,
+      "is_final": false,
+      "entry_conditions": [
+        "verdict=accepted_with_limitation",
+        "verify_gpt_reply_pass"
+      ],
+      "exit_conditions": [
+        "limitations_addressed",
+        "closure_conditions_met",
+        "next_task_authorization_generated"
+      ],
+      "allowed_operations": [
+        "record_limitations",
+        "generate_next_task_authorization",
+        "execute_closure_binding"
+      ],
+      "forbidden_operations": [
+        "rollback_to_reviewing",
+        "ignore_limitations_and_close"
+      ]
+    },
+    {
+      "name": "blocked",
+      "description": "GPT 审查拒绝，存在 blocking issue",
+      "is_initial": false,
+      "is_final": false,
+      "entry_conditions": [
+        "verdict=blocked"
+      ],
+      "exit_conditions": [
+        "fixes_applied",
+        "evidence_pack_rebuilt"
+      ],
+      "allowed_operations": [
+        "analyze_blocking_issues",
+        "fix_issues",
+        "rebuild_evidence_pack"
+      ],
+      "forbidden_operations": [
+        "skip_draft_and_resubmit",
+        "ignore_blocking_issues"
+      ]
+    },
+    {
+      "name": "human_required",
+      "description": "需要人工介入",
+      "is_initial": false,
+      "is_final": false,
+      "entry_conditions": [
+        "verdict=human_required",
+        "safety_rule_triggered"
+      ],
+      "exit_conditions": [
+        "human_decision_recorded",
+        "decision_evidence_attached"
+      ],
+      "allowed_operations": [
+        "wait_for_human_input",
+        "record_decision"
+      ],
+      "forbidden_operations": [
+        "auto_execute_side_effects",
+        "skip_human_decision"
+      ]
+    },
+    {
+      "name": "closed",
+      "description": "任务交接完成",
+      "is_initial": false,
+      "is_final": true,
+      "entry_conditions": [
+        "source_state IN (accepted, accepted_with_limitation)",
+        "closure_conditions_met",
+        "next_task_authorization_generated"
+      ],
+      "exit_conditions": [],
+      "allowed_operations": [
+        "read_only_query",
+        "audit"
+      ],
+      "forbidden_operations": [
+        "any_state_transition",
+        "modify_evidence_pack",
+        "resubmit_gpt_review"
+      ]
+    }
+  ],
+  "initial_state": "draft",
+  "final_states": ["closed"],
+  "transitions": [
+    {
+      "id": "T01",
+      "from": "draft",
+      "to": "gate_passing",
+      "guard": "evidence_pack_linter_pass AND evidence_pack_complete AND startup_read_gate_pass",
+      "evidence_required": true,
+      "description": "Evidence pack 通过 linter 且启动门禁通过后进入门禁检查阶段"
+    },
+    {
+      "id": "T02",
+      "from": "gate_passing",
+      "to": "gpt_reviewing",
+      "guard": "pre_gpt_review_gate_all_pass AND attachment_uploaded AND prompt_ready",
+      "evidence_required": true,
+      "description": "所有 pre-GPT 门禁通过后提交 GPT 审查"
+    },
+    {
+      "id": "T03",
+      "from": "gpt_reviewing",
+      "to": "accepted",
+      "guard": "verdict=accepted AND verify_gpt_reply_pass",
+      "evidence_required": true,
+      "description": "GPT 无条件通过且验证器 PASS"
+    },
+    {
+      "id": "T04",
+      "from": "gpt_reviewing",
+      "to": "accepted_with_limitation",
+      "guard": "verdict=accepted_with_limitation AND verify_gpt_reply_pass",
+      "evidence_required": true,
+      "description": "GPT 有条件通过且验证器 PASS"
+    },
+    {
+      "id": "T05",
+      "from": "gpt_reviewing",
+      "to": "blocked",
+      "guard": "verdict=blocked",
+      "evidence_required": true,
+      "description": "GPT 审查拒绝"
+    },
+    {
+      "id": "T06",
+      "from": "gpt_reviewing",
+      "to": "human_required",
+      "guard": "verdict=human_required OR safety_rule_triggered",
+      "evidence_required": true,
+      "description": "需要人工介入或安全规则触发"
+    },
+    {
+      "id": "T07",
+      "from": "accepted",
+      "to": "closed",
+      "guard": "closure_conditions_met AND next_task_authorization_generated",
+      "evidence_required": true,
+      "description": "无条件通过后关闭任务"
+    },
+    {
+      "id": "T08",
+      "from": "accepted_with_limitation",
+      "to": "closed",
+      "guard": "limitations_addressed AND closure_conditions_met AND next_task_authorization_generated",
+      "evidence_required": true,
+      "description": "有条件通过后处理 limitation 并关闭任务"
+    },
+    {
+      "id": "T09",
+      "from": "blocked",
+      "to": "draft",
+      "guard": "fixes_applied AND evidence_pack_rebuilt",
+      "evidence_required": true,
+      "description": "修正 blocking issue 后回到草稿状态重建 evidence pack"
+    },
+    {
+      "id": "T10",
+      "from": "human_required",
+      "to": "gate_passing",
+      "guard": "human_decision_recorded AND decision_evidence_attached",
+      "evidence_required": true,
+      "description": "人工决策记录完成后重新进入门禁检查"
+    }
+  ],
+  "forbidden_transitions": [
+    {"from": "closed", "to": "*", "reason": "INV-01: closed is terminal"},
+    {"from": "accepted", "to": "gpt_reviewing", "reason": "已通过审查不可撤回"},
+    {"from": "accepted_with_limitation", "to": "gpt_reviewing", "reason": "已通过审查不可撤回"},
+    {"from": "blocked", "to": "gate_passing", "reason": "INV-03: must go through draft"},
+    {"from": "blocked", "to": "gpt_reviewing", "reason": "INV-03: must go through draft"},
+    {"from": "blocked", "to": "accepted", "reason": "必须先修正问题"},
+    {"from": "blocked", "to": "accepted_with_limitation", "reason": "必须先修正问题"},
+    {"from": "draft", "to": "gpt_reviewing", "reason": "不可跳过门禁检查"},
+    {"from": "draft", "to": "closed", "reason": "不可跳过审查直接关闭"},
+    {"from": "gate_passing", "to": "accepted", "reason": "不可跳过 GPT 审查"},
+    {"from": "gate_passing", "to": "accepted_with_limitation", "reason": "不可跳过 GPT 审查"},
+    {"from": "gate_passing", "to": "closed", "reason": "不可跳过 GPT 审查"}
+  ],
+  "invariants": [
+    {
+      "id": "INV-01",
+      "description": "closed 是终态，不可退出",
+      "formal": "FORALL t IN transitions: t.from != 'closed'",
+      "severity": "critical"
+    },
+    {
+      "id": "INV-02",
+      "description": "gpt_reviewing 到 accepted* 必须经过 verify_gpt_reply.py",
+      "formal": "FORALL t IN transitions WHERE t.from='gpt_reviewing' AND t.to IN ('accepted','accepted_with_limitation'): verify_gpt_reply_pass(t) == true",
+      "severity": "critical"
+    },
+    {
+      "id": "INV-03",
+      "description": "blocked 只能回到 draft",
+      "formal": "FORALL t IN transitions WHERE t.from='blocked': t.to == 'draft'",
+      "severity": "high"
+    },
+    {
+      "id": "INV-04",
+      "description": "human_required 必须有 HUMAN_REQUIRED_DECISION_RECORD",
+      "formal": "FORALL t IN transitions WHERE t.from='human_required': exists_decision_record(t) == true",
+      "severity": "high"
+    },
+    {
+      "id": "INV-05",
+      "description": "每次状态转换必须有 evidence 记录",
+      "formal": "FORALL t IN executed_transitions: t.evidence_record != null",
+      "severity": "high"
+    },
+    {
+      "id": "INV-06",
+      "description": "同一任务 GPT 审查轮次不超过 3",
+      "formal": "FORALL task: count(task.transitions WHERE t.to='gpt_reviewing') <= 3",
+      "severity": "medium"
+    },
+    {
+      "id": "INV-07",
+      "description": "进入 closed 前必须生成 next_task_authorization",
+      "formal": "FORALL t IN transitions WHERE t.to='closed': exists_next_task_auth(t) == true",
+      "severity": "high"
+    },
+    {
+      "id": "INV-08",
+      "description": "合法状态集合约束",
+      "formal": "FORALL task: task.current_state IN ('draft','gate_passing','gpt_reviewing','accepted','accepted_with_limitation','blocked','human_required','closed')",
+      "severity": "critical"
+    }
+  ],
+  "authorization_mechanism": {
+    "description": "next_task_authorization 传递机制",
+    "trigger": "task enters accepted or accepted_with_limitation",
+    "source": "gpt_verdict_next_task_authorization field",
+    "verification": "verify_gpt_reply.py checks has_next_task_auth for accepted verdicts",
+    "record_format": {
+      "authorization_id": "AUTH-{source_task_id}-{authorized_task_id}",
+      "source_task_id": "string",
+      "source_verdict": "accepted | accepted_with_limitation",
+      "authorized_task_id": "string",
+      "authorized_at": "ISO 8601 timestamp",
+      "authorization_source": "string (path to GPT review record)",
+      "evidence_ref": "string (path to evidence file)"
+    },
+    "validation_rule": "gate_passing entry requires valid authorization record matching current task_id"
+  },
+  "review_round_limit": {
+    "max_rounds": 3,
+    "overflow_action": "auto_transition_to_human_required",
+    "description": "同一任务最多 3 轮 GPT 审查。3 轮后仍为 blocked 则自动进入 human_required"
+  }
+}

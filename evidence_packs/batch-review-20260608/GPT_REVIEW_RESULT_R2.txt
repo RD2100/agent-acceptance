@@ -1,0 +1,104 @@
+overall_judgment: mixed_blocked
+evidence_pack_reviewed: true
+
+pack_level_findings:
+manifest_hash_integrity: pass
+actual_deliverables_present: pass
+raw_test_outputs_present: partial
+changed_files_present: pass
+git_status_present: pass
+safety_attestation_present: pass
+remaining_pack_issues:
+- "BATCH_REVIEW_SUMMARY.md 仍有若干空白字段，例如 missing function/module names。"
+- "KEY_DIFFS.patch 仍是精选 diff，不是完整 diff。"
+- "GIT_STATUS.txt 显示仍有大量 dirty/untracked 文件；本包未证明这些未被纳入提交，只能说明当前工作区仍 dirty。"
+
+verdicts:
+
+task_id: AI-WORKFLOW-HUB-RESTORE
+verdict: accepted
+rationale: >
+R2 已补充 actual_deliverables/hub/run_governance.py 和 issue_ledger.py。
+run_governance.py 中可见 render_full_governance_md()，issue_ledger.py 作为完整模块存在。
+reports/smoke_report.txt 显示 ai-workflow-hub core state tests 为 147 passed, 1 skipped，
+monorepo smoke Summary 为 5 passed, 0 failed。该项可接受。
+blocking_issues: []
+required_fixes: []
+
+task_id: CODEGRAPH-FORK-POOL-FIX
+verdict: blocked
+blocking_issues:
+
+issue_id: CODEGRAPH-FORK-POOL-FIX-R2-BLOCKER-01
+title: "缺少 CodeGraph 测试原始输出"
+detail: >
+actual_deliverables/codegraph/vitest.config.ts 已包含 pool: 'forks'。
+但 evidence pack 中没有 CODEGRAPH_TEST_OUTPUT.txt、vitest 输出或 34/37 pass 的原始测试记录。
+smoke_report.txt 只证明 CodeGraph type-check 通过，不能证明 worker crashes 已由 vitest 测试层面消除。
+
+issue_id: CODEGRAPH-FORK-POOL-FIX-R2-BLOCKER-02
+title: "34/37 仍非全绿，缺少剩余 3 项归因"
+detail: >
+包内没有 REMAINING_3_CLASSIFICATION.md 或等价说明，无法确认剩余 3 项是否均为已知 Windows symlink gated/环境限制，
+还是仍存在真实测试失败。
+required_fixes:
+
+"补充 CODEGRAPH_TEST_OUTPUT.txt，显示 34/37 pass 且 0 worker errors。"
+
+"补充 REMAINING_3_CLASSIFICATION.md，列出剩余 3 项测试名、状态、归因和 Windows symlink gating 证据。"
+
+"如已能达到 37/37，则补充新的完整 CodeGraph 测试输出。"
+
+task_id: CONTROL-PLANE-BYPASS-FIX
+verdict: blocked
+blocking_issues:
+
+issue_id: CONTROL-PLANE-BYPASS-FIX-R2-BLOCKER-01
+title: "check_submission_bypass.py 的测试环境自动 PASS 规则过宽"
+detail: >
+actual_deliverables/control-plane/check_submission_bypass.py 中只要 cwd 字符串包含 'pytest' 或 'Temp' 就直接 PASS。
+这可能导致生产/开发路径位于 Temp 目录时绕过 bypass approval，仍不满足 fail-closed 要求。
+
+issue_id: CONTROL-PLANE-BYPASS-FIX-R2-BLOCKER-02
+title: "缺少 bypass checker 的 targeted 安全测试"
+detail: >
+reports/CONTROL_PLANE_TESTS.txt 显示 72 passed，但没有专门证明：
+
+正常非测试目录且无 .ai/bypass_approved 时必须 fail；
+
+测试例外只在受控 pytest fixture 下生效；
+
+普通 Temp 路径不会被无条件放行；
+
+.ai/bypass_approved 机制不会被误提交为全局 bypass。
+
+issue_id: CONTROL-PLANE-BYPASS-FIX-R2-BLOCKER-03
+title: "CHANGED_FILES 声称 .ai/bypass_approved 新增，但 actual_deliverables 未包含且风险未解释"
+detail: >
+CHANGED_FILES.txt 写 agent-acceptance 中新增 .ai/bypass_approved。
+这类文件若被提交，可能形成全局 bypass；若不提交，则应在 evidence 中明确说明它只是本地测试/运行临时文件且未纳入提交。
+required_fixes:
+
+"收窄 check_submission_bypass.py 的测试例外：不要因 cwd 包含 Temp 就直接 PASS。"
+
+"新增 targeted tests，证明无 marker 正常 fail closed、有 marker 才 pass、pytest 临时例外受控且不会影响生产路径。"
+
+"补充 BYPASS_BEFORE_FAILURE_OUTPUT.txt 和 BYPASS_AFTER_PASS_OUTPUT.txt。"
+
+"明确 .ai/bypass_approved 是否提交；建议不得提交该 marker，并在 EXCLUDED/SAFETY 中说明。"
+
+"重新生成 CONTROL_PLANE_BYPASS targeted output 和 batch-review-r3.zip。"
+
+required_pack_fixes:
+
+"为 CodeGraph 补充真实 vitest/CodeGraph test output。"
+
+"为 Control-plane bypass 补充 targeted safety tests 与 before/after evidence。"
+
+"修正 BATCH_REVIEW_SUMMARY.md 中空白字段。"
+
+"补充完整 diff 或至少每项完整 per-file diff。"
+
+"明确 .ai/bypass_approved 的提交/排除状态。"
+
+END_OF_GPT_RESPONSE

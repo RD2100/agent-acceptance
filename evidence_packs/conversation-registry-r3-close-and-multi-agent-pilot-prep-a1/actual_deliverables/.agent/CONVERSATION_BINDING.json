@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0.0",
+  "awsp_version": "1.3.0",
+  "project_id": "agent-acceptance",
+  "project_root": "D:/agent-acceptance",
+  "default_conversation_policy": "one_agent_one_conversation",
+  "governance_scope": {
+    "default_execution_policy": "human_gated_for_external_runtime_execution",
+    "forbid_ad_hoc_gpt_submission": true,
+    "forbid_cross_repo_smoke_without_human_gate": true,
+    "external_runtimes": [
+      {
+        "runtime_id": "devframe-control-plane",
+        "runtime_kind": "control_plane",
+        "path": "D:/dev-frame/ai-workflow-hub",
+        "governance_status": "in_scope_read_only",
+        "allowed_actions": [
+          "read_policy",
+          "adapter_dry_run",
+          "pipeline_provenance_reference"
+        ],
+        "forbidden_actions": [
+          "modify_runtime_files",
+          "run_ai_workflow_hub",
+          "run_smoke_test",
+          "produce_gate_result",
+          "write_tasks_yaml_without_authorization"
+        ],
+        "human_gate_required": true
+      },
+      {
+        "runtime_id": "dev-frame-opencode",
+        "runtime_kind": "agent_dispatch",
+        "path": null,
+        "governance_status": "in_scope_human_gated",
+        "allowed_actions": [
+          "dispatch_with_taskspec",
+          "return_execution_report",
+          "provide_diff_and_test_evidence"
+        ],
+        "forbidden_actions": [
+          "direct_gpt_submission",
+          "manual_flow_outcome",
+          "authoritative_closure_without_reviewer",
+          "bypass_submission_adapter"
+        ],
+        "human_gate_required": true
+      },
+      {
+        "runtime_id": "paper-workflow",
+        "runtime_kind": "business_workflow",
+        "path": null,
+        "governance_status": "in_scope_pilot_only",
+        "allowed_actions": [
+          "synthetic_reference_pipeline",
+          "sanitized_paper_probe",
+          "evidence_pack_generation"
+        ],
+        "forbidden_actions": [
+          "real_user_paper_without_authorization",
+          "live_cdp_without_authorization",
+          "ad_hoc_playwright_submission",
+          "fabricated_gpt_review"
+        ],
+        "human_gate_required": true
+      }
+    ]
+  },
+  "bindings": [
+    {
+      "agent_id": "agent-local-001",
+      "role": "reviewer",
+      "binding_status": "pending_manual_binding",
+      "conversation_id": null,
+      "chat_url": null,
+      "browser_profile_id": null,
+      "cdp_endpoint": null,
+      "allowed_task_scope": ["*"],
+      "capture_policy": {
+        "must_match_run_id": true,
+        "must_match_task_id": true,
+        "must_include_end_marker": true,
+        "forbid_last_message_only_capture": true
+      }
+    }
+  ]
+}

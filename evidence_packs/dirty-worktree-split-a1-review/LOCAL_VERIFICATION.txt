@@ -1,0 +1,5 @@
+﻿VERIFICATION:
+- STAGING_PLAN.yaml parsed successfully before packaging.
+- commit_policy.whole_dirty_tree_commit_allowed is false.
+- recommended_first_group is GROUP-01.
+- This pack contains only plan/review evidence, not the full dirty worktree implementation batch.

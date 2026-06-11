@@ -1,0 +1,12 @@
+{
+  "runner_id": "runner-test-003",
+  "task_id": "TEST-RS-003",
+  "current_step": 7,
+  "current_round": 1,
+  "terminal": true,
+  "last_decision": "human_required",
+  "next_action": "Human must attest baseline commit",
+  "heartbeat": "2026-06-02T07:00:00Z",
+  "resume_command": "python tools/oracle_flow_runner.py --resume --task-id TEST-RS-003",
+  "reason": "Human attestation required before continuing"
+}

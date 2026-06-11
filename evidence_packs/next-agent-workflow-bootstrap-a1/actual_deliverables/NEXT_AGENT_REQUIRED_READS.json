@@ -1,0 +1,230 @@
+{
+  "task_id": "NEXT-AGENT-WORKFLOW-BOOTSTRAP-IMPLEMENT-A1",
+  "run_id": "NEXT_AGENT_WORKFLOW_BOOTSTRAP_IMPLEMENT_A1_20260608_235642",
+  "generated_at": "2026-06-08T15:56:42.456803+00:00",
+  "working_directory_rule": "Every Bash command must explicitly begin with: cd \"D:/agent-acceptance\" && ...",
+  "conversation_context_is_not_sufficient": true,
+  "memory_is_recall_not_source_of_truth": true,
+  "required_reads": [
+    {
+      "path": "HANDOFF_SOURCE_OF_TRUTH.md",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P1",
+      "purpose": "必须读取：P0/P1/P2/P3 权威层级与 approval rule。",
+      "sha256": "6fac2b229a4207a05bf45719ae3d78a252fe21e18e6285851be53b809674e3c2",
+      "bytes": 3119,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "HANDOFF_APPROVAL_RECORD.json",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P1",
+      "purpose": "必须读取：HANDOFF-PIPELINE-REFACTOR-A1 verified GPT verdict 与限制。",
+      "sha256": "1a008db43ecb45826c8166d181095613143aabe26cf40f94386798b3bdb8dc9f",
+      "bytes": 1757,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/handoff-pipeline-refactor-a1/ATTACHMENT_BACKED_GPT_REVIEW_RUNBOOK.md",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P1",
+      "purpose": "必须读取：附件版 GPT 审查 SOP。",
+      "sha256": "3f4e6348d9c71662e6ab8af43162119aa74ff8fc7ad9a96b6511cfa088c4fd03",
+      "bytes": 4686,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "scripts/verify_gpt_reply.py",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：GPT 回复 fail-closed verifier。",
+      "sha256": "68571359abb8cd424607da275f12a693b98f6e5eed23ac46ebe0c2916d284fe8",
+      "bytes": 4884,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "scripts/gpt_new_chat_attachment_submit.py",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：附件提交入口及 strict submitter 指向。",
+      "sha256": "01a2638f73e5bfffe9e4bb5eb12d42652cbde11ebe267c3676a4d2c5bf51c62d",
+      "bytes": 1017,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "scripts/pre_gpt_review_gate.py",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：pre-GPT gate。",
+      "sha256": "71ad725f1f32a715952e382a235f1e71af69781b5f8504ddd962b94784d33569",
+      "bytes": 1705,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "scripts/evidence_pack_linter.py",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：evidence pack linter。",
+      "sha256": "e560844a599f0731e94503611bd9806c00e1efac9092093a104ddad7a8c552a8",
+      "bytes": 2910,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/GPT_REVIEW_RECORD.json",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：global handoff repair GPT verdict 与 required fix。",
+      "sha256": "d3bdf606b2c89d47fc67b08da2118bfe41af2d3f24e525288b1e28ae3bdb53d8",
+      "bytes": 2151,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/VERIFY_GPT_REPLY_OUTPUT.txt",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：global repair verifier 输出。",
+      "sha256": "c260c4d4bdf131df08070fe8d33392812254d5d7246a0035ede457087d5b8955",
+      "bytes": 1388,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/PRE_GPT_GATE_OUTPUT.txt",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：global repair pre-GPT gate 输出。",
+      "sha256": "930565ffbc91c755f47ce260cdd232b678030a13d9d919347e8258a757395527",
+      "bytes": 426,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/EXECUTION_REPORT.md",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：global repair 执行报告与限制。",
+      "sha256": "592ceab088aa76dd3c06219f605f23365af4d33081927b6bceeafe87f0cbcdd4",
+      "bytes": 3028,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/PACK_MANIFEST.md",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：global repair pack manifest。",
+      "sha256": "01eab1792f5bae1f73ff9c610056059589511a9e0fdd3716ebcc6d9ec23d1b9c",
+      "bytes": 3196,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_SOURCE_OF_TRUTH_MAP.json",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：whole-project claims/evidence map。",
+      "sha256": "19905e67827cbd7689b9cd3040b55c6ac11d59997caf676c7114b831a1e9cb72",
+      "bytes": 4798,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_STALE_CLAIMS_REGISTER.json",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：stale/unverified claims。",
+      "sha256": "a8c52279844639ba7773d2008f8e7ce5b5694dfa3b00a463d2fa070397a09230",
+      "bytes": 1430,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-handoff-repair-a1/WHOLE_PROJECT_TEST_LEDGER.json",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：test ledger 与 296 PASS 未验证限制。",
+      "sha256": "7bb6bdda9e792707bde09453ded1f70cadc90db96f30af5568337e9bde441166",
+      "bytes": 1042,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/GPT_REVIEW_RESULT.txt",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：GLOBAL-PROJECT-EVIDENCE-BINDING-A1 blocked verdict。",
+      "sha256": "211d3f1e37d46a7c59bae055726ac865418877a5302b6a6b2eb486759a5a2509",
+      "bytes": 2422,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/VERIFY_GPT_REPLY_OUTPUT.txt",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：blocked verdict verifier 输出。",
+      "sha256": "d1159c64752016ca794e79769bd3019574b6abdcf6cc0b5c94cf6b0c962e3237",
+      "bytes": 1327,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/PACK_MANIFEST.md",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：blocked pack manifest。",
+      "sha256": "12b3debefba391834fecf7325f2527a23ae482ae5494ef351fd094078ba862c6",
+      "bytes": 5006,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/EXECUTION_REPORT.md",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：evidence-binding 执行报告。",
+      "sha256": "f67bd04eb26afa548eac593c5d8b6a9da02f2df33b0aa7df0a8e73331991cf5e",
+      "bytes": 1813,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/CHANGED_FILES_EVIDENCE.json",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：HANDOFF_REPLY_V4 deletion conflict。",
+      "sha256": "083e028484498ed549d853effcfd6b42b661fc13c93a12a777bf8247dcec9959",
+      "bytes": 10337,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/PROTECTED_LEGACY_FILES_STATUS.json",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：protected legacy status。",
+      "sha256": "ff5c0547f99e93c09878fcfa7b91dfcc1b845dc82c609c14f803bfcfee5090ad",
+      "bytes": 7317,
+      "fail_closed_if_missing": true
+    },
+    {
+      "path": "_reports/global-project-evidence-binding-a1/SOURCE_MAP_EVIDENCE_BINDING_APPENDIX.json",
+      "exists": true,
+      "must_read_at_startup": true,
+      "evidence_level": "P0",
+      "purpose": "必须读取：source binding appendix 与旧 ZIP 嵌入声明。",
+      "sha256": "d5dfbb5ef15c20a966ff3e1fe205e5feedb59e5854cec54373c49da697831f28",
+      "bytes": 5875,
+      "fail_closed_if_missing": true
+    }
+  ]
+}

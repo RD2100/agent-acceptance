@@ -1,0 +1,10 @@
+ai-workflow-hub:
+  - src/ai_workflow_hub/run_governance.py (+render_full_governance_md)
+  - src/ai_workflow_hub/issue_ledger.py (new)
+
+codegraph:
+  - vitest.config.ts (+pool: forks)
+
+agent-acceptance:
+  - scripts/check_submission_bypass.py (new)
+  - .ai/bypass_approved (new)

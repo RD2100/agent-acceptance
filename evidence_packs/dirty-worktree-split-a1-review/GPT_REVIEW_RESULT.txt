@@ -1,0 +1,60 @@
+YAML
+overall_judgment: accepted
+reviewer_type: gpt
+task_id: DIRTY-WORKTREE-SPLIT-A1
+evidence_pack_reviewed: true
+review_scope: staging_plan_review
+
+blocking_issues: []
+
+required_fixes: []
+
+review_findings:
+  follows_prior_triage:
+    status: pass
+    rationale: "STAGING_PLAN.md 和 STAGING_PLAN.yaml 明确基于 DIRTY-WORKTREE-REVIEW-20260607，保留了原 triage 中的 8 个分组，并将 GROUP-01 设为推荐第一组。"
+
+  blocks_whole_dirty_tree_commit:
+    status: pass
+    rationale: "commit_policy.whole_dirty_tree_commit_allowed=false，STAGING_PLAN.md 明确写明不得把当前 dirty worktree 作为一个 batch 提交。"
+
+  protects_historical_evidence:
+    status: pass
+    rationale: "计划明确禁止直接提交 HANDOFF_REPLY_V4.txt deletion，也禁止直接提交 runs/*/POST_REVIEW_ROUTE.json 修改；如需纠偏，要求 sidecar correction 或 append-only project/ledger note。"
+
+  excludes_noise:
+    status: pass
+    rationale: "do_not_commit_patterns 覆盖 .tmpconfig、.tmpdata、__pycache__、*.pyc、dirty review pack、root scratch GPT files、runs/*/POST_REVIEW_ROUTE.json 和 HANDOFF_REPLY_V4.txt deletion。"
+
+  group_01_reasonable:
+    status: pass
+    rationale: "GROUP-01 聚焦 flow/runner/task spec contracts、policies、schema tests 与 fixtures，边界比 governance hardening、archive hook、chain evidence 组更清楚，适合作为第一执行单元。"
+
+  evidence_pack_integrity:
+    status: pass
+    rationale: "PACK_MANIFEST.md 与 ZIP 内容可对应，非 self 文件 sha256 校验一致；本包是 staging plan review，不是代码 closure pack。"
+
+missing_guardrails_before_group_01:
+  - "GROUP-01 执行前必须先生成独立 TaskSpec，并显式声明 submission_target。"
+  - "GROUP-01 只能 stage STAGING_PLAN 中列出的 contracts、policies、tests、fixtures；不得顺手 stage runs/*、archive hooks、tools/*、memory/*、root scratch files。"
+  - "执行前必须保存 baseline git status 与 selected-files list，证明历史 evidence 修改和 HANDOFF_REPLY_V4.txt deletion 没有进入 GROUP-01。"
+  - "GROUP-01 必须运行 targeted schema/policy tests 和 full tests。"
+  - "GROUP-01 evidence pack 必须包含 actual deliverables、diff、changed files、test output、manifest/hash、safety scan、repo status。"
+  - "如果 GROUP-01 是历史 accepted 合同的 backfill，CLOSURE_REPORT 必须标注 backfill，不得包装成全新功能或重新改写历史结论。"
+
+next_task_authorization:
+  authorized: yes
+  execute_immediately: yes
+  ask_before_starting: no
+  recommended_task_id: GROUP-01
+  recommended_task_name: AA-FLOW-RUNNER-CONTRACT-BACKFILL
+  conditions:
+    - "只执行 GROUP-01 文件集合。"
+    - "先冻结 baseline，再选择性 stage。"
+    - "不得提交 whole dirty tree。"
+    - "不得提交 HANDOFF_REPLY_V4.txt deletion。"
+    - "不得提交 runs/*/POST_REVIEW_ROUTE.json 修改。"
+    - "不得提交 .tmpconfig、.tmpdata、__pycache__、*.pyc、dirty review pack、root scratch GPT files。"
+    - "完成后提交独立 GROUP-01 evidence pack 给 GPT review。"
+
+END_OF_GPT_RESPONSE_

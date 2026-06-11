@@ -1,0 +1,94 @@
+overall_judgment: blocked
+task_id: PAPER-C4-BOUNDED-SECTION-REVIEW-A1
+evidence_pack_reviewed: true
+
+pack_level_findings:
+manifest_hash_integrity: pass
+actual_deliverables_present: partial
+targeted_tests_present: pass
+full_tests_present: pass
+safety_attestation_present: thin
+notes:
+- "PACK_MANIFEST.md hashes match ZIP contents."
+- "reports/TARGETED_TEST_OUTPUT.txt shows 8 passed."
+- "reports/TEST_OUTPUT.txt shows 295 passed, 21 warnings."
+- "reports/SYNTHETIC_OUTPUT.txt shows a generated section review result."
+- "actual_deliverables includes runner, validator, schemas, and tests."
+- "The pack does not include example input files, CHANGED_FILES, diff patch, sanitized output, negative forbidden-field run output, or shell health outputs."
+
+accepted_parts:
+
+"The workflow is local and rule-based; it does not call Web GPT, CDP, or external upload."
+
+"Positive synthetic review path works."
+
+"Positive sanitized-with-authorization path is covered by targeted tests."
+
+"Missing file, unknown privacy_mode, sanitized_without_auth, real_paper_full_text, and raw_paper_text are covered by targeted tests."
+
+"Full suite is green: 295 passed, 21 warnings."
+
+blocking_issues:
+
+issue_id: PAPER-C4-BLOCKER-01
+title: "Actual deliverables are incomplete"
+detail: >
+The evidence pack does not include the example input files used by the tests:
+examples/paper_c4_section_review/SECTION_REVIEW_INPUT.synthetic.yaml and
+examples/paper_c4_section_review/SECTION_REVIEW_INPUT.sanitized.yaml.
+Because the tests depend on these fixtures, the pack is not fully reviewable as an actual-deliverables pack.
+
+issue_id: PAPER-C4-BLOCKER-02
+title: "Forbidden-field coverage is incomplete"
+detail: >
+The validator defines multiple forbidden fields, but targeted tests only prove blocking for
+real_paper_full_text and raw_paper_text. There is no raw targeted proof for full_chapter_text,
+private_user_text, raw_transcript, external_upload, memory_write_with_paper_content,
+live_cdp, or paper_excerpt_unbounded.
+
+issue_id: PAPER-C4-BLOCKER-03
+title: "Forbidden-field validation only blocks truthy values"
+detail: >
+paper_c4_section_packet_validator.py uses if data.get(field) for forbidden fields.
+This means forbidden fields with false/empty values can be present without being blocked.
+Since the contract describes these as forbidden fields, presence should fail closed unless a
+specific field is explicitly allowed and documented.
+
+issue_id: PAPER-C4-BLOCKER-04
+title: "Sanitized mode output is not included"
+detail: >
+The user claims synthetic and sanitized input modes. The targeted tests include sanitized_with_auth,
+but the pack only includes reports/SYNTHETIC_OUTPUT.txt. It does not include a SANITIZED_OUTPUT
+or sanitized result/report artifact.
+
+issue_id: PAPER-C4-BLOCKER-05
+title: "Result schema is not validated in tests"
+detail: >
+The pack includes result schema, but the targeted test output does not prove that generated
+SECTION_REVIEW_RESULT.json validates against paper_c4_section_review_result.schema.json.
+This is important because the workflow claims machine-readable JSON output.
+
+required_fixes:
+
+"Include actual_deliverables/examples/paper_c4_section_review/SECTION_REVIEW_INPUT.synthetic.yaml and SECTION_REVIEW_INPUT.sanitized.yaml."
+
+"Change forbidden-field logic to fail closed on field presence, not only truthy values, unless explicitly documented otherwise."
+
+"Add targeted tests for every forbidden field: full_chapter_text, private_user_text, raw_transcript, external_upload, memory_write_with_paper_content, live_cdp, paper_excerpt_unbounded, plus the existing real_paper_full_text/raw_paper_text."
+
+"Add sanitized-mode run output, e.g. SANITIZED_OUTPUT.txt and/or SANITIZED_SECTION_REVIEW_RESULT.json."
+
+"Add a targeted test that validates generated result JSON against the result schema."
+
+"Regenerate the closure pack with CHANGED_FILES, diff patch, and a stronger SAFETY_ATTESTATION."
+
+near_acceptance_note: >
+The implementation is close and the direction is valuable. Once the missing fixtures,
+forbidden-field fail-closed coverage, sanitized output, and result-schema validation are added,
+this should be acceptable, likely as accepted_with_limitation if it remains bounded to
+synthetic/sanitized section packets and does not authorize real-paper ingestion.
+
+summary:
+PAPER-C4-BOUNDED-SECTION-REVIEW-A1: blocked
+
+END_OF_GPT_RESPONSE
