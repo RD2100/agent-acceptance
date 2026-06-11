@@ -1,0 +1,44 @@
+commit 4efcbac9af27ac4ec6defce636ff4c7a223e3ca9
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Thu Jun 11 08:52:47 2026 +0800
+
+    feat: tripmark binding, bindChrome v5, docs, and session cleanup
+    
+    - tripmark project CONVERSATION_BINDING.json updated
+    - bindChrome skill v5 with tab detection and URL fast-path
+    - GPT review docs and workflow hardening plans
+    - Archive draft hooks and run results
+    - Memory tasks and module ledger updates
+    - HANDOFF_REPLY_V4.txt cleanup
+
+M	.ai/current-task.yaml
+A	.ai/module_ledger/M1.json
+A	.ai/module_ledger/M2.json
+A	.ai/module_ledger/M3.json
+M	.ai/paper_authorization.json
+D	HANDOFF_REPLY_V4.txt
+M	archive/draft-hooks/pre-final.audit.ps1
+M	archive/draft-hooks/pre-task.audit.ps1
+M	archive/draft-hooks/pre-tool.audit.ps1
+A	docs/AGENT_WORKFLOW_STANDARD.md
+A	docs/GPT_CAPTURE_FIX.txt
+A	docs/GPT_CHINESE_FINAL.txt
+A	docs/GPT_CHINESE_TEMPLATE_REVIEW.txt
+A	docs/GPT_CONTROL_PLANE_A1.txt
+A	docs/GPT_DEVIATION_ANALYSIS.txt
+A	docs/GPT_HANDOFF_PLAN.txt
+A	docs/GPT_META_ASKING.txt
+A	docs/GPT_NEXT_TASK_FIX.txt
+A	docs/GPT_PROPOSAL_REVIEW.txt
+A	docs/GPT_PUSH_BLOCKER_PLAN.txt
+A	docs/GPT_STRUCTURAL_FIX.txt
+A	docs/GPT_TEMPLATE_FINAL.txt
+A	docs/GPT_TEMPLATE_FINAL_REVIEW.txt
+A	docs/GPT_WORKFLOW_HARDENING_A1_PLAN.txt
+A	docs/GPT_WORKFLOW_HARDENING_A2_PLAN.txt
+A	docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md
+A	docs/submit_proposal_to_gpt.py
+M	hooks/sealed-files-manifest.json
+A	memory/tasks/handoff-pipeline-refactor-a1.md
+M	runs/project-history-gaps-v1/POST_REVIEW_ROUTE.json
+M	runs/repo-routing-a1-v1/POST_REVIEW_ROUTE.json

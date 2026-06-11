@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-11T08:52:48.4105564+08:00",
+    "generated":  "2026-06-11T09:33:20.7703732+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
@@ -24,12 +24,12 @@
                              "path":  ".github/workflows/ai-guard.yml"
                          },
                          {
-                             "sha256":  "B76B75E0BA3E660CCA3E3896F90C71D7CDDA3D7BF9D1AA1ED5C7C248886A08D0",
-                             "path":  "_projects/project-alpha/AGENTS.md"
+                             "sha256":  "D6AFFFAD1C6D112A459361CA56825F5844E1E7127286BF67DD71DB3D2B2EB77E",
+                             "path":  "_projects/dev-frame-writing/AGENTS.md"
                          },
                          {
-                             "sha256":  "D6AFFFAD1C6D112A459361CA56825F5844E1E7127286BF67DD71DB3D2B2EB77E",
-                             "path":  "_projects/project-beta/AGENTS.md"
+                             "sha256":  "B76B75E0BA3E660CCA3E3896F90C71D7CDDA3D7BF9D1AA1ED5C7C248886A08D0",
+                             "path":  "_projects/project-alpha/AGENTS.md"
                          },
                          {
                              "sha256":  "8564F060ADB40B2E148537E3EAFA34F20D510A1497A5D80D002E7DCEF7A8B65D",

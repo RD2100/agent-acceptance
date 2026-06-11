@@ -1,0 +1,64 @@
+{
+  "chain_id": "R18-chain",
+  "date": "2026-06-11",
+  "review_history": [
+    {
+      "round": "R1-R16",
+      "status": "prior reviews archived in _evidence/",
+      "verdict": "various"
+    },
+    {
+      "round": "R17",
+      "status": "ACCEPTED_WITH_LIMITATION",
+      "verdict": "closed all R16 blockers"
+    },
+    {
+      "round": "R18-first",
+      "status": "NEEDS_MORE_EVIDENCE",
+      "verdict": "text-only, no machine-verifiable artifacts"
+    },
+    {
+      "round": "R18-second",
+      "status": "SUBMITTED",
+      "verdict": "pending - full evidence pack attached"
+    }
+  ],
+  "evidence_files": [
+    "commit-manifest.json",
+    "current-task-before.yaml",
+    "current-task-after.yaml",
+    "current-task-diff.patch",
+    "ai-guard-scope-check-output.txt",
+    "pytest-output.txt",
+    "secret-scan-output.txt",
+    "deferred-files-register.yaml",
+    "git-status-before.txt",
+    "git-status-after.txt",
+    "safety-report.json",
+    "chain-evidence.json",
+    "review.yaml",
+    "final-report.md",
+    "git-show-name-status-511c54ab.txt",
+    "git-show-name-status-283b5834.txt",
+    "git-show-name-status-dae0e9fb.txt",
+    "git-show-name-status-a9ad148d.txt",
+    "git-show-name-status-3fc33dac.txt",
+    "git-show-name-status-4efcbac9.txt"
+  ],
+  "commit_hashes": [
+    "511c54ab",
+    "283b5834",
+    "dae0e9fb",
+    "a9ad148d",
+    "3fc33dac",
+    "4efcbac9"
+  ],
+  "git_show_files": [
+    "git-show-name-status-511c54ab.txt",
+    "git-show-name-status-283b5834.txt",
+    "git-show-name-status-dae0e9fb.txt",
+    "git-show-name-status-a9ad148d.txt",
+    "git-show-name-status-3fc33dac.txt",
+    "git-show-name-status-4efcbac9.txt"
+  ]
+}

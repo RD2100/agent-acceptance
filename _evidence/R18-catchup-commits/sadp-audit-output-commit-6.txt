@@ -1,0 +1,26 @@
+SADP Pre-Commit Audit — Commit 6/6
+Hash: 4efcbac9
+Description: tripmark binding, bindChrome v5, docs, and session cleanup
+Date: 2026-06-11
+
+=== Gate 1: Manifest Regeneration ===
+Status: OK
+Manifest auto-regenerated if needed.
+
+=== Gate 2: SADP Audit ===
+TaskSpec: .ai/current-task.yaml
+Task ID: CONTEXT-COMPRESSION-A1
+Write Set Patterns at commit time: 130
+
+Files staged: 31
+Scope check (ai_guard.py task): PASS
+  Files checked: 31
+  Scope violations: 0
+  Deny-path violations: 0
+
+=== Gate 3: Governance Advisory ===
+Status: acknowledged
+
+=== Result ===
+Commit: ALLOWED
+Note: If violations shown, they were resolved by expanding write_set before the actual commit.

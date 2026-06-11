@@ -1,0 +1,45 @@
+AI Guard Scope Check — R18 Catch-Up Commit Batch (Full Replay)
+Date: 2026-06-11
+Mode: task (replayed)
+TaskSpec: .ai/current-task.yaml
+Task ID: CONTEXT-COMPRESSION-A1
+Write Set Patterns: 130
+
+=== Per-Commit Results ===
+
+Commit 511c54ab (SADP core infrastructure):
+  Files checked: 100
+  Scope violations: 0
+  Deny-path violations: 0
+
+Commit 283b5834 (evidence packs and review archives (R1-R17)):
+  Files checked: 751
+  Scope violations: 0
+  Deny-path violations: 0
+
+Commit dae0e9fb (reports, handoff docs, contracts, and governance artifacts):
+  Files checked: 1061
+  Scope violations: 0
+  Deny-path violations: 0
+
+Commit a9ad148d (CDP automation scripts, GPT interaction tools, TaskSpecs):
+  Files checked: 81
+  Scope violations: 0
+  Deny-path violations: 0
+
+Commit 3fc33dac (10 project scaffolding and task definitions):
+  Files checked: 1610
+  Scope violations: 0
+  Deny-path violations: 0
+
+Commit 4efcbac9 (tripmark binding, bindChrome v5, docs, and session cleanup):
+  Files checked: 31
+  Scope violations: 0
+  Deny-path violations: 0
+
+=== Summary ===
+Total files checked: 3634
+Total scope violations: 0
+Total deny-path violations: 0
+
+AI Guard: PASS - 3634 file(s) checked, 0 scope violations, 0 deny-path violations

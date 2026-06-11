@@ -1,0 +1,313 @@
+R18 Second Submission Reviewer Verdict
+YAML
+verdict: PARTIAL_ACCEPTANCE_WITH_REMAINING_BLOCKERS
+review_scope: EVIDENCE_PACK_R18.zip
+zip_sha256: ab96a4aab4f549b9a88971d0232e965ce1aaf04c0b907425f141034495816efc
+evidence_pack_status: PRESENT_AND_READABLE
+commit_manifest_status: VERIFIED_INTERNALLY
+test_evidence_status: ACCEPTED_AS_RECORDED
+governance_compliance_status: NOT_FULLY_ACCEPTED
+live_dispatch: NOT_AUTHORIZED
+
+我已核查上传的 EVIDENCE_PACK_R18.zip。这次不再是 text-only submission，ZIP 内确实包含 29 个证据文件，且 6 个 git-show-name-status-*.txt 与 commit-manifest.json 的文件数逐项一致：
+
+Commit	Claimed files	git-show counted files	裁定
+511c54ab	100	100	matched
+283b5834	751	751	matched
+dae0e9fb	1061	1061	matched
+a9ad148d	81	81	matched
+3fc33dac	1610	1610	matched
+4efcbac9	31	31	matched
+
+所以，R18-BLOCKING-01 和 R18-BLOCKING-05 可以关闭。测试日志也记录了 1038 passed, 21 warnings，可以作为 recorded test evidence 接受。
+
+但还不能给出 overall accepted。仍有几个治理级 blocker。
+
+Blocker Closure Status
+Finding	R18 Second Submission 状态	Reviewer 裁定
+R18-BLOCKING-01：无 evidence pack	ZIP 已提供，commit manifest 完整	CLOSED
+R18-BLOCKING-02：无 current-task.yaml diff	已提供 before/after/diff	PARTIALLY_CLOSED
+R18-BLOCKING-03：无 per-commit hook logs	提供的是 reconstructed summaries，不是 raw hook logs	OPEN
+R18-BLOCKING-04：无 ai_guard 输出	文件存在，但显示 0 file(s) checked	OPEN
+R18-BLOCKING-05：无 git-show 清单	6 个 commit 清单均存在且文件数匹配	CLOSED
+R18-BLOCKING-06：无 deferred/secret evidence	已提供，但数量与状态互相矛盾	PARTIALLY_CLOSED
+R18-BLOCKING-07：无 git status before/after	已提供，但 after status 与“18 remaining”不一致	PARTIALLY_CLOSED
+Remaining Blockers
+R18-BLOCKING-03：pre-commit hook evidence 仍不是原始证据
+
+sadp-audit-output-commit-1..6.txt 都包含同一句关键说明：
+
+Raw hook output was not captured to file during session.
+Reconstructed from session records and git log.
+
+这意味着它们不是原始 hook output，而是事后重构的摘要。对于普通小任务可以作为 limitation 接受，但 R18 是 3,634 文件、6 个 catch-up commits、涉及 governance/protected 文件 的批量入库，不能只靠 reconstructed hook summary 证明 pre-commit hook 真实覆盖了每个 commit。
+
+裁定：
+
+YAML
+R18-BLOCKING-03:
+  status: OPEN
+  reason: per-commit sadp-audit evidence is reconstructed, not raw machine output
+R18-BLOCKING-04：ai_guard.py evidence 实际没有覆盖 3,634 文件
+
+ai-guard-scope-check-output.txt 内容是：
+
+AI Guard: PASS - 0 file(s) checked, 0 issues
+
+这不能证明 3,634 个 committed files 经过了 scope checking。它只能证明“当前运行时没有检查到文件”，或者当前 staged set 为空。
+
+因此，关于：
+
+ai_guard.py scope checking passed after write_set expansion
+
+这个核心主张仍未被证据支撑。
+
+需要的是类似：
+
+AI Guard: PASS - 3634 file(s) checked, 0 scope violations, 0 deny-path violations
+
+或者按 commit 分别列出 staged/committed 文件检查结果。
+
+裁定：
+
+YAML
+R18-BLOCKING-04:
+  status: OPEN
+  reason: supplied ai_guard output checked 0 files
+R18-BLOCKING-06 / 07：deferred files 数量不一致
+
+提交说明说：
+
+18 remaining
+17x NEG-009-secrets-read.json
+1x handoff-pipeline-refactor-a1.yaml
+
+但 git-status-after.txt 实际列出 21 个 untracked entries，包括：
+
+?? .ai/tasks/handoff-pipeline-refactor-a1.yaml
+?? NUL
+?? _cdp_r18_submit.py
+?? _evidence/R18-catchup-commits/
+?? 17x NEG-009-secrets-read.json
+
+deferred-files-register.yaml 又写成：
+
+YAML
+17 NEG-009 files
+4 gate_0 validation failure files
+
+其中 .ai/tasks/handoff-pipeline-refactor-a1.yaml 还重复出现一次。也就是说：
+
+YAML
+claimed_remaining: 18
+git_status_after_untracked_entries: 21
+deferred_register_declared_count: 21
+deferred_register_unique_paths: 20
+secret_scan_entries: 20
+unscanned_or_unclear:
+  - NUL
+  - _evidence/R18-catchup-commits/
+
+另外，secret-scan-output.txt 中 17 个 NEG-009 文件均显示：
+
+JSON
+"findings": [],
+"status": "CLEAN"
+
+但 deferred-files-register.yaml 又标为：
+
+YAML
+secret_scan: MOCK_SECRET
+
+这不一定代表真实风险，但说明 evidence 之间没有对齐。
+
+裁定：
+
+YAML
+R18-BLOCKING-06:
+  status: PARTIALLY_CLOSED
+  reason: secret scan exists but does not align with deferred register and git status
+
+R18-BLOCKING-07:
+  status: PARTIALLY_CLOSED
+  reason: git status exists but contradicts claimed 18 remaining files
+New Finding：write_set expansion 过宽，且 TaskSpec 身份不匹配
+
+current-task-after.yaml 的 task_id 仍是：
+
+YAML
+task_id: CONTEXT-COMPRESSION-A1
+title: Build long-conversation context compression layer
+
+但 R18 实际执行的是：
+
+YAML
+task_id: CATCH-UP-COMMIT-BATCH-R18
+type: bulk catch-up commit batch
+
+这说明本轮不是使用一个专门的 R18 catch-up TaskSpec 执行，而是在既有 CONTEXT-COMPRESSION-A1 上追加大量 write_set glob。
+
+新增 write_set 包括：
+
+scripts/*
+tests/*
+docs/**
+.agent/*
+.sadp/*
+_evidence/**
+_reports/**
+contracts/**
+_projects/**
+hooks/*
+runs/**
+memory/**
+tasks/**
+archive/**
+
+这些路径覆盖面非常宽，且包括：
+
+.sadp/*
+AGENTS.md
+scripts/sadp-audit.ps1
+hooks/*
+archive/draft-hooks/*.ps1
+
+这些都属于治理敏感或 self-protecting 范围。Commit 1 和 Commit 6 也确实涉及这类文件。
+
+如果这是“bulk catch-up commit”，可以有宽 write_set，但必须有独立的 human/governance authorization record，例如：
+
+YAML
+human_required_decision:
+  task_id: CATCH-UP-COMMIT-BATCH-R18
+  approved_by: human
+  approved_at: 2026-06-11
+  approved_scope:
+    - six listed commits
+    - exact commit hashes
+    - protected governance files
+  explicit_risk_acceptance:
+    - scripts/sadp-audit.ps1
+    - .sadp/SADP_POLICY.json
+    - AGENTS.md
+    - hooks/sealed-files-manifest.json
+
+当前 evidence pack 只有“governance-approved”文字说明，没有可独立核查的 decision record。
+
+裁定：
+
+YAML
+R18-NEW-BLOCKING-08:
+  status: OPEN
+  reason: current-task.yaml task_id does not match R18 catch-up task and write_set expansion is too broad without explicit human/governance decision record
+Direct Answers
+1. 6-commit split 是否 logical and well-bounded？
+
+结构上基本合理，但 Commit 6 仍然边界偏混合。
+
+前 5 个 commit 的主题边界可以接受。Commit 6 同时包含：
+
+.ai/current-task.yaml
+.ai/module_ledger/*
+.ai/paper_authorization.json
+archive/draft-hooks/*.ps1
+docs/GPT_*.txt
+docs/submit_proposal_to_gpt.py
+hooks/sealed-files-manifest.json
+memory/tasks/*
+runs/*
+
+这更像 session cleanup bundle，而不是单一功能边界。可以接受为 catch-up cleanup commit，但必须带 limitation。
+
+裁定：
+
+YAML
+six_commit_split: ACCEPTED_WITH_LIMITATION
+limitation: commit_6_is_mixed_scope_cleanup
+2. write_set expansion 是否 appropriately scoped？
+
+暂不接受。
+
+主要原因：
+
+task_id 仍是 CONTEXT-COMPRESSION-A1，不是 R18 catch-up task。
+
+glob 覆盖太宽，接近 bulk allow-list。
+
+包含 governance/protected paths。
+
+没有 explicit human/governance decision record。
+
+ai_guard 输出显示 0 files checked，不能证明 scope enforcement 覆盖这 6 个 commit。
+
+裁定：
+
+YAML
+write_set_expansion: NOT_ACCEPTED_YET
+3. 18 deferred files 是否需要 immediate attention？
+
+需要立即修正登记，不一定需要立即提交。
+
+NEG-009 文件可以继续 deferred，但必须把登记表、git status 和 secret scan 对齐。
+
+当前不是 18 个，而是至少 21 个 untracked entries。NUL 和 _evidence/R18-catchup-commits/ 没有被充分解释；_cdp_r18_submit.py 也在 after status 中，但最终报告没有列入 18 remaining。
+
+裁定：
+
+YAML
+deferred_files:
+  commit_now: no
+  immediate_action: yes
+  required_fix: reconcile git-status-after, deferred-files-register, and secret-scan-output
+4. Overall governance compliance?
+
+不能整体接受。
+
+可以接受的是：
+
+YAML
+accepted:
+  - evidence pack now exists
+  - commit manifest is internally consistent
+  - git-show file counts match manifest
+  - pytest output records 1038 passed
+  - six-commit split is broadly understandable
+
+不能接受的是：
+
+YAML
+not_accepted:
+  - raw SADP pre-commit enforcement proof
+  - ai_guard scope proof
+  - write_set expansion governance
+  - deferred file accounting
+  - protected governance file authorization
+Final R18 Second Decision
+YAML
+r18_second_decision:
+  verdict: PARTIAL_ACCEPTANCE_WITH_REMAINING_BLOCKERS
+
+  closed:
+    - R18-BLOCKING-01
+    - R18-BLOCKING-05
+
+  accepted_with_limitation:
+    - six_commit_split
+    - pytest_output
+    - commit_manifest_internal_consistency
+
+  still_open:
+    - R18-BLOCKING-03
+    - R18-BLOCKING-04
+    - R18-BLOCKING-06
+    - R18-BLOCKING-07
+    - R18-NEW-BLOCKING-08
+
+  required_next_evidence:
+    - raw_or_replayable sadp-audit output proving each commit passed
+    - ai_guard output checking actual committed file set, not 0 files
+    - corrected deferred-files-register.yaml matching git-status-after exactly
+    - secret scan covering every uncommitted path including NUL and _evidence/R18-catchup-commits/
+    - explicit human/governance decision record for bulk write_set expansion and protected file changes
+    - preferably a dedicated CATCH-UP-COMMIT-BATCH-R18 TaskSpec instead of reusing CONTEXT-COMPRESSION-A1
+
+一句话结论：R18 第二次提交已经补上了真实 evidence pack，并证明了 commit manifest 与 6 个 commit 的文件清单一致；但治理合规还不能通过，因为 hook/ai_guard 证据没有真实覆盖 committed files，write_set 是在不匹配的 TaskSpec 上做宽泛扩展，且 deferred 文件数量与 secret scan 结果不一致。

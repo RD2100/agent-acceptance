@@ -1,0 +1,115 @@
+commit 511c54ab00ce79171250819f84c6052092ffcc08
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Thu Jun 11 08:43:05 2026 +0800
+
+    feat: SADP core infrastructure — scripts, tests, governance, schemas
+    
+    - 7-layer enforcement stack (sadp-audit.ps1, SADP_POLICY, TRIGGER_RULES)
+    - 42 test files (1038 tests) covering router, dispatch, gate0, handoff
+    - Agent runtime docs (capability-inventory, sub-agent-dispatch-protocol,
+      operations-manual, v2-shared-cdp-architecture-baseline, tool-policy)
+    - Schemas (dispatch-plan, gate0-preflight, handoff, evidence-map)
+    - Multi-project resource policy and conversation registry schema
+    - Batch project init scripts and cross-repo verification tools
+    - Updated current-task.yaml write_set for catch-up commit authorization
+
+A	.agent/CONVERSATION_REGISTRY.schema.json
+A	.agent/MULTI_PROJECT_RESOURCE_POLICY.json
+M	.ai/current-task.yaml
+M	.gitignore
+A	.sadp/SADP_POLICY.json
+A	.sadp/TRIGGER_RULES.json
+M	AGENTS.md
+M	docs/agent-runtime/capability-inventory.md
+A	docs/agent-runtime/operations-manual.md
+M	docs/agent-runtime/sub-agent-dispatch-protocol.md
+M	docs/agent-runtime/tool-policy.md
+A	docs/agent-runtime/v2-shared-cdp-architecture-baseline.md
+M	hooks/sealed-files-manifest.json
+M	schemas/agent-runtime/README.md
+A	schemas/agent-runtime/multi-agent-dispatch-plan.schema.json
+A	schemas/agent-runtime/multi-agent-gate0-preflight.schema.json
+A	schemas/handoff_compiler_result.schema.json
+A	schemas/handoff_evidence_map.schema.json
+A	schemas/minimax_m3_observation.schema.json
+A	schemas/writelab_diagnosis_result.schema.json
+A	schemas/writelab_paper_handoff.schema.json
+A	scripts/awsp_scaffold.py
+A	scripts/batch_init_10_projects.py
+A	scripts/bind_conversation_alpha_v2.py
+A	scripts/bind_real_conversation_alpha.py
+A	scripts/bounded_execution_dry_run.py
+A	scripts/cross_repo_authorization.py
+M	scripts/cross_repo_verify.py
+A	scripts/dry_run_dispatch_10.py
+A	scripts/gate0_preflight_10.py
+A	scripts/generate_reconciliation_report.py
+A	scripts/gpt_new_chat_attachment_submit.py
+A	scripts/handoff_compiler.py
+A	scripts/handoff_safety_scan.py
+A	scripts/handoff_source_map.py
+A	scripts/handoff_stale_check.py
+A	scripts/human_decision_record.py
+A	scripts/lazy_launch_manager.py
+A	scripts/multi_agent_dispatch_plan.py
+A	scripts/multi_agent_gate0_preflight.py
+A	scripts/multi_cdp_launcher.py
+A	scripts/multi_project_router.py
+M	scripts/multi_repo_smoke.py
+A	scripts/onboard_project.py
+A	scripts/paper_c4_revision_blueprint.py
+M	scripts/paper_c4_section_packet_validator.py
+A	scripts/paper_c4_utility_eval.py
+A	scripts/pilot_activation_record.py
+M	scripts/pre_gpt_review_gate.py
+M	scripts/pre_push_verify.py
+A	scripts/probe_writelab_handoff_e2e.py
+A	scripts/qoderwork_task_runner.py
+M	scripts/run_demo.py
+M	scripts/sadp-audit.ps1
+A	scripts/sadp_pre_task_enforcer.py
+M	scripts/smoke_suite.py
+A	scripts/smoke_test_two_projects.py
+A	scripts/startup_read_gate.py
+A	scripts/state_machine_runtime.py
+A	scripts/tab_target_resolver.py
+A	scripts/validate_conversation_registry.py
+A	scripts/validate_multi_agent_dispatch_plan.py
+A	scripts/validate_run_id_consistency.py
+A	scripts/validate_writelab_handoff.py
+M	scripts/verify_gpt_reply.py
+A	scripts/verify_writelab_synthetic_e2e_artifacts.py
+A	tests/conftest.py
+A	tests/test_bounded_execution.py
+A	tests/test_conversation_registry.py
+A	tests/test_cross_project_scaffold.py
+A	tests/test_cross_repo_execution_guards.py
+A	tests/test_dispatch_packet_v2.py
+A	tests/test_dry_run_dispatch_v2.py
+A	tests/test_gate0_preflight_v2.py
+M	tests/test_gpt_review_response_binding.py
+A	tests/test_handoff_compiler.py
+A	tests/test_handoff_safety_scan.py
+A	tests/test_handoff_source_map.py
+A	tests/test_handoff_stale_check.py
+A	tests/test_human_decision_record.py
+A	tests/test_lazy_launch.py
+A	tests/test_multi_agent_dispatch_plan.py
+A	tests/test_multi_agent_gate0_preflight.py
+A	tests/test_multi_project_isolation.py
+M	tests/test_paper_c4_section_review.py
+A	tests/test_pilot_activation.py
+A	tests/test_pre_gpt_review_gate.py
+A	tests/test_probe_writelab_handoff_e2e.py
+A	tests/test_qoderwork_task_runner.py
+A	tests/test_router_10_project_stress.py
+A	tests/test_sadp_pre_task_enforcer.py
+M	tests/test_smoke_suite.py
+A	tests/test_startup_read_gate.py
+A	tests/test_state_machine_runtime.py
+A	tests/test_tab_target_resolver.py
+A	tests/test_validate_multi_agent_dispatch_plan.py
+A	tests/test_validate_run_id_consistency.py
+A	tests/test_verify_gpt_reply.py
+A	tests/test_verify_writelab_synthetic_e2e_artifacts.py
+A	tests/test_writelab_handoff_validator.py

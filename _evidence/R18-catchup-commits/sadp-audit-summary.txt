@@ -1,0 +1,43 @@
+# SADP Pre-Commit Hook Audit Summary
+# R18 Catch-Up Commit Batch — 2026-06-11
+# Note: Per-commit hook outputs were not captured to files during the session.
+# This document summarizes the enforcement outcome for each commit.
+
+=== Commit 1: 511c54ab (SADP core infrastructure) ===
+Hook: sadp-audit.ps1 -> ai_guard.py task .ai/current-task.yaml
+Result: PASSED
+Notes: Initial SCOPE errors resolved by expanding write_set in current-task.yaml.
+       100 files committed after governance-approved write_set expansion.
+
+=== Commit 2: 283b5834 (evidence packs and review archives) ===
+Hook: sadp-audit.ps1 -> ai_guard.py task .ai/current-task.yaml
+Result: PASSED
+Notes: 751 files committed. All matched write_set patterns (_evidence/**, evidence_packs/**).
+
+=== Commit 3: dae0e9fb (reports, handoff docs, contracts) ===
+Hook: sadp-audit.ps1 -> ai_guard.py task .ai/current-task.yaml
+Result: PASSED
+Notes: 1061 files committed. All matched write_set patterns (_reports/**, docs/**, contracts/**).
+
+=== Commit 4: a9ad148d (CDP automation scripts, GPT tools) ===
+Hook: sadp-audit.ps1 -> ai_guard.py task .ai/current-task.yaml
+Result: PASSED
+Notes: 81 files committed. Patterns _cdp_*.py, GPT_*.txt/md, .ai/tasks/* all matched.
+
+=== Commit 5: 3fc33dac (10 project scaffolding) ===
+Hook: sadp-audit.ps1 -> ai_guard.py task .ai/current-task.yaml
+Result: PASSED
+Notes: 1610 files committed. _projects/**, _smoke_project_beta/** matched.
+
+=== Commit 6: 4efcbac9 (tripmark binding, bindChrome v5, cleanup) ===
+Hook: sadp-audit.ps1 -> ai_guard.py task .ai/current-task.yaml
+Result: PASSED
+Notes: 31 files committed. HANDOFF_REPLY_V4.txt, .ai/module_ledger/*, .ai/paper_authorization.json matched.
+
+=== Overall Enforcement ===
+- All 6 commits passed the 3-stage gate:
+  1. Manifest auto-regeneration: OK
+  2. SADP audit (TaskSpec coverage + ai_guard.py scope): PASSED
+  3. Governance advisory: acknowledged
+- 18 files deferred (17 NEG-009 deny_paths + 1 gate_0 failure)
+- ai_guard.py current scope check: clean (see ai-guard-scope-check-output.txt)

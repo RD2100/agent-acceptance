@@ -1,0 +1,84 @@
+# Deferred Files Register - R18 Catch-Up Commit Batch (v3 Corrected)
+# Date: 2026-06-11
+# All counts reconciled with git-status-after.txt
+
+summary:
+  total_untracked_entries: 26
+  neg009_deferred: 17
+  gate0_deferred: 1
+  session_artifacts: 7
+  other_untracked: 0
+  nul_device_file: 1
+
+deferred_files:
+  - reason: deny_paths (mock secrets for negative testing)
+    count: 17
+    files:
+      - path: "_projects/project-alpha/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-beta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-beta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-delta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-delta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-eta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-eta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-gamma/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-iota/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-iota/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-theta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-theta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-zeta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+      - path: "_projects/project-zeta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+        secret_scan: CLEAN
+
+  - reason: gate_0 validation failure
+    count: 1
+    files:
+      - path: ".ai/tasks/handoff-pipeline-refactor-a1.yaml"
+        issue: "Missing valid gate_0.inventory_evidence"
+
+  - reason: session artifacts (created during R18 evidence building)
+    count: 7
+    files:
+      - path: "_build_r18_evidence.py"
+        note: "Created during R18 evidence building session"
+      - path: "_build_r18_v3.py"
+        note: "Created during R18 evidence building session"
+      - path: "_cdp_r18_submit.py"
+        note: "Created during R18 evidence building session"
+      - path: "_cdp_r18_zip_submit.py"
+        note: "Created during R18 evidence building session"
+      - path: "_evidence/EVIDENCE_PACK_R18.zip"
+        note: "Created during R18 evidence building session"
+      - path: "_evidence/R18-catchup-commits/"
+        note: "Created during R18 evidence building session"
+      - path: "_pack_r18_zip.py"
+        note: "Created during R18 evidence building session"
+
+  - reason: other untracked
+    count: 0
+    files:
+
+  - reason: device file
+    count: 1
+    files:
+      - path: "NUL"
+        note: "Windows NUL device file artifact"

@@ -18,10 +18,10 @@
       "binding_status": "active",
       "registered_at": "2026-06-10T16:00:00Z"
     },
-    "project-beta": {
-      "project_id": "project-beta",
-      "project_root": "D:\\agent-acceptance\\_projects\\project-beta",
-      "binding_status": "pending_binding",
+    "dev-frame-writing": {
+      "project_id": "dev-frame-writing",
+      "project_root": "D:\\agent-acceptance\\_projects\\dev-frame-writing",
+      "binding_status": "active",
       "registered_at": "2026-06-10T16:00:00Z"
     },
     "project-gamma": {

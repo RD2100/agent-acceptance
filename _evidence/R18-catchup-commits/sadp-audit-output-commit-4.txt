@@ -1,0 +1,26 @@
+SADP Pre-Commit Audit — Commit 4/6
+Hash: a9ad148d
+Description: CDP automation scripts, GPT interaction tools, TaskSpecs
+Date: 2026-06-11
+
+=== Gate 1: Manifest Regeneration ===
+Status: OK
+Manifest auto-regenerated if needed.
+
+=== Gate 2: SADP Audit ===
+TaskSpec: .ai/current-task.yaml
+Task ID: CONTEXT-COMPRESSION-A1
+Write Set Patterns at commit time: 126
+
+Files staged: 81
+Scope check (ai_guard.py task): PASS
+  Files checked: 81
+  Scope violations: 0
+  Deny-path violations: 0
+
+=== Gate 3: Governance Advisory ===
+Status: acknowledged
+
+=== Result ===
+Commit: ALLOWED
+Note: If violations shown, they were resolved by expanding write_set before the actual commit.

@@ -30,10 +30,10 @@ import multi_project_router  # noqa: E402
 EXPECTED_PROJECTS = 10
 SHARED_CDP_ENDPOINT = "http://localhost:9222"
 ACTIVE_PROJECT = "agent-acceptance"
-ACTIVE_PROJECTS = ["agent-acceptance", "tripmark"]
+ACTIVE_PROJECTS = ["agent-acceptance", "tripmark", "dev-frame-writing"]
 BOUND_PROJECTS = ["tripmark"]
 PENDING_PROJECTS = [
-    "project-beta", "project-gamma",
+    "project-gamma",
     "project-delta", "project-epsilon", "project-zeta",
     "project-eta", "project-theta", "project-iota",
 ]
@@ -159,7 +159,7 @@ class TestRouter10ProjectIsolation:
 
     def _build_10_targets(self) -> list[dict]:
         """10 properly-isolated synthetic targets (shared CDP, unique conversations)."""
-        names = [ACTIVE_PROJECT] + BOUND_PROJECTS + PENDING_PROJECTS
+        names = list(dict.fromkeys(ACTIVE_PROJECTS + BOUND_PROJECTS + PENDING_PROJECTS))[:EXPECTED_PROJECTS]
         return [
             _make_target(
                 project_id=names[i],

@@ -1,0 +1,85 @@
+task_id: R18-FOLLOWUP-CLEANUP-A1
+title: R18 review follow-up — cleanup, gate_0 repair, and session artifact commit
+priority: P1
+status: in_progress
+mode: "@go edit"
+whole_dirty_worktree_allowed: false
+external_upload_allowed: false
+raw_transcript_allowed: false
+real_paper_text_allowed: false
+
+description: >
+  Address the 5 limitations from GPT R18 v3 ACCEPTED_WITH_LIMITATION review.
+  Clean up session artifacts, repair handoff-pipeline-refactor gate_0,
+  stage project-beta deletions, commit R18 evidence and new project scaffold.
+
+goal:
+  user_visible_success: >
+    Working tree is clean of session artifacts. R18 evidence is committed.
+    handoff-pipeline-refactor-a1.yaml has valid gate_0.inventory_evidence.
+    project-beta deletions are tracked. All 1038 tests still pass.
+  in_scope:
+    - Commit _evidence/R18-catchup-commits/ and EVIDENCE_PACK_R18.zip
+    - Commit R18 build/submit scripts as maintenance tooling
+    - Fix gate_0.inventory_evidence in handoff-pipeline-refactor-a1.yaml
+    - Stage 186 project-beta file deletions
+    - Commit modified .agent/PROJECT_REGISTRY.json
+    - Commit _projects/dev-frame-writing/ new project scaffold
+    - Verify all 1038 tests pass
+    - Run ai_guard scope check and secret scan
+    - Produce full SADP evidence run directory
+  out_of_scope:
+    - Committing NEG-009-secrets-read.json files (deny_paths)
+    - Committing NUL device file
+    - Modifying SADP core scripts or governance policies
+    - Any live dispatch testing
+
+gate_0:
+  triggered: true
+  inventory_evidence:
+    queried_sources:
+      - .ai/current-task.yaml
+      - _evidence/R18-catchup-commits/gpt_reply_r3.txt
+      - _evidence/R18-catchup-commits/commit-manifest.json
+      - .ai/tasks/handoff-pipeline-refactor-a1.yaml
+      - git status output (26 untracked entries)
+    matched_capabilities:
+      - sadp_governance_compliance
+      - evidence_pack_building
+      - cdp_submission_automation
+      - ai_guard_scope_checking
+    compared_against_request:
+      - "R18 v3 review required_follow_up (4 items)"
+  sufficiency_decision: sufficient_with_reuse
+  decision: execute_cleanup_delta
+
+write_set:
+  - ".ai/current-task.yaml"
+  - ".ai/tasks/handoff-pipeline-refactor-a1.yaml"
+  - ".ai/tasks/r18-followup-cleanup-a1.yaml"
+  - "_evidence/**"
+  - "_build_r18_evidence.py"
+  - "_build_r18_v3.py"
+  - "_cdp_r18_submit.py"
+  - "_cdp_r18_zip_submit.py"
+  - "_pack_r18_zip.py"
+  - "_projects/dev-frame-writing/**"
+  - "_projects/project-beta/**"
+  - ".agent/PROJECT_REGISTRY.json"
+  - "_reports/r18-followup-cleanup-a1/**"
+  - "runs/r18-followup-cleanup-a1/**"
+
+known_deferred:
+  - reason: deny_paths (mock secrets)
+    count: 15
+    pattern: "**/NEG-009-secrets-read.json"
+  - reason: Windows device file artifact
+    count: 1
+    path: "NUL"
+
+forbidden:
+  - delete_move_rename_any_committed_file
+  - modify_sadp_core_scripts
+  - commit_NEG-009_files
+  - commit_NUL_device_file
+  - auto_push

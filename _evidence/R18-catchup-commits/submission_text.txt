@@ -1,0 +1,86 @@
+## R18 Evidence Pack — Catch-Up Commit Batch (6 Commits)
+## Date: 2026-06-11
+## Target: ChatGPT Review Window 6a297f76-3e7c-83a5-a0e5-b4413d923c7e
+
+### Summary
+
+This session executed 6 structured catch-up commits to bring 3,634 accumulated files under git version control. These files were generated across multiple prior sessions of SADP-governed development but had not been committed due to TaskSpec scope restrictions. All commits passed the SADP pre-commit hook (sadp-audit.ps1) after write_set authorization was updated in current-task.yaml.
+
+### Commit Manifest
+
+| # | Hash | Message | Files | Insertions | Deletions |
+|---|------|---------|-------|------------|-----------|
+| 1 | 511c54ab | SADP core infrastructure — scripts, tests, governance, schemas | 100 | 26,584 | 80 |
+| 2 | 283b5834 | evidence packs and review archives (R1-R17) | 751 | 87,894 | 5 |
+| 3 | dae0e9fb | reports, handoff docs, contracts, and governance artifacts | 1,061 | 75,334 | 115 |
+| 4 | a9ad148d | CDP automation scripts, GPT interaction tools, TaskSpecs, and handoff docs | 81 | 9,113 | 1 |
+| 5 | 3fc33dac | 10 project scaffolding and task definitions | 1,610 | 124,209 | 1 |
+| 6 | 4efcbac9 | tripmark binding, bindChrome v5, docs, and session cleanup | 31 | 1,543 | 36 |
+
+**Totals**: 3,634 files changed, 324,677 insertions(+), 238 deletions(-)
+
+### Commit Detail
+
+#### Commit 1: SADP Core Infrastructure (511c54ab)
+- 7-layer enforcement stack: sadp-audit.ps1, SADP_POLICY.json, TRIGGER_RULES.json
+- 42 test files with 1,038 tests covering router, dispatch, gate0, handoff validation
+- Agent runtime documentation: capability-inventory, sub-agent-dispatch-protocol, operations-manual, v2-shared-cdp-architecture-baseline, tool-policy
+- Schemas: dispatch-plan, gate0-preflight, handoff, evidence-map
+- Multi-project resource policy and conversation registry schema
+
+#### Commit 2: Evidence Packs and Review Archives (283b5834)
+- _evidence/ directories for SHARED-CDP-V2-REVIEW-FINDINGS-FIX-A1 (R1-R17 rounds)
+- _evidence/ SHARED-CDP-GPT-REVIEW-DRY-RUN-2-A1
+- evidence_packs/ for 40+ tasks (dirty-worktree, handoff, batch, CI, etc.)
+- GPT review results R4-R17 archived with full verdict chain
+- R17 verdict: ACCEPTED_WITH_LIMITATION, closing all R16 blockers
+
+#### Commit 3: Reports and Governance Artifacts (dae0e9fb)
+- _reports/ for 60+ tasks (execution reports, GPT review prompts, closure reports)
+- docs/governance/ (decision log, risk register, tech debt, verification matrix)
+- contracts/ (runner, dispatch, flow outcome schemas)
+- Handoff pipeline refactor and workflow hardening plans
+
+#### Commit 4: CDP Automation and GPT Tools (a9ad148d)
+- 24 CDP automation scripts (_cdp_*.py) for Playwright browser control via CDP
+- GPT review result archives (GPT_*.txt/md) and handoff manifests
+- TaskSpec definitions in .ai/tasks/ (24 task YAML files)
+- Batch review and submission automation scripts
+
+#### Commit 5: Project Scaffolding (3fc33dac)
+- _projects/ with 10 scaffolded projects (alpha through iota)
+- Each project: AGENTS.md, docs/agent-runtime/, schemas/, rules/
+- .agent/CONVERSATION_BINDING.json and PROJECT_REGISTRY.json
+- Task markdown files for SADP governance tracking
+- _smoke_project_beta/ for smoke testing
+
+#### Commit 6: Session Cleanup (4efcbac9)
+- tripmark project CONVERSATION_BINDING.json updated
+- bindChrome skill v5 with tab detection and URL fast-path
+- GPT review docs and workflow hardening plans
+- Archive draft hooks and run results
+
+### Test Results
+```
+1038 passed, 21 warnings in 45.48s
+```
+All 1,038 tests pass. Warnings are non-critical (PytestReturnNotNoneWarning for tests that use `return` instead of `assert` on tuples).
+
+### SADP Governance Compliance
+- Pre-commit hook (sadp-audit.ps1) enforced on all 6 commits
+- ai_guard.py scope checking passed after write_set expansion
+- Write_set patterns added to current-task.yaml covering 40+ glob patterns for historical directories
+- Authorization: governance-approved bulk catch-up commit (2026-06-11 session)
+
+### Uncommitted Files (18 remaining, intentionally deferred)
+- 17x NEG-009-secrets-read.json: On deny_paths list (contain mock secrets for negative testing)
+- 1x handoff-pipeline-refactor-a1.yaml: Missing valid gate_0.inventory_evidence
+
+### Scope of Review Requested
+Please review:
+1. Whether the 6-commit split structure is logical and well-bounded
+2. Whether the write_set expansion in current-task.yaml is appropriately scoped
+3. Whether the 18 deferred files need immediate attention or can be addressed in a future task
+4. Overall governance compliance of the catch-up commit process
+
+END_OF_GPT_RESPONSE

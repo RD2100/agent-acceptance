@@ -1,0 +1,93 @@
+commit a9ad148db6c1790d168b1368b4e608b929673c04
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Thu Jun 11 08:47:21 2026 +0800
+
+    feat: CDP automation scripts, GPT interaction tools, TaskSpecs, and handoff docs
+    
+    - 24 CDP automation scripts (_cdp_*.py) for Playwright browser control
+    - GPT review result archives (GPT_*.txt/md) and handoff manifests
+    - TaskSpec definitions in .ai/tasks/ (24 task YAML files)
+    - Batch review and submission automation scripts
+    - Handoff source-of-truth and legacy inventory docs
+
+M	.ai/current-task.yaml
+A	.ai/tasks/m4-m1-s1-status-semantics-unification.yaml
+A	.ai/tasks/t-chain-evidence-hardening-20260601.yaml
+A	.ai/tasks/t-dirty-boundary-closure-20260601.yaml
+A	.ai/tasks/t-governance-convergence-20260601.yaml
+A	.ai/tasks/t-rerun-chain-evidence-guard-20260601.yaml
+A	.ai/tasks/t-review-chain-evidence-hardening-20260601.yaml
+A	.ai/tasks/t-review-dirty-boundary-closure-20260601.yaml
+A	.ai/tasks/t-review-governance-convergence-20260601.yaml
+A	.ai/tasks/t-review-rerun-chain-evidence-guard-20260601.yaml
+A	GPT_ADJUDICATION_LATEST.txt
+A	GPT_C5_REVIEW.txt
+A	GPT_C6_REVIEW.txt
+A	GPT_CAPABILITY_DISCUSSION.txt
+A	GPT_CAPABILITY_FINAL.txt
+A	GPT_COLLAB_PLAN.txt
+A	GPT_FINAL_REPLY.txt
+A	GPT_HANDOFF_ARCHITECTURE_RESPONSE.md
+A	GPT_HANDOFF_DIAGNOSIS.txt
+A	GPT_HANDOFF_DRAFT.txt
+A	GPT_HANDOFF_FINAL.txt
+A	GPT_LAST_REPLY.txt
+A	GPT_MEMORY_PLAN.txt
+A	GPT_NEXT_TASK.txt
+A	GPT_NEXT_TASK_LATEST.txt
+A	GPT_PAPER_PLAN.txt
+A	GPT_PAPER_REVIEW.txt
+A	GPT_PRISM_ANALYSIS.txt
+A	GPT_PRISM_ANALYSIS2.txt
+A	GPT_PRISM_PLAN.txt
+A	GPT_REVIEW_BATCH_LATEST.txt
+A	GPT_REVIEW_RESULT.md
+A	GPT_SHELL_DIAGNOSIS.txt
+A	HANDOFF_APPROVAL_RECORD.json
+A	HANDOFF_APPROVED_FOR_NEW_GPT.md
+A	HANDOFF_MANIFEST.sha256
+A	HANDOFF_SOURCE_OF_TRUTH.md
+A	HANDOFF_V6.md
+A	HISTORY_ANALYSIS.md
+A	LEGACY_HANDOFF_INVENTORY.md
+A	NEW_CONVERSATION_URL.txt
+A	PASTE_BLOCK_APPROVED_FOR_NEW_GPT.txt
+A	PROJECT_HISTORY_FINAL.md
+A	_batch_r2.py
+A	_batch_r2_all.py
+A	_batch_review.py
+A	_c7_round2.py
+A	_cdp_batch.py
+A	_cdp_c5_submit.py
+A	_cdp_c6_submit.py
+A	_cdp_c7_m3.py
+A	_cdp_collab.py
+A	_cdp_m2.py
+A	_cdp_m3r2.py
+A	_cdp_m3r3.py
+A	_cdp_m4.py
+A	_cdp_m4r2.py
+A	_cdp_m6.py
+A	_cdp_m7.py
+A	_cdp_m8.py
+A	_cdp_memory_plan.py
+A	_cdp_next.py
+A	_cdp_paste.py
+A	_cdp_prism.py
+A	_cdp_prism2.py
+A	_cdp_prism_plan.py
+A	_cdp_r2_batch.py
+A	_close_m3.py
+A	_gh_push.py
+A	_git_fix.py
+A	_gpt_msg.py
+A	_m10_m12_r3.py
+A	_m2_r3.py
+A	_m3_round2.py
+A	_m3_round3.py
+A	_m4_r3.py
+A	_m4_review.py
+A	_m6_r2.py
+A	_push.sh
+A	_sections_2_3.py
+M	hooks/sealed-files-manifest.json

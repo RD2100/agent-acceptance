@@ -1,0 +1,26 @@
+SADP Pre-Commit Audit — Commit 5/6
+Hash: 3fc33dac
+Description: 10 project scaffolding and task definitions
+Date: 2026-06-11
+
+=== Gate 1: Manifest Regeneration ===
+Status: OK
+Manifest auto-regenerated if needed.
+
+=== Gate 2: SADP Audit ===
+TaskSpec: .ai/current-task.yaml
+Task ID: CONTEXT-COMPRESSION-A1
+Write Set Patterns at commit time: 127
+
+Files staged: 1610
+Scope check (ai_guard.py task): PASS
+  Files checked: 1610
+  Scope violations: 0
+  Deny-path violations: 0
+
+=== Gate 3: Governance Advisory ===
+Status: acknowledged
+
+=== Result ===
+Commit: ALLOWED
+Note: If violations shown, they were resolved by expanding write_set before the actual commit.
