@@ -74,7 +74,10 @@ def validate_against_schema(data: dict, schema: dict) -> list[str]:
             errors.append(f"stages[{i}].name '{name}' not in enum {valid_names}")
         ec = stage.get("exit_code")
         if ec is not None and not isinstance(ec, int):
-            errors.append(f"stages[{i}].exit_code must be integer, got {type(ec).__name__}")
+            errors.append(f"stages[{i}].exit_code must be integer or null, got {type(ec).__name__}")
+        of = stage.get("output_file")
+        if of is not None and not isinstance(of, str):
+            errors.append(f"stages[{i}].output_file must be string or null, got {type(of).__name__}")
         dm = stage.get("duration_ms")
         if dm is not None and not isinstance(dm, int):
             errors.append(f"stages[{i}].duration_ms must be integer, got {type(dm).__name__}")

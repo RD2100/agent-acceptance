@@ -384,7 +384,6 @@ Output persistence is not merely logging — it is a structured enforcement mech
 
 - **Blocking stages**: sadp-audit, ai-guard. Any non-zero exit code from these stages causes `overall_result: BLOCKED` and hook exit 1, which rejects the commit.
 - **Advisory stages**: manifest-regen, test-governance. Exit codes are logged but do not block the commit.
-- **Advisory stages**: manifest-regen. Exit code is logged but does not affect the commit decision.
 
 Raw hook output should be captured when available. The files in `_evidence/hook-output/` are original captures produced at commit time, not replay output generated after the fact. Each file header includes `Source: pre-commit hook (original)` to distinguish original from replay.
 

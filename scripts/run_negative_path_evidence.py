@@ -1,7 +1,7 @@
 """Runtime negative-path evidence for hook failure semantics (v2.3.0).
 
 Generates synthetic latest.json files with failure scenarios and validates
-them against the validator. Proves (8 scenarios):
+them against the validator. Proves (9 scenarios):
 1. sadp_audit failure → BLOCKED → validator PASS (correct semantics)
 2. ai_guard failure → BLOCKED → validator PASS (correct semantics)
 3. test_governance failure → PASS advisory → validator PASS (advisory, not blocking)
@@ -10,6 +10,7 @@ them against the validator. Proves (8 scenarios):
 6. Invalid JSON → REJECTED (validator exit nonzero)
 7. Missing sadp-audit stage → REJECTED (fail-closed: absence = BLOCKED)
 8. Null exit_code + PASS → REJECTED (fail-closed: null = expected BLOCKED)
+9. Missing ai-guard stage → REJECTED (fail-closed: absence = BLOCKED)
 
 This script generates evidence files for the evidence pack.
 """
@@ -123,6 +124,13 @@ def main():
     rc, out = run_validator(data, "null_exit_code_rejected")
     results.append(("null_exit_code_rejected", rc, out))
     print(f"[8] Null exit_code + PASS → REJECTED: exit={rc} {'PASS' if rc != 0 else 'FAIL'}")
+
+    # Test 9: missing blocking stage (ai-guard) → validator should FAIL (fail-closed)
+    data = json.loads(json.dumps(BASELINE))
+    data["stages"] = [s for s in data["stages"] if s["name"] != "ai-guard"]
+    rc, out = run_validator(data, "missing_ai_guard_rejected")
+    results.append(("missing_ai_guard_rejected", rc, out))
+    print(f"[9] Missing ai-guard → REJECTED: exit={rc} {'PASS' if rc != 0 else 'FAIL'}")
 
     # Write all evidence to files
     all_output = []
