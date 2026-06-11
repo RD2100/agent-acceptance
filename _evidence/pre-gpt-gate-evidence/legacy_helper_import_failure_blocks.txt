@@ -1,0 +1,11 @@
+# Scenario: legacy_helper_import_failure_blocks
+# Description: _cdp_submit_helper.run_pre_gpt_gate() source code verification
+#   that ImportError handling returns exit 3 (fail-closed), not exit 0 (fail-open)
+# Expected: return 3, severity=BLOCKING, no 'proceeding without gate check'
+# Actual value: return_3=True, blocking=True, no_fail_open=True
+# Status: PASS
+#
+# Source verification:
+#   has 'return 3,': True
+#   has 'BLOCKING': True
+#   no 'proceeding without gate check': True

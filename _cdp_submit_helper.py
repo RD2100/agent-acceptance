@@ -41,9 +41,19 @@ def run_pre_gpt_gate(allow_init=False):
             sys.path.remove(scripts_dir)
         return result
     except ImportError as exc:
-        # Graceful degradation: if pre_gpt_gate not available, warn but proceed
-        print(f"WARNING: pre_gpt_gate not available ({exc}), proceeding without gate check")
-        return 0, {"decision": "UNKNOWN"}, f"Gate unavailable: {exc}"
+        # Fail-closed: if pre_gpt_gate is not available, BLOCK submission
+        # This prevents legacy scripts from bypassing the gate when the
+        # decision engine module is missing or broken.
+        return 3, {
+            "decision": "UNKNOWN",
+            "severity": "BLOCKING",
+            "reasons": [{
+                "code": "pre_gpt_gate_unavailable",
+                "actual": str(exc),
+                "threshold": "pre_gpt_gate import required",
+                "policy": "force",
+            }]
+        }, f"BLOCKED: pre_gpt_gate unavailable: {exc}"
 
 
 async def paste_and_send(page, msg: str):

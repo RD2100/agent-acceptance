@@ -51,10 +51,16 @@ write_set:
   - "_submit_health_gate_a1_r4.py"
   - "_capture_r4_verdict.py"
   - "_ask_next_task_v2.py"
+  - "_capture_a2_verdict.py"
+  - "_capture_a2_detailed.py"
+  - "_capture_a2_verdict_v2.py"
+  - "_check_a2_response.py"
+  - "_submit_health_gate_a2.py"
   - "_evidence/conversation-health/latest.json"
   - "_evidence/conversation-health/current-snapshot.json"
   - "_evidence/pre-gpt-gate-evidence/*"
   - "_evidence/next_task_reply.txt"
+  - "_evidence/conversation_health_gate_a2_verdict.txt"
   - "hooks/sealed-files-manifest.json"
 
 deny_paths:

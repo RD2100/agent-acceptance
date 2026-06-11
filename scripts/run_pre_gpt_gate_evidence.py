@@ -196,7 +196,7 @@ def main():
             "# Scenario: successful_metrics_refresh_updates_current_json",
             "# Description: update_metrics() refreshes current.json with new CDP metrics",
             f"# Expected: assistant_message_count={expected_count}",
-            f"# Actual exit: {actual_count}",
+            f"# Actual value: {actual_count}",
             f"# Error: {err}",
             f"# Status: {status}",
             f"#",
@@ -227,7 +227,7 @@ def main():
             "# Scenario: latest_json_written_for_pre_gpt_gate",
             "# Description: Pre-GPT gate writes latest.json AND current-snapshot.json",
             f"# Expected: latest.json exists AND current-snapshot.json exists",
-            f"# Actual exit: latest={has_latest}, snapshot={has_snapshot}",
+            f"# Actual value: latest={has_latest}, snapshot={has_snapshot}",
             f"# Status: {status}",
             f"#",
             f"# latest.json decision: {latest_data.get('last_health_decision')}",
@@ -238,6 +238,87 @@ def main():
             "\n".join(lines) + "\n", encoding="utf-8"
         )
         results.append(("latest_json_written_for_pre_gpt_gate", status))
+
+    # --- Scenario 9: legacy_helper_import_failure_blocks ---
+    # Prove that run_pre_gpt_gate() in _cdp_submit_helper.py is coded
+    # to fail-closed when pre_gpt_gate module is unavailable.
+    # We verify by reading the source code (runtime simulation is unreliable
+    # because the module is cached in sys.modules).
+    helper_path = REPO / "_cdp_submit_helper.py"
+    helper_source = helper_path.read_text(encoding="utf-8") if helper_path.exists() else ""
+
+    # Check for fail-closed pattern in the source
+    has_fail_closed = 'return 3,' in helper_source
+    has_blocking = '"severity": "BLOCKING"' in helper_source or "'severity': 'BLOCKING'" in helper_source
+    has_blocking_str = "BLOCKING" in helper_source
+    no_fail_open = 'proceeding without gate check' not in helper_source
+
+    status = "PASS" if (has_fail_closed and has_blocking_str and no_fail_open) else "FAIL"
+
+    EVIDENCE_OUT.mkdir(parents=True, exist_ok=True)
+    lines = [
+        "# Scenario: legacy_helper_import_failure_blocks",
+        "# Description: _cdp_submit_helper.run_pre_gpt_gate() source code verification",
+        "#   that ImportError handling returns exit 3 (fail-closed), not exit 0 (fail-open)",
+        f"# Expected: return 3, severity=BLOCKING, no 'proceeding without gate check'",
+        f"# Actual value: return_3={has_fail_closed}, blocking={has_blocking_str}, no_fail_open={no_fail_open}",
+        f"# Status: {status}",
+        f"#",
+        f"# Source verification:",
+        f"#   has 'return 3,': {has_fail_closed}",
+        f"#   has 'BLOCKING': {has_blocking_str}",
+        f"#   no 'proceeding without gate check': {no_fail_open}",
+    ]
+    (EVIDENCE_OUT / "legacy_helper_import_failure_blocks.txt").write_text(
+        "\n".join(lines) + "\n", encoding="utf-8"
+    )
+    results.append(("legacy_helper_import_failure_blocks", status))
+
+    # --- Scenario 10: legacy_script_post_response_updates_current_json ---
+    # Prove that a legacy script can call update_metrics() after CDP response
+    # and successfully write back to current.json
+    with tempfile.TemporaryDirectory() as tmp:
+        cp, ev = _make_env(tmp)
+        # Simulate post-response metrics capture
+        simulated_metrics = {
+            "assistant_message_count": 15,
+            "last_gpt_reply_bytes": 3200,
+            "last_response_time_seconds": 7.5,
+        }
+        updated, err = update_metrics(
+            cp, new_metrics=simulated_metrics,
+            nav_result="ok", source="cdp_dom_count"
+        )
+        data = json.loads(Path(cp).read_text())
+        actual_msgs = data["last_known_metrics"]["assistant_message_count"]
+        actual_bytes = data["last_known_metrics"]["last_gpt_reply_bytes"]
+        actual_source = data.get("metrics_source")
+        actual_freshness = data.get("metrics_freshness")
+        all_ok = (
+            err is None
+            and actual_msgs == 15
+            and actual_bytes == 3200
+            and actual_source == "cdp_dom_count"
+            and actual_freshness == "fresh"
+        )
+        status = "PASS" if all_ok else "FAIL"
+        EVIDENCE_OUT.mkdir(parents=True, exist_ok=True)
+        lines = [
+            "# Scenario: legacy_script_post_response_updates_current_json",
+            "# Description: Legacy CDP script calls update_metrics() after GPT response,",
+            "#   writing assistant_message_count, last_gpt_reply_bytes, last_response_time_seconds",
+            "#   back to current.json with source=cdp_dom_count and freshness=fresh",
+            f"# Expected: msgs=15, bytes=3200, source=cdp_dom_count, freshness=fresh",
+            f"# Actual value: msgs={actual_msgs}, bytes={actual_bytes}, source={actual_source}, freshness={actual_freshness}",
+            f"# Error: {err}",
+            f"# Status: {status}",
+            f"#",
+            f"# Full metrics: {json.dumps(data.get('last_known_metrics', {}))}",
+        ]
+        (EVIDENCE_OUT / "legacy_script_post_response_updates_current_json.txt").write_text(
+            "\n".join(lines) + "\n", encoding="utf-8"
+        )
+        results.append(("legacy_script_post_response_updates_current_json", status))
 
     # --- Combined summary ---
     all_pass = all(s == "PASS" for _, s in results)

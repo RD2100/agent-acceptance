@@ -31,6 +31,9 @@ MSG = """CONVERSATION-HEALTH-GATE-A1 已 ACCEPTED (R4 verdict)。
 
 
 async def main():
+    import time as _time
+    _start_time = _time.monotonic()
+
     # A2: Pre-GPT gate check before CDP interaction
     exit_code, decision, message = run_pre_gpt_gate()
     if exit_code != 0:
@@ -125,6 +128,27 @@ async def main():
             with open(op, "w", encoding="utf-8") as f:
                 f.write(reply)
             print(f"\nSaved: {op}")
+
+            # A2: Post-response metrics refresh — write back to current.json
+            import time as _time
+            _reply_bytes = len(reply.encode("utf-8"))
+            _resp_time = _time.monotonic() - _start_time if '_start_time' in dir() else None
+            try:
+                from pre_gpt_gate import update_metrics as _um
+                _new_metrics = {
+                    "assistant_message_count": cnt,
+                    "last_gpt_reply_bytes": _reply_bytes,
+                }
+                if _resp_time is not None:
+                    _new_metrics["last_response_time_seconds"] = round(_resp_time, 1)
+                _updated, _err = _um(new_metrics=_new_metrics, nav_result="ok",
+                                      source="cdp_dom_count")
+                if _err:
+                    print(f"WARNING: Metrics refresh failed: {_err}")
+                else:
+                    print(f"A2: current.json refreshed — msgs={cnt}, bytes={_reply_bytes}")
+            except ImportError:
+                print("WARNING: pre_gpt_gate not available for post-response refresh")
         else:
             print("No assistant messages found")
             await target_page.screenshot(path=r"D:\agent-acceptance\_evidence\ask_next_task_debug.png")
