@@ -2,7 +2,8 @@
   "task_id": "R18-WORKSPACE-CLEANUP-A1",
   "commits": [
     "104ac8b1",
-    "f06ce965"
+    "f06ce965",
+    "6022c187"
   ],
   "date": "2026-06-11T10:21:56.091713",
   "commit_104ac8b1": {
@@ -17,7 +18,7 @@
     "deny_violations": 0,
     "verdict": "PASS"
   },
-  "total_committed": 62,
+  "total_committed": 1,
   "sadp_hook_results": {
     "104ac8b1": "PASS (manifest regen + audit + advisory)",
     "f06ce965": "PASS (manifest regen + audit + advisory)"
@@ -28,5 +29,6 @@
     "secret_scan_denied": 2,
     "other": 2
   },
-  "overall_verdict": "PASS"
+  "overall_verdict": "PASS",
+  "note": "Three commits: registry reconciliation, closure evidence, final evidence pack with raw audit"
 }
