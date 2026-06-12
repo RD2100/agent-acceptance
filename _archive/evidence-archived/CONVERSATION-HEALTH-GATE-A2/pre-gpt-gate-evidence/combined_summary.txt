@@ -1,0 +1,14 @@
+# COMBINED: Pre-GPT Gate Negative-Path Evidence
+# Overall: ALL PASS
+# Scenarios: 8
+# Passed: 8
+# Failed: 0
+#
+# PASS: force_handoff_blocks_submit
+# PASS: human_required_blocks_submit
+# PASS: missing_current_json_blocks_without_refresh
+# PASS: stale_metrics_warns_or_suggests
+# PASS: access_denied_records_force
+# PASS: auth_required_records_human_required
+# PASS: successful_metrics_refresh_updates_current_json
+# PASS: latest_json_written_for_pre_gpt_gate

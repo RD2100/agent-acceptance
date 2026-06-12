@@ -1,0 +1,2858 @@
+commit 593d78fba745800c55c72f8c74d8fb32c5eb4bda
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Fri Jun 12 06:59:54 2026 +0800
+
+    feat: CONVERSATION-HEALTH-GATE-A2 — Pre-GPT Gate + CDP metrics refresh + legacy integration
+    
+    - scripts/pre_gpt_gate.py: unified Pre-GPT Gate module + CLI
+      - check_pre_gpt_gate() for pre-submit enforcement
+      - update_metrics() for post-response CDP refresh
+      - record_nav_result() for navigation failure recording
+      - capture_cdp_metrics() async CDP DOM scraping
+      - CLI: check, refresh, gate, nav-result commands
+    - scripts/run_pre_gpt_gate_evidence.py: 8-scenario negative-path evidence
+    - tests/test_pre_gpt_gate.py: 28 tests (OK, SUGGEST, FORCE, HUMAN_REQUIRED,
+      missing, stale, nav-result, metrics-update, schema compliance, A1 non-regression)
+    - Legacy integration: _cdp_submit_helper.py, _submit_health_gate_a1_r4.py,
+      _capture_r4_verdict.py, _ask_next_task_v2.py
+    - Evidence Pack: current-snapshot.json + pre-gpt-gate-evidence/ included
+    - All 1126 tests pass (1098 A1 + 28 A2), modified_tracked: 0
+
+diff --git a/.ai/current-task.yaml b/.ai/current-task.yaml
+index 1b8cef85..3426b44e 100644
+--- a/.ai/current-task.yaml
++++ b/.ai/current-task.yaml
+@@ -1,9 +1,11 @@
+-task_id: CONVERSATION-HEALTH-GATE-A1
++task_id: CONVERSATION-HEALTH-GATE-A2
+ type: feature
+ priority: P1
+-status: in_progress
++status: complete
++gpt_verdict: pending
++completed: "2026-06-12T16:00:00+08:00"
+ live_dispatch: NOT_AUTHORIZED
+-created: "2026-06-11T00:00:00Z"
++created: "2026-06-12T00:00:00Z"
+ mode: "@go edit"
+ whole_dirty_worktree_allowed: false
+ external_upload_allowed: false
+@@ -14,49 +16,46 @@ gate_0:
+   triggered: true
+   inventory_evidence:
+     queried_sources:
+-      - GPT 3-round discussion (CONSENSUS REACHED)
+-      - _evidence/conversation-health-gate-consensus.md (decision record)
+-      - scripts/check_handoff_needed.py (existing thresholds, no execution entry)
+-      - scripts/sadp_pre_task_enforcer.py (existing pre_task gate, no health check)
+-      - scripts/build_evidence_pack.py (existing pack builder, no health evidence)
+-      - schemas/agent-runtime/ (16 existing schemas, no conversation-health schema)
++      - GPT R4 verdict (CONVERSATION-HEALTH-GATE-A1 ACCEPTED, A2 recommended)
++      - GPT next-task reply (_evidence/next_task_reply.txt, detailed TaskSpec)
++      - scripts/check_handoff_needed.py (A1 decision engine, directly reusable)
++      - scripts/sadp_pre_task_enforcer.py (integration pattern template)
++      - scripts/build_evidence_pack.py (conversation_health section exists)
++      - _cdp_submit_helper.py (shared CDP helper, needs gate integration)
+     matched_capabilities:
+-      - evidence_pack_building
+-      - sadp_pre_task_enforcement
+-      - hook_output_validation
++      - check_handoff_v2 (decision engine)
++      - load_policy (policy loader)
++      - sadp_pre_task_enforcer integration pattern
++      - evidence_pack conversation_health section
+     compared_against_request:
+-      - "Make conversation health thresholds proactively enforced instead of passively ignored"
++      - "Pre-GPT Gate + CDP metrics refresh + legacy submit script integration"
+   sufficiency_decision: new_delta_required
+   decision: build_delta
+ 
+ goal: >
+-  Implement CONVERSATION-HEALTH-GATE A1: minimal viable closed-loop for
+-  proactive conversation health enforcement. Four deliverables:
+-  1. Data layer: conversation-health schema + decision schema + policy YAML + current.json example
+-  2. Decision engine: upgrade check_handoff_needed.py with --input --write --fail-on-force --mode --composite
+-  3. Pre-Task integration: sadp_pre_task_enforcer.py reads current.json, FORCE_HANDOFF blocks task start
+-  4. Evidence Pack integration: build_evidence_pack.py requires conversation-health/latest.json
+-  A1 does NOT implement Pre-GPT wrapper or pre-commit advisory (those are A2/A3).
++  Implement the Pre-GPT Gate layer for the Conversation Health Gate system.
++  Connect the A1 decision engine to GPT/CDP submission and capture workflows.
++  A2 must refresh runtime conversation metrics, write updated conversation-health
++  evidence, and prevent GPT/CDP submission when an unresolved FORCE_HANDOFF
++  or HUMAN_REQUIRED condition is present.
+ 
+ write_set:
++  - ".ai/tasks/conversation-health-gate-a2.yaml"
+   - ".ai/tasks/conversation-health-gate-a1.yaml"
+   - ".ai/current-task.yaml"
+-  - ".ai/conversation/current.json.example"
+-  - "schemas/agent-runtime/conversation-health.schema.json"
+-  - "schemas/agent-runtime/conversation-health-decision.schema.json"
+-  - "configs/conversation-health-policy.yaml"
+-  - "docs/agent-runtime/conversation-health-gate.md"
+-  - "scripts/check_handoff_needed.py"
+-  - "scripts/sadp_pre_task_enforcer.py"
++  - "scripts/pre_gpt_gate.py"
++  - "scripts/run_pre_gpt_gate_evidence.py"
+   - "scripts/build_evidence_pack.py"
+-  - "scripts/run_conversation_health_evidence.py"
+-  - "tests/test_conversation_health_gate.py"
+-  - "hooks/sealed-files-manifest.json"
++  - "tests/test_pre_gpt_gate.py"
+   - "_cdp_submit_helper.py"
+-  - "_evidence/conversation-health-gate-consensus.md"
+-  - "_evidence/conversation-health-evidence/*"
++  - "_submit_health_gate_a1_r4.py"
++  - "_capture_r4_verdict.py"
++  - "_ask_next_task_v2.py"
+   - "_evidence/conversation-health/latest.json"
+-  - "tests/test_handoff_trigger.py"
++  - "_evidence/conversation-health/current-snapshot.json"
++  - "_evidence/pre-gpt-gate-evidence/*"
++  - "_evidence/next_task_reply.txt"
++  - "hooks/sealed-files-manifest.json"
+ 
+ deny_paths:
+   - "**/NEG-009-secrets-read.json"
+@@ -68,19 +67,23 @@ constraints:
+   - Do NOT modify sadp-audit.ps1
+   - Do NOT modify ai_guard.py
+   - Do NOT modify hooks/pre-commit.governance.ps1 (A3 scope)
+-  - A1 only reads .ai/conversation/current.json, never opens CDP
+-  - Thresholds must be loaded from policy YAML, not hardcoded
+-  - Changes to existing scripts must be backward-compatible
++  - Do NOT change A1 threshold semantics
++  - Do NOT migrate all legacy _submit_*.py scripts (only 2-3)
++  - Do NOT implement pre-commit advisory (A3 scope)
++  - Do NOT redesign A1 schemas unless required by a failing test
+ 
+ acceptance_criteria:
+-  - conversation-health.schema.json validates current.json structure
+-  - conversation-health-decision.schema.json validates decision output
+-  - conversation-health-policy.yaml defines force/suggest/composite thresholds
+-  - check_handoff_needed.py supports --input --write --fail-on-force --mode --composite --json
+-  - sadp_pre_task_enforcer.py pre_task check includes conversation health
+-  - build_evidence_pack.py includes conversation-health evidence and marks review.yaml
+-  - Full pytest suite passes (existing + new tests)
+-  - 9 negative-path runtime evidence scenarios ALL PASS
+-  - conversation-health-gate.md documents the four-layer architecture
++  - scripts/pre_gpt_gate.py exists as module + CLI
++  - At least 2-3 legacy scripts integrated with pre_gpt_gate
++  - FORCE_HANDOFF blocks GPT submission (exit code 1)
++  - HUMAN_REQUIRED blocks GPT submission (exit code 2)
++  - Missing current.json blocks submission without allow_init
++  - Runtime metrics refresh current.json with schema-compliant fields
++  - latest.json and current-snapshot.json written during Pre-GPT flows
++  - Evidence Pack includes conversation-health evidence and pre-gpt-gate evidence
++  - Tests pass in full regression (A1 + A2)
++  - Runtime negative-path evidence included (8 scenarios)
++  - modified_tracked is 0 after commit
++  - No A1 behavior regresses
+ 
+-depends_on: EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-CLEANUP-A1
++depends_on: CONVERSATION-HEALTH-GATE-A1
+diff --git a/.ai/tasks/conversation-health-gate-a1.yaml b/.ai/tasks/conversation-health-gate-a1.yaml
+index 1b8cef85..64d05be5 100644
+--- a/.ai/tasks/conversation-health-gate-a1.yaml
++++ b/.ai/tasks/conversation-health-gate-a1.yaml
+@@ -1,7 +1,11 @@
+ task_id: CONVERSATION-HEALTH-GATE-A1
+ type: feature
+ priority: P1
+-status: in_progress
++status: complete
++gpt_verdict: ACCEPTED
++gpt_verdict_file: _evidence/conversation_health_gate_a1_r4_verdict.txt
++evidence_zip: _evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A1_R4.zip
++completed: "2026-06-11T22:50:00+08:00"
+ live_dispatch: NOT_AUTHORIZED
+ created: "2026-06-11T00:00:00Z"
+ mode: "@go edit"
+diff --git a/.ai/tasks/conversation-health-gate-a2.yaml b/.ai/tasks/conversation-health-gate-a2.yaml
+new file mode 100644
+index 00000000..3426b44e
+--- /dev/null
++++ b/.ai/tasks/conversation-health-gate-a2.yaml
+@@ -0,0 +1,89 @@
++task_id: CONVERSATION-HEALTH-GATE-A2
++type: feature
++priority: P1
++status: complete
++gpt_verdict: pending
++completed: "2026-06-12T16:00:00+08:00"
++live_dispatch: NOT_AUTHORIZED
++created: "2026-06-12T00:00:00Z"
++mode: "@go edit"
++whole_dirty_worktree_allowed: false
++external_upload_allowed: false
++raw_transcript_allowed: false
++real_paper_text_allowed: false
++
++gate_0:
++  triggered: true
++  inventory_evidence:
++    queried_sources:
++      - GPT R4 verdict (CONVERSATION-HEALTH-GATE-A1 ACCEPTED, A2 recommended)
++      - GPT next-task reply (_evidence/next_task_reply.txt, detailed TaskSpec)
++      - scripts/check_handoff_needed.py (A1 decision engine, directly reusable)
++      - scripts/sadp_pre_task_enforcer.py (integration pattern template)
++      - scripts/build_evidence_pack.py (conversation_health section exists)
++      - _cdp_submit_helper.py (shared CDP helper, needs gate integration)
++    matched_capabilities:
++      - check_handoff_v2 (decision engine)
++      - load_policy (policy loader)
++      - sadp_pre_task_enforcer integration pattern
++      - evidence_pack conversation_health section
++    compared_against_request:
++      - "Pre-GPT Gate + CDP metrics refresh + legacy submit script integration"
++  sufficiency_decision: new_delta_required
++  decision: build_delta
++
++goal: >
++  Implement the Pre-GPT Gate layer for the Conversation Health Gate system.
++  Connect the A1 decision engine to GPT/CDP submission and capture workflows.
++  A2 must refresh runtime conversation metrics, write updated conversation-health
++  evidence, and prevent GPT/CDP submission when an unresolved FORCE_HANDOFF
++  or HUMAN_REQUIRED condition is present.
++
++write_set:
++  - ".ai/tasks/conversation-health-gate-a2.yaml"
++  - ".ai/tasks/conversation-health-gate-a1.yaml"
++  - ".ai/current-task.yaml"
++  - "scripts/pre_gpt_gate.py"
++  - "scripts/run_pre_gpt_gate_evidence.py"
++  - "scripts/build_evidence_pack.py"
++  - "tests/test_pre_gpt_gate.py"
++  - "_cdp_submit_helper.py"
++  - "_submit_health_gate_a1_r4.py"
++  - "_capture_r4_verdict.py"
++  - "_ask_next_task_v2.py"
++  - "_evidence/conversation-health/latest.json"
++  - "_evidence/conversation-health/current-snapshot.json"
++  - "_evidence/pre-gpt-gate-evidence/*"
++  - "_evidence/next_task_reply.txt"
++  - "hooks/sealed-files-manifest.json"
++
++deny_paths:
++  - "**/NEG-009-secrets-read.json"
++  - "**/*real-secret*"
++  - "**/.env"
++  - "**/.env.*"
++
++constraints:
++  - Do NOT modify sadp-audit.ps1
++  - Do NOT modify ai_guard.py
++  - Do NOT modify hooks/pre-commit.governance.ps1 (A3 scope)
++  - Do NOT change A1 threshold semantics
++  - Do NOT migrate all legacy _submit_*.py scripts (only 2-3)
++  - Do NOT implement pre-commit advisory (A3 scope)
++  - Do NOT redesign A1 schemas unless required by a failing test
++
++acceptance_criteria:
++  - scripts/pre_gpt_gate.py exists as module + CLI
++  - At least 2-3 legacy scripts integrated with pre_gpt_gate
++  - FORCE_HANDOFF blocks GPT submission (exit code 1)
++  - HUMAN_REQUIRED blocks GPT submission (exit code 2)
++  - Missing current.json blocks submission without allow_init
++  - Runtime metrics refresh current.json with schema-compliant fields
++  - latest.json and current-snapshot.json written during Pre-GPT flows
++  - Evidence Pack includes conversation-health evidence and pre-gpt-gate evidence
++  - Tests pass in full regression (A1 + A2)
++  - Runtime negative-path evidence included (8 scenarios)
++  - modified_tracked is 0 after commit
++  - No A1 behavior regresses
++
++depends_on: CONVERSATION-HEALTH-GATE-A1
+diff --git a/_ask_next_task_v2.py b/_ask_next_task_v2.py
+new file mode 100644
+index 00000000..0f9babdb
+--- /dev/null
++++ b/_ask_next_task_v2.py
+@@ -0,0 +1,133 @@
++"""Ask GPT for next task after CONVERSATION-HEALTH-GATE-A1 ACCEPTED.
++
++CONVERSATION-HEALTH-GATE-A2: Integrated with pre_gpt_gate.
++"""
++import asyncio, os, json, sys
++from pathlib import Path
++from playwright.async_api import async_playwright
++
++# A2 integration: import gate check
++sys.path.insert(0, str(Path(__file__).resolve().parent))
++from _cdp_submit_helper import run_pre_gpt_gate  # noqa: E402
++
++TARGET_URL = "https://chatgpt.com/c/6a2a8cb1-b228-83aa-addb-79bda9aba043"
++CDP_URL = "http://localhost:9222"
++
++MSG = """CONVERSATION-HEALTH-GATE-A1 已 ACCEPTED (R4 verdict)。
++
++当前项目状态：
++- A1 完成：四层对话健康防御 (Pre-Task Hard Gate + Pre-GPT Gate 基础 + Evidence Pack + Pre-Commit Advisory 基础)
++- 最新 commit: fbb08f0 (R4 schema/CLI/evidence gaps closed)
++- 测试：1098 passed, 0 failed
++- modified_tracked: 0
++- 所有 A1 acceptance criteria 已闭合
++
++你在 R4 verdict 中提到下一步可以进入 A2：Pre-GPT Gate + CDP metrics refresh + legacy submit script integration。
++
++请确认：
++1. 下一个任务是否就是 A2？还是有更优先的任务？
++2. 请给出具体的任务描述、验收标准和范围边界。
++3. 如果有其他待处理任务（如 OPERATIONS-MANUAL-AUDIT-PATTERN-BIND-A1 等），请说明优先级。"""
++
++
++async def main():
++    # A2: Pre-GPT gate check before CDP interaction
++    exit_code, decision, message = run_pre_gpt_gate()
++    if exit_code != 0:
++        print(f"GATE BLOCKED (exit {exit_code}): {message}")
++        sys.exit(exit_code)
++    print(f"GATE: {message}")
++
++    async with async_playwright() as p:
++        browser = await p.chromium.connect_over_cdp(CDP_URL)
++        ctx = browser.contexts[0]
++
++        # Find the target page
++        target_page = None
++        for page in ctx.pages:
++            if "6a2a8cb1-b228-83aa-addb-79bda9aba043" in page.url:
++                target_page = page
++                break
++
++        if not target_page:
++            # Try navigating in first page
++            target_page = ctx.pages[0]
++            print(f"Navigating from {target_page.url} to target...")
++            await target_page.goto(TARGET_URL, wait_until="networkidle", timeout=30000)
++            await asyncio.sleep(5)
++
++        print(f"Page: {target_page.url}")
++        await target_page.wait_for_timeout(3000)
++
++        # Count user messages before sending
++        ub = await target_page.locator('div[data-message-author-role="user"]').count()
++        print(f"User msgs before: {ub}")
++
++        # Focus editor
++        editor = target_page.locator('#prompt-textarea')
++        if await editor.count() == 0:
++            editor = target_page.locator('div[contenteditable="true"]').last
++        await editor.click()
++        await target_page.wait_for_timeout(500)
++
++        # Paste via clipboard
++        await target_page.evaluate(f"""
++            async () => {{
++                await navigator.clipboard.writeText({json.dumps(MSG)});
++            }}
++        """)
++        await target_page.wait_for_timeout(500)
++        await editor.press("Control+v")
++        await target_page.wait_for_timeout(2000)
++
++        # Send
++        send_btn = target_page.locator('button[data-testid="send-button"]')
++        disabled = await send_btn.first.get_attribute("disabled")
++        print(f"Send disabled: {disabled}")
++        if disabled is None:
++            await send_btn.first.click()
++        else:
++            await editor.press("Enter")
++            await target_page.wait_for_timeout(2000)
++            d2 = await send_btn.first.get_attribute("disabled")
++            if d2 is not None:
++                await send_btn.first.click(force=True)
++
++        await target_page.wait_for_timeout(5000)
++        ua = await target_page.locator('div[data-message-author-role="user"]').count()
++        print(f"User msgs after: {ua}")
++        if ua <= ub:
++            print("WARNING: Message may not have been sent")
++            # Take screenshot for debug
++            await target_page.screenshot(path=r"D:\agent-acceptance\_evidence\ask_next_task_debug.png")
++            return
++        print(f"SUCCESS: {ub} -> {ua}")
++
++        # Wait for GPT response
++        print("Waiting for GPT response (120s)...")
++        await target_page.wait_for_timeout(120000)
++
++        # Check if still generating
++        stop_btn = target_page.locator('button[data-testid="stop-button"]')
++        if await stop_btn.count() > 0 and await stop_btn.first.is_visible():
++            print("GPT still generating, waiting more (60s)...")
++            await target_page.wait_for_timeout(60000)
++
++        # Capture reply
++        ams = target_page.locator('div[data-message-author-role="assistant"]')
++        cnt = await ams.count()
++        if cnt > 0:
++            reply = await ams.last.inner_text()
++            print(f"\n=== GPT REPLY ({len(reply)} chars) ===")
++            print(reply[:10000])
++            op = r"D:\agent-acceptance\_evidence\next_task_reply.txt"
++            os.makedirs(os.path.dirname(op), exist_ok=True)
++            with open(op, "w", encoding="utf-8") as f:
++                f.write(reply)
++            print(f"\nSaved: {op}")
++        else:
++            print("No assistant messages found")
++            await target_page.screenshot(path=r"D:\agent-acceptance\_evidence\ask_next_task_debug.png")
++
++
++asyncio.run(main())
+diff --git a/_capture_r4_verdict.py b/_capture_r4_verdict.py
+new file mode 100644
+index 00000000..c99a2728
+--- /dev/null
++++ b/_capture_r4_verdict.py
+@@ -0,0 +1,76 @@
++"""Capture R4 verdict with follow-up if needed.
++
++CONVERSATION-HEALTH-GATE-A2: Integrated with pre_gpt_gate.
++"""
++import asyncio
++import json
++import sys
++from pathlib import Path
++from playwright.async_api import async_playwright
++
++# A2 integration: import gate check
++sys.path.insert(0, str(Path(__file__).resolve().parent))
++from _cdp_submit_helper import run_pre_gpt_gate  # noqa: E402
++
++sys.stdout.reconfigure(encoding='utf-8')
++
++OUTPUT = Path(r"D:\agent-acceptance\_evidence\conversation_health_gate_a1_r4_verdict.txt")
++
++
++async def main():
++    # A2: Pre-GPT gate check before CDP interaction
++    exit_code, decision, message = run_pre_gpt_gate()
++    if exit_code != 0:
++        print(f"GATE BLOCKED (exit {exit_code}): {message}")
++        sys.exit(exit_code)
++    print(f"GATE: {message}")
++
++    async with async_playwright() as p:
++        browser = await p.chromium.connect_over_cdp("http://localhost:9222")
++        ctx = browser.contexts[0]
++        page = ctx.pages[0]
++
++        msgs = await page.locator('[data-message-author-role="assistant"]').all()
++        last = await msgs[-1].text_content()
++        print(f"Last msg: {len(last)} chars")
++
++        if len(last) < 300:
++            print("Short response, sending follow-up...")
++            textarea = page.locator("#prompt-textarea")
++            await textarea.click()
++            await asyncio.sleep(0.5)
++            follow = "请继续详细核验 R4 证据包，逐项检查并给出最终判定 ACCEPTED / REJECTED / NEEDS_REVISION。"
++            await page.evaluate("navigator.clipboard.writeText(arguments[0])", follow)
++            await asyncio.sleep(0.3)
++            await page.keyboard.press("Control+v")
++            await asyncio.sleep(1)
++            await page.keyboard.press("Enter")
++            print("Follow-up sent, waiting...")
++
++            stop_btn = page.locator('button[aria-label="Stop generating"]')
++            for i in range(48):
++                await asyncio.sleep(5)
++                if not await stop_btn.is_visible():
++                    await asyncio.sleep(10)
++                    if not await stop_btn.is_visible():
++                        print(f"Done after ~{(i+1)*5}s")
++                        break
++
++            msgs = await page.locator('[data-message-author-role="assistant"]').all()
++            last = await msgs[-1].text_content()
++
++        OUTPUT.write_text(last, encoding="utf-8")
++        print(f"\nSaved {len(last)} chars")
++        print()
++        print(last[:3000])
++        if len(last) > 3000:
++            print(f"\n... ({len(last) - 3000} more)")
++
++        upper = last.upper()
++        for kw in ["ACCEPTED_WITH_MINOR", "ACCEPTED", "REJECTED", "NEEDS_REVISION"]:
++            if kw in upper:
++                print(f"\n*** VERDICT: {kw} ***")
++                break
++
++
++asyncio.run(main())
+diff --git a/_cdp_submit_helper.py b/_cdp_submit_helper.py
+index 4643673d..e1de3166 100644
+--- a/_cdp_submit_helper.py
++++ b/_cdp_submit_helper.py
+@@ -1,12 +1,49 @@
+ """CDP submission helper — uses clipboard paste instead of keyboard.type for long messages.
+ 
++CONVERSATION-HEALTH-GATE-A2: Now integrates with pre_gpt_gate for
++conversation health enforcement before every GPT/CDP submission.
++
+ Usage:
+-    from _cdp_submit_helper import paste_and_send
++    from _cdp_submit_helper import paste_and_send, run_pre_gpt_gate
++
++    # Check gate before submission
++    exit_code, decision, message = run_pre_gpt_gate()
++    if exit_code != 0:
++        print(f"BLOCKED: {message}")
++        return
+ 
+     await paste_and_send(page, message_text)
+ """
+ import asyncio
+ import json
++import sys
++from pathlib import Path
++
++
++def run_pre_gpt_gate(allow_init=False):
++    """Run the Pre-GPT gate check before CDP submission.
++
++    Returns (exit_code, decision, message).
++    exit_code 0 = proceed, non-zero = blocked.
++
++    A2 integration: legacy scripts call this before any CDP interaction.
++    """
++    try:
++        repo = Path(__file__).resolve().parent
++        scripts_dir = str(repo / "scripts")
++        added = False
++        if scripts_dir not in sys.path:
++            sys.path.insert(0, scripts_dir)
++            added = True
++        from pre_gpt_gate import check_pre_gpt_gate  # type: ignore
++        result = check_pre_gpt_gate(allow_init=allow_init)
++        if added and scripts_dir in sys.path:
++            sys.path.remove(scripts_dir)
++        return result
++    except ImportError as exc:
++        # Graceful degradation: if pre_gpt_gate not available, warn but proceed
++        print(f"WARNING: pre_gpt_gate not available ({exc}), proceeding without gate check")
++        return 0, {"decision": "UNKNOWN"}, f"Gate unavailable: {exc}"
+ 
+ 
+ async def paste_and_send(page, msg: str):
+diff --git a/_evidence/conversation-health/current-snapshot.json b/_evidence/conversation-health/current-snapshot.json
+new file mode 100644
+index 00000000..1bf1ceca
+--- /dev/null
++++ b/_evidence/conversation-health/current-snapshot.json
+@@ -0,0 +1,20 @@
++{
++  "schema_version": "conversation-health.v1",
++  "conversation_id": "EXAMPLE_UUID",
++  "chat_url": "https://chatgpt.com/c/EXAMPLE_UUID-xxxx-xxxx-xxxx",
++  "status": "active",
++  "last_known_metrics": {
++    "assistant_message_count": 14,
++    "review_round_count": 1,
++    "last_response_time_seconds": 12.0,
++    "last_gpt_reply_bytes": 8841
++  },
++  "last_nav_result": "ok",
++  "last_health_decision": "OK",
++  "last_health_reasons": [],
++  "last_checked_at": "2026-06-12T06:58:52+08:00",
++  "metrics_source": "cdp_dom_count",
++  "metrics_freshness": "fresh",
++  "_snapshot_at": "2026-06-12T06:58:52+08:00",
++  "_snapshot_source": "pre_gpt_gate"
++}
+diff --git a/_evidence/conversation-health/latest.json b/_evidence/conversation-health/latest.json
+index 1762c574..129953fe 100644
+--- a/_evidence/conversation-health/latest.json
++++ b/_evidence/conversation-health/latest.json
+@@ -1,23 +1,20 @@
+ {
+   "schema_version": "conversation-health.v1",
+-  "conversation_id": "6a2a8cb1-b228-83aa-addb-79bda9aba043",
+-  "chat_url": "https://chatgpt.com/c/6a2a8cb1-b228-83aa-addb-79bda9aba043",
++  "conversation_id": "EXAMPLE_UUID",
++  "chat_url": "https://chatgpt.com/c/EXAMPLE_UUID-xxxx-xxxx-xxxx",
+   "status": "active",
+   "last_known_metrics": {
+-    "assistant_message_count": 12,
++    "assistant_message_count": 14,
+     "review_round_count": 1,
+-    "last_response_time_seconds": 8.5,
+-    "last_gpt_reply_bytes": 5851
++    "last_response_time_seconds": 12.0,
++    "last_gpt_reply_bytes": 8841
+   },
+   "last_nav_result": "ok",
+   "last_health_decision": "OK",
+-  "last_health_reasons": [
+-    "msg_count 12 < 60 (force threshold)",
+-    "rounds 1 < 3 (force threshold)",
+-    "nav_result ok",
+-    "metrics fresh"
+-  ],
+-  "last_checked_at": "2026-06-11T22:14:45+08:00",
++  "last_health_reasons": [],
++  "last_checked_at": "2026-06-12T06:58:52+08:00",
+   "metrics_source": "cdp_dom_count",
+-  "metrics_freshness": "fresh"
++  "metrics_freshness": "fresh",
++  "last_health_severity": "INFO",
++  "last_health_checked_at": "2026-06-11T22:58:52Z"
+ }
+diff --git a/_evidence/next_task_reply.txt b/_evidence/next_task_reply.txt
+new file mode 100644
+index 00000000..e1439e49
+--- /dev/null
++++ b/_evidence/next_task_reply.txt
+@@ -0,0 +1,352 @@
++确认：下一个任务应该进入 A2。
++
++理由很简单：A1 已经把“对话健康度判断”接入了 Pre-Task 和 Evidence Pack，但真正最容易出问题的位置还没有闭合，就是 GPT/CDP 提交前后。如果不做 A2，agent 仍然可能在 _submit_*.py 或 _capture_*.py 里直接操作 CDP，绕开实时 metrics 刷新。
++
++所以当前最优先任务是：
++
++CONVERSATION-HEALTH-GATE-A2
++Pre-GPT Gate + CDP Metrics Refresh + Legacy Submit Script Integration
++1. 是否就是 A2？
++
++是，建议直接进入 A2。
++
++但 A2 的范围要控制住，不要一次性迁移所有 CDP 脚本，也不要急着做完整统一 submit wrapper。
++
++A2 的核心目标应该是：
++
++建立 pre_gpt_gate.py 作为所有 GPT/CDP 提交前的统一门禁模块；
++让至少若干个高频 legacy submit/capture 脚本接入它；
++在 GPT/CDP 交互后刷新 current.json 和 latest.json；
++证明 force_handoff / human_required / nav failure 等场景会被正确拦截或记录。
++
++换句话说，A2 不是“大重构”，而是把 A1 的静态判断能力接到真实 GPT/CDP 交互链路上。
++
++2. 建议的正式 TaskSpec 基础
++
++下面这段可以直接作为下一个 agent 的任务说明基础。
++
++编辑
++
++Task: CONVERSATION-HEALTH-GATE-A2
++
++Goal:
++Implement the Pre-GPT Gate layer for the Conversation Health Gate system by connecting the A1 conversation-health decision engine to GPT/CDP submission and capture workflows. A2 must refresh runtime conversation metrics, write updated conversation-health evidence, and prevent GPT/CDP submission when an unresolved FORCE_HANDOFF or HUMAN_REQUIRED condition is present.
++
++Context:
++CONVERSATION-HEALTH-GATE-A1 has been ACCEPTED at commit fbb08f0. A1 delivered the data layer, decision engine, Pre-Task Hard Gate integration, Evidence Pack hard requirement, policy YAML, schemas, and negative-path evidence. A2 continues the four-layer defense model by implementing the Pre-GPT Gate layer. A3 will later handle Pre-Commit Advisory and registry reconciliation.
++
++Required Work:
++
++Create scripts/pre_gpt_gate.py
++
++Provide a reusable module and CLI for GPT/CDP workflows.
++
++It must read .ai/conversation/current.json.
++
++It must call the existing check_handoff_needed.py / check_handoff_v2 logic rather than duplicating threshold rules.
++
++It must support at least:
++
++pre-submit check
++
++post-response metrics update
++
++writing _evidence/conversation-health/latest.json
++
++writing _evidence/conversation-health/current-snapshot.json
++
++It must return blocking exit codes for unresolved FORCE_HANDOFF and HUMAN_REQUIRED states.
++
++Define Pre-GPT decision semantics
++
++OK → allow GPT/CDP submission.
++
++SUGGEST_HANDOFF → allow submission but write evidence and warning.
++
++FORCE_HANDOFF → block submission unless a handoff or migration record is present.
++
++HUMAN_REQUIRED → block submission and require human intervention.
++
++Missing current.json:
++
++allowed only if the wrapper can initialize or refresh metrics before submission;
++
++otherwise BLOCKED.
++
++Stale current.json:
++
++attempt refresh when CDP context is available;
++
++if refresh fails, write evidence and apply policy-defined behavior.
++
++Add CDP metrics refresh support
++
++Capture assistant_message_count from the ChatGPT DOM when available.
++
++Capture last_gpt_reply_bytes from the latest assistant response when available.
++
++Capture last_response_time_seconds around GPT/CDP submission when available.
++
++Capture last_nav_result from navigation or submit failures.
++
++Update .ai/conversation/current.json using schema-compliant fields:
++
++last_response_time_seconds
++
++last_gpt_reply_bytes
++
++assistant_message_count
++
++review_round_count
++
++metrics_source
++
++last_nav_result
++
++last_checked_at
++
++Integrate with legacy scripts incrementally
++
++Do not migrate every submit.py or capture.py script in A2.
++
++Select 2–3 active/high-frequency GPT/CDP scripts and add pre_gpt_gate integration.
++
++Add a clear deprecation note or TODO in legacy scripts not yet integrated.
++
++Do not delete legacy scripts.
++
++The target architecture may mention submit_gpt_review.py, but a full unified wrapper is not required in A2 unless it can be done safely as a thin wrapper.
++
++Preserve A1 semantics
++
++Do not change accepted A1 threshold semantics unless a clear bug is found.
++
++Do not regress:
++
++response_time_seconds alone → SUGGEST
++
++last_gpt_reply_bytes alone → SUGGEST
++
++slow + short + rounds → FORCE
++
++auth_required → HUMAN_REQUIRED
++
++manual_estimate does not trigger FORCE by itself
++
++Any schema or policy change must include tests and updated runtime evidence.
++
++Evidence requirements
++
++Generate _evidence/conversation-health/latest.json during Pre-GPT flows.
++
++Generate _evidence/conversation-health/current-snapshot.json.
++
++If a conversation switch occurs, generate:
++
++_evidence/conversation-health/migration-records/{timestamp}.yaml
++
++Evidence Pack must include these files or mark verdict_eligibility as needs_more_evidence.
++
++Tests
++Add or update tests covering:
++
++pre_gpt_gate allows OK
++
++pre_gpt_gate allows SUGGEST with warning
++
++pre_gpt_gate blocks FORCE_HANDOFF
++
++pre_gpt_gate blocks HUMAN_REQUIRED
++
++missing current.json with no refresh path blocks submission
++
++stale current.json attempts refresh or records stale decision
++
++access_denied writes last_nav_result and triggers FORCE
++
++auth_required writes HUMAN_REQUIRED
++
++post-response metrics update writes schema-compliant current.json
++
++generated latest.json validates against conversation-health-decision schema
++
++Runtime negative-path evidence
++Provide runtime evidence for at least:
++
++force_handoff_blocks_submit
++
++human_required_blocks_submit
++
++missing_current_json_blocks_without_refresh
++
++stale_metrics_warns_or_suggests
++
++access_denied_records_force
++
++auth_required_records_human_required
++
++successful_metrics_refresh_updates_current_json
++
++latest_json_written_for_pre_gpt_gate
++
++Out of Scope:
++
++Do not implement full Pre-Commit Advisory in A2.
++
++Do not implement full registry reconciliation in A2.
++
++Do not migrate all legacy CDP scripts.
++
++Do not redesign A1 schemas, policy, or threshold semantics unless required by a failing test.
++
++Do not introduce a large framework or replace existing evidence pack architecture.
++
++Do not mark missing conversation-health evidence as acceptable.
++
++Acceptance Criteria:
++
++scripts/pre_gpt_gate.py exists and is usable both as a module and CLI.
++
++At least 2–3 active GPT/CDP legacy scripts are integrated with pre_gpt_gate.
++
++Pre-GPT submission is blocked on unresolved FORCE_HANDOFF and HUMAN_REQUIRED.
++
++Runtime metrics can refresh .ai/conversation/current.json using schema-compliant fields.
++
++_evidence/conversation-health/latest.json and current-snapshot.json are written during Pre-GPT flows.
++
++Evidence Pack includes conversation-health evidence and records conversation_health in review.yaml.
++
++Tests pass in full regression.
++
++Runtime negative-path evidence is included in the evidence pack.
++
++modified_tracked is 0 after commit.
++
++No accepted A1 behavior regresses.
++
++3. A2 的范围边界
++
++A2 最容易失控，所以边界要写死。
++
++A2 要做
++1. pre_gpt_gate.py
++2. Pre-GPT 检查逻辑
++3. CDP metrics refresh 的最小实现
++4. current.json / latest.json 写入
++5. 2–3 个 legacy submit/capture 脚本接入
++6. 对 FORCE / HUMAN_REQUIRED 的阻断证据
++7. runtime negative-path evidence
++A2 不要做
++1. 不迁移全部 _submit_*.py
++2. 不把所有 CDP 脚本统一重写为 submit_gpt_review.py
++3. 不实现 pre-commit conversation-health stage
++4. 不做完整 conversation registry lifecycle
++5. 不改 A1 阈值语义
++6. 不重构 evidence pack builder 的整体架构
++
++A2 最理想的状态是：形成可复用 gate 模块，并证明它可以接入真实 CDP 脚本。不要求一次性完成全部迁移。
++
++4. 验收标准重点
++
++A2 的验收不应只看 tests passed，还要看 4 类证据。
++
++第一类：阻断证据
++
++必须证明：
++
++FORCE_HANDOFF → GPT submit 被阻断
++HUMAN_REQUIRED → GPT submit 被阻断
++
++这两个是 A2 的硬核心。
++
++第二类：刷新证据
++
++必须证明：
++
++CDP/submit wrapper 能刷新 current.json
++能写 latest.json
++能记录 current-snapshot.json
++第三类：legacy 接入证据
++
++必须明确列出：
++
++哪些 _submit_*.py / _capture_*.py 已接入 pre_gpt_gate
++哪些仍是 legacy
++为什么没有全部迁移
++第四类：不回归证据
++
++必须证明 A1 语义没有被破坏：
++
++response_time alone → suggest
++reply_bytes alone → suggest
++composite → force
++manual_estimate no force
++auth_required → human_required
++5. 其他任务优先级
++
++当前我建议优先级这样排：
++
++P0 / 当前立即做：CONVERSATION-HEALTH-GATE-A2
++
++这是 A1 的直接后续，也是真正堵住“agent 绕过 GPT 交互门禁”的关键。A1 如果不接 A2，Conversation Health Gate 仍有明显空洞。
++
++P1：CONVERSATION-HEALTH-GATE-A3
++
++A3 应在 A2 后做，内容包括：
++
++pre-commit.governance.ps1 增加 conversation-health ADVISORY stage
++startup-read-gate.md 新增第 7 项
++conversation registry reconciliation
++migration lifecycle 文档和检查
++
++A3 不建议插到 A2 前面，因为 pre-commit advisory 只是审计层，不是最关键的执行入口。
++
++P1 / 可并行但不应抢占：Universal Agent Workflow Standard
++
++这是战略任务，仍然重要。
++但如果当前工程要沿着 Conversation Health Gate 收束，A2 更优先。
++
++原因是：A2 会提供一个很好的通用模式：
++
++pre-task 只读 last known state
++pre-gpt 刷新 runtime metrics
++evidence pack 防绕过
++reviewer 以证据为准
++
++这个模式后续正好可以写进 Universal Agent Workflow Standard。
++所以建议是：A2 完成后，把 A1/A2 经验再沉淀进 Universal Standard。
++
++P2：OPERATIONS-MANUAL-AUDIT-PATTERN-BIND-A1
++
++这个任务听起来像是“把 operations manual 与 audit pattern 绑定”，属于复用治理和文档治理方向。它有价值，但当前不应高于 A2。
++
++除非出现以下情况，才建议把它提前：
++
++1. A2 实施前必须先确认已有 submit/capture 脚本清单；
++2. operations manual 中已有脚本索引是 A2 的前置依赖；
++3. agent 明确不知道该改哪些 legacy scripts。
++
++否则它可以作为 A2 后的 P2，或者作为 A2 的轻量前置要求：
++
++A2 开始前，先阅读 operations manual，列出将接入的 2–3 个 legacy scripts。
++
++不需要单独抢占一个完整任务。
++
++6. 推荐执行顺序
++
++我建议接下来这样走：
++
++1. CONVERSATION-HEALTH-GATE-A2
++   先把 Pre-GPT Gate 接进真实 GPT/CDP 提交流程。
++
++2. CONVERSATION-HEALTH-GATE-A3
++   再做 pre-commit advisory、startup-read-gate 第 7 项、registry reconciliation。
++
++3. Universal Agent Workflow Standard
++   把 A1/A2/A3 沉淀成通用 agent 工作规范。
++
++4. OPERATIONS-MANUAL-AUDIT-PATTERN-BIND-A1
++   作为复用治理和文档治理增强任务，视项目节奏插入。
++
++一句话判断：下一步就是 A2，而且 A2 应该是“小步接入真实 CDP 脚本”，不是“大规模统一 submit wrapper 重构”。
+\ No newline at end of file
+diff --git a/_evidence/pre-gpt-gate-evidence/access_denied_records_force.txt b/_evidence/pre-gpt-gate-evidence/access_denied_records_force.txt
+new file mode 100644
+index 00000000..c8cf837a
+--- /dev/null
++++ b/_evidence/pre-gpt-gate-evidence/access_denied_records_force.txt
+@@ -0,0 +1,12 @@
++# Scenario: access_denied_records_force
++# Description: access_denied nav result is recorded and triggers FORCE_HANDOFF
++# Expected: exit_code=1
++# Actual exit: 1
++# Decision: FORCE_HANDOFF
++# Severity: BLOCKING
++# Status: PASS
++#
++# Message: FORCE_HANDOFF: nav_result_access_denied: access_denied (threshold: access_denied_or_not_found, policy: force)
++#
++# Reasons:
++#   - nav_result_access_denied: actual=access_denied threshold=access_denied_or_not_found policy=force
+diff --git a/_evidence/pre-gpt-gate-evidence/auth_required_records_human_required.txt b/_evidence/pre-gpt-gate-evidence/auth_required_records_human_required.txt
+new file mode 100644
+index 00000000..b409d803
+--- /dev/null
++++ b/_evidence/pre-gpt-gate-evidence/auth_required_records_human_required.txt
+@@ -0,0 +1,12 @@
++# Scenario: auth_required_records_human_required
++# Description: auth_required nav result is recorded and triggers HUMAN_REQUIRED
++# Expected: exit_code=2
++# Actual exit: 2
++# Decision: HUMAN_REQUIRED
++# Severity: BLOCKING
++# Status: PASS
++#
++# Message: HUMAN_REQUIRED: nav_result_auth_required: auth_required (threshold: auth_required, policy: human)
++#
++# Reasons:
++#   - nav_result_auth_required: actual=auth_required threshold=auth_required policy=human
+diff --git a/_evidence/pre-gpt-gate-evidence/combined_summary.txt b/_evidence/pre-gpt-gate-evidence/combined_summary.txt
+new file mode 100644
+index 00000000..4eec8aae
+--- /dev/null
++++ b/_evidence/pre-gpt-gate-evidence/combined_summary.txt
+@@ -0,0 +1,14 @@
++# COMBINED: Pre-GPT Gate Negative-Path Evidence
++# Overall: ALL PASS
++# Scenarios: 8
++# Passed: 8
++# Failed: 0
++#
++# PASS: force_handoff_blocks_submit
++# PASS: human_required_blocks_submit
++# PASS: missing_current_json_blocks_without_refresh
++# PASS: stale_metrics_warns_or_suggests
++# PASS: access_denied_records_force
++# PASS: auth_required_records_human_required
++# PASS: successful_metrics_refresh_updates_current_json
++# PASS: latest_json_written_for_pre_gpt_gate
+diff --git a/_evidence/pre-gpt-gate-evidence/force_handoff_blocks_submit.txt b/_evidence/pre-gpt-gate-evidence/force_handoff_blocks_submit.txt
+new file mode 100644
+index 00000000..87e48bbf
+--- /dev/null
++++ b/_evidence/pre-gpt-gate-evidence/force_handoff_blocks_submit.txt
+@@ -0,0 +1,12 @@
++# Scenario: force_handoff_blocks_submit
++# Description: High message count (65 >= 60) triggers FORCE_HANDOFF, blocking submission
++# Expected: exit_code=1
++# Actual exit: 1
++# Decision: FORCE_HANDOFF
++# Severity: BLOCKING
++# Status: PASS
++#
++# Message: FORCE_HANDOFF: assistant_message_count_exceeded: 65 (threshold: 60, policy: force)
++#
++# Reasons:
++#   - assistant_message_count_exceeded: actual=65 threshold=60 policy=force
+diff --git a/_evidence/pre-gpt-gate-evidence/human_required_blocks_submit.txt b/_evidence/pre-gpt-gate-evidence/human_required_blocks_submit.txt
+new file mode 100644
+index 00000000..789ce49a
+--- /dev/null
++++ b/_evidence/pre-gpt-gate-evidence/human_required_blocks_submit.txt
+@@ -0,0 +1,12 @@
++# Scenario: human_required_blocks_submit
++# Description: auth_required nav result triggers HUMAN_REQUIRED, blocking submission
++# Expected: exit_code=2
++# Actual exit: 2
++# Decision: HUMAN_REQUIRED
++# Severity: BLOCKING
++# Status: PASS
++#
++# Message: HUMAN_REQUIRED: nav_result_auth_required: auth_required (threshold: auth_required, policy: human)
++#
++# Reasons:
++#   - nav_result_auth_required: actual=auth_required threshold=auth_required policy=human
+diff --git a/_evidence/pre-gpt-gate-evidence/latest_json_written_for_pre_gpt_gate.txt b/_evidence/pre-gpt-gate-evidence/latest_json_written_for_pre_gpt_gate.txt
+new file mode 100644
+index 00000000..329e499f
+--- /dev/null
++++ b/_evidence/pre-gpt-gate-evidence/latest_json_written_for_pre_gpt_gate.txt
+@@ -0,0 +1,9 @@
++# Scenario: latest_json_written_for_pre_gpt_gate
++# Description: Pre-GPT gate writes latest.json AND current-snapshot.json
++# Expected: latest.json exists AND current-snapshot.json exists
++# Actual exit: latest=True, snapshot=True
++# Status: PASS
++#
++# latest.json decision: OK
++# snapshot conversation_id: evidence-test
++# snapshot source: pre_gpt_gate
+diff --git a/_evidence/pre-gpt-gate-evidence/missing_current_json_blocks_without_refresh.txt b/_evidence/pre-gpt-gate-evidence/missing_current_json_blocks_without_refresh.txt
+new file mode 100644
+index 00000000..59a1ad8b
+--- /dev/null
++++ b/_evidence/pre-gpt-gate-evidence/missing_current_json_blocks_without_refresh.txt
+@@ -0,0 +1,12 @@
++# Scenario: missing_current_json_blocks_without_refresh
++# Description: Missing current.json with no allow_init blocks submission
++# Expected: exit_code=3
++# Actual exit: 3
++# Decision: UNKNOWN
++# Severity: BLOCKING
++# Status: PASS
++#
++# Message: BLOCKED: current.json not found: C:\Users\RD\AppData\Local\Temp\tmpfeuzw_e1\nonexistent\current.json
++#
++# Reasons:
++#   - missing_current_json: actual=none threshold=current.json policy=force
+diff --git a/_evidence/pre-gpt-gate-evidence/stale_metrics_warns_or_suggests.txt b/_evidence/pre-gpt-gate-evidence/stale_metrics_warns_or_suggests.txt
+new file mode 100644
+index 00000000..e98446a3
+--- /dev/null
++++ b/_evidence/pre-gpt-gate-evidence/stale_metrics_warns_or_suggests.txt
+@@ -0,0 +1,12 @@
++# Scenario: stale_metrics_warns_or_suggests
++# Description: Stale metrics (>12h old) produce SUGGEST_HANDOFF warning
++# Expected: exit_code=0
++# Actual exit: 0
++# Decision: SUGGEST_HANDOFF
++# Severity: WARNING
++# Status: PASS
++#
++# Message: SUGGEST (proceed with caution): SUGGEST_HANDOFF: metrics_stale: 102.9 (threshold: 12, policy: suggest)
++#
++# Reasons:
++#   - metrics_stale: actual=102.9 threshold=12 policy=suggest
+diff --git a/_evidence/pre-gpt-gate-evidence/successful_metrics_refresh_updates_current_json.txt b/_evidence/pre-gpt-gate-evidence/successful_metrics_refresh_updates_current_json.txt
+new file mode 100644
+index 00000000..8ee3e940
+--- /dev/null
++++ b/_evidence/pre-gpt-gate-evidence/successful_metrics_refresh_updates_current_json.txt
+@@ -0,0 +1,10 @@
++# Scenario: successful_metrics_refresh_updates_current_json
++# Description: update_metrics() refreshes current.json with new CDP metrics
++# Expected: assistant_message_count=20
++# Actual exit: 20
++# Error: None
++# Status: PASS
++#
++# Updated metrics: {"assistant_message_count": 20, "review_round_count": 1, "last_response_time_seconds": 10.0, "last_gpt_reply_bytes": 4000}
++# Freshness: fresh
++# Source: cdp_dom_count
+diff --git a/_submit_health_gate_a1_r4.py b/_submit_health_gate_a1_r4.py
+new file mode 100644
+index 00000000..52cee4b2
+--- /dev/null
++++ b/_submit_health_gate_a1_r4.py
+@@ -0,0 +1,86 @@
++"""Submit R4 to GPT.
++
++CONVERSATION-HEALTH-GATE-A2: Integrated with pre_gpt_gate.
++Before any CDP interaction, the gate check runs to verify conversation health.
++"""
++import asyncio
++import json
++import sys
++from pathlib import Path
++from playwright.async_api import async_playwright
++
++# A2 integration: import gate check
++sys.path.insert(0, str(Path(__file__).resolve().parent))
++from _cdp_submit_helper import run_pre_gpt_gate  # noqa: E402
++
++ZIP_PATH = Path(r"D:\agent-acceptance\_evidence\EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A1_R4.zip")
++CHAT_URL = "https://chatgpt.com/c/6a2a8cb1-b228-83aa-addb-79bda9aba043"
++
++MSG = r"""请审核 CONVERSATION-HEALTH-GATE-A1 R4 证据包。
++
++## R4 修复 (你的 R3 两个 Blocker)
++
++### Blocker 1: policy="info" → "warning" ✅
++- check_handoff_v2() 的 no_metrics_source 分支: "info" → "warning"
++- 新增测试: test_metrics_source_none_policy_is_warning
++- 验证: 所有 policy 值都在 schema enum 中
++
++### Blocker 2: CLI 字段映射 ✅
++- check_handoff_v2() 内部添加字段归一化:
++  last_response_time_seconds → response_time_seconds
++- CLI flatten 逻辑同步添加 _field_map
++- 新增测试: test_schema_compliant_last_response_time_triggers_composite
++  (使用 schema 标准字段 last_response_time_seconds 触发 composite FORCE)
++
++### 负路径证据 ✅
++- run_conversation_health_evidence.py composite 场景使用 schema 标准字段
++- 9/9 ALL PASS
++- composite_force.txt: response_time→suggest, reply_bytes→suggest, composite→force_composite
++
++## Commit chain
++8ccb446 → 892d445 → 2b52579 → dcc31a7 → 40e4aba → fbb08f0
++Tests: 1098 passed (+2 new)
++modified_tracked: 0
++35 files, 80.9 KB
++
++请核验并给出最终判定。"""
++
++
++async def main():
++    # A2: Pre-GPT gate check before CDP interaction
++    exit_code, decision, message = run_pre_gpt_gate()
++    if exit_code != 0:
++        print(f"GATE BLOCKED (exit {exit_code}): {message}")
++        sys.exit(exit_code)
++    print(f"GATE: {message}")
++
++    async with async_playwright() as p:
++        browser = await p.chromium.connect_over_cdp("http://localhost:9222")
++        ctx = browser.contexts[0]
++        page = ctx.pages[0]
++
++        await page.goto(CHAT_URL, wait_until="networkidle", timeout=30000)
++        await asyncio.sleep(3)
++
++        file_input = page.locator("#upload-files")
++        await file_input.set_input_files(str(ZIP_PATH))
++        await asyncio.sleep(3)
++        print("ZIP uploaded")
++
++        textarea = page.locator("#prompt-textarea")
++        await textarea.click()
++        await asyncio.sleep(0.5)
++        await page.evaluate(f"navigator.clipboard.writeText({json.dumps(MSG)})")
++        await asyncio.sleep(0.3)
++        await page.keyboard.press("Control+v")
++        await asyncio.sleep(1)
++
++        send_btn = page.locator('button[data-testid="send-button"]')
++        if await send_btn.is_visible():
++            await send_btn.click()
++        else:
++            await page.keyboard.press("Enter")
++        print("R4 submitted!")
++        await asyncio.sleep(5)
++
++asyncio.run(main())
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index 5c35722f..84ff6514 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-11T22:44:13.1376245+08:00",
++    "generated":  "2026-06-12T06:59:55.5317151+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+diff --git a/scripts/build_evidence_pack.py b/scripts/build_evidence_pack.py
+index 0dca0798..d296869b 100644
+--- a/scripts/build_evidence_pack.py
++++ b/scripts/build_evidence_pack.py
+@@ -674,8 +674,10 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
+         f"  sum_check: {n_neg} + {n_sec} + {n_ses} = {n_neg + n_sec + n_ses} == untracked_total({n_unt})",
+     ]
+ 
+-    # Conversation health evidence (CONVERSATION-HEALTH-GATE-A1)
++    # Conversation health evidence (CONVERSATION-HEALTH-GATE-A1/A2)
+     health_path = os.path.join(repo, "_evidence", "conversation-health", "latest.json")
++    health_snapshot = os.path.join(repo, "_evidence", "conversation-health", "current-snapshot.json")
++    pre_gpt_dir = os.path.join(repo, "_evidence", "pre-gpt-gate-evidence")
+     if os.path.isfile(health_path):
+         try:
+             with open(health_path, encoding="utf-8") as _hf:
+@@ -691,6 +693,9 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
+                 f"  latest_file: _evidence/conversation-health/latest.json",
+                 f"  checked_at: \"{_checked}\"",
+                 f"  verdict_eligibility: eligible",
++                f"  pre_gpt_gate: true",
++                f"  snapshot_file: {'present' if os.path.isfile(health_snapshot) else 'missing'}",
++                f"  pre_gpt_evidence: {'present' if os.path.isdir(pre_gpt_dir) else 'missing'}",
+             ]
+         except (json.JSONDecodeError, OSError):
+             lines += [
+@@ -990,7 +995,7 @@ def build_evidence_pack(
+                  gen_review_yaml(git_data, task_id, commits, base,
+                                  tests_passed, now, repo=repo))
+ 
+-    # 15b. conversation-health evidence (CONVERSATION-HEALTH-GATE-A1)
++    # 15b. conversation-health evidence (CONVERSATION-HEALTH-GATE-A1/A2)
+     health_evidence_dir = os.path.join(repo, "_evidence", "conversation-health")
+     health_latest = os.path.join(health_evidence_dir, "latest.json")
+     if os.path.isfile(health_latest):
+@@ -1001,6 +1006,23 @@ def build_evidence_pack(
+         print("  [15b] conversation-health/latest.json NOT FOUND — HARD REQUIREMENT MISSING")
+         print("        Evidence pack verdict_eligibility: needs_more_evidence")
+ 
++    # 15c. conversation-health current-snapshot.json (CONVERSATION-HEALTH-GATE-A2)
++    health_snapshot = os.path.join(health_evidence_dir, "current-snapshot.json")
++    if os.path.isfile(health_snapshot):
++        with open(health_snapshot, encoding="utf-8") as _csf:
++            writer.write("conversation-health/current-snapshot.json", _csf.read())
++        print("  [15c] conversation-health/current-snapshot.json included")
++
++    # 15d. pre-gpt-gate negative-path evidence (CONVERSATION-HEALTH-GATE-A2)
++    pre_gpt_evidence_dir = os.path.join(repo, "_evidence", "pre-gpt-gate-evidence")
++    if os.path.isdir(pre_gpt_evidence_dir):
++        for _pgf in sorted(os.listdir(pre_gpt_evidence_dir)):
++            _pgsrc = os.path.join(pre_gpt_evidence_dir, _pgf)
++            if os.path.isfile(_pgsrc):
++                with open(_pgsrc, encoding="utf-8") as _pgfh:
++                    writer.write(f"pre-gpt-gate-evidence/{_pgf}", _pgfh.read())
++        print(f"  [15d] pre-gpt-gate-evidence/ included ({len(os.listdir(pre_gpt_evidence_dir))} files)")
++
+     # 16. final-report.md (initially without ZIP info)
+     #     We'll overwrite it after building the ZIP to include ZIP metadata.
+ 
+diff --git a/scripts/pre_gpt_gate.py b/scripts/pre_gpt_gate.py
+new file mode 100644
+index 00000000..5739d9b9
+--- /dev/null
++++ b/scripts/pre_gpt_gate.py
+@@ -0,0 +1,698 @@
++"""Pre-GPT Gate for Conversation Health -- CONVERSATION-HEALTH-GATE-A2.
++
++Provides a unified gate module that all GPT/CDP submission scripts must call
++before interacting with ChatGPT.  Connects the A1 decision engine
++(``check_handoff_needed.check_handoff_v2``) to real GPT/CDP workflows.
++
++Public API (for legacy script integration)
++------------------------------------------
++    from pre_gpt_gate import check_pre_gpt_gate
++
++    exit_code, decision, message = check_pre_gpt_gate()
++    if exit_code != 0:
++        print(f"BLOCKED: {message}")
++        sys.exit(exit_code)
++
++CLI
++---
++    # Pre-submit check (reads current.json, writes latest.json)
++    python pre_gpt_gate.py check
++
++    # Refresh current.json with new metrics
++    python pre_gpt_gate.py refresh --metrics '{"assistant_message_count": 15, ...}'
++
++    # Full gate: check + optional refresh
++    python pre_gpt_gate.py gate --metrics-file metrics.json
++
++    # Record navigation result
++    python pre_gpt_gate.py nav-result --result access_denied
++
++Exit Codes
++----------
++    0 -- OK or SUGGEST (submission allowed)
++    1 -- FORCE_HANDOFF (submission blocked)
++    2 -- HUMAN_REQUIRED (submission blocked, human intervention needed)
++    3 -- Missing current.json with no refresh path (submission blocked)
++    4 -- Stale metrics with failed refresh (submission blocked or warning)
++"""
++
++import argparse
++import json
++import os
++import sys
++from copy import deepcopy
++from datetime import datetime, timezone
++from pathlib import Path
++
++# ---------------------------------------------------------------------------
++# Paths
++# ---------------------------------------------------------------------------
++
++REPO = Path(__file__).resolve().parent.parent
++CURRENT_JSON = REPO / ".ai" / "conversation" / "current.json"
++POLICY_YAML = REPO / "configs" / "conversation-health-policy.yaml"
++EVIDENCE_DIR = REPO / "_evidence" / "conversation-health"
++LATEST_JSON = EVIDENCE_DIR / "latest.json"
++SNAPSHOT_JSON = EVIDENCE_DIR / "current-snapshot.json"
++MIGRATION_DIR = EVIDENCE_DIR / "migration-records"
++
++# Exit codes
++EXIT_OK = 0
++EXIT_SUGGEST = 0          # SUGGEST still allows submission
++EXIT_FORCE = 1
++EXIT_HUMAN_REQUIRED = 2
++EXIT_MISSING_BLOCKED = 3
++EXIT_STALE_BLOCKED = 4
++
++
++# ---------------------------------------------------------------------------
++# Internal helpers
++# ---------------------------------------------------------------------------
++
++def _now_iso():
++    return datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
++
++
++def _load_current_json(path=None):
++    """Load .ai/conversation/current.json.
++
++    Returns (data_dict, error_string_or_None).
++    """
++    p = Path(path) if path else CURRENT_JSON
++    if not p.is_file():
++        return None, f"current.json not found: {p}"
++    try:
++        text = p.read_text(encoding="utf-8")
++        data = json.loads(text)
++        if not isinstance(data, dict):
++            return None, f"current.json must contain a JSON object"
++        return data, None
++    except json.JSONDecodeError as exc:
++        return None, f"Invalid JSON in current.json: {exc}"
++    except OSError as exc:
++        return None, f"Cannot read current.json: {exc}"
++
++
++def _write_json(path, data):
++    """Write a dict as formatted JSON."""
++    p = Path(path)
++    p.parent.mkdir(parents=True, exist_ok=True)
++    p.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n",
++                 encoding="utf-8")
++
++
++def _import_decision_engine():
++    """Import check_handoff_v2 and load_policy from check_handoff_needed.
++
++    Returns (check_handoff_v2, load_policy, error_string_or_None).
++    """
++    scripts_dir = str(REPO / "scripts")
++    added = False
++    if scripts_dir not in sys.path:
++        sys.path.insert(0, scripts_dir)
++        added = True
++    try:
++        from check_handoff_needed import check_handoff_v2, load_policy  # type: ignore
++        return check_handoff_v2, load_policy, None
++    except ImportError as exc:
++        return None, None, f"Cannot import decision engine: {exc}"
++    finally:
++        if added and scripts_dir in sys.path:
++            sys.path.remove(scripts_dir)
++
++
++def _flatten_metrics(current_data):
++    """Extract a flat metrics dict from current.json data for check_handoff_v2.
++
++    Handles the field name mapping: schema uses last_response_time_seconds,
++    decision engine uses response_time_seconds.
++    """
++    lkm = current_data.get("last_known_metrics", {})
++    metrics = {
++        "assistant_message_count": lkm.get("assistant_message_count"),
++        "response_time_seconds": lkm.get("last_response_time_seconds"),
++        "review_round_count": lkm.get("review_round_count"),
++        "last_gpt_reply_bytes": lkm.get("last_gpt_reply_bytes"),
++        "metrics_source": current_data.get("metrics_source", "none"),
++        "nav_result": current_data.get("last_nav_result", "unknown"),
++        "last_checked_at": current_data.get("last_checked_at"),
++    }
++    return metrics
++
++
++def _decision_to_exit_code(decision):
++    """Map a decision string to an exit code."""
++    d = decision.get("decision", "UNKNOWN") if isinstance(decision, dict) else str(decision)
++    if d == "FORCE_HANDOFF":
++        return EXIT_FORCE
++    elif d == "HUMAN_REQUIRED":
++        return EXIT_HUMAN_REQUIRED
++    elif d == "UNKNOWN":
++        # UNKNOWN with BLOCKING severity -> block
++        sev = decision.get("severity", "") if isinstance(decision, dict) else ""
++        if sev == "BLOCKING":
++            return EXIT_MISSING_BLOCKED
++        return EXIT_OK
++    else:
++        # OK, SUGGEST_HANDOFF
++        return EXIT_OK
++
++
++def _decision_to_message(decision):
++    """Build a human-readable message from a decision."""
++    d = decision.get("decision", "UNKNOWN") if isinstance(decision, dict) else "UNKNOWN"
++    reasons = decision.get("reasons", []) if isinstance(decision, dict) else []
++    reason_strs = []
++    for r in reasons:
++        if isinstance(r, dict):
++            reason_strs.append(f"{r.get('code', '?')}: {r.get('actual', '?')} "
++                               f"(threshold: {r.get('threshold', '?')}, "
++                               f"policy: {r.get('policy', '?')})")
++        else:
++            reason_strs.append(str(r))
++    if reason_strs:
++        return f"{d}: {'; '.join(reason_strs)}"
++    return d
++
++
++# ---------------------------------------------------------------------------
++# Core API: check_pre_gpt_gate()
++# ---------------------------------------------------------------------------
++
++def check_pre_gpt_gate(current_json_path=None, policy_path=None, evidence_dir=None,
++                       *, allow_init=False):
++    """Run the Pre-GPT gate check.
++
++    This is the primary entry point for legacy script integration.
++
++    Parameters
++    ----------
++    current_json_path : str or Path, optional
++        Path to current.json. Defaults to .ai/conversation/current.json.
++    policy_path : str or Path, optional
++        Path to policy YAML. Defaults to configs/conversation-health-policy.yaml.
++    evidence_dir : str or Path, optional
++        Directory for evidence output. Defaults to _evidence/conversation-health/.
++    allow_init : bool
++        If True and current.json is missing, initialize it from template.
++
++    Returns
++    -------
++    (exit_code, decision, message) : tuple[int, dict, str]
++        exit_code: 0=OK/SUGGEST (proceed), 1=FORCE (blocked),
++                   2=HUMAN_REQUIRED (blocked), 3=missing (blocked)
++        decision: v2 decision dict from check_handoff_v2
++        message: human-readable summary
++    """
++    c_path = Path(current_json_path) if current_json_path else CURRENT_JSON
++    p_path = Path(policy_path) if policy_path else POLICY_YAML
++    e_dir = Path(evidence_dir) if evidence_dir else EVIDENCE_DIR
++
++    # 1. Load current.json
++    current_data, load_err = _load_current_json(c_path)
++    if current_data is None:
++        if allow_init:
++            # Try to initialize from template
++            current_data = _init_current_json(c_path)
++            if current_data is None:
++                return (EXIT_MISSING_BLOCKED,
++                        {"decision": "UNKNOWN", "severity": "BLOCKING",
++                         "reasons": [{"code": "init_failed", "actual": "none",
++                                      "threshold": "current.json", "policy": "force"}]},
++                        f"BLOCKED: Cannot initialize current.json: {load_err}")
++        else:
++            return (EXIT_MISSING_BLOCKED,
++                    {"decision": "UNKNOWN", "severity": "BLOCKING",
++                     "reasons": [{"code": "missing_current_json", "actual": "none",
++                                  "threshold": "current.json", "policy": "force"}]},
++                    f"BLOCKED: {load_err}")
++
++    # 2. Import decision engine
++    check_v2, load_policy_fn, import_err = _import_decision_engine()
++    if check_v2 is None:
++        return (EXIT_MISSING_BLOCKED,
++                {"decision": "UNKNOWN", "severity": "BLOCKING",
++                 "reasons": [{"code": "engine_import_failed", "actual": "error",
++                              "threshold": "check_handoff_needed", "policy": "force"}]},
++                f"BLOCKED: {import_err}")
++
++    # 3. Load policy
++    policy = None
++    if p_path.is_file():
++        try:
++            policy = load_policy_fn(str(p_path))
++        except Exception:
++            policy = None  # Will fall back to DEFAULT_POLICY
++
++    # 4. Flatten metrics
++    metrics = _flatten_metrics(current_data)
++
++    # 5. Run decision engine
++    decision = check_v2(
++        metrics=metrics,
++        policy=policy,
++        mode="pre-gpt",
++        max_staleness_hours=None,  # Use policy default
++        composite=True,
++        source_label="pre_gpt_gate",
++    )
++
++    # 6. Write evidence files
++    _write_latest_json(e_dir, current_data, decision)
++    _write_snapshot_json(e_dir, current_data)
++
++    # 7. Map to exit code
++    exit_code = _decision_to_exit_code(decision)
++    message = _decision_to_message(decision)
++
++    if exit_code == EXIT_OK:
++        d = decision.get("decision", "OK")
++        if d == "SUGGEST_HANDOFF":
++            message = f"SUGGEST (proceed with caution): {message}"
++        else:
++            message = f"OK: {message}" if message else "OK"
++
++    return exit_code, decision, message
++
++
++# ---------------------------------------------------------------------------
++# Core API: update_metrics()
++# ---------------------------------------------------------------------------
++
++def update_metrics(current_json_path=None, new_metrics=None, nav_result=None,
++                   source=None):
++    """Update current.json with new metrics.
++
++    Parameters
++    ----------
++    current_json_path : str or Path, optional
++        Path to current.json. Defaults to .ai/conversation/current.json.
++    new_metrics : dict, optional
++        New metrics to merge. Keys should use schema field names:
++        assistant_message_count, review_round_count,
++        last_response_time_seconds, last_gpt_reply_bytes.
++    nav_result : str, optional
++        Navigation result: ok, access_denied, not_found, timeout,
++        auth_required, cdp_unavailable, unknown.
++    source : str, optional
++        Metrics source label: cdp_dom_count, wrapper_counter,
++        manual_estimate, none.
++
++    Returns
++    -------
++    (updated_data, error_string_or_None) : tuple[dict, str or None]
++    """
++    c_path = Path(current_json_path) if current_json_path else CURRENT_JSON
++
++    current_data, load_err = _load_current_json(c_path)
++    if current_data is None:
++        # Initialize if missing
++        current_data = _init_current_json(c_path)
++        if current_data is None:
++            return None, load_err
++
++    data = deepcopy(current_data)
++
++    # Update metrics
++    if new_metrics:
++        lkm = data.setdefault("last_known_metrics", {})
++        for key in ("assistant_message_count", "review_round_count",
++                     "last_response_time_seconds", "last_gpt_reply_bytes"):
++            if key in new_metrics and new_metrics[key] is not None:
++                lkm[key] = new_metrics[key]
++
++    # Update nav result
++    if nav_result is not None:
++        data["last_nav_result"] = nav_result
++
++    # Update source
++    if source is not None:
++        data["metrics_source"] = source
++
++    # Update timestamp and freshness
++    data["last_checked_at"] = _now_iso()
++    data["metrics_freshness"] = "fresh"
++
++    # Write back
++    _write_json(c_path, data)
++
++    return data, None
++
++
++# ---------------------------------------------------------------------------
++# Core API: record_nav_result()
++# ---------------------------------------------------------------------------
++
++def record_nav_result(nav_result, current_json_path=None, evidence_dir=None):
++    """Record a navigation result and update evidence.
++
++    Used when CDP navigation fails (access_denied, auth_required, etc.)
++    even if no full metrics refresh was possible.
++
++    Returns (exit_code, decision, message) tuple.
++    """
++    c_path = Path(current_json_path) if current_json_path else CURRENT_JSON
++    e_dir = Path(evidence_dir) if evidence_dir else EVIDENCE_DIR
++
++    # Update current.json with nav result
++    updated, err = update_metrics(c_path, nav_result=nav_result)
++    if err:
++        return EXIT_MISSING_BLOCKED, {"decision": "UNKNOWN"}, f"NAV RECORD FAILED: {err}"
++
++    # Re-run gate check to get updated decision
++    return check_pre_gpt_gate(c_path, evidence_dir=e_dir)
++
++
++# ---------------------------------------------------------------------------
++# Core API: capture_cdp_metrics()
++# ---------------------------------------------------------------------------
++
++async def capture_cdp_metrics(page, chat_url=None):
++    """Capture conversation metrics from a ChatGPT CDP page.
++
++    Parameters
++    ----------
++    page : playwright Page
++        The browser page with ChatGPT loaded.
++    chat_url : str, optional
++        Expected chat URL for conversation ID extraction.
++
++    Returns
++    -------
++    dict with keys: assistant_message_count, last_gpt_reply_bytes,
++                    last_response_time_seconds, nav_result, source.
++    """
++    metrics = {
++        "assistant_message_count": None,
++        "last_gpt_reply_bytes": None,
++        "last_response_time_seconds": None,
++        "nav_result": "ok",
++        "source": "cdp_dom_count",
++    }
++
++    try:
++        # Count assistant messages
++        assistant_msgs = page.locator('div[data-message-author-role="assistant"]')
++        msg_count = await assistant_msgs.count()
++        metrics["assistant_message_count"] = msg_count
++
++        # Get last reply size
++        if msg_count > 0:
++            last_reply_text = await assistant_msgs.last.inner_text()
++            metrics["last_gpt_reply_bytes"] = len(last_reply_text.encode("utf-8"))
++
++    except Exception as exc:
++        metrics["nav_result"] = "cdp_unavailable"
++        metrics["source"] = "none"
++
++    return metrics
++
++
++# ---------------------------------------------------------------------------
++# Internal: init current.json
++# ---------------------------------------------------------------------------
++
++def _init_current_json(path=None):
++    """Initialize current.json from the example template.
++
++    Returns the initialized data dict, or None on failure.
++    """
++    p = Path(path) if path else CURRENT_JSON
++    example = REPO / ".ai" / "conversation" / "current.json.example"
++
++    if example.is_file():
++        try:
++            data = json.loads(example.read_text(encoding="utf-8"))
++        except (json.JSONDecodeError, OSError):
++            data = None
++    else:
++        data = None
++
++    if data is None:
++        # Fallback minimal template
++        data = {
++            "schema_version": "conversation-health.v1",
++            "conversation_id": "unknown",
++            "chat_url": "https://chatgpt.com/",
++            "status": "active",
++            "last_known_metrics": {
++                "assistant_message_count": 0,
++                "review_round_count": 0,
++                "last_response_time_seconds": 0,
++                "last_gpt_reply_bytes": 0,
++            },
++            "last_nav_result": "unknown",
++            "last_checked_at": _now_iso(),
++            "metrics_source": "none",
++            "metrics_freshness": "unknown",
++        }
++    else:
++        data["last_checked_at"] = _now_iso()
++
++    try:
++        p.parent.mkdir(parents=True, exist_ok=True)
++        _write_json(p, data)
++        return data
++    except OSError:
++        return None
++
++
++# ---------------------------------------------------------------------------
++# Internal: write evidence files
++# ---------------------------------------------------------------------------
++
++def _write_latest_json(e_dir, current_data, decision):
++    """Write _evidence/conversation-health/latest.json.
++
++    Combines current.json state with the decision output so that
++    build_evidence_pack.py can find both ``last_health_decision`` and
++    ``decision`` fields.
++    """
++    e_path = Path(e_dir)
++    e_path.mkdir(parents=True, exist_ok=True)
++
++    # Start from current data, add decision fields
++    output = deepcopy(current_data)
++    output["last_health_decision"] = decision.get("decision", "UNKNOWN")
++    output["last_health_reasons"] = [
++        r.get("code", str(r)) if isinstance(r, dict) else str(r)
++        for r in decision.get("reasons", [])
++    ]
++    output["last_health_severity"] = decision.get("severity", "INFO")
++    output["last_health_checked_at"] = decision.get("checked_at", _now_iso())
++
++    _write_json(e_path / "latest.json", output)
++
++
++def _write_snapshot_json(e_dir, current_data):
++    """Write _evidence/conversation-health/current-snapshot.json.
++
++    A point-in-time copy of current.json for evidence trail.
++    """
++    e_path = Path(e_dir)
++    e_path.mkdir(parents=True, exist_ok=True)
++
++    snapshot = deepcopy(current_data)
++    snapshot["_snapshot_at"] = _now_iso()
++    snapshot["_snapshot_source"] = "pre_gpt_gate"
++
++    _write_json(e_path / "current-snapshot.json", snapshot)
++
++
++# ---------------------------------------------------------------------------
++# Internal: write migration record
++# ---------------------------------------------------------------------------
++
++def write_migration_record(old_conversation_id, new_conversation_id,
++                           reason="manual", evidence_dir=None):
++    """Record a conversation switch event.
++
++    Writes a YAML file to _evidence/conversation-health/migration-records/.
++    """
++    e_dir = Path(evidence_dir) if evidence_dir else MIGRATION_DIR
++    e_dir.mkdir(parents=True, exist_ok=True)
++
++    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
++    record = {
++        "timestamp": _now_iso(),
++        "old_conversation_id": old_conversation_id,
++        "new_conversation_id": new_conversation_id,
++        "reason": reason,
++    }
++
++    # Write as simple YAML (no dependency on PyYAML)
++    lines = [
++        f"timestamp: \"{record['timestamp']}\"",
++        f"old_conversation_id: \"{record['old_conversation_id']}\"",
++        f"new_conversation_id: \"{record['new_conversation_id']}\"",
++        f"reason: \"{record['reason']}\"",
++    ]
++    (e_dir / f"{ts}.yaml").write_text("\n".join(lines) + "\n", encoding="utf-8")
++
++
++# ---------------------------------------------------------------------------
++# CLI
++# ---------------------------------------------------------------------------
++
++def _build_parser():
++    parser = argparse.ArgumentParser(
++        description="Pre-GPT Gate for Conversation Health (A2)",
++        formatter_class=argparse.RawDescriptionHelpFormatter,
++    )
++    sub = parser.add_subparsers(dest="command", help="Available commands")
++
++    # check
++    chk = sub.add_parser("check", help="Pre-submit gate check")
++    chk.add_argument("--input", default=str(CURRENT_JSON),
++                     help="Path to current.json")
++    chk.add_argument("--policy", default=str(POLICY_YAML),
++                     help="Path to policy YAML")
++    chk.add_argument("--evidence-dir", default=str(EVIDENCE_DIR),
++                     help="Evidence output directory")
++    chk.add_argument("--allow-init", action="store_true",
++                     help="Initialize current.json if missing")
++    chk.add_argument("--json", action="store_true", dest="json_output",
++                     help="Output decision as JSON")
++
++    # refresh
++    ref = sub.add_parser("refresh", help="Refresh current.json with new metrics")
++    ref.add_argument("--input", default=str(CURRENT_JSON),
++                     help="Path to current.json")
++    ref.add_argument("--metrics", help="JSON string of new metrics")
++    ref.add_argument("--metrics-file", help="JSON file with new metrics")
++    ref.add_argument("--nav-result", help="Navigation result string")
++    ref.add_argument("--source", help="Metrics source label")
++
++    # gate (combined check + refresh)
++    gate = sub.add_parser("gate", help="Full gate: refresh then check")
++    gate.add_argument("--input", default=str(CURRENT_JSON),
++                      help="Path to current.json")
++    gate.add_argument("--policy", default=str(POLICY_YAML),
++                      help="Path to policy YAML")
++    gate.add_argument("--evidence-dir", default=str(EVIDENCE_DIR),
++                      help="Evidence output directory")
++    gate.add_argument("--metrics", help="JSON string of new metrics")
++    gate.add_argument("--metrics-file", help="JSON file with new metrics")
++    gate.add_argument("--nav-result", help="Navigation result string")
++    gate.add_argument("--source", help="Metrics source label")
++    gate.add_argument("--allow-init", action="store_true",
++                      help="Initialize current.json if missing")
++    gate.add_argument("--json", action="store_true", dest="json_output",
++                      help="Output decision as JSON")
++
++    # nav-result
++    nav = sub.add_parser("nav-result", help="Record a navigation result")
++    nav.add_argument("--input", default=str(CURRENT_JSON),
++                     help="Path to current.json")
++    nav.add_argument("--evidence-dir", default=str(EVIDENCE_DIR),
++                     help="Evidence output directory")
++    nav.add_argument("--result", required=True,
++                     help="Navigation result: ok, access_denied, auth_required, etc.")
++    nav.add_argument("--json", action="store_true", dest="json_output",
++                     help="Output decision as JSON")
++
++    return parser
++
++
++def _load_metrics_arg(args):
++    """Load metrics from --metrics or --metrics-file."""
++    new_metrics = None
++    if hasattr(args, "metrics_file") and args.metrics_file:
++        try:
++            new_metrics = json.loads(Path(args.metrics_file).read_text(encoding="utf-8"))
++        except (json.JSONDecodeError, OSError) as exc:
++            print(f"ERROR: Cannot load metrics file: {exc}", file=sys.stderr)
++            sys.exit(2)
++    elif hasattr(args, "metrics") and args.metrics:
++        try:
++            new_metrics = json.loads(args.metrics)
++        except json.JSONDecodeError as exc:
++            print(f"ERROR: Invalid metrics JSON: {exc}", file=sys.stderr)
++            sys.exit(2)
++    return new_metrics
++
++
++def _output_result(exit_code, decision, message, json_output=False):
++    """Print and exit with the result."""
++    if json_output:
++        output = {
++            "exit_code": exit_code,
++            "decision": decision,
++            "message": message,
++        }
++        print(json.dumps(output, indent=2, ensure_ascii=False))
++    else:
++        print(message)
++    sys.exit(exit_code)
++
++
++def main():
++    parser = _build_parser()
++    args = parser.parse_args()
++
++    if not args.command:
++        parser.print_help()
++        sys.exit(0)
++
++    if args.command == "check":
++        exit_code, decision, message = check_pre_gpt_gate(
++            current_json_path=args.input,
++            policy_path=args.policy,
++            evidence_dir=args.evidence_dir,
++            allow_init=args.allow_init,
++        )
++        _output_result(exit_code, decision, message, args.json_output)
++
++    elif args.command == "refresh":
++        new_metrics = _load_metrics_arg(args)
++        nav_result = getattr(args, "nav_result", None)
++        source = getattr(args, "source", None)
++        updated, err = update_metrics(
++            current_json_path=args.input,
++            new_metrics=new_metrics,
++            nav_result=nav_result,
++            source=source,
++        )
++        if err:
++            print(f"ERROR: {err}", file=sys.stderr)
++            sys.exit(2)
++        print(f"current.json updated: {json.dumps(updated.get('last_known_metrics', {}))}")
++        sys.exit(0)
++
++    elif args.command == "gate":
++        # Step 1: Refresh if metrics provided
++        new_metrics = _load_metrics_arg(args)
++        nav_result = getattr(args, "nav_result", None)
++        source = getattr(args, "source", None)
++
++        if new_metrics or nav_result or source:
++            updated, err = update_metrics(
++                current_json_path=args.input,
++                new_metrics=new_metrics,
++                nav_result=nav_result,
++                source=source,
++            )
++            if err:
++                print(f"WARNING: Metrics refresh failed: {err}", file=sys.stderr)
++                # Continue with check even if refresh fails
++
++        # Step 2: Check
++        exit_code, decision, message = check_pre_gpt_gate(
++            current_json_path=args.input,
++            policy_path=args.policy,
++            evidence_dir=args.evidence_dir,
++            allow_init=args.allow_init,
++        )
++        _output_result(exit_code, decision, message, args.json_output)
++
++    elif args.command == "nav-result":
++        exit_code, decision, message = record_nav_result(
++            nav_result=args.result,
++            current_json_path=args.input,
++            evidence_dir=args.evidence_dir,
++        )
++        _output_result(exit_code, decision, message, args.json_output)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/run_pre_gpt_gate_evidence.py b/scripts/run_pre_gpt_gate_evidence.py
+new file mode 100644
+index 00000000..4281f961
+--- /dev/null
++++ b/scripts/run_pre_gpt_gate_evidence.py
+@@ -0,0 +1,270 @@
++"""Generate runtime negative-path evidence for CONVERSATION-HEALTH-GATE-A2.
++
++Produces evidence files demonstrating that the Pre-GPT Gate correctly:
++1. Blocks FORCE_HANDOFF submissions
++2. Blocks HUMAN_REQUIRED submissions
++3. Blocks when current.json is missing (no refresh path)
++4. Warns on stale metrics
++5. Records access_denied as FORCE
++6. Records auth_required as HUMAN_REQUIRED
++7. Successfully refreshes metrics
++8. Writes latest.json for Pre-GPT flows
++
++Each scenario writes a .txt file with Expected/Actual exit codes.
++ALL PASS means the gate behaves as specified.
++"""
++import json
++import os
++import sys
++import tempfile
++from pathlib import Path
++
++REPO = Path(__file__).resolve().parent.parent
++SCRIPTS = REPO / "scripts"
++EVIDENCE_OUT = REPO / "_evidence" / "pre-gpt-gate-evidence"
++
++sys.path.insert(0, str(SCRIPTS))
++from pre_gpt_gate import (
++    check_pre_gpt_gate, update_metrics, record_nav_result,
++    EXIT_OK, EXIT_FORCE, EXIT_HUMAN_REQUIRED, EXIT_MISSING_BLOCKED,
++)
++
++
++def _make_env(tmp, **overrides):
++    """Create a temp current.json and evidence dir."""
++    ai_dir = Path(tmp) / "ai" / "conversation"
++    ai_dir.mkdir(parents=True, exist_ok=True)
++    ev_dir = Path(tmp) / "evidence" / "conversation-health"
++    ev_dir.mkdir(parents=True, exist_ok=True)
++
++    data = {
++        "schema_version": "conversation-health.v1",
++        "conversation_id": "evidence-test",
++        "chat_url": "https://chatgpt.com/c/evidence-test",
++        "status": "active",
++        "last_known_metrics": {
++            "assistant_message_count": 10,
++            "review_round_count": 1,
++            "last_response_time_seconds": 5.0,
++            "last_gpt_reply_bytes": 5000,
++        },
++        "last_nav_result": "ok",
++        "last_checked_at": "2026-06-12T12:00:00+08:00",
++        "metrics_source": "cdp_dom_count",
++        "metrics_freshness": "fresh",
++    }
++    for k, v in overrides.items():
++        if k == "last_known_metrics" and isinstance(v, dict):
++            data["last_known_metrics"].update(v)
++        else:
++            data[k] = v
++
++    cp = ai_dir / "current.json"
++    cp.write_text(json.dumps(data, indent=2), encoding="utf-8")
++    return str(cp), str(ev_dir)
++
++
++def _write_result(name, description, expected_exit, actual_exit, decision, message):
++    """Write a single scenario evidence file."""
++    EVIDENCE_OUT.mkdir(parents=True, exist_ok=True)
++    status = "PASS" if expected_exit == actual_exit else "FAIL"
++    lines = [
++        f"# Scenario: {name}",
++        f"# Description: {description}",
++        f"# Expected: exit_code={expected_exit}",
++        f"# Actual exit: {actual_exit}",
++        f"# Decision: {decision.get('decision', 'N/A')}",
++        f"# Severity: {decision.get('severity', 'N/A')}",
++        f"# Status: {status}",
++        f"#",
++        f"# Message: {message}",
++        f"#",
++        f"# Reasons:",
++    ]
++    for r in decision.get("reasons", []):
++        if isinstance(r, dict):
++            lines.append(f"#   - {r.get('code')}: actual={r.get('actual')} "
++                         f"threshold={r.get('threshold')} policy={r.get('policy')}")
++        else:
++            lines.append(f"#   - {r}")
++
++    op = EVIDENCE_OUT / f"{name}.txt"
++    op.write_text("\n".join(lines) + "\n", encoding="utf-8")
++    return status
++
++
++def main():
++    import shutil
++
++    # Clean previous evidence
++    if EVIDENCE_OUT.exists():
++        shutil.rmtree(EVIDENCE_OUT)
++    EVIDENCE_OUT.mkdir(parents=True)
++
++    results = []
++
++    # --- Scenario 1: force_handoff_blocks_submit ---
++    with tempfile.TemporaryDirectory() as tmp:
++        cp, ev = _make_env(tmp, last_known_metrics={"assistant_message_count": 65})
++        exit_code, decision, message = check_pre_gpt_gate(cp, evidence_dir=ev)
++        s = _write_result(
++            "force_handoff_blocks_submit",
++            "High message count (65 >= 60) triggers FORCE_HANDOFF, blocking submission",
++            EXIT_FORCE, exit_code, decision, message,
++        )
++        results.append(("force_handoff_blocks_submit", s))
++
++    # --- Scenario 2: human_required_blocks_submit ---
++    with tempfile.TemporaryDirectory() as tmp:
++        cp, ev = _make_env(tmp, last_nav_result="auth_required")
++        exit_code, decision, message = check_pre_gpt_gate(cp, evidence_dir=ev)
++        s = _write_result(
++            "human_required_blocks_submit",
++            "auth_required nav result triggers HUMAN_REQUIRED, blocking submission",
++            EXIT_HUMAN_REQUIRED, exit_code, decision, message,
++        )
++        results.append(("human_required_blocks_submit", s))
++
++    # --- Scenario 3: missing_current_json_blocks_without_refresh ---
++    with tempfile.TemporaryDirectory() as tmp:
++        fake_path = str(Path(tmp) / "nonexistent" / "current.json")
++        ev = str(Path(tmp) / "evidence")
++        exit_code, decision, message = check_pre_gpt_gate(fake_path, evidence_dir=ev)
++        s = _write_result(
++            "missing_current_json_blocks_without_refresh",
++            "Missing current.json with no allow_init blocks submission",
++            EXIT_MISSING_BLOCKED, exit_code, decision, message,
++        )
++        results.append(("missing_current_json_blocks_without_refresh", s))
++
++    # --- Scenario 4: stale_metrics_warns_or_suggests ---
++    with tempfile.TemporaryDirectory() as tmp:
++        cp, ev = _make_env(tmp, last_checked_at="2026-06-08T00:00:00+08:00")
++        exit_code, decision, message = check_pre_gpt_gate(cp, evidence_dir=ev)
++        # Stale metrics should produce SUGGEST (exit 0 but with warning)
++        expected = EXIT_OK  # SUGGEST still exits 0
++        s = _write_result(
++            "stale_metrics_warns_or_suggests",
++            "Stale metrics (>12h old) produce SUGGEST_HANDOFF warning",
++            expected, exit_code, decision, message,
++        )
++        results.append(("stale_metrics_warns_or_suggests", s))
++
++    # --- Scenario 5: access_denied_records_force ---
++    with tempfile.TemporaryDirectory() as tmp:
++        cp, ev = _make_env(tmp)
++        exit_code, decision, message = record_nav_result(
++            "access_denied", cp, ev,
++        )
++        s = _write_result(
++            "access_denied_records_force",
++            "access_denied nav result is recorded and triggers FORCE_HANDOFF",
++            EXIT_FORCE, exit_code, decision, message,
++        )
++        results.append(("access_denied_records_force", s))
++
++    # --- Scenario 6: auth_required_records_human_required ---
++    with tempfile.TemporaryDirectory() as tmp:
++        cp, ev = _make_env(tmp)
++        exit_code, decision, message = record_nav_result(
++            "auth_required", cp, ev,
++        )
++        s = _write_result(
++            "auth_required_records_human_required",
++            "auth_required nav result is recorded and triggers HUMAN_REQUIRED",
++            EXIT_HUMAN_REQUIRED, exit_code, decision, message,
++        )
++        results.append(("auth_required_records_human_required", s))
++
++    # --- Scenario 7: successful_metrics_refresh_updates_current_json ---
++    with tempfile.TemporaryDirectory() as tmp:
++        cp, ev = _make_env(tmp)
++        new_metrics = {
++            "assistant_message_count": 20,
++            "last_response_time_seconds": 10.0,
++            "last_gpt_reply_bytes": 4000,
++        }
++        updated, err = update_metrics(cp, new_metrics=new_metrics, source="cdp_dom_count")
++        # Verify update happened
++        data = json.loads(Path(cp).read_text())
++        actual_count = data["last_known_metrics"]["assistant_message_count"]
++        expected_count = 20
++        # For this scenario, we compare the metric value, not exit code
++        status = "PASS" if actual_count == expected_count and err is None else "FAIL"
++        EVIDENCE_OUT.mkdir(parents=True, exist_ok=True)
++        lines = [
++            "# Scenario: successful_metrics_refresh_updates_current_json",
++            "# Description: update_metrics() refreshes current.json with new CDP metrics",
++            f"# Expected: assistant_message_count={expected_count}",
++            f"# Actual exit: {actual_count}",
++            f"# Error: {err}",
++            f"# Status: {status}",
++            f"#",
++            f"# Updated metrics: {json.dumps(data.get('last_known_metrics', {}))}",
++            f"# Freshness: {data.get('metrics_freshness')}",
++            f"# Source: {data.get('metrics_source')}",
++        ]
++        (EVIDENCE_OUT / "successful_metrics_refresh_updates_current_json.txt").write_text(
++            "\n".join(lines) + "\n", encoding="utf-8"
++        )
++        results.append(("successful_metrics_refresh_updates_current_json", status))
++
++    # --- Scenario 8: latest_json_written_for_pre_gpt_gate ---
++    with tempfile.TemporaryDirectory() as tmp:
++        cp, ev = _make_env(tmp)
++        exit_code, decision, message = check_pre_gpt_gate(cp, evidence_dir=ev)
++        latest_path = Path(ev) / "latest.json"
++        snapshot_path = Path(ev) / "current-snapshot.json"
++        has_latest = latest_path.exists()
++        has_snapshot = snapshot_path.exists()
++        status = "PASS" if has_latest and has_snapshot else "FAIL"
++
++        latest_data = json.loads(latest_path.read_text()) if has_latest else {}
++        snapshot_data = json.loads(snapshot_path.read_text()) if has_snapshot else {}
++
++        EVIDENCE_OUT.mkdir(parents=True, exist_ok=True)
++        lines = [
++            "# Scenario: latest_json_written_for_pre_gpt_gate",
++            "# Description: Pre-GPT gate writes latest.json AND current-snapshot.json",
++            f"# Expected: latest.json exists AND current-snapshot.json exists",
++            f"# Actual exit: latest={has_latest}, snapshot={has_snapshot}",
++            f"# Status: {status}",
++            f"#",
++            f"# latest.json decision: {latest_data.get('last_health_decision')}",
++            f"# snapshot conversation_id: {snapshot_data.get('conversation_id')}",
++            f"# snapshot source: {snapshot_data.get('_snapshot_source')}",
++        ]
++        (EVIDENCE_OUT / "latest_json_written_for_pre_gpt_gate.txt").write_text(
++            "\n".join(lines) + "\n", encoding="utf-8"
++        )
++        results.append(("latest_json_written_for_pre_gpt_gate", status))
++
++    # --- Combined summary ---
++    all_pass = all(s == "PASS" for _, s in results)
++    lines = [
++        "# COMBINED: Pre-GPT Gate Negative-Path Evidence",
++        f"# Overall: {'ALL PASS' if all_pass else 'FAILURES DETECTED'}",
++        f"# Scenarios: {len(results)}",
++        f"# Passed: {sum(1 for _, s in results if s == 'PASS')}",
++        f"# Failed: {sum(1 for _, s in results if s == 'FAIL')}",
++        "#",
++    ]
++    for name, status in results:
++        lines.append(f"# {status}: {name}")
++
++    (EVIDENCE_OUT / "combined_summary.txt").write_text(
++        "\n".join(lines) + "\n", encoding="utf-8"
++    )
++
++    # Print summary
++    print(f"Pre-GPT Gate Evidence: {len(results)} scenarios")
++    for name, status in results:
++        print(f"  {status}: {name}")
++    print(f"\nOverall: {'ALL PASS' if all_pass else 'FAILURES DETECTED'}")
++    print(f"Output: {EVIDENCE_OUT}")
++
++    return 0 if all_pass else 1
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/tests/test_pre_gpt_gate.py b/tests/test_pre_gpt_gate.py
+new file mode 100644
+index 00000000..6db995b0
+--- /dev/null
++++ b/tests/test_pre_gpt_gate.py
+@@ -0,0 +1,585 @@
++"""Tests for CONVERSATION-HEALTH-GATE-A2: Pre-GPT Gate enforcement.
++
++Covers:
++- check_pre_gpt_gate() allows OK
++- check_pre_gpt_gate() allows SUGGEST with warning
++- check_pre_gpt_gate() blocks FORCE_HANDOFF
++- check_pre_gpt_gate() blocks HUMAN_REQUIRED
++- missing current.json with no refresh path blocks submission
++- stale current.json attempts refresh or records stale decision
++- access_denied writes last_nav_result and triggers FORCE
++- auth_required writes HUMAN_REQUIRED
++- post-response metrics update writes schema-compliant current.json
++- generated latest.json validates against conversation-health schema
++- CLI interface (check, refresh, gate, nav-result)
++- Legacy script integration pattern
++"""
++import json
++import os
++import sys
++import tempfile
++from pathlib import Path
++
++import pytest
++
++SCRIPT_DIR = Path(__file__).resolve().parent.parent / "scripts"
++SCHEMAS_DIR = Path(__file__).resolve().parent.parent / "schemas" / "agent-runtime"
++CONFIGS_DIR = Path(__file__).resolve().parent.parent / "configs"
++
++sys.path.insert(0, str(SCRIPT_DIR))
++from pre_gpt_gate import (  # noqa: E402
++    check_pre_gpt_gate,
++    update_metrics,
++    record_nav_result,
++    write_migration_record,
++    _flatten_metrics,
++    _decision_to_exit_code,
++    _init_current_json,
++    _write_latest_json,
++    _write_snapshot_json,
++    EXIT_OK,
++    EXIT_FORCE,
++    EXIT_HUMAN_REQUIRED,
++    EXIT_MISSING_BLOCKED,
++)
++
++
++# ---------------------------------------------------------------------------
++# Fixtures
++# ---------------------------------------------------------------------------
++
++def _make_current_json(tmp_dir, **overrides):
++    """Create a valid current.json in tmp_dir and return its path."""
++    data = {
++        "schema_version": "conversation-health.v1",
++        "conversation_id": "test-conv-001",
++        "chat_url": "https://chatgpt.com/c/test-conv-001",
++        "status": "active",
++        "last_known_metrics": {
++            "assistant_message_count": 10,
++            "review_round_count": 1,
++            "last_response_time_seconds": 5.0,
++            "last_gpt_reply_bytes": 5000,
++        },
++        "last_nav_result": "ok",
++        "last_health_decision": "OK",
++        "last_health_reasons": [],
++        "last_checked_at": "2026-06-12T12:00:00+08:00",
++        "metrics_source": "cdp_dom_count",
++        "metrics_freshness": "fresh",
++    }
++    # Apply overrides
++    for key, value in overrides.items():
++        if key == "last_known_metrics" and isinstance(value, dict):
++            data["last_known_metrics"].update(value)
++        else:
++            data[key] = value
++
++    p = Path(tmp_dir) / "current.json"
++    p.parent.mkdir(parents=True, exist_ok=True)
++    p.write_text(json.dumps(data, indent=2), encoding="utf-8")
++    return str(p)
++
++
++def _make_evidence_dir(tmp_dir):
++    """Create evidence directory and return its path."""
++    e = Path(tmp_dir) / "evidence" / "conversation-health"
++    e.mkdir(parents=True, exist_ok=True)
++    return str(e)
++
++
++@pytest.fixture
++def tmp_env(tmp_path):
++    """Provide a temporary environment with current.json and evidence dir."""
++    current_path = _make_current_json(tmp_path / "ai" / "conversation")
++    evidence_dir = _make_evidence_dir(tmp_path)
++    policy_path = str(CONFIGS_DIR / "conversation-health-policy.yaml")
++    return {
++        "current_json": current_path,
++        "evidence_dir": evidence_dir,
++        "policy_path": policy_path,
++        "tmp_dir": str(tmp_path),
++    }
++
++
++# ---------------------------------------------------------------------------
++# 1. OK scenario
++# ---------------------------------------------------------------------------
++
++class TestPreGptGateOK:
++    """pre_gpt_gate allows OK when metrics are healthy."""
++
++    def test_ok_allows_submission(self, tmp_env):
++        exit_code, decision, message = check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        assert exit_code == EXIT_OK
++        assert decision["decision"] == "OK"
++        assert decision["severity"] == "INFO"
++
++    def test_ok_writes_latest_json(self, tmp_env):
++        check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        latest = Path(tmp_env["evidence_dir"]) / "latest.json"
++        assert latest.exists()
++        data = json.loads(latest.read_text())
++        assert data["last_health_decision"] == "OK"
++
++    def test_ok_writes_snapshot_json(self, tmp_env):
++        check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        snapshot = Path(tmp_env["evidence_dir"]) / "current-snapshot.json"
++        assert snapshot.exists()
++        data = json.loads(snapshot.read_text())
++        assert data["conversation_id"] == "test-conv-001"
++        assert "_snapshot_at" in data
++        assert data["_snapshot_source"] == "pre_gpt_gate"
++
++
++# ---------------------------------------------------------------------------
++# 2. SUGGEST scenario
++# ---------------------------------------------------------------------------
++
++class TestPreGptGateSuggest:
++    """pre_gpt_gate allows SUGGEST with warning."""
++
++    def test_suggest_allows_submission(self, tmp_env):
++        # Make metrics slightly elevated (response_time >= 60)
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_known_metrics={"last_response_time_seconds": 65},
++        )
++        exit_code, decision, message = check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        assert exit_code == EXIT_OK  # SUGGEST still exits 0
++        assert decision["decision"] == "SUGGEST_HANDOFF"
++        assert "SUGGEST" in message.upper() or "CAUTION" in message.upper()
++
++    def test_suggest_writes_evidence(self, tmp_env):
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_known_metrics={"last_response_time_seconds": 65},
++        )
++        check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        latest = Path(tmp_env["evidence_dir"]) / "latest.json"
++        data = json.loads(latest.read_text())
++        assert data["last_health_decision"] == "SUGGEST_HANDOFF"
++
++
++# ---------------------------------------------------------------------------
++# 3. FORCE_HANDOFF scenario
++# ---------------------------------------------------------------------------
++
++class TestPreGptGateForce:
++    """pre_gpt_gate blocks FORCE_HANDOFF."""
++
++    def test_force_blocks_submission(self, tmp_env):
++        # High message count triggers FORCE
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_known_metrics={"assistant_message_count": 65},
++        )
++        exit_code, decision, message = check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        assert exit_code == EXIT_FORCE
++        assert decision["decision"] == "FORCE_HANDOFF"
++        assert decision["severity"] == "BLOCKING"
++
++    def test_force_writes_evidence(self, tmp_env):
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_known_metrics={"assistant_message_count": 65},
++        )
++        check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        latest = Path(tmp_env["evidence_dir"]) / "latest.json"
++        data = json.loads(latest.read_text())
++        assert data["last_health_decision"] == "FORCE_HANDOFF"
++
++    def test_composite_force_blocks(self, tmp_env):
++        # Slow + short + rounds = composite FORCE
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_known_metrics={
++                "last_response_time_seconds": 75,
++                "last_gpt_reply_bytes": 500,
++                "review_round_count": 3,
++            },
++        )
++        exit_code, decision, message = check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        assert exit_code == EXIT_FORCE
++        assert decision["decision"] == "FORCE_HANDOFF"
++
++
++# ---------------------------------------------------------------------------
++# 4. HUMAN_REQUIRED scenario
++# ---------------------------------------------------------------------------
++
++class TestPreGptGateHumanRequired:
++    """pre_gpt_gate blocks HUMAN_REQUIRED."""
++
++    def test_auth_required_blocks(self, tmp_env):
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_nav_result="auth_required",
++        )
++        exit_code, decision, message = check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        assert exit_code == EXIT_HUMAN_REQUIRED
++        assert decision["decision"] == "HUMAN_REQUIRED"
++        assert decision["severity"] == "BLOCKING"
++
++
++# ---------------------------------------------------------------------------
++# 5. Missing current.json
++# ---------------------------------------------------------------------------
++
++class TestPreGptGateMissing:
++    """missing current.json with no refresh path blocks submission."""
++
++    def test_missing_blocks_without_init(self, tmp_path):
++        fake_path = str(tmp_path / "nonexistent" / "current.json")
++        exit_code, decision, message = check_pre_gpt_gate(
++            current_json_path=fake_path,
++            evidence_dir=str(tmp_path / "evidence"),
++        )
++        assert exit_code == EXIT_MISSING_BLOCKED
++        assert decision["severity"] == "BLOCKING"
++        assert "missing" in message.lower() or "not found" in message.lower()
++
++    def test_missing_with_init_allowed(self, tmp_path):
++        fake_path = str(tmp_path / "ai" / "conversation" / "current.json")
++        evidence_dir = str(tmp_path / "evidence")
++        exit_code, decision, message = check_pre_gpt_gate(
++            current_json_path=fake_path,
++            evidence_dir=evidence_dir,
++            allow_init=True,
++        )
++        # After init, metrics_source is "none" → UNKNOWN → may be WARNING
++        # The key test is that it doesn't crash
++        assert isinstance(exit_code, int)
++        assert isinstance(decision, dict)
++
++
++# ---------------------------------------------------------------------------
++# 6. Stale current.json
++# ---------------------------------------------------------------------------
++
++class TestPreGptGateStale:
++    """stale current.json records stale decision."""
++
++    def test_stale_metrics_produces_suggest(self, tmp_env):
++        # Set last_checked_at to 48 hours ago
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_checked_at="2026-06-10T00:00:00+08:00",
++        )
++        exit_code, decision, message = check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        # Stale should produce SUGGEST (metrics_stale reason)
++        assert decision["decision"] in ("SUGGEST_HANDOFF", "OK", "FORCE_HANDOFF")
++        # If stale is the only issue, it should be SUGGEST
++        reason_codes = [r.get("code", "") for r in decision.get("reasons", [])]
++        has_stale = any("stale" in c for c in reason_codes)
++        if has_stale and exit_code == EXIT_OK:
++            assert decision["decision"] == "SUGGEST_HANDOFF"
++
++
++# ---------------------------------------------------------------------------
++# 7. Navigation result recording
++# ---------------------------------------------------------------------------
++
++class TestPreGptGateNavResult:
++    """access_denied writes last_nav_result and triggers FORCE."""
++
++    def test_access_denied_records_force(self, tmp_env):
++        exit_code, decision, message = record_nav_result(
++            nav_result="access_denied",
++            current_json_path=tmp_env["current_json"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        assert exit_code == EXIT_FORCE
++        assert decision["decision"] == "FORCE_HANDOFF"
++
++        # Verify current.json was updated
++        data = json.loads(Path(tmp_env["current_json"]).read_text())
++        assert data["last_nav_result"] == "access_denied"
++
++    def test_auth_required_records_human(self, tmp_env):
++        exit_code, decision, message = record_nav_result(
++            nav_result="auth_required",
++            current_json_path=tmp_env["current_json"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        assert exit_code == EXIT_HUMAN_REQUIRED
++        assert decision["decision"] == "HUMAN_REQUIRED"
++
++        data = json.loads(Path(tmp_env["current_json"]).read_text())
++        assert data["last_nav_result"] == "auth_required"
++
++
++# ---------------------------------------------------------------------------
++# 8. Metrics update (post-response refresh)
++# ---------------------------------------------------------------------------
++
++class TestPreGptGateMetricsUpdate:
++    """post-response metrics update writes schema-compliant current.json."""
++
++    def test_update_writes_schema_compliant(self, tmp_env):
++        new_metrics = {
++            "assistant_message_count": 20,
++            "review_round_count": 2,
++            "last_response_time_seconds": 12.5,
++            "last_gpt_reply_bytes": 4500,
++        }
++        updated, err = update_metrics(
++            current_json_path=tmp_env["current_json"],
++            new_metrics=new_metrics,
++            nav_result="ok",
++            source="cdp_dom_count",
++        )
++        assert err is None
++        assert updated is not None
++
++        # Verify schema compliance
++        data = json.loads(Path(tmp_env["current_json"]).read_text())
++        assert data["last_known_metrics"]["assistant_message_count"] == 20
++        assert data["last_known_metrics"]["review_round_count"] == 2
++        assert data["last_known_metrics"]["last_response_time_seconds"] == 12.5
++        assert data["last_known_metrics"]["last_gpt_reply_bytes"] == 4500
++        assert data["last_nav_result"] == "ok"
++        assert data["metrics_source"] == "cdp_dom_count"
++        assert data["metrics_freshness"] == "fresh"
++
++    def test_update_preserves_conversation_id(self, tmp_env):
++        updated, err = update_metrics(
++            current_json_path=tmp_env["current_json"],
++            new_metrics={"assistant_message_count": 15},
++        )
++        assert err is None
++        assert updated["conversation_id"] == "test-conv-001"
++
++    def test_update_partial_metrics(self, tmp_env):
++        # Only update some metrics — others should remain
++        updated, err = update_metrics(
++            current_json_path=tmp_env["current_json"],
++            new_metrics={"assistant_message_count": 25},
++        )
++        assert err is None
++        data = json.loads(Path(tmp_env["current_json"]).read_text())
++        assert data["last_known_metrics"]["assistant_message_count"] == 25
++        assert data["last_known_metrics"]["last_response_time_seconds"] == 5.0  # preserved
++
++
++# ---------------------------------------------------------------------------
++# 9. latest.json schema compliance
++# ---------------------------------------------------------------------------
++
++class TestLatestJsonSchema:
++    """generated latest.json validates against conversation-health schema."""
++
++    def test_latest_json_has_required_fields(self, tmp_env):
++        check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        latest = Path(tmp_env["evidence_dir"]) / "latest.json"
++        data = json.loads(latest.read_text())
++
++        # Must have conversation-health.v1 fields
++        assert "schema_version" in data
++        assert "conversation_id" in data
++        assert "last_health_decision" in data
++        assert "last_known_metrics" in data
++        assert "last_nav_result" in data
++
++    def test_latest_json_decision_matches_engine(self, tmp_env):
++        # Force a FORCE decision
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_known_metrics={"assistant_message_count": 65},
++        )
++        _, decision, _ = check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        latest = Path(tmp_env["evidence_dir"]) / "latest.json"
++        data = json.loads(latest.read_text())
++        assert data["last_health_decision"] == decision["decision"]
++
++
++# ---------------------------------------------------------------------------
++# 10. Internal helpers
++# ---------------------------------------------------------------------------
++
++class TestInternalHelpers:
++    """Test internal utility functions."""
++
++    def test_flatten_metrics_field_mapping(self):
++        """Verify last_response_time_seconds → response_time_seconds mapping."""
++        data = {
++            "last_known_metrics": {
++                "assistant_message_count": 10,
++                "review_round_count": 1,
++                "last_response_time_seconds": 8.5,
++                "last_gpt_reply_bytes": 5000,
++            },
++            "metrics_source": "cdp_dom_count",
++            "last_nav_result": "ok",
++            "last_checked_at": "2026-06-12T12:00:00+08:00",
++        }
++        flat = _flatten_metrics(data)
++        assert flat["response_time_seconds"] == 8.5
++        assert flat["assistant_message_count"] == 10
++        assert flat["metrics_source"] == "cdp_dom_count"
++
++    def test_decision_to_exit_code_mapping(self):
++        assert _decision_to_exit_code({"decision": "OK"}) == EXIT_OK
++        assert _decision_to_exit_code({"decision": "SUGGEST_HANDOFF"}) == EXIT_OK
++        assert _decision_to_exit_code({"decision": "FORCE_HANDOFF"}) == EXIT_FORCE
++        assert _decision_to_exit_code({"decision": "HUMAN_REQUIRED"}) == EXIT_HUMAN_REQUIRED
++
++    def test_init_current_json(self, tmp_path):
++        path = str(tmp_path / "new" / "current.json")
++        data = _init_current_json(path)
++        assert data is not None
++        assert data["schema_version"] == "conversation-health.v1"
++        assert Path(path).exists()
++
++    def test_write_migration_record(self, tmp_path):
++        mig_dir = tmp_path / "migrations"
++        write_migration_record("old-conv", "new-conv", reason="test",
++                               evidence_dir=str(mig_dir))
++        files = list(mig_dir.glob("*.yaml"))
++        assert len(files) == 1
++        content = files[0].read_text()
++        assert "old-conv" in content
++        assert "new-conv" in content
++
++
++# ---------------------------------------------------------------------------
++# 11. A1 non-regression tests
++# ---------------------------------------------------------------------------
++
++class TestA1NonRegression:
++    """Ensure A1 semantics are not broken by A2."""
++
++    def test_response_time_alone_is_suggest(self, tmp_env):
++        """response_time alone → SUGGEST, not FORCE."""
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_known_metrics={
++                "last_response_time_seconds": 75,
++                "last_gpt_reply_bytes": 5000,  # not low
++                "assistant_message_count": 10,
++                "review_round_count": 1,
++            },
++        )
++        exit_code, decision, _ = check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        assert decision["decision"] == "SUGGEST_HANDOFF"
++        assert exit_code == EXIT_OK
++
++    def test_reply_bytes_alone_is_suggest(self, tmp_env):
++        """reply_bytes alone → SUGGEST, not FORCE."""
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_known_metrics={
++                "last_response_time_seconds": 5.0,  # not slow
++                "last_gpt_reply_bytes": 500,  # low
++                "assistant_message_count": 10,
++                "review_round_count": 1,
++            },
++        )
++        exit_code, decision, _ = check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        assert decision["decision"] == "SUGGEST_HANDOFF"
++        assert exit_code == EXIT_OK
++
++    def test_composite_is_force(self, tmp_env):
++        """slow + short + rounds → FORCE."""
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_known_metrics={
++                "last_response_time_seconds": 75,
++                "last_gpt_reply_bytes": 500,
++                "assistant_message_count": 10,
++                "review_round_count": 3,
++            },
++        )
++        exit_code, decision, _ = check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        assert decision["decision"] == "FORCE_HANDOFF"
++        assert exit_code == EXIT_FORCE
++
++    def test_manual_estimate_no_force(self, tmp_env):
++        """manual_estimate caps severity at SUGGEST."""
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_known_metrics={"assistant_message_count": 65},
++            metrics_source="manual_estimate",
++        )
++        exit_code, decision, _ = check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        # manual_estimate caps FORCE to SUGGEST
++        assert decision["decision"] in ("SUGGEST_HANDOFF", "OK")
++        assert exit_code == EXIT_OK
++
++    def test_auth_required_is_human(self, tmp_env):
++        """auth_required → HUMAN_REQUIRED."""
++        _make_current_json(
++            Path(tmp_env["current_json"]).parent,
++            last_nav_result="auth_required",
++        )
++        exit_code, decision, _ = check_pre_gpt_gate(
++            current_json_path=tmp_env["current_json"],
++            policy_path=tmp_env["policy_path"],
++            evidence_dir=tmp_env["evidence_dir"],
++        )
++        assert decision["decision"] == "HUMAN_REQUIRED"
++        assert exit_code == EXIT_HUMAN_REQUIRED

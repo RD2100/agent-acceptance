@@ -1,0 +1,12 @@
+# Scenario: stale_metrics_warns_or_suggests
+# Description: Stale metrics (>12h old) produce SUGGEST_HANDOFF warning
+# Expected: exit_code=0
+# Actual exit: 0
+# Decision: SUGGEST_HANDOFF
+# Severity: WARNING
+# Status: PASS
+#
+# Message: SUGGEST (proceed with caution): SUGGEST_HANDOFF: metrics_stale: 102.9 (threshold: 12, policy: suggest)
+#
+# Reasons:
+#   - metrics_stale: actual=102.9 threshold=12 policy=suggest

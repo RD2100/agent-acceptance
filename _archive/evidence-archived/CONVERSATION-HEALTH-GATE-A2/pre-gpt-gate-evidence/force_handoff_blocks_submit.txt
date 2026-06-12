@@ -1,0 +1,12 @@
+# Scenario: force_handoff_blocks_submit
+# Description: High message count (65 >= 60) triggers FORCE_HANDOFF, blocking submission
+# Expected: exit_code=1
+# Actual exit: 1
+# Decision: FORCE_HANDOFF
+# Severity: BLOCKING
+# Status: PASS
+#
+# Message: FORCE_HANDOFF: assistant_message_count_exceeded: 65 (threshold: 60, policy: force)
+#
+# Reasons:
+#   - assistant_message_count_exceeded: actual=65 threshold=60 policy=force

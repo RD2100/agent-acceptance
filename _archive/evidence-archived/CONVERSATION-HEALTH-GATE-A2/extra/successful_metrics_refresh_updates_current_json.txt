@@ -1,0 +1,10 @@
+# Scenario: successful_metrics_refresh_updates_current_json
+# Description: update_metrics() refreshes current.json with new CDP metrics
+# Expected: assistant_message_count=20
+# Actual exit: 20
+# Error: None
+# Status: PASS
+#
+# Updated metrics: {"assistant_message_count": 20, "review_round_count": 1, "last_response_time_seconds": 10.0, "last_gpt_reply_bytes": 4000}
+# Freshness: fresh
+# Source: cdp_dom_count

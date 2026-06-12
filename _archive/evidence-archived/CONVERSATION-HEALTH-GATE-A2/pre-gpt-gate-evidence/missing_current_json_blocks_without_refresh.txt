@@ -1,0 +1,12 @@
+# Scenario: missing_current_json_blocks_without_refresh
+# Description: Missing current.json with no allow_init blocks submission
+# Expected: exit_code=3
+# Actual exit: 3
+# Decision: UNKNOWN
+# Severity: BLOCKING
+# Status: PASS
+#
+# Message: BLOCKED: current.json not found: C:\Users\RD\AppData\Local\Temp\tmpfeuzw_e1\nonexistent\current.json
+#
+# Reasons:
+#   - missing_current_json: actual=none threshold=current.json policy=force

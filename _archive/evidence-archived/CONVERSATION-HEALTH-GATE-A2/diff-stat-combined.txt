@@ -1,0 +1,28 @@
+# Combined diff stat: fbb08f08..HEAD
+# Command: git diff fbb08f08..HEAD --stat
+
+.ai/current-task.yaml                              |  95 +--
+ .ai/tasks/conversation-health-gate-a1.yaml         |   6 +-
+ .ai/tasks/conversation-health-gate-a2.yaml         |  89 +++
+ _ask_next_task_v2.py                               | 133 ++++
+ _capture_r4_verdict.py                             |  76 +++
+ _cdp_submit_helper.py                              |  39 +-
+ .../conversation-health/current-snapshot.json      |  20 +
+ _evidence/conversation-health/latest.json          |  23 +-
+ _evidence/next_task_reply.txt                      | 352 +++++++++++
+ .../access_denied_records_force.txt                |  12 +
+ .../auth_required_records_human_required.txt       |  12 +
+ .../pre-gpt-gate-evidence/combined_summary.txt     |  14 +
+ .../force_handoff_blocks_submit.txt                |  12 +
+ .../human_required_blocks_submit.txt               |  12 +
+ .../latest_json_written_for_pre_gpt_gate.txt       |   9 +
+ ...missing_current_json_blocks_without_refresh.txt |  12 +
+ .../stale_metrics_warns_or_suggests.txt            |  12 +
+ ...essful_metrics_refresh_updates_current_json.txt |  10 +
+ _submit_health_gate_a1_r4.py                       |  86 +++
+ hooks/sealed-files-manifest.json                   |   2 +-
+ scripts/build_evidence_pack.py                     |  26 +-
+ scripts/pre_gpt_gate.py                            | 698 +++++++++++++++++++++
+ scripts/run_pre_gpt_gate_evidence.py               | 270 ++++++++
+ tests/test_pre_gpt_gate.py                         | 585 +++++++++++++++++
+ 24 files changed, 2541 insertions(+), 64 deletions(-)

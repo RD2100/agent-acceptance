@@ -1,0 +1,17 @@
+# SADP Pre-commit Hook Output (from commit 593d78fb message)
+
+feat: CONVERSATION-HEALTH-GATE-A2 — Pre-GPT Gate + CDP metrics refresh + legacy integration
+
+- scripts/pre_gpt_gate.py: unified Pre-GPT Gate module + CLI
+  - check_pre_gpt_gate() for pre-submit enforcement
+  - update_metrics() for post-response CDP refresh
+  - record_nav_result() for navigation failure recording
+  - capture_cdp_metrics() async CDP DOM scraping
+  - CLI: check, refresh, gate, nav-result commands
+- scripts/run_pre_gpt_gate_evidence.py: 8-scenario negative-path evidence
+- tests/test_pre_gpt_gate.py: 28 tests (OK, SUGGEST, FORCE, HUMAN_REQUIRED,
+  missing, stale, nav-result, metrics-update, schema compliance, A1 non-regression)
+- Legacy integration: _cdp_submit_helper.py, _submit_health_gate_a1_r4.py,
+  _capture_r4_verdict.py, _ask_next_task_v2.py
+- Evidence Pack: current-snapshot.json + pre-gpt-gate-evidence/ included
+- All 1126 tests pass (1098 A1 + 28 A2), modified_tracked: 0
