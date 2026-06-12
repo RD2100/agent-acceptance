@@ -1,7 +1,11 @@
 ## Three-Step Closure Report -- CLOSEOUT + GATE0 + Human Gate
 
 **Date:** 2026-06-12
-**HEAD:** 576f198b (governance: close out 19 stale TaskSpecs + GATE0 fresh snapshot)
+**HEAD:** 38a1006 (fix: correct enum count 8->9 + report HEAD update)
+**Note:** Report HEAD field is self-referential. The value shown is the
+commit containing this report after final amend. Subsequent amends to
+correct the hash create a new hash; this is an inherent limitation of
+self-referencing reports. Verify with `git log --oneline -1`.
 **Scope:** TASKSPEC-STATUS-CLOSEOUT-A1, MULTI-AGENT-GATE0-FRESH-SNAPSHOT-A1, Human Authorization Checklist
 
 ---
@@ -69,7 +73,7 @@ from PRE-EXECUTION-READINESS-SNAPSHOT-A1.
 **Enum fix applied:** 2 files (`conversation-health-gate-a1`,
 `conversation-health-gate-a2`) changed from `complete` to `completed`.
 No `complete` values remain. Schema `task-spec.schema.json` defines only
-4 enum values (draft, ready, deferred, rejected) -- the 8 values in actual
+4 enum values (draft, ready, deferred, rejected) -- the 9 values in actual
 use exceed the schema. Governance gap noted for future schema update.
 
 Each modified file received a `closeout_reason` field documenting the rationale.
@@ -78,7 +82,7 @@ Each modified file received a `closeout_reason` field documenting the rationale.
 
 ### 2. MULTI-AGENT-GATE0-FRESH-SNAPSHOT-A1
 
-**HEAD:** 576f198b
+**HEAD:** 38a1006
 **Total tracked files:** 6,896
 
 #### 2.1 Infrastructure Artifacts
@@ -201,18 +205,22 @@ Tasks completed this session (including earlier HOOK-V241 probe):
 | 7 | TASKSPEC-STATUS-CLOSEOUT-A1 | 576f198b | completed (19 files updated) |
 | 8 | MULTI-AGENT-GATE0-FRESH-SNAPSHOT-A1 | 576f198b | completed (read-only) |
 | 9 | Human Authorization Checklist | 576f198b | confirmed (all NO) |
+| 10 | Report fix patch (HEAD/count/enum) | fa63543e + 38a1006 | completed (4 corrections) |
 
 ---
 
 ### 5. Worktree State
 
 ```
-HEAD: 576f198b
-Committed (this step):
-  .ai/tasks/*.yaml (19 files, status updates)
-  .ai/current-task.yaml (write_set updated)
-  _reports/THREE-STEP-CLOSURE-REPORT.md (this file)
-  hooks/sealed-files-manifest.json (auto-regenerated)
+HEAD: 38a1006
+Committed (three-step closure):
+  576f198b: .ai/tasks/*.yaml (19 files, status updates)
+  576f198b: .ai/current-task.yaml (write_set updated)
+  576f198b: _reports/THREE-STEP-CLOSURE-REPORT.md (initial)
+  fa63543e: .ai/tasks/conversation-health-gate-a1.yaml (complete->completed)
+  fa63543e: .ai/tasks/conversation-health-gate-a2.yaml (complete->completed)
+  38a1006: _reports/THREE-STEP-CLOSURE-REPORT.md (enum count 9 + HEAD self-ref fix)
+  hooks/sealed-files-manifest.json (auto-regenerated each commit)
 Untracked (rotating hook-output artifacts):
   _evidence/hook-output/ai-guard-<timestamp>.txt
   _evidence/hook-output/sadp-audit-<timestamp>.txt
@@ -240,7 +248,7 @@ This report does NOT claim:
 
 ### 7. Recommended Next Steps
 
-1. **Update task-spec.schema.json** -- expand status enum from 4 to cover all 8 values in actual use (draft, ready, deferred, rejected, in_progress, completed, closed, accepted_with_limitation, pending_human_decision)
+1. **Update task-spec.schema.json** -- expand status enum from 4 to cover all 9 values in actual use (draft, ready, deferred, rejected, in_progress, completed, closed, accepted_with_limitation, pending_human_decision)
 2. **Address GATE0 gaps** (before live dispatch):
    - Create `.ai/risk-register.yaml` or equivalent
    - Create `.ai/verify-matrix.yaml` or equivalent
