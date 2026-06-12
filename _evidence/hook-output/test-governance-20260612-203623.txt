@@ -1,0 +1,34 @@
+﻿# Test-Governance Output - 2026-06-12T12:36:23Z
+# Exit code: 0
+# Source: pre-commit hook (original)
+
+=== Test-Governance (advisory mode) ===
+Project: D:\agent-acceptance
+
+Changed files: 26 (unstaged=0, staged=26)
+
+[Test-ProtectedPaths] Running...警告: 
+模块“GovernanceShared”中的某些导入命令的名称包含未批准的动词，这些动词可能导致这些命令名不易被发现。若要查找具有未批准的
+动词的命令，请使用 Verbose 参数再次运行 Import-Module 命令。有关批准的动词列表，请键入 Get-Verb。
+ PASS
+[Test-KeyScan] Running...警告: 
+模块“GovernanceShared”中的某些导入命令的名称包含未批准的动词，这些动词可能导致这些命令名不易被发现。若要查找具有未批准的
+动词的命令，请使用 Verbose 参数再次运行 Import-Module 命令。有关批准的动词列表，请键入 Get-Verb。
+ PASS
+[Test-BatchReferences] Running...警告: 
+模块“GovernanceShared”中的某些导入命令的名称包含未批准的动词，这些动词可能导致这些命令名不易被发现。若要查找具有未批准的
+动词的命令，请使用 Verbose 参数再次运行 Import-Module 命令。有关批准的动词列表，请键入 Get-Verb。
+ PASS
+
+=== Results ===
+[ProtectedPaths] PASS
+    Protected paths covered by TaskSpec: t-structural-governance-fix-20260531.json
+    Independent reviewer evidence: PASS
+    -> Governance protected-path changes admitted through SADP evidence.
+[Secrets] PASS
+    ai_guard.py: no secrets found
+[BatchReferences] PASS
+    All batch references valid
+
+Summary: BLOCKED=0 ERROR=0 WARN=0 (1.6s)
+
