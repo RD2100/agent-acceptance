@@ -1,0 +1,20 @@
+{
+  "schema_version": "reviewer-provenance.v1",
+  "task_id": "LIVE-DISPATCH-READINESS-FIX-A1",
+  "review_type": "independent_gpt_review",
+  "review_author": "independent_gpt_reviewer",
+  "reviewer_model": "GPT (via ChatGPT web, conversation 6a26cc03)",
+  "captured_by": "qoderwork_executor",
+  "executor_authored_verdict": false,
+  "submission_method": "CDP (Playwright, shared Chrome instance, localhost:9222)",
+  "submission_script": "_submit_fix_independent_review.py",
+  "submission_prompt_file": "_evidence/LIVE-DISPATCH-READINESS-FIX-A1/gpt-review-submission.md",
+  "raw_response_file": "_evidence/LIVE-DISPATCH-READINESS-FIX-A1/gpt-review-raw.md",
+  "submission_timestamp": "2026-06-12T14:45:00+08:00",
+  "response_timestamp": "2026-06-12T14:49:00+08:00",
+  "integrity_notes": [
+    "GPT reviewer operates in separate browser conversation, no shared state with executor",
+    "Executor only prepared submission materials and captured response; verdict content is GPT-generated",
+    "Raw response saved verbatim without modification"
+  ]
+}

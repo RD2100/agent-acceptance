@@ -1,0 +1,158 @@
+{
+  "schema_version": "evidence-manifest.v1",
+  "task_id": "LIVE-DISPATCH-READINESS-REVIEW-A1",
+  "pack_name": "EVIDENCE_PACK_LIVE_DISPATCH_REVIEW_A1",
+  "created_at": "2026-06-12T14:50:37.561374+08:00",
+  "base_commit": "7ddb641f",
+  "head_commit": "323fcbc",
+  "commit_chain": [
+    {
+      "hash": "66ebc66fdcbee27e2b31eb8b6c45070e700b3c87",
+      "author": "RD2100",
+      "timestamp": "2026-06-12T12:29:45+08:00",
+      "subject": "feat: LIVE-DISPATCH-READINESS-REVIEW-A1 - readiness verdict NOT_READY_NEEDS_FIXES"
+    },
+    {
+      "hash": "323fcbc23f46509c366e867f6f60e1aa47932cd1",
+      "author": "RD2100",
+      "timestamp": "2026-06-12T12:56:14+08:00",
+      "subject": "chore: LIVE-DISPATCH-READINESS-REVIEW-A1 - record GPT R1 verdict accepted_with_limitation"
+    }
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "path": "EXECUTION_REPORT.md",
+      "size_bytes": 3286,
+      "content_sha256": "59af5caf963d505fc6123cb18ba5d0f857915754c733575a0a992c9991dd7fe4"
+    },
+    {
+      "path": "binding-conflict-check.md",
+      "size_bytes": 2946,
+      "content_sha256": "212ccc650015c382fcca39512e4041539c61bf5c48de8b29d0d790eb04f9f986"
+    },
+    {
+      "path": "chain-evidence.json",
+      "size_bytes": 3177,
+      "content_sha256": "a3adf0b86cc5891007a11e07895f87120cd1cc6bf5b71a8bc894458497e0aac3"
+    },
+    {
+      "path": "deferred-files-register.yaml",
+      "size_bytes": 2591,
+      "content_sha256": "5f23376c48fdc839eeff7524efa02f95714f3954fb385eb07c2a0836fa8da46c"
+    },
+    {
+      "path": "diff.patch",
+      "size_bytes": 0,
+      "content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "dry-run-evidence-review.md",
+      "size_bytes": 3116,
+      "content_sha256": "f6bab22a3acac7084939dc6c32436f624cd7796362168a1e26f8b48ac0e1863e"
+    },
+    {
+      "path": "evidence-capture-readiness.md",
+      "size_bytes": 3334,
+      "content_sha256": "907ed1095080b12498a0479718f51cc34372852125b14390ba1be190f8e28887"
+    },
+    {
+      "path": "final-report.md",
+      "size_bytes": 4234,
+      "content_sha256": "a5e9a3e49eae96bfc9f8cbf82614a4f45e80bd683219e2aa8f7dc7226537b3ba"
+    },
+    {
+      "path": "git-status-after.txt",
+      "size_bytes": 9877,
+      "content_sha256": "b1a1ba4b23357b8f79e5c625ac76a740f2f716de3fc20e2a850f822668671500"
+    },
+    {
+      "path": "git-status-before.txt",
+      "size_bytes": 9792,
+      "content_sha256": "cdbdd5233d7a55dceb93fdbaa23d8e10b097ef47106fcb908d2fe729b447bb61"
+    },
+    {
+      "path": "gpt_verdict_r1.txt",
+      "size_bytes": 3660,
+      "content_sha256": "0a24167451c2fa6fa2526396cde106646057c29432b10f05e2db83a7c59e01a2"
+    },
+    {
+      "path": "hook-failure-semantics-status.md",
+      "size_bytes": 3578,
+      "content_sha256": "45e770469593b58b207d468d21770eaf4ed091815fa69034fb22520985b0c2f2"
+    },
+    {
+      "path": "r1_submission.txt",
+      "size_bytes": 5731,
+      "content_sha256": "7dfa2d2d505ae4ab78f3c9e5eeb23cc457958c4eb84c49f3533186a9f9972493"
+    },
+    {
+      "path": "registry-readiness.md",
+      "size_bytes": 3121,
+      "content_sha256": "6ffcacd0cc1718d47e3b97a9138cc4055b592b21f24bdfdb4a11f5d343ce614b"
+    },
+    {
+      "path": "review.md",
+      "size_bytes": 3611,
+      "content_sha256": "cd7a3cd9b902e044a4ab4dd41c29f5d3f88e08cbd19281bbd00766803db170b5"
+    },
+    {
+      "path": "review.yaml",
+      "size_bytes": 3919,
+      "content_sha256": "bb73387a878ac6d9d91e97589f3a86c6aaae7d63b86fbc3526625404fba3bcf6"
+    },
+    {
+      "path": "safety-report.json",
+      "size_bytes": 2529,
+      "content_sha256": "4c4d1fade8a3041b22d914d38de80e1f75941733782aa6575ee0c6fed41a4919"
+    },
+    {
+      "path": "workspace-closure-status.md",
+      "size_bytes": 2450,
+      "content_sha256": "946200a2b9d325c801ecd1cc555d6f0ef48efd448fb3f5796f3f29da1da2b828"
+    }
+  ],
+  "required_files": {
+    "tier_0": [
+      "chain-evidence.json",
+      "safety-report.json",
+      "review.md",
+      "review.yaml",
+      "final-report.md",
+      "deferred-files-register.yaml"
+    ]
+  },
+  "files_present": [
+    "EXECUTION_REPORT.md",
+    "binding-conflict-check.md",
+    "chain-evidence.json",
+    "deferred-files-register.yaml",
+    "diff.patch",
+    "dry-run-evidence-review.md",
+    "evidence-capture-readiness.md",
+    "final-report.md",
+    "git-status-after.txt",
+    "git-status-before.txt",
+    "gpt_verdict_r1.txt",
+    "hook-failure-semantics-status.md",
+    "r1_submission.txt",
+    "registry-readiness.md",
+    "review.md",
+    "review.yaml",
+    "safety-report.json",
+    "workspace-closure-status.md"
+  ],
+  "files_missing": {
+    "tier_0": []
+  },
+  "safety": {
+    "live_dispatch_executed": false,
+    "no_functional_changes": true
+  },
+  "pack_info": {
+    "file_count": 19,
+    "zip_size_bytes": 28035,
+    "zip_sha256": "fd83e368f85c1bdc608248b0799979d0b0eda0b75d4363a7054d824e4f9eaec8",
+    "content_sha256": "f54e5e28a145e359e7d6a67b28103bea21e24e083a8c6abdd02a49bf522ad2ac"
+  }
+}

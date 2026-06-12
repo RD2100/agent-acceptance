@@ -20,12 +20,13 @@ goal:
     - Build evidence-manifest.json for REVIEW-A1 evidence directory
     - Build evidence-manifest.json for FIX-A1 evidence directory
     - Create EVIDENCE_PACK ZIPs with SHA256 for both
-    - Validate pack integrity
+    - Validate pack integrity (manifest parse, ZIP exists, SHA256 match, required files)
     - Submit FIX-A1 evidence to GPT for independent reviewer verdict
     - Capture GPT raw response with provenance
-    - Write reviewer-provenance.json
+    - Write reviewer-provenance.json (executor_authored_verdict: false)
     - Update review.yaml with provenance metadata
-    - Create ExecutionReport for REVIEW-A1 and FIX-A1
+    - Create ExecutionReport for REVIEW-A1
+    - Create ExecutionReport for FIX-A1
     - Write final closeout verdict
     - Record GPT closeout review verdict
   out_of_scope:
@@ -43,7 +44,6 @@ write_set:
   - "_evidence/EVIDENCE_PACK_LIVE_DISPATCH_REVIEW_A1.zip"
   - "_evidence/EVIDENCE_PACK_LIVE_DISPATCH_FIX_A1.zip"
   - "hooks/sealed-files-manifest.json"
-  - "_evidence/LIVE-DISPATCH-READINESS-SADP-ECS-CLOSEOUT-A1/**"
 
 deny_paths:
   - "scripts/multi_project_router.py"
@@ -95,6 +95,33 @@ acceptance_criteria:
   - "ExecutionReport exists for both REVIEW-A1 and FIX-A1"
   - "Closeout verdict recorded"
   - "No live dispatch executed"
+
+verdict:
+  status: completed
+  closeout_verdict: accepted_with_limitation
+  review_chain:
+    - task: LIVE-DISPATCH-READINESS-REVIEW-A1
+      evidence_pack: "_evidence/EVIDENCE_PACK_LIVE_DISPATCH_REVIEW_A1.zip"
+      pack_files: 18
+      pack_size_bytes: 28035
+      pack_sha256: "fd83e368f85c1bdc608248b0799979d0b0eda0b75d4363a7054d824e4f9eaec8"
+      gpt_review: "R1 accepted_with_limitation"
+      execution_report: true
+    - task: LIVE-DISPATCH-READINESS-FIX-A1
+      evidence_pack: "_evidence/EVIDENCE_PACK_LIVE_DISPATCH_FIX_A1.zip"
+      pack_files: 14
+      pack_size_bytes: 23402
+      pack_sha256: "fbb793bda040236824d253bf25c37238c0df87783d38e8c41f4d171b8995cd65"
+      gpt_review: "R2 broad analysis + independent closeout review accepted_with_limitation"
+      execution_report: true
+      reviewer_provenance: "reviewer-provenance.json (executor_authored_verdict: false)"
+  limitations:
+    - "tripmark tab_unresolved (non-blocking)"
+    - "7 pending projects not yet bound (non-blocking)"
+    - "193+ untracked workspace files deferred to WORKSPACE-CLOSURE-UNTRACKED-TRIAGE-A1"
+    - "Hook failure semantics deferred to HOOK-FAILURE-SEMANTICS-FINALIZE-A1"
+  live_dispatch_authorized: false
+  next_recommended: "WORKSPACE-CLOSURE-UNTRACKED-TRIAGE-A1 (P1)"
 
 verdict:
   status: completed

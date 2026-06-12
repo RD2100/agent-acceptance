@@ -1,0 +1,135 @@
+{
+  "schema_version": "evidence-manifest.v1",
+  "task_id": "LIVE-DISPATCH-READINESS-FIX-A1",
+  "pack_name": "EVIDENCE_PACK_LIVE_DISPATCH_FIX_A1",
+  "created_at": "2026-06-12T14:50:37.561374+08:00",
+  "base_commit": "323fcbc",
+  "head_commit": "35cb4db",
+  "commit_chain": [
+    {
+      "hash": "018886b47bb335223ef045fe057e655b23ce5ed1",
+      "author": "RD2100",
+      "timestamp": "2026-06-12T14:02:59+08:00",
+      "subject": "fix: LIVE-DISPATCH-READINESS-FIX-A1 - resolve blocking issues, upgrade verdict to READY"
+    },
+    {
+      "hash": "35cb4db568b8bd2f8c383f0f96949eb0ab7b098a",
+      "author": "RD2100",
+      "timestamp": "2026-06-12T14:09:06+08:00",
+      "subject": "chore: LIVE-DISPATCH-READINESS-FIX-A1 - record GPT R2 response (project status analysis)"
+    }
+  ],
+  "file_count": 14,
+  "files": [
+    {
+      "path": "DRY_RUN_DISPATCH_10_FRESH.json",
+      "size_bytes": 8387,
+      "content_sha256": "72a0391523edf238ed601708a3af0a90d912c379de98bb51be13fc62713d23d9"
+    },
+    {
+      "path": "EXECUTION_REPORT.md",
+      "size_bytes": 4067,
+      "content_sha256": "e687d8b86a6e678d8674fcf55616fc430155a2fd37cca1b4b647dea896dead85"
+    },
+    {
+      "path": "binding-fix-evidence.md",
+      "size_bytes": 2550,
+      "content_sha256": "b221fce03ea909eafb37a4498236a854f7676fb918199bad7af3af44c8483971"
+    },
+    {
+      "path": "chain-evidence.json",
+      "size_bytes": 1047,
+      "content_sha256": "ca03ade2920d6f27d6d1cfd3ae8e6fc380a08fd10554cba2aa7b0125db406a77"
+    },
+    {
+      "path": "final-report.md",
+      "size_bytes": 1779,
+      "content_sha256": "0dcadcce8b65d17176a96f9c12147d3408a65aa8869650371fd85c7a2d24a447"
+    },
+    {
+      "path": "git-status-before.txt",
+      "size_bytes": 10023,
+      "content_sha256": "ac289157403aa90f6a7f2ccf45d82cd9ea4bc157dac0765af72caedcde6a05a1"
+    },
+    {
+      "path": "gpt-review-raw.md",
+      "size_bytes": 5531,
+      "content_sha256": "b79d73788c8fff87d24543fd408d22d57d9e90ce4af46fb86335b545fe540930"
+    },
+    {
+      "path": "gpt-review-submission.md",
+      "size_bytes": 3460,
+      "content_sha256": "62971d302a125bf3f73cfd8fa4dc8b47353fe89abedc097b8181f7da95e4759d"
+    },
+    {
+      "path": "gpt_verdict_r2.txt",
+      "size_bytes": 7397,
+      "content_sha256": "22ae694e769d436d4bfe9e1d8fe3e6123fa7f97dccb4655c1718aad0ee04bfb5"
+    },
+    {
+      "path": "r2_submission.txt",
+      "size_bytes": 4339,
+      "content_sha256": "3da7a04876fdf15797d31c3d0b5a86d863d215d20b2f571087e72d7762ede0c6"
+    },
+    {
+      "path": "review.md",
+      "size_bytes": 2122,
+      "content_sha256": "191e37dd5ff97bb28d78c13d77f8c809c1183bb9a114dbea9cc3301ed7e81f02"
+    },
+    {
+      "path": "review.yaml",
+      "size_bytes": 3288,
+      "content_sha256": "2c50d5e82201f9264c914e21f51f42bb72701a5a452caa6c35ba680519c3b698"
+    },
+    {
+      "path": "reviewer-provenance.json",
+      "size_bytes": 1047,
+      "content_sha256": "ea35555a8e4b8cce4152a7daae9c752989bb12d9d12058bee25edaed4cc21078"
+    },
+    {
+      "path": "safety-report.json",
+      "size_bytes": 1137,
+      "content_sha256": "0afddb1d2e860f0f72bee21b2e1b11cf50a31f27e9a181222aebc7a2bfd76b44"
+    }
+  ],
+  "required_files": {
+    "tier_0": [
+      "chain-evidence.json",
+      "safety-report.json",
+      "review.md",
+      "review.yaml",
+      "final-report.md",
+      "binding-fix-evidence.md",
+      "DRY_RUN_DISPATCH_10_FRESH.json"
+    ]
+  },
+  "files_present": [
+    "DRY_RUN_DISPATCH_10_FRESH.json",
+    "EXECUTION_REPORT.md",
+    "binding-fix-evidence.md",
+    "chain-evidence.json",
+    "final-report.md",
+    "git-status-before.txt",
+    "gpt-review-raw.md",
+    "gpt-review-submission.md",
+    "gpt_verdict_r2.txt",
+    "r2_submission.txt",
+    "review.md",
+    "review.yaml",
+    "reviewer-provenance.json",
+    "safety-report.json"
+  ],
+  "files_missing": {
+    "tier_0": []
+  },
+  "safety": {
+    "live_dispatch_executed": false,
+    "no_functional_changes": true
+  },
+  "pack_info": {
+    "file_count": 15,
+    "zip_size_bytes": 23402,
+    "zip_sha256": "fbb793bda040236824d253bf25c37238c0df87783d38e8c41f4d171b8995cd65",
+    "content_sha256": "1c234deb8254380107082f6ae5027ae2916336a1a25f03ae1dc3b8b9a8970d17"
+  }
+}
