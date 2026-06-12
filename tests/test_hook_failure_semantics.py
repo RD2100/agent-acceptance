@@ -7,9 +7,9 @@ Validates that:
 4. The hook output validator works correctly
 5. Replay-style evidence is labeled
 
-Failure semantics (v2.3.0):
+Failure semantics (v2.4.0):
   BLOCKING:   sadp-audit, ai-guard
-  ADVISORY:   manifest-regen, test-governance
+  ADVISORY:   manifest-regen, test-governance, conversation-health
 """
 import json
 import subprocess
@@ -130,17 +130,17 @@ class TestFailureSemanticsMapping:
 class TestOverallResultLogic:
     """Simulate the hook's overall_result calculation to verify correctness.
 
-    v2.3.0 rules:
+    v2.4.0 rules:
       - BLOCKING: sadp-audit, ai-guard
-      - ADVISORY: manifest-regen, test-governance
+      - ADVISORY: manifest-regen, test-governance, conversation-health
     """
 
     @staticmethod
     def compute_overall_result(stages):
-        """Mirror the PowerShell logic from the hook script (v2.3.0).
+        """Mirror the PowerShell logic from the hook script (v2.4.0).
 
         BLOCKING: sadp-audit, ai-guard
-        ADVISORY: manifest-regen, test-governance
+        ADVISORY: manifest-regen, test-governance, conversation-health
         """
         overall_result = "PASS"
         for s in stages:
@@ -148,7 +148,7 @@ class TestOverallResultLogic:
                 if s["name"] in ("sadp-audit", "ai-guard"):
                     overall_result = "BLOCKED"
                     break
-                # manifest-regen and test-governance: advisory only
+                # manifest-regen, test-governance, conversation-health: advisory only
         return overall_result
 
     def test_all_pass(self):
@@ -201,13 +201,36 @@ class TestOverallResultLogic:
         ]
         assert self.compute_overall_result(stages) == "PASS"
 
+    def test_conversation_health_advisory(self):
+        """conversation-health exit non-zero does not block (v2.4.0 advisory)"""
+        stages = [
+            {"name": "manifest-regen", "exit_code": 0},
+            {"name": "sadp-audit", "exit_code": 0},
+            {"name": "ai-guard", "exit_code": 0},
+            {"name": "test-governance", "exit_code": 0},
+            {"name": "conversation-health", "exit_code": 1},
+        ]
+        assert self.compute_overall_result(stages) == "PASS"
+
+    def test_all_five_stages_pass(self):
+        """All 5 stages (v2.4.0) with exit_code 0 → PASS"""
+        stages = [
+            {"name": "manifest-regen", "exit_code": 0},
+            {"name": "sadp-audit", "exit_code": 0},
+            {"name": "ai-guard", "exit_code": 0},
+            {"name": "test-governance", "exit_code": 0},
+            {"name": "conversation-health", "exit_code": 0},
+        ]
+        assert self.compute_overall_result(stages) == "PASS"
+
     def test_multiple_failures(self):
-        """Multiple blocking failures → BLOCKED"""
+        """Multiple blocking failures → BLOCKED (advisory stages ignored)"""
         stages = [
             {"name": "manifest-regen", "exit_code": 0},
             {"name": "sadp-audit", "exit_code": 1},
             {"name": "ai-guard", "exit_code": 1},
             {"name": "test-governance", "exit_code": 1},
+            {"name": "conversation-health", "exit_code": 2},
         ]
         assert self.compute_overall_result(stages) == "BLOCKED"
 

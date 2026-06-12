@@ -12,13 +12,15 @@ Exit codes (advisory — never block commit):
     0 = healthy / advisory ran successfully
     1 = degraded (FORCE_HANDOFF or HUMAN_REQUIRED detected — advisory warning)
     2 = evidence missing (no current.json — advisory warning)
-    3 = module error (should not happen; hook logs but continues)
+    3 = module error (internal error — diagnostic code, hook still does not block)
 
 Design principles:
-    - Advisory only: the hook stage NEVER blocks, regardless of exit code
+    - Advisory only: the hook stage NEVER blocks, regardless of exit code.
+      Non-zero exit codes are diagnostic signals, not block decisions.
+      The hook's overall_result logic only checks sadp-audit and ai-guard for BLOCKING.
     - Reads existing evidence: does NOT open CDP browser or modify files
     - Reuses decision engine: imports check_handoff_v2() for threshold evaluation
-    - Fail-graceful: any internal error → exit 0 with diagnostic message
+    - Fail-graceful: ImportError → exit 0; other exceptions → exit 3 (diagnostic)
 """
 
 from __future__ import annotations

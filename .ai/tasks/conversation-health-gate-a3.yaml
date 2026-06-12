@@ -28,7 +28,7 @@ gate_0:
       - _check_conversation_health (pre-task pattern, directly reusable)
       - test-governance advisory pattern (mirror for conversation-health stage)
     compared_against_request:
-      - "Pre-Commit Advisory + Registry Reconciliation + Startup Read Gate Item 7"
+      - "Pre-Commit Advisory + Registry Reconciliation (startup-read-gate item 7 deferred)"
   sufficiency_decision: new_delta_required
   decision: build_delta
 
@@ -37,7 +37,8 @@ goal: >
   Gate system. Add conversation-health as an ADVISORY stage to the pre-commit
   hook that audits and warns but never blocks. Implement registry reconciliation
   that cross-checks conversation-health state against CONVERSATION_BINDING.json.
-  Integrate conversation-health awareness into the startup read gate (item 7).
+  Note: startup-read-gate item 7 (conversation-health awareness) is deferred to
+  a follow-up task (A4 or later) — out of scope for A3.
 
 write_set:
   - ".ai/tasks/conversation-health-gate-a3.yaml"
