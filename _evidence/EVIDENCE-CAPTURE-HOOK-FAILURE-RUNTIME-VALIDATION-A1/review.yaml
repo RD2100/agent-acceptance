@@ -1,0 +1,37 @@
+verdict: EVIDENCE_COMPLETE
+task_id: EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1
+generated: 2026-06-11T17:12:41.988373+08:00
+version: '1.0.0'
+commits: [7b8d947]
+base_commit: 20a4aa2
+head_commit: 7b8d947
+
+evidence_files:
+  - ai-guard-scope-check-output.txt
+  - chain-evidence.json
+  - deferred-files-register.yaml
+  - diff-stat-7b8d947.txt
+  - diff-stat-combined.txt
+  - diff.patch
+  - final-report.md
+  - git-log.txt
+  - git-show-7b8d947.txt
+  - git-status-after.txt
+  - review.md
+  - review.yaml
+  - sadp-audit-raw.txt
+  - safety-report.json
+  - secret-scan-output.txt
+  - test-output.txt
+
+post_commit_state:
+  modified_tracked: 1
+  untracked_total: 46
+  neg_009: 17
+  secret_scan: 5
+  session_artifacts: 24
+  grand_total: 47
+
+consistency_check:
+  all_files_agree: true
+  sum_check: 17 + 5 + 24 = 46 == untracked_total(46)

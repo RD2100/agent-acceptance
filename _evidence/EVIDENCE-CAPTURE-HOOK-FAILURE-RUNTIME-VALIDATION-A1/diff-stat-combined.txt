@@ -1,0 +1,14 @@
+# Combined diff stat: 20a4aa2..HEAD
+# Command: git diff 20a4aa2..HEAD --stat
+
+.ai/current-task.yaml                              | 221 ++++----------
+ ...capture-hook-failure-runtime-validation-a1.yaml |  69 +++++
+ ...evidence-capture-hook-failure-semantics-a1.yaml |  63 ++++
+ docs/agent-runtime/evidence-capture-workflow.md    |  20 ++
+ docs/agent-runtime/hook-failure-semantics.md       |  86 ++++++
+ hooks/pre-commit.governance.ps1                    |  73 ++++-
+ hooks/sealed-files-manifest.json                   |  12 +-
+ schemas/agent-runtime/evidence-capture.schema.json |   6 +-
+ scripts/validate_hook_output.py                    | 181 ++++++++++++
+ tests/test_hook_failure_semantics.py               | 317 +++++++++++++++++++++
+ 10 files changed, 856 insertions(+), 192 deletions(-)
