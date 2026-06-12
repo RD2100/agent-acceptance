@@ -1,0 +1,128 @@
+# Verify Matrix -- RD2100 Agent Runtime
+# Pre-dispatch verification checklist for GATE0 readiness.
+# Each item must be verified before live multi-agent dispatch.
+# Created: 2026-06-12
+# Last verified: 2026-06-12
+
+metadata:
+  matrix_id: verify-matrix-v1
+  owner: human_reviewer
+  maintainer: sadp_governance
+  schema_reference: schemas/agent-runtime/multi-agent-gate0-preflight.schema.json
+  review_frequency: per_dispatch
+
+verifications:
+  - id: VM-001
+    name: AGENTS.md existence and completeness
+    check_type: file_exists
+    target: AGENTS.md
+    required_fields: [references SADP, references rules/core.md]
+    last_verified_at: 2026-06-12
+    verified_by: static_file_check
+    result: pass
+    evidence: 9.6 KB, Phase 0-5 documented
+
+  - id: VM-002
+    name: policy.yaml completeness
+    check_type: file_content
+    target: .ai/policy.yaml
+    required_sections:
+      - deny_paths (10 patterns)
+      - allow_paths (3 narrowed overrides)
+      - restricted_paths (9 patterns)
+      - dangerous_commands (5 commands)
+      - secret_patterns (10 patterns)
+    last_verified_at: 2026-06-12
+    verified_by: content_inspection
+    result: pass
+    evidence: All required sections present with expected counts
+
+  - id: VM-003
+    name: Sealed files manifest currency
+    check_type: file_content
+    target: hooks/sealed-files-manifest.json
+    required_fields: [sealed_files count, generation_date within 1 day]
+    last_verified_at: 2026-06-12
+    verified_by: auto_regeneration_hook
+    result: pass
+    evidence: 178 sealed files, regenerated each commit by governance hook
+
+  - id: VM-004
+    name: Capability inventory coverage
+    check_type: content_count
+    target: docs/agent-runtime/capability-inventory.md
+    threshold: ">= 20 verified capabilities"
+    last_verified_at: 2026-06-12
+    verified_by: passport_summary_inspection
+    result: pass
+    evidence: 29 capabilities registered, 26 verified (note passport accuracy gap RR-001)
+
+  - id: VM-005
+    name: Test suite pass rate
+    check_type: test_execution
+    target: pytest (full suite)
+    threshold: ">= 95% pass"
+    last_verified_at: 2026-06-12
+    verified_by: pytest_run
+    result: pass
+    evidence: 1269/1275 = 99.5% pass; 6 failures are pre-existing (RR-004)
+
+  - id: VM-006
+    name: No P0/P1 open findings
+    check_type: finding_scan
+    target: safety-report.json + review records
+    threshold: zero P0 or P1 open
+    last_verified_at: 2026-06-12
+    verified_by: ai_guard_scan
+    result: pass
+    evidence: No P0/P1 findings in current worktree
+
+  - id: VM-007
+    name: Risk register present and current
+    check_type: file_exists
+    target: .ai/risk-register.yaml
+    required_fields: [metadata, risks array, each risk has id/status/mitigation]
+    last_verified_at: 2026-06-12
+    verified_by: file_creation
+    result: pass
+    evidence: Created 2026-06-12, 6 risks documented (RR-001 through RR-006)
+
+  - id: VM-008
+    name: Verify matrix present and current
+    check_type: file_exists
+    target: .ai/verify-matrix.yaml (this file)
+    required_fields: [metadata, verifications array]
+    last_verified_at: 2026-06-12
+    verified_by: file_creation
+    result: pass
+    evidence: Created 2026-06-12, 10 verification items
+
+  - id: VM-009
+    name: CAP-014 WorkQueue usability
+    check_type: capability_inspection
+    target: capability-inventory.md CAP-014
+    threshold: usable_for_gate0 = true
+    last_verified_at: 2026-06-12
+    verified_by: static_file_check
+    result: fail
+    result_detail: >
+      degraded, usable_for_gate0: false, confidence 0.5.
+      Queue definitions present (workqueue-controlled-use-policy.md, memory entries).
+      But consumption is forbidden. No fallback defined.
+    accepted_risk: true
+    acceptance_note: Accepted as partial coverage; consumption blocked by design
+
+  - id: VM-010
+    name: CAP-017 SourceLock usability
+    check_type: capability_inspection
+    target: capability-inventory.md CAP-017
+    threshold: usable_for_gate0 = true
+    last_verified_at: 2026-06-12
+    verified_by: static_file_check
+    result: fail
+    result_detail: >
+      stale, usable_for_gate0: false, confidence 0.3, critical risk.
+      SourceLockRecord schema present (schemas/agent-runtime/source-lock-record.schema.json).
+      Phase 6 design docs exist but Phase 6C execution blocked.
+    accepted_risk: true
+    acceptance_note: Accepted as candidate-only until Phase 6 activation

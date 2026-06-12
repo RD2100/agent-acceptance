@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-12T23:18:48.0013281+08:00",
+    "generated":  "2026-06-12T23:30:56.8439455+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "5F355E8D4FC1DF34627264AB41E20499C39CA3FDF3F1FEFCEDB364EA6ADB40BD",
@@ -84,7 +84,7 @@
                              "path":  "docs/agent-runtime/capability-fallback-policy.md"
                          },
                          {
-                             "sha256":  "5ABD30F1AB891FBDB29BC074B49E5DE000A54033E9C0C3BCA3F22515B21335DB",
+                             "sha256":  "35E72276DA524073FDBF12D3272A818440E6ECBE51649952AAA87350C19CFABA",
                              "path":  "docs/agent-runtime/capability-inventory.md"
                          },
                          {

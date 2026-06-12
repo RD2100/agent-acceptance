@@ -98,12 +98,13 @@ The inventory must reflect reality, not declaration.
 - **Must explain if skipped**: yes
 - **Evidence**: codegraph_status output, index_freshness, target_root match
 
-- **Passport verified_status**: verified
-- **Passport last_verified_at**: 2026-05-28
+- **Passport verified_status**: unknown
+- **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.95
-- **Passport usable_for_gate0**: true
+- **Passport usable_for_gate0**: false
 - **Passport usable_for_execution**: true
 - **Passport dependency_type**: external_dependency
+- **Passport re_verification_note**: 2026-06-12 codex plugin list shows CodeGraph NOT installed. Downgraded from verified to unknown.
 
 ## 2. rg / Grep / Read (filesystem search)
 - **Platform**: Both
@@ -315,10 +316,11 @@ JSON
 - **Evidence**: R7 policy docs
 
 - **Passport verified_status**: degraded
-- **Passport last_verified_at**: 2026-05-28
+- **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.5
 - **Passport usable_for_gate0**: false
 - **Passport usable_for_execution**: false
+- **Passport re_verification_note**: 2026-06-12 confirmed queue definitions present (workqueue-controlled-use-policy.md, memory entries). Status remains degraded by design.
 
 ## 15. Scripts (PowerShell runners)
 - **Platform**: Both
@@ -368,11 +370,12 @@ JSON
 - **Must explain if skipped**: no
 - **Evidence**: Phase 6 design docs, SourceLockRecord schema
 - **Passport verified_status**: stale
-- **Passport last_verified_at**: 2026-05-28
+- **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.3
 - **Passport usable_for_gate0**: false
 - **Passport usable_for_execution**: false
 - **Passport dependency_type**: local_static
+- **Passport re_verification_note**: 2026-06-12 confirmed source-lock-record.schema.json exists (4.7 KB). Phase 6 not yet active. Status remains stale by design.
 
 ## 18. Sealed Files Manifest
 - **Platform**: Claude
@@ -424,12 +427,13 @@ JSON
 - **Must explain if skipped**: no
 - **Phase 0-5**: allowed (read-only review, no mutation)
 - **Evidence**: codex plugin list output
-- **Passport verified_status**: verified
-- **Passport last_verified_at**: 2026-05-28
+- **Passport verified_status**: unknown
+- **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
-- **Passport usable_for_gate0**: true
+- **Passport usable_for_gate0**: false
 - **Passport usable_for_execution**: true
 - **Passport dependency_type**: external_dependency
+- **Passport re_verification_note**: 2026-06-12 codex plugin list shows coderabbit NOT installed. Downgraded from verified to unknown.
 
 ## 21. codex-security
 - **Platform**: Codex
@@ -444,11 +448,12 @@ JSON
 - **Phase 0-5**: allowed (read-only scan, no mutation)
 - **Evidence**: codex plugin list output
 - **Passport verified_status**: verified
-- **Passport last_verified_at**: 2026-05-28
+- **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
 - **Passport usable_for_gate0**: true
 - **Passport usable_for_execution**: true
 - **Passport dependency_type**: external_dependency
+- **Passport re_verification_note**: 2026-06-12 codex plugin list confirms installed, enabled (c6ea566d). Status verified.
 
 ## 22. supabase
 - **Platform**: Codex
@@ -462,12 +467,13 @@ JSON
 - **Must explain if skipped**: no
 - **Phase 0-5**: restricted (writes blocked)
 - **Evidence**: codex plugin list output
-- **Passport verified_status**: verified
-- **Passport last_verified_at**: 2026-05-28
+- **Passport verified_status**: unknown
+- **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
-- **Passport usable_for_gate0**: true
+- **Passport usable_for_gate0**: false
 - **Passport usable_for_execution**: true
 - **Passport dependency_type**: external_dependency
+- **Passport re_verification_note**: 2026-06-12 codex plugin list shows supabase NOT installed. Downgraded from verified to unknown.
 
 ## 23. github
 - **Platform**: Codex
@@ -481,12 +487,13 @@ JSON
 - **Must explain if skipped**: no
 - **Phase 0-5**: restricted (writes blocked)
 - **Evidence**: codex plugin list output
-- **Passport verified_status**: verified
-- **Passport last_verified_at**: 2026-05-28
+- **Passport verified_status**: unknown
+- **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
-- **Passport usable_for_gate0**: true
+- **Passport usable_for_gate0**: false
 - **Passport usable_for_execution**: true
 - **Passport dependency_type**: external_dependency
+- **Passport re_verification_note**: 2026-06-12 codex plugin list shows github NOT installed. Downgraded from verified to unknown.
 
 ## 24. browser
 - **Platform**: Codex
@@ -500,12 +507,13 @@ JSON
 - **Must explain if skipped**: no
 - **Phase 0-5**: restricted (localhost only)
 - **Evidence**: codex plugin list output
-- **Passport verified_status**: verified
-- **Passport last_verified_at**: 2026-05-28
+- **Passport verified_status**: unknown
+- **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
-- **Passport usable_for_gate0**: true
+- **Passport usable_for_gate0**: false
 - **Passport usable_for_execution**: true
 - **Passport dependency_type**: external_dependency
+- **Passport re_verification_note**: 2026-06-12 codex plugin list shows browser (openai-curated) NOT installed. browser (openai-bundled) is installed/enabled but is a separate marketplace entry. Downgraded from verified to unknown.
 
 ## 25. superpowers
 - **Platform**: Codex
@@ -519,12 +527,13 @@ JSON
 - **Must explain if skipped**: no
 - **Phase 0-5**: allowed (methodology reference)
 - **Evidence**: codex plugin list output
-- **Passport verified_status**: verified
-- **Passport last_verified_at**: 2026-05-28
+- **Passport verified_status**: unknown
+- **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
-- **Passport usable_for_gate0**: true
+- **Passport usable_for_gate0**: false
 - **Passport usable_for_execution**: true
 - **Passport dependency_type**: external_dependency
+- **Passport re_verification_note**: 2026-06-12 codex plugin list shows superpowers NOT installed. Downgraded from verified to unknown.
 
 ## 26. linear
 - **Platform**: Codex
@@ -538,12 +547,13 @@ JSON
 - **Must explain if skipped**: no
 - **Phase 0-5**: restricted (no use case; kept for Phase 1+)
 - **Evidence**: codex plugin list output
-- **Passport verified_status**: verified
-- **Passport last_verified_at**: 2026-05-28
+- **Passport verified_status**: unknown
+- **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
-- **Passport usable_for_gate0**: true
+- **Passport usable_for_gate0**: false
 - **Passport usable_for_execution**: true
 - **Passport dependency_type**: external_dependency
+- **Passport re_verification_note**: 2026-06-12 codex plugin list shows linear NOT installed. Downgraded from verified to unknown.
 
 ## 27. notion
 - **Platform**: Codex
@@ -557,12 +567,13 @@ JSON
 - **Must explain if skipped**: no
 - **Phase 0-5**: restricted (no use case; kept for Phase 1+)
 - **Evidence**: codex plugin list output
-- **Passport verified_status**: verified
-- **Passport last_verified_at**: 2026-05-28
+- **Passport verified_status**: unknown
+- **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
-- **Passport usable_for_gate0**: true
+- **Passport usable_for_gate0**: false
 - **Passport usable_for_execution**: true
 - **Passport dependency_type**: external_dependency
+- **Passport re_verification_note**: 2026-06-12 codex plugin list shows notion NOT installed. Downgraded from verified to unknown.
 
 ---
 
@@ -662,29 +673,29 @@ JSON
 ---
 
 
-## Capability Passport Summary (2026-05-28)
+## Capability Passport Summary (2026-06-12)
 
-Evidence-based verification status. **27 of 27 classified** (updated 2026-05-31, CAP-009 removed).
+Evidence-based verification status. **29 of 29 registered** (updated 2026-06-12, passport renewal via codex plugin list re-verification).
 CAP-029 is approved on 2026-06-10 and is included in approved execution totals.
 
 | Status | Count | IDs |
 |--------|:-----:|-----|
-| verified | 26 | CAP-001~008, CAP-010~013, CAP-015~016, CAP-018~029 (CAP-009 removed) |
-| degraded | 0 | �� | |
+| verified | 18 | CAP-002~008, CAP-010~013, CAP-015~016, CAP-018~019, CAP-021, CAP-028~029 |
+| degraded | 1 | CAP-014 (WorkQueue: confirmed definitions present, still degraded) |
 | broken | 0 | (none) |
-| stale | 1 | CAP-017 (Phase 6 SourceLock: not yet active) |
-| unknown | 0 | �� |
+| stale | 1 | CAP-017 (Phase 6 SourceLock: confirmed schema present, still stale) |
+| unknown | 8 | CAP-001, CAP-020, CAP-022~027 (not installed in codex; re-verified 2026-06-12) |
 
 | Type | Count | Expiry |
 |------|:-----:|--------|
 | local_static | 20 | 90 days |
-| external_dependency | 8 | 30 days |
+| external_dependency | 10 | 30 days |
 
 **Rule**: unknown/stale/broken must NOT be sole basis to reject new construction in Gate 0.
 
 **Verification evidence**:
-- Local static (20): 12 Test-Path confirmed 2026-05-28, 5 session-usage confirmed, 2 reference-only (docs exist), 1 stale (Phase 6 not yet active)
-- External dependency (7): 7 codex plugin list confirmed 2026-05-28
+- Local static (20): 12 Test-Path confirmed 2026-05-28, 5 session-usage confirmed, 2 reference-only (docs exist), 1 stale (Phase 6 not yet active). CAP-014 re-verified 2026-06-12.
+- External dependency (10): 1 confirmed installed (CAP-021 codex-security, 2026-06-12), 8 not installed (CAP-001, CAP-020, CAP-022~027, downgraded to unknown 2026-06-12), 1 confirmed 2026-06-10 (CAP-029)
 
 ## External Skills Intake (Phase 0-5: classification only)
 

@@ -1,0 +1,142 @@
+# Risk Register -- RD2100 Agent Runtime
+# Single source of truth for identified risks requiring tracking.
+# Derived from: capability-risk-matrix.md (CR-A), resource-risk-matrix.md (R0-B), fmea-risk-analysis.md
+# Created: 2026-06-12
+# Last updated: 2026-06-12
+
+metadata:
+  register_id: risk-register-v1
+  owner: human_reviewer
+  maintainer: sadp_governance
+  review_frequency: per_batch
+  source_documents:
+    - docs/agent-runtime/capability-risk-matrix.md
+    - docs/agent-runtime/resource-risk-matrix.md
+    - docs/agent-runtime/fmea-risk-analysis.md
+
+risks:
+  - id: RR-001
+    category: capability_passport_accuracy
+    risk_level: high
+    title: External capability passport overstates installation status
+    description: >
+      2026-06-12 verification found that 8 of 9 external_dependency capabilities
+      with last_verified_at 2026-05-28 are NOT installed in codex runtime
+      (coderabbit, supabase, github, superpowers, linear, notion, CodeGraph, browser-via-curated).
+      Only codex-security is installed/enabled. The inventory claims verified status
+      for all 9, which is inaccurate.
+    affected_capabilities:
+      - CAP-001  # CodeGraph
+      - CAP-020  # coderabbit
+      - CAP-022  # supabase
+      - CAP-023  # github
+      - CAP-024  # browser
+      - CAP-025  # superpowers
+      - CAP-026  # linear
+      - CAP-027  # notion
+    current_control: None -- passport data not corrected since initial registration
+    control_gap: No automated re-verification of actual plugin install state
+    mitigation: >
+      Update passport entries to reflect actual install state. Downgrade
+      uninstalled capabilities from verified to unknown or install them
+      before citing in GATE0.
+    gate_decision: blocked_for_uninstalled
+    status: open
+    identified_at: 2026-06-12
+    next_review: before_next_live_dispatch
+
+  - id: RR-002
+    category: capability_degradation
+    risk_level: high
+    title: CAP-014 WorkQueue degraded -- no fallback defined
+    description: >
+      WorkQueue capability is read_only with degraded passport status.
+      No fallback is defined. Queue definitions exist but consumption
+      is forbidden without human gate.
+    affected_capabilities: [CAP-014]
+    current_control: read_only access; human gate required for consumption
+    control_gap: No fallback defined for queue definition reference
+    mitigation: Accept degraded status; define fallback if queue consumption needed
+    gate_decision: partial_coverage_only
+    status: accepted
+    identified_at: 2026-05-28
+    next_review: when_workqueue_consumption_needed
+
+  - id: RR-003
+    category: capability_staleness
+    risk_level: critical
+    title: CAP-017 Phase 6 SourceLock stale -- design-only, not active
+    description: >
+      Phase 6 SourceLock is the only critical-risk capability.
+      Status is stale (confidence 0.3). SourceLockRecord schema exists
+      but Phase 6C execution is blocked. Design docs present but unverified.
+    affected_capabilities: [CAP-017]
+    current_control: reference_only; Phase 6C blocked
+    control_gap: No active SourceLock enforcement; design docs may be stale
+    mitigation: Accept stale status until Phase 6 activation; re-verify design docs before use
+    gate_decision: candidate_only
+    status: accepted
+    identified_at: 2026-05-28
+    next_review: before_phase6_activation
+
+  - id: RR-004
+    category: test_reliability
+    risk_level: medium
+    title: 6 pre-existing test failures -- time-dependent and registry-coupled
+    description: >
+      2 router tests fail because PROJECT_REGISTRY.json suspended dev-frame-writing
+      (commit 018886b4) but tests still expect 4 active projects.
+      4 startup health tests fail because fixture hardcodes
+      checked_at=2026-06-12T00:00:00Z which exceeds 12h staleness
+      threshold after noon UTC.
+    affected_tests:
+      - test_router_10_project_stress.py::test_active_vs_pending_classification
+      - test_router_10_project_stress.py::test_active_count
+      - test_startup_conversation_health_check.py::test_ok_decision
+      - test_startup_conversation_health_check.py::test_ok_severity_info
+      - test_startup_conversation_health_check.py::test_ok_recommended_action_continue
+      - test_startup_conversation_health_check.py::test_ok_writes_startup_read_file
+    current_control: Known failures documented; not regression from governance changes
+    control_gap: Tests use real registry state and wall-clock time instead of mocks
+    mitigation: >
+      Update router test constants to match current registry.
+      Fix health check fixture to use dynamic timestamp or mock time.
+    gate_decision: needs_fix_before_next_batch
+    status: open
+    identified_at: 2026-06-12
+    next_review: before_next_test_run
+
+  - id: RR-005
+    category: schema_governance
+    risk_level: medium
+    title: task-spec.schema.json status enum incomplete
+    description: >
+      Schema defines only 4 status values (draft, ready, deferred, rejected)
+      but 9 values are in actual use across 43 TaskSpec files
+      (draft, ready, deferred, rejected, in_progress, completed, closed,
+      accepted_with_limitation, pending_human_decision).
+    affected_files:
+      - schemas/agent-runtime/task-spec.schema.json
+    current_control: None -- schema does not enforce status values at write time
+    control_gap: No schema validation of TaskSpec status field
+    mitigation: Expand schema status enum to cover all 9 values in use
+    gate_decision: needs_revision
+    status: open
+    identified_at: 2026-06-12
+    next_review: before_next_taskspec_creation
+
+  - id: RR-006
+    category: evidence_integrity
+    risk_level: low
+    title: Rotating hook-output artifacts perpetually dirty worktree
+    description: >
+      Every git commit generates 4+ hook-output files + modifies latest.json.
+      These are never committed (by design) but appear as untracked/modified
+      in git status, preventing clean worktree claims.
+    current_control: .gitignore does not cover _evidence/hook-output (intentional)
+    control_gap: Cannot claim git-clean worktree while hooks are active
+    mitigation: Accept as operational artifact; document in worktree state claims
+    gate_decision: accepted
+    status: accepted
+    identified_at: 2026-06-12
+    next_review: annually

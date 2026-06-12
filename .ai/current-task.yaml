@@ -30,6 +30,7 @@ write_set:
   - "docs/agent-runtime/evidence-capture-standard.md"
   - "docs/agent-runtime/evidence-generation-hygiene.md"
   - "docs/agent-runtime/human-required-decision-record.md"
+  - "docs/agent-runtime/capability-inventory.md"
   - "tools/ai_guard.py"
   - "tests/**"
   - "hooks/sealed-files-manifest.json"
