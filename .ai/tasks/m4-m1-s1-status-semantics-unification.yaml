@@ -1,7 +1,8 @@
 task_id: m4-m1-s1-status-semantics-unification
 title: M4-M1-S1 @go status semantics unification
 priority: P0
-status: ready
+status: deferred
+closeout_reason: "Phase 4+ scope"
 mode: "@go edit"
 description: >
   Eliminate fake-green risk in the @go main path by unifying the meanings of

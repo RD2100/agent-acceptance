@@ -1,7 +1,8 @@
 task_id: t-chain-evidence-hardening-20260601
 title: Harden reviewer evidence runtime validation
 priority: P1
-status: ready
+status: closed
+closeout_reason: "group-05 chain evidence hardening completed"
 mode: "@go edit"
 description: >
   Strengthen the existing reviewer evidence chain by adding runtime validation

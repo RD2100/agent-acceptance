@@ -1,7 +1,8 @@
 task_id: t-review-rerun-chain-evidence-guard-20260601
 title: Review rerun of chain-evidence required guard
 priority: P1
-status: ready
+status: closed
+closeout_reason: "group-05 review completed"
 mode: "@go read"
 description: >
   Independent reviewer task for the required-guard rerun batch. Review the

@@ -1,7 +1,8 @@
 task_id: t-rerun-chain-evidence-guard-20260601
 title: Rerun required guard for chain-evidence hardening batch
 priority: P1
-status: ready
+status: closed
+closeout_reason: "group-05 chain evidence guard rerun completed"
 mode: "@go read"
 description: >
   After Batch 2 closes the current dirty boundary, rerun the blocked required

@@ -1,7 +1,8 @@
 task_id: t-governance-convergence-20260601
 title: Converge in-flight governance and blackboard cleanup module
 priority: P0
-status: ready
+status: deferred
+closeout_reason: "Phase 4 scope"
 mode: "@go edit"
 description: >
   Resolve the current in-flight governance module as a coherent batch instead of

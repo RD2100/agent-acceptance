@@ -1,7 +1,8 @@
 task_id: EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1
 type: governance_validation_and_minimal_fix
 priority: P1
-status: in_progress
+status: closed
+closeout_reason: "Phase 3 cleanup superseded; evidence dirs committed, validation covered by tests"
 live_dispatch: NOT_AUTHORIZED
 created: "2026-06-11T00:00:00Z"
 mode: "@go edit"

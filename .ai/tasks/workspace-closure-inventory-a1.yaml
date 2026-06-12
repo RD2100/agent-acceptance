@@ -1,7 +1,8 @@
 task_id: WORKSPACE-CLOSURE-INVENTORY-A1
 title: "Read-only workspace untracked file inventory"
 priority: P1
-status: in_progress
+status: closed
+closeout_reason: "Phase 3 cleanup superseded; inventory completed (commit 1e6b4f6e)"
 type: audit
 mode: "@go edit"
 description: >

@@ -1,7 +1,8 @@
 task_id: R18-EVIDENCE-MAINTENANCE-A1
 title: R18 evidence maintenance — commit session artifacts, update register
 priority: P2
-status: in_progress
+status: closed
+closeout_reason: "Phase 3 cleanup superseded; evidence maintenance addressed"
 mode: "@go edit"
 whole_dirty_worktree_allowed: false
 external_upload_allowed: false

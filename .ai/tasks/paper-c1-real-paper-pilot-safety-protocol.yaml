@@ -1,6 +1,7 @@
 task_id: PAPER-C1
 title: Real-paper pilot safety protocol
-status: gpt_accepted_ready_for_binding
+status: pending_human_decision
+closeout_reason: "Paper workflow paused/NOGO; requires human re-authorization per PAPER_WORKFLOW_HANDOFF.md"
 primary_repo: agent-acceptance
 gate_0:
   inventory_evidence:

@@ -1,7 +1,8 @@
 task_id: R18-WORKSPACE-CLEANUP-A1
 title: R18 workspace cleanup — registry reconciliation, session artifacts, NUL removal
 priority: P1
-status: in_progress
+status: closed
+closeout_reason: "Phase 3 cleanup superseded; workspace cleaned to rotating artifacts only"
 mode: "@go edit"
 whole_dirty_worktree_allowed: false
 external_upload_allowed: false

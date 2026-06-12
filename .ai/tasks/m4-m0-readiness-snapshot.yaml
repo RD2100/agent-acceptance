@@ -1,7 +1,8 @@
 task_id: m4-m0-readiness-snapshot
 title: M4-M0 readiness snapshot
 priority: P1
-status: ready
+status: closed
+closeout_reason: "Superseded by PRE-EXECUTION-READINESS-SNAPSHOT-A1"
 mode: "@go read"
 description: >
   Create a lightweight M4 readiness snapshot that records the current milestone

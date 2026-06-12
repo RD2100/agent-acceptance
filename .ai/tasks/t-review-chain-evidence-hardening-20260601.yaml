@@ -1,7 +1,8 @@
 task_id: t-review-chain-evidence-hardening-20260601
 title: Review blocked runtime hardening batch
 priority: P1
-status: ready
+status: closed
+closeout_reason: "group-05 review completed"
 mode: "@go read"
 description: >
   Independent reviewer task for the blocked runtime hardening batch. Review the

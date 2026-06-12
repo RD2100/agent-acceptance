@@ -1,7 +1,8 @@
 task_id: CONTEXT-COMPRESSION-A1
 title: Build long-conversation context compression layer
 priority: P1
-status: in_progress
+status: closed
+closeout_reason: "Phase 3 cleanup superseded; context management handled by session tooling"
 mode: "@go edit"
 whole_dirty_worktree_allowed: false
 external_upload_allowed: false

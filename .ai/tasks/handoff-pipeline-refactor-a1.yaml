@@ -1,7 +1,8 @@
 task_id: HANDOFF-PIPELINE-REFACTOR-A1
 title: Refactor GPT and coding-agent handoff pipeline with source-of-truth hierarchy
 priority: P0
-status: in_progress
+status: deferred
+closeout_reason: "Large refactor scope; no blocking dependency on current work"
 mode: "evidence-first handoff pipeline"
 
 goal:

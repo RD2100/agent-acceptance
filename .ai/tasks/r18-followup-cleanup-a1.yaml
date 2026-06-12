@@ -1,7 +1,8 @@
 task_id: R18-FOLLOWUP-CLEANUP-A1
 title: R18 review follow-up — cleanup, gate_0 repair, and session artifact commit
 priority: P1
-status: in_progress
+status: closed
+closeout_reason: "Phase 3 cleanup superseded; followup cleanup completed"
 mode: "@go edit"
 whole_dirty_worktree_allowed: false
 external_upload_allowed: false
