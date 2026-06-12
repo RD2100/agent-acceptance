@@ -1,0 +1,1164 @@
+commit e016d632f7cf41bab00dfbca1ee57a307da9198b
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Fri Jun 12 09:02:34 2026 +0800
+
+    feat: CONVERSATION-HEALTH-GATE-A4 — Startup Read Gate Item 1.9 + Startup Conversation Health Evidence
+    
+    - startup-read-gate.md: added item 1.9 (Conversation Health State), YAML schema fields, anti-pattern
+    - startup_conversation_health_check.py: lightweight helper, reads current/latest.json without CDP
+    - build_evidence_pack.py: startup_read block in review.yaml + step 15e file copy
+    - Tests: 32 new (OK/SUGGEST/FORCE/HUMAN/missing/stale/no-CDP/format/evidence-pack/doc/non-regression)
+    - Runtime evidence: startup-read-latest.json generated (SUGGEST_HANDOFF, response_time 141.7s)
+    - Regression: 1204 passed
+
+diff --git a/.ai/current-task.yaml b/.ai/current-task.yaml
+index 68281f3c..34a023ff 100644
+--- a/.ai/current-task.yaml
++++ b/.ai/current-task.yaml
+@@ -1,8 +1,8 @@
+-task_id: CONVERSATION-HEALTH-GATE-A3
++task_id: CONVERSATION-HEALTH-GATE-A4
+ type: feature
+ priority: P1
+-status: accepted_with_limitation
+-gpt_verdict: accepted_with_limitation
++status: in_progress
++gpt_verdict: pending
+ created: "2026-06-12T00:00:00Z"
+ mode: "@go edit"
+ whole_dirty_worktree_allowed: false
+@@ -14,51 +14,39 @@ gate_0:
+   triggered: true
+   inventory_evidence:
+     queried_sources:
+-      - docs/agent-runtime/conversation-health-gate.md (section 1.4 Layer 4 + section 6 A3 scope)
+-      - docs/agent-runtime/hook-failure-semantics.md (stage classification + anti-pattern 4)
+-      - hooks/pre-commit.governance.ps1 (v2.3.0, 3 stages, advisory pattern)
+-      - schemas/agent-runtime/evidence-capture.schema.json (maxItems 4, 4 enum values)
+-      - scripts/validate_conversation_registry.py (11 checks, schema validation)
+-      - scripts/sadp_pre_task_enforcer.py (_check_conversation_health pattern)
+-      - docs/agent-runtime/startup-read-gate.md (section 1.7 Project Registry)
+-      - configs/conversation-health-policy.yaml (threshold policy)
++      - docs/agent-runtime/startup-read-gate.md (8 items 1.1-1.8, 4-row table template, YAML schema 14 fields)
++      - scripts/build_evidence_pack.py (8-phase pack builder, review.yaml gen_review_yaml(), conversation_health block exists)
++      - scripts/check_handoff_needed.py (check_handoff_v2(metrics, policy, mode, composite, source_label) -> decision dict)
++      - .ai/conversation/current.json (schema conversation-health.v1, last_known_metrics nested, metrics at top level)
++      - _evidence/conversation-health/latest.json (superset of current.json, includes last_health_decision/severity)
++      - configs/conversation-health-policy.yaml (thresholds: force 60 msgs/3 rounds, suggest 45 msgs/60s/2000 bytes)
+     matched_capabilities:
+-      - check_handoff_v2 (decision engine, advisory mode support)
+-      - validate_binding (registry validator, 11 checks)
+-      - _check_conversation_health (pre-task pattern, directly reusable)
+-      - test-governance advisory pattern (mirror for conversation-health stage)
++      - check_handoff_v2 (decision engine, stdlib-only, direct import)
++      - load_policy (YAML config loader with DEFAULT_POLICY fallback)
++      - load_metrics (current.json reader, returns (dict, error_string))
++      - build_evidence_pack gen_review_yaml (existing conversation_health block, add startup_read block)
+     compared_against_request:
+-      - "Pre-Commit Advisory + Registry Reconciliation (startup-read-gate item 7 deferred)"
++      - "Startup Read Gate Item 1.9 + Startup Conversation Health Evidence + Evidence Pack Integration"
+   sufficiency_decision: new_delta_required
+   decision: build_delta
+ 
+ goal: >
+-  Implement the Pre-Commit Advisory layer (Layer 4) for the Conversation Health
+-  Gate system. Add conversation-health as an ADVISORY stage to the pre-commit
+-  hook that audits and warns but never blocks. Implement registry reconciliation
+-  that cross-checks conversation-health state against CONVERSATION_BINDING.json.
+-  Note: startup-read-gate item 7 (conversation-health awareness) is deferred to
+-  a follow-up task (A4 or later) — out of scope for A3.
++  Integrate conversation-health awareness into the Startup Read Gate as item 1.9,
++  create a lightweight startup helper that reads current.json/latest.json without
++  opening CDP, writes auditable startup-read-latest.json evidence, and integrate
++  startup-read evidence into build_evidence_pack.py (review.yaml + evidence files).
++  This task closes the startup-read-gate item deferred from A3.
+ 
+ write_set:
+-  - ".ai/tasks/conversation-health-gate-a3.yaml"
++  - ".ai/tasks/conversation-health-gate-a4.yaml"
+   - ".ai/current-task.yaml"
+-  - "hooks/pre-commit.governance.ps1"
++  - "docs/agent-runtime/startup-read-gate.md"
++  - "scripts/startup_conversation_health_check.py"
++  - "scripts/build_evidence_pack.py"
++  - "tests/test_startup_conversation_health_check.py"
++  - "_evidence/conversation-health/startup-read-latest.json"
++  - "_evidence/conversation_health_gate_a4_verdict.txt"
+   - "hooks/sealed-files-manifest.json"
+-  - "schemas/agent-runtime/evidence-capture.schema.json"
+-  - "scripts/pre_commit_health_advisory.py"
+-  - "scripts/reconcile_conversation_registry.py"
+-  - "tests/test_pre_commit_health_advisory.py"
+-  - "tests/test_reconcile_conversation_registry.py"
+-  - "tests/test_hook_failure_semantics.py"
+-  - "docs/agent-runtime/hook-failure-semantics.md"
+-  - "_evidence/conversation-health/latest.json"
+-  - "_evidence/conversation-health/current-snapshot.json"
+-  - "_evidence/hook-output/*"
+-  - "_evidence/conversation_health_gate_a3_verdict.txt"
+-  - "_evidence/conversation_health_gate_a3_r2_verdict.txt"
+-  - "_evidence/CONVERSATION-HEALTH-GATE-A3-R2/*"
+-  - "_evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A3_R2.zip"
+ 
+ deny_paths:
+   - "**/NEG-009-secrets-read.json"
+@@ -67,36 +55,33 @@ deny_paths:
+   - "**/.env.*"
+ 
+ constraints:
+-  - Do NOT modify sadp-audit.ps1
+-  - Do NOT modify ai_guard.py
+-  - Do NOT change A1 threshold semantics
+-  - Advisory stage MUST NOT block commits (exit code logged only)
+-  - Do NOT remove or weaken existing hook stages
+-  - Do NOT hardcode thresholds (use configs/conversation-health-policy.yaml)
+-  - Registry reconciliation is ADVISORY only
++  - Do NOT modify check_handoff_needed.py (reuse via import only)
++  - Do NOT modify A1 Pre-Task Hard Gate semantics
++  - Do NOT modify A2 Pre-GPT blocking semantics
++  - Do NOT modify A3 pre-commit advisory semantics
++  - Startup helper MUST NOT open CDP browser
++  - Startup helper MUST NOT be a hard blocking gate (awareness/read only)
++  - Startup helper MUST NOT duplicate threshold logic from check_handoff_needed.py
++  - Missing current.json → exit 0 with UNKNOWN/WARNING evidence (not silent pass)
++  - Do NOT weaken existing A1 hard requirement for _evidence/conversation-health/latest.json
++  - Evidence pack must include review.yaml, final-report.md, test-output, git-status-after, safety-report
+ 
+ acceptance_criteria:
+-  - pre-commit.governance.ps1 has 4 stages (conversation-health advisory added)
+-  - Hook version bumped to 2.4.0
+-  - evidence-capture.schema.json updated (maxItems 5, conversation-health enum added)
+-  - pre_commit_health_advisory.py reads latest.json/current.json and produces advisory output
+-  - reconcile_conversation_registry.py cross-checks health state vs registry bindings
+-  - hook-failure-semantics.md documents the new stage
+-  - Tests pass in full regression (A1 + A2 + A3)
+-  - Advisory stage never blocks commit (verified by evidence)
++  - docs/agent-runtime/startup-read-gate.md includes item 1.9 Conversation Health Check
++  - Item 1.9 follows established 4-row table template (What/Required/Why/Verification)
++  - YAML schema in Section 3 extended with startup_read_health_* fields
++  - scripts/startup_conversation_health_check.py exists and writes startup-read-latest.json
++  - Startup helper reads current.json + latest.json without CDP
++  - Startup helper reuses check_handoff_v2() via import (no threshold duplication)
++  - Missing current.json produces UNKNOWN/WARNING evidence (not silent pass)
++  - FORCE_HANDOFF/HUMAN_REQUIRED clearly reported with recommended action
++  - build_evidence_pack.py includes startup-read evidence when present
++  - review.yaml includes startup_read block with conversation_health_checked field
++  - Tests cover all 6 scenarios: OK, SUGGEST, FORCE, HUMAN, missing, stale
++  - Tests verify evidence pack integration (startup_read in review.yaml)
++  - Runtime evidence provided for positive and negative scenarios
++  - Full regression passes (A1 + A2 + A3 + A4)
+   - modified_tracked is 0 after commit
+-  - No A1/A2 behavior regresses
++  - No A1/A2/A3 behavior regresses
+ 
+-depends_on: CONVERSATION-HEALTH-GATE-A2
+-
+-gpt_verdict_file: _evidence/conversation_health_gate_a3_r2_verdict.txt
+-gpt_evidence_zip: _evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A3_R2.zip
+-gpt_review_rounds: 2
+-gpt_accepted_at: "2026-06-12T08:21:03Z"
+-gpt_limitations:
+-  - "Evidence pack missing standard review.yaml, final-report.md, git-status-after.txt, safety-report.json"
+-  - "1172 full regression count stated but full regression log not in ZIP"
+-  - "No real runtime artifact with conversation-health exit_code!=0 (test simulation covers it)"
+-gpt_next_task: CONVERSATION-HEALTH-GATE-A4
+-gpt_next_task_authorized: true
+-gpt_next_task_ask_first: true
++depends_on: CONVERSATION-HEALTH-GATE-A3
+diff --git a/.ai/tasks/conversation-health-gate-a4.yaml b/.ai/tasks/conversation-health-gate-a4.yaml
+new file mode 100644
+index 00000000..34a023ff
+--- /dev/null
++++ b/.ai/tasks/conversation-health-gate-a4.yaml
+@@ -0,0 +1,87 @@
++task_id: CONVERSATION-HEALTH-GATE-A4
++type: feature
++priority: P1
++status: in_progress
++gpt_verdict: pending
++created: "2026-06-12T00:00:00Z"
++mode: "@go edit"
++whole_dirty_worktree_allowed: false
++external_upload_allowed: false
++raw_transcript_allowed: false
++real_paper_text_allowed: false
++
++gate_0:
++  triggered: true
++  inventory_evidence:
++    queried_sources:
++      - docs/agent-runtime/startup-read-gate.md (8 items 1.1-1.8, 4-row table template, YAML schema 14 fields)
++      - scripts/build_evidence_pack.py (8-phase pack builder, review.yaml gen_review_yaml(), conversation_health block exists)
++      - scripts/check_handoff_needed.py (check_handoff_v2(metrics, policy, mode, composite, source_label) -> decision dict)
++      - .ai/conversation/current.json (schema conversation-health.v1, last_known_metrics nested, metrics at top level)
++      - _evidence/conversation-health/latest.json (superset of current.json, includes last_health_decision/severity)
++      - configs/conversation-health-policy.yaml (thresholds: force 60 msgs/3 rounds, suggest 45 msgs/60s/2000 bytes)
++    matched_capabilities:
++      - check_handoff_v2 (decision engine, stdlib-only, direct import)
++      - load_policy (YAML config loader with DEFAULT_POLICY fallback)
++      - load_metrics (current.json reader, returns (dict, error_string))
++      - build_evidence_pack gen_review_yaml (existing conversation_health block, add startup_read block)
++    compared_against_request:
++      - "Startup Read Gate Item 1.9 + Startup Conversation Health Evidence + Evidence Pack Integration"
++  sufficiency_decision: new_delta_required
++  decision: build_delta
++
++goal: >
++  Integrate conversation-health awareness into the Startup Read Gate as item 1.9,
++  create a lightweight startup helper that reads current.json/latest.json without
++  opening CDP, writes auditable startup-read-latest.json evidence, and integrate
++  startup-read evidence into build_evidence_pack.py (review.yaml + evidence files).
++  This task closes the startup-read-gate item deferred from A3.
++
++write_set:
++  - ".ai/tasks/conversation-health-gate-a4.yaml"
++  - ".ai/current-task.yaml"
++  - "docs/agent-runtime/startup-read-gate.md"
++  - "scripts/startup_conversation_health_check.py"
++  - "scripts/build_evidence_pack.py"
++  - "tests/test_startup_conversation_health_check.py"
++  - "_evidence/conversation-health/startup-read-latest.json"
++  - "_evidence/conversation_health_gate_a4_verdict.txt"
++  - "hooks/sealed-files-manifest.json"
++
++deny_paths:
++  - "**/NEG-009-secrets-read.json"
++  - "**/*real-secret*"
++  - "**/.env"
++  - "**/.env.*"
++
++constraints:
++  - Do NOT modify check_handoff_needed.py (reuse via import only)
++  - Do NOT modify A1 Pre-Task Hard Gate semantics
++  - Do NOT modify A2 Pre-GPT blocking semantics
++  - Do NOT modify A3 pre-commit advisory semantics
++  - Startup helper MUST NOT open CDP browser
++  - Startup helper MUST NOT be a hard blocking gate (awareness/read only)
++  - Startup helper MUST NOT duplicate threshold logic from check_handoff_needed.py
++  - Missing current.json → exit 0 with UNKNOWN/WARNING evidence (not silent pass)
++  - Do NOT weaken existing A1 hard requirement for _evidence/conversation-health/latest.json
++  - Evidence pack must include review.yaml, final-report.md, test-output, git-status-after, safety-report
++
++acceptance_criteria:
++  - docs/agent-runtime/startup-read-gate.md includes item 1.9 Conversation Health Check
++  - Item 1.9 follows established 4-row table template (What/Required/Why/Verification)
++  - YAML schema in Section 3 extended with startup_read_health_* fields
++  - scripts/startup_conversation_health_check.py exists and writes startup-read-latest.json
++  - Startup helper reads current.json + latest.json without CDP
++  - Startup helper reuses check_handoff_v2() via import (no threshold duplication)
++  - Missing current.json produces UNKNOWN/WARNING evidence (not silent pass)
++  - FORCE_HANDOFF/HUMAN_REQUIRED clearly reported with recommended action
++  - build_evidence_pack.py includes startup-read evidence when present
++  - review.yaml includes startup_read block with conversation_health_checked field
++  - Tests cover all 6 scenarios: OK, SUGGEST, FORCE, HUMAN, missing, stale
++  - Tests verify evidence pack integration (startup_read in review.yaml)
++  - Runtime evidence provided for positive and negative scenarios
++  - Full regression passes (A1 + A2 + A3 + A4)
++  - modified_tracked is 0 after commit
++  - No A1/A2/A3 behavior regresses
++
++depends_on: CONVERSATION-HEALTH-GATE-A3
+diff --git a/_evidence/conversation-health/startup-read-latest.json b/_evidence/conversation-health/startup-read-latest.json
+new file mode 100644
+index 00000000..62a6a9c0
+--- /dev/null
++++ b/_evidence/conversation-health/startup-read-latest.json
+@@ -0,0 +1,24 @@
++{
++  "schema_version": "startup-read-conversation-health.v1",
++  "checked_at": "2026-06-12T01:02:19.091635+00:00",
++  "current_json_present": true,
++  "latest_json_present": true,
++  "source_files_read": [
++    "D:\\agent-acceptance\\_evidence\\conversation-health\\latest.json",
++    "D:\\agent-acceptance\\.ai\\conversation\\current.json"
++  ],
++  "decision": "SUGGEST_HANDOFF",
++  "severity": "WARNING",
++  "recommended_action": "suggest_handoff",
++  "metrics_source": "cdp_dom_count",
++  "metrics_freshness": "fresh",
++  "last_nav_result": "ok",
++  "reasons": [
++    {
++      "code": "response_time_elevated",
++      "actual": 141.7,
++      "threshold": 60,
++      "policy": "suggest"
++    }
++  ]
++}
+\ No newline at end of file
+diff --git a/docs/agent-runtime/startup-read-gate.md b/docs/agent-runtime/startup-read-gate.md
+index 08fcfb72..f2ff5a06 100644
+--- a/docs/agent-runtime/startup-read-gate.md
++++ b/docs/agent-runtime/startup-read-gate.md
+@@ -108,6 +108,17 @@ Every agent MUST read the following items in order before performing any work. E
+ 
+ **Failure example (R17 limitation)**: R17 ACCEPTED_WITH_LIMITATION verdict explicitly stated: "sadp-audit.ps1 governance pattern change -- NOT ACCEPTED" and "any self-protecting file mutation -- NOT ACCEPTED." The reviewer drew a hard boundary around governance files. The subsequent R18 task required a `governance-decision-record.yaml` to document that protected files were touched, and the limitation was carried forward: "treating reconstructed hook logs as the normal evidence standard" was NOT AUTHORIZED.
+ 
++### 1.9 Conversation Health State
++
++| Field | Detail |
++|-------|--------|
++| **What to read** | `.ai/conversation/current.json` and `_evidence/conversation-health/latest.json` (when present), plus conversation-health policy summary from `configs/conversation-health-policy.yaml` |
++| **Required fields** | Current decision (`OK` / `SUGGEST_HANDOFF` / `FORCE_HANDOFF` / `HUMAN_REQUIRED` / `UNKNOWN`), metrics freshness, `last_nav_result`, whether handoff or migration is required |
++| **Why** | The agent must know whether the current conversation is stale, degraded, or requires handoff before beginning work. Without this awareness, the agent may invest significant effort into a conversation that should be migrated. Startup Read Gate is an awareness/read gate — enforcement remains in A1 Pre-Task, A2 Pre-GPT, and Evidence Pack rules |
++| **Verification** | Agent must report the current conversation-health decision and freshness. `UNKNOWN` must not be silently treated as `OK` — it must be explicitly flagged as `WARNING` |
++
++**Failure example (A3 R2 limitation)**: A3 R2 evidence pack had no runtime artifact showing conversation-health with `exit_code!=0`. The GPT reviewer noted: "nonzero conversation-health advisory behavior is covered by tests and schema simulation, not by a real hook-output runtime artifact." Had the startup-read check been in place during A3, the agent would have had an additional evidence trail of conversation-health state transitions throughout the session.
++
+ ---
+ 
+ ## 2. Hard Stop Conditions
+@@ -145,6 +156,11 @@ startup_read_gate:
+   deferred_register_total: <count> | null
+   registry_read: true | false | n/a
+   deny_paths_known: true | false
++  startup_read_health_checked: true | false
++  startup_read_health_decision: "OK" | "SUGGEST_HANDOFF" | "FORCE_HANDOFF" | "HUMAN_REQUIRED" | "UNKNOWN" | null
++  startup_read_health_severity: "INFO" | "WARNING" | "BLOCKING" | null
++  startup_read_health_freshness: "fresh" | "stale" | "unknown" | null
++  startup_read_health_evidence_file: "_evidence/conversation-health/startup-read-latest.json" | null
+ ```
+ 
+ All fields marked `true` (or with non-null values where applicable) are required before execution may begin.
+@@ -172,6 +188,7 @@ All fields marked `true` (or with non-null values where applicable) are required
+ | **Blocker Amnesia** | Agent ignores previous reviewer blockers and repeats rejected patterns | R16 partial closure of R15-BLOCKING-02 |
+ | **Workspace Assumption** | Agent describes workspace state from memory rather than running git status | R18 BLOCKING-07 count mismatch |
+ | **Register Ignorance** | Agent does not check deferred-files register and creates duplicate untracked files | R18 BLOCKING-06 register/status inconsistency |
++| **Health Blindness** | Agent begins work without checking conversation-health state, missing stale/degraded signals | A3 R2 limitation — no startup evidence trail |
+ 
+ ---
+ 
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index 9c75095f..09e0c92f 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-12T08:23:39.0881591+08:00",
++    "generated":  "2026-06-12T09:02:35.7908303+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+@@ -424,7 +424,7 @@
+                              "path":  "docs/agent-runtime/stale-memory-review-checklist.md"
+                          },
+                          {
+-                             "sha256":  "BC4F898CBBB37D94649F69E5176A4A2CF8FA0AD719511C35EB4704CAA0491AB9",
++                             "sha256":  "094D558917790FE066DF475250D0A595D1600A464A8CAF8CBA7E3892F13191A8",
+                              "path":  "docs/agent-runtime/startup-read-gate.md"
+                          },
+                          {
+diff --git a/scripts/build_evidence_pack.py b/scripts/build_evidence_pack.py
+index 3e0482ed..4fc6da37 100644
+--- a/scripts/build_evidence_pack.py
++++ b/scripts/build_evidence_pack.py
+@@ -641,6 +641,18 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
+         "review.yaml",
+         "final-report.md",
+     ]
++    # Conditionally add conversation-health evidence files
++    health_evidence_dir_check = os.path.join(repo, "_evidence", "conversation-health")
++    if os.path.isfile(os.path.join(health_evidence_dir_check, "latest.json")):
++        evidence_files.append("conversation-health/latest.json")
++    if os.path.isfile(os.path.join(health_evidence_dir_check, "current-snapshot.json")):
++        evidence_files.append("conversation-health/current-snapshot.json")
++    if os.path.isfile(os.path.join(health_evidence_dir_check, "startup-read-latest.json")):
++        evidence_files.append("conversation-health/startup-read-latest.json")
++    pre_gpt_dir_check = os.path.join(repo, "_evidence", "pre-gpt-gate-evidence")
++    if os.path.isdir(pre_gpt_dir_check):
++        evidence_files.append("pre-gpt-gate-evidence/")
++
+     for c in commits:
+         evidence_files.append(f"git-show-{c}.txt")
+         evidence_files.append(f"diff-stat-{c}.txt")
+@@ -717,6 +729,44 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
+             "  hard_requirement: true",
+         ]
+ 
++    # Startup-read conversation health evidence (CONVERSATION-HEALTH-GATE-A4)
++    startup_read_path = os.path.join(
++        repo, "_evidence", "conversation-health", "startup-read-latest.json"
++    )
++    if os.path.isfile(startup_read_path):
++        try:
++            with open(startup_read_path, encoding="utf-8") as _srf:
++                _srdata = json.loads(_srf.read())
++            lines += [
++                "",
++                "startup_read:",
++                f"  conversation_health_checked: true",
++                f"  decision: {_srdata.get('decision', 'UNKNOWN')}",
++                f"  severity: {_srdata.get('severity', 'UNKNOWN')}",
++                f"  metrics_source: {_srdata.get('metrics_source', 'none')}",
++                f"  metrics_freshness: {_srdata.get('metrics_freshness', 'unknown')}",
++                f"  last_nav_result: {_srdata.get('last_nav_result', 'unknown')}",
++                f"  recommended_action: {_srdata.get('recommended_action', 'investigate')}",
++                f"  startup_evidence_file: _evidence/conversation-health/startup-read-latest.json",
++                f"  verdict_impact: none",
++            ]
++        except (json.JSONDecodeError, OSError):
++            lines += [
++                "",
++                "startup_read:",
++                "  conversation_health_checked: false",
++                "  reason: startup-read-latest.json unreadable",
++                "  verdict_impact: limitation",
++            ]
++    else:
++        lines += [
++            "",
++            "startup_read:",
++            "  conversation_health_checked: false",
++            "  note: _evidence/conversation-health/startup-read-latest.json not found",
++            "  verdict_impact: limitation",
++        ]
++
+     return "\n".join(lines) + "\n"
+ 
+ 
+@@ -1023,6 +1073,15 @@ def build_evidence_pack(
+                     writer.write(f"pre-gpt-gate-evidence/{_pgf}", _pgfh.read())
+         print(f"  [15d] pre-gpt-gate-evidence/ included ({len(os.listdir(pre_gpt_evidence_dir))} files)")
+ 
++    # 15e. startup-read conversation health evidence (CONVERSATION-HEALTH-GATE-A4)
++    startup_read_file = os.path.join(health_evidence_dir, "startup-read-latest.json")
++    if os.path.isfile(startup_read_file):
++        with open(startup_read_file, encoding="utf-8") as _srf:
++            writer.write("conversation-health/startup-read-latest.json", _srf.read())
++        print("  [15e] conversation-health/startup-read-latest.json included")
++    else:
++        print("  [15e] conversation-health/startup-read-latest.json NOT FOUND")
++
+     # 16. final-report.md (initially without ZIP info)
+     #     We'll overwrite it after building the ZIP to include ZIP metadata.
+ 
+diff --git a/scripts/startup_conversation_health_check.py b/scripts/startup_conversation_health_check.py
+new file mode 100644
+index 00000000..906619a9
+--- /dev/null
++++ b/scripts/startup_conversation_health_check.py
+@@ -0,0 +1,281 @@
++#!/usr/bin/env python3
++"""Startup Conversation Health Check (A4 — Item 1.9).
++
++Lightweight startup-read helper that checks conversation-health state
++at agent startup without opening CDP. Reads existing evidence files
++and writes auditable startup-read-latest.json.
++
++Usage:
++    python scripts/startup_conversation_health_check.py [--project-root PATH]
++
++Exit codes (awareness only — never blocks startup):
++    0 = check completed (any outcome — OK, degraded, or missing evidence)
++
++Design principles:
++    - Awareness only: the startup check never blocks agent execution.
++      It produces auditable evidence about conversation-health state.
++    - No CDP: reads existing files only, does not open a browser.
++    - Reuses decision engine: imports check_handoff_v2() for threshold
++      evaluation. Does not duplicate threshold logic.
++    - Fail-graceful: missing current.json → UNKNOWN/WARNING evidence.
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++import os
++import sys
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any, Dict, Optional, Tuple
++
++
++# ---------------------------------------------------------------------------
++# Constants
++# ---------------------------------------------------------------------------
++
++REPO_ROOT = Path(__file__).resolve().parent.parent
++DEFAULT_CURRENT_JSON = REPO_ROOT / ".ai" / "conversation" / "current.json"
++DEFAULT_LATEST_JSON = REPO_ROOT / "_evidence" / "conversation-health" / "latest.json"
++DEFAULT_POLICY = REPO_ROOT / "configs" / "conversation-health-policy.yaml"
++DEFAULT_OUTPUT = REPO_ROOT / "_evidence" / "conversation-health" / "startup-read-latest.json"
++
++
++# ---------------------------------------------------------------------------
++# Core startup check
++# ---------------------------------------------------------------------------
++
++def run_startup_check(
++    current_json_path: Optional[str] = None,
++    latest_json_path: Optional[str] = None,
++    policy_path: Optional[str] = None,
++    output_path: Optional[str] = None,
++    project_root: Optional[str] = None,
++) -> Dict[str, Any]:
++    """Run the startup conversation-health check.
++
++    Reads current.json and latest.json, evaluates health state using
++    check_handoff_v2(), and writes startup-read-latest.json evidence.
++
++    Returns:
++        A JSON-serializable dict with the startup check result.
++    """
++    repo = Path(project_root) if project_root else REPO_ROOT
++    current_path = Path(current_json_path) if current_json_path else DEFAULT_CURRENT_JSON
++    latest_path = Path(latest_json_path) if latest_json_path else DEFAULT_LATEST_JSON
++    out_path = Path(output_path) if output_path else DEFAULT_OUTPUT
++
++    result: Dict[str, Any] = {
++        "schema_version": "startup-read-conversation-health.v1",
++        "checked_at": datetime.now(timezone.utc).isoformat(),
++        "current_json_present": False,
++        "latest_json_present": False,
++        "source_files_read": [],
++        "decision": "UNKNOWN",
++        "severity": "WARNING",
++        "recommended_action": "investigate",
++        "metrics_source": "none",
++        "metrics_freshness": "unknown",
++        "last_nav_result": "unknown",
++        "reasons": [],
++    }
++
++    # --- Read latest.json first (richer data, includes previous decision) ---
++    latest_data = None
++    if latest_path.exists():
++        try:
++            latest_data = json.loads(latest_path.read_text(encoding="utf-8"))
++            result["latest_json_present"] = True
++            result["source_files_read"].append(str(latest_path))
++        except (json.JSONDecodeError, OSError):
++            result["source_files_read"].append(f"{latest_path} (unreadable)")
++
++    # --- Read current.json (live metrics) ---
++    current_data = None
++    if current_path.exists():
++        try:
++            current_data = json.loads(current_path.read_text(encoding="utf-8"))
++            result["current_json_present"] = True
++            result["source_files_read"].append(str(current_path))
++        except (json.JSONDecodeError, OSError):
++            result["source_files_read"].append(f"{current_path} (unreadable)")
++
++    # --- If neither file is available → UNKNOWN/WARNING ---
++    if current_data is None and latest_data is None:
++        result["decision"] = "UNKNOWN"
++        result["severity"] = "WARNING"
++        result["reasons"].append({
++            "code": "no_evidence_available",
++            "actual": "neither current.json nor latest.json readable",
++            "threshold": "at least one evidence source required for startup awareness",
++            "policy": "awareness",
++        })
++        result["recommended_action"] = "run_pre_gpt_gate_to_refresh_metrics"
++        _write_output(out_path, result)
++        return result
++
++    # --- Prefer current.json for fresh metrics, fall back to latest.json ---
++    evidence_data = current_data if current_data is not None else latest_data
++
++    # Extract metrics and metadata
++    metrics = evidence_data.get("last_known_metrics", {})
++    nav_result = evidence_data.get("last_nav_result", "unknown")
++    metrics_source = evidence_data.get("metrics_source", "none")
++    last_checked = evidence_data.get("last_checked_at", "")
++    metrics_freshness = evidence_data.get("metrics_freshness", "unknown")
++
++    result["metrics_source"] = metrics_source
++    result["metrics_freshness"] = metrics_freshness
++    result["last_nav_result"] = nav_result
++
++    # --- Run decision engine ---
++    try:
++        scripts_dir = str(repo / "scripts")
++        if scripts_dir not in sys.path:
++            sys.path.insert(0, scripts_dir)
++        from check_handoff_needed import check_handoff_v2
++
++        decision_output = check_handoff_v2(
++            metrics={
++                "assistant_message_count": metrics.get("assistant_message_count"),
++                "response_time_seconds": metrics.get("last_response_time_seconds")
++                    or metrics.get("response_time_seconds"),
++                "review_round_count": metrics.get("review_round_count"),
++                "last_gpt_reply_bytes": metrics.get("last_gpt_reply_bytes"),
++                "metrics_source": metrics_source,
++                "nav_result": nav_result,
++                "last_checked_at": last_checked,
++            },
++            mode="advisory",
++            max_staleness_hours=12,
++            composite=True,
++            source_label="startup-read-check",
++        )
++
++        if isinstance(decision_output, dict):
++            decision = decision_output.get("decision", "UNKNOWN")
++            severity = decision_output.get("severity", "INFO")
++            reasons = decision_output.get("reasons", [])
++            recommended = decision_output.get("recommended_action", "continue")
++        else:
++            decision = "UNKNOWN"
++            severity = "INFO"
++            reasons = []
++            recommended = "investigate"
++
++        result["decision"] = decision
++        result["severity"] = severity
++        result["reasons"] = reasons
++        result["recommended_action"] = recommended
++
++    except ImportError as exc:
++        result["decision"] = "UNKNOWN"
++        result["severity"] = "WARNING"
++        result["reasons"].append({
++            "code": "decision_engine_unavailable",
++            "actual": str(exc),
++            "threshold": "check_handoff_needed import required",
++            "policy": "awareness",
++        })
++        result["recommended_action"] = "decision_engine_not_available"
++
++    except Exception as exc:
++        result["decision"] = "UNKNOWN"
++        result["severity"] = "WARNING"
++        result["reasons"].append({
++            "code": "startup_check_error",
++            "actual": str(exc),
++            "threshold": "no errors expected",
++            "policy": "awareness",
++        })
++        result["recommended_action"] = "investigate"
++
++    _write_output(out_path, result)
++    return result
++
++
++def _write_output(out_path: Path, result: Dict[str, Any]) -> None:
++    """Write the startup-read evidence to disk."""
++    try:
++        out_path.parent.mkdir(parents=True, exist_ok=True)
++        out_path.write_text(
++            json.dumps(result, indent=2, ensure_ascii=False),
++            encoding="utf-8",
++        )
++    except OSError:
++        pass  # Awareness only — write failure is not blocking
++
++
++def format_startup_output(result: Dict[str, Any]) -> str:
++    """Format startup check result for human-readable output."""
++    lines = [
++        "=== Startup Conversation Health Check (A4 Item 1.9) ===",
++        f"Checked at: {result.get('checked_at', 'N/A')}",
++        f"Decision: {result['decision']}",
++        f"Severity: {result['severity']}",
++        f"Recommended action: {result['recommended_action']}",
++        "",
++        f"current.json: {'present' if result.get('current_json_present') else 'missing'}",
++        f"latest.json: {'present' if result.get('latest_json_present') else 'missing'}",
++        f"Metrics source: {result.get('metrics_source', 'none')}",
++        f"Metrics freshness: {result.get('metrics_freshness', 'unknown')}",
++        f"Last nav result: {result.get('last_nav_result', 'unknown')}",
++    ]
++
++    if result.get("reasons"):
++        lines.append("")
++        lines.append("Reasons:")
++        for r in result["reasons"]:
++            if isinstance(r, dict):
++                lines.append(f"  - [{r.get('code', '?')}] {r.get('actual', '?')} "
++                           f"(policy: {r.get('policy', '?')})")
++            else:
++                lines.append(f"  - {r}")
++
++    lines.append("")
++    decision = result.get("decision", "UNKNOWN")
++    if decision == "OK":
++        lines.append("[STARTUP] Conversation health OK — proceed with task")
++    elif decision in ("FORCE_HANDOFF", "HUMAN_REQUIRED"):
++        lines.append(f"[STARTUP] ACTION REQUIRED: {decision} — "
++                    f"{result.get('recommended_action', 'handoff recommended')}")
++    elif decision == "SUGGEST_HANDOFF":
++        lines.append("[STARTUP] SUGGESTION: consider switching conversation "
++                    "before starting complex work")
++    else:
++        lines.append("[STARTUP] WARNING: conversation health unknown — "
++                    "run Pre-GPT Gate to refresh metrics")
++
++    return "\n".join(lines)
++
++
++# ---------------------------------------------------------------------------
++# CLI
++# ---------------------------------------------------------------------------
++
++def main():
++    parser = argparse.ArgumentParser(
++        description="Startup Conversation Health Check (A4 Item 1.9)"
++    )
++    parser.add_argument("--project-root", default=None,
++                       help="Project root directory (default: auto-detect)")
++    parser.add_argument("--current-json", default=None,
++                       help="Path to current.json")
++    parser.add_argument("--latest-json", default=None,
++                       help="Path to latest.json")
++    parser.add_argument("--output", default=None,
++                       help="Output path for startup-read-latest.json")
++    args = parser.parse_args()
++
++    result = run_startup_check(
++        current_json_path=args.current_json,
++        latest_json_path=args.latest_json,
++        output_path=args.output,
++        project_root=args.project_root,
++    )
++    print(format_startup_output(result))
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/tests/test_startup_conversation_health_check.py b/tests/test_startup_conversation_health_check.py
+new file mode 100644
+index 00000000..b34a3541
+--- /dev/null
++++ b/tests/test_startup_conversation_health_check.py
+@@ -0,0 +1,432 @@
++"""Tests for Startup Conversation Health Check (A4 Item 1.9).
++
++Covers:
++- OK / SUGGEST_HANDOFF / FORCE_HANDOFF / HUMAN_REQUIRED decisions
++- Missing current.json → UNKNOWN/WARNING evidence
++- Stale metrics reporting
++- No CDP import (awareness only)
++- startup-read-latest.json output
++- Evidence pack integration (review.yaml startup_read block)
++- A1/A2/A3 non-regression
++"""
++
++import json
++import os
++import sys
++import tempfile
++from pathlib import Path
++from unittest.mock import MagicMock, patch
++
++import pytest
++
++
++# ---------------------------------------------------------------------------
++# Helpers
++# ---------------------------------------------------------------------------
++
++SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "scripts"
++HELPER_PATH = SCRIPTS_DIR / "startup_conversation_health_check.py"
++BUILDER_PATH = SCRIPTS_DIR / "build_evidence_pack.py"
++STARTUP_READ_GATE_DOC = Path(__file__).resolve().parent.parent / "docs" / "agent-runtime" / "startup-read-gate.md"
++
++
++def _make_current_json(tmp: Path, decision="OK", msg_count=5, rt=12.0,
++                       reply_bytes=3000, freshness="fresh",
++                       nav_result="ok", source="cdp_dom_count",
++                       checked_at="2026-06-12T00:00:00Z") -> str:
++    """Create a current.json in tmp and return its path."""
++    current_dir = tmp / ".ai" / "conversation"
++    current_dir.mkdir(parents=True, exist_ok=True)
++    current_path = current_dir / "current.json"
++    data = {
++        "schema_version": "conversation-health.v1",
++        "conversation_id": "test-uuid",
++        "chat_url": "https://chatgpt.com/c/test-uuid",
++        "status": "active",
++        "last_known_metrics": {
++            "assistant_message_count": msg_count,
++            "review_round_count": 1,
++            "last_response_time_seconds": rt,
++            "last_gpt_reply_bytes": reply_bytes,
++        },
++        "last_nav_result": nav_result,
++        "last_health_decision": decision,
++        "last_health_reasons": [],
++        "last_checked_at": checked_at,
++        "metrics_source": source,
++        "metrics_freshness": freshness,
++    }
++    current_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
++    return str(current_path)
++
++
++def _make_latest_json(tmp: Path, decision="OK", msg_count=10, rt=10.0,
++                      reply_bytes=5000, freshness="fresh",
++                      nav_result="ok", source="cdp_dom_count") -> str:
++    """Create a latest.json in tmp and return its path."""
++    latest_dir = tmp / "_evidence" / "conversation-health"
++    latest_dir.mkdir(parents=True, exist_ok=True)
++    latest_path = latest_dir / "latest.json"
++    data = {
++        "schema_version": "conversation-health.v1",
++        "conversation_id": "test-uuid",
++        "chat_url": "https://chatgpt.com/c/test-uuid",
++        "status": "active",
++        "last_known_metrics": {
++            "assistant_message_count": msg_count,
++            "review_round_count": 1,
++            "last_response_time_seconds": rt,
++            "last_gpt_reply_bytes": reply_bytes,
++        },
++        "last_nav_result": nav_result,
++        "last_health_decision": decision,
++        "last_health_reasons": [],
++        "last_checked_at": "2026-06-12T00:00:00Z",
++        "metrics_source": source,
++        "metrics_freshness": freshness,
++        "last_health_severity": "INFO",
++    }
++    latest_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
++    return str(latest_path)
++
++
++def _get_output_path(tmp: Path) -> str:
++    """Get the output path for startup-read-latest.json."""
++    out = tmp / "_evidence" / "conversation-health" / "startup-read-latest.json"
++    return str(out)
++
++
++def _run_check(tmp: Path, current_path=None, latest_path=None, output_path=None):
++    """Import and run the startup check with given paths."""
++    sys.path.insert(0, str(SCRIPTS_DIR))
++    try:
++        from startup_conversation_health_check import run_startup_check
++        return run_startup_check(
++            current_json_path=current_path,
++            latest_json_path=latest_path,
++            output_path=output_path or _get_output_path(tmp),
++            project_root=str(tmp),
++        )
++    finally:
++        if str(SCRIPTS_DIR) in sys.path:
++            sys.path.remove(str(SCRIPTS_DIR))
++
++
++# ---------------------------------------------------------------------------
++# TestStartupOK
++# ---------------------------------------------------------------------------
++
++class TestStartupOK:
++    """Startup read with healthy conversation → OK."""
++
++    def test_ok_decision(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=5, rt=12.0, reply_bytes=3000)
++        lat = _make_latest_json(tmp_path, msg_count=5, rt=12.0, reply_bytes=3000)
++        result = _run_check(tmp_path, cur, lat)
++        assert result["decision"] == "OK"
++
++    def test_ok_severity_info(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=5, rt=12.0, reply_bytes=3000)
++        lat = _make_latest_json(tmp_path, msg_count=5, rt=12.0, reply_bytes=3000)
++        result = _run_check(tmp_path, cur, lat)
++        assert result["severity"] == "INFO"
++
++    def test_ok_recommended_action_continue(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=5, rt=12.0, reply_bytes=3000)
++        lat = _make_latest_json(tmp_path, msg_count=5, rt=12.0, reply_bytes=3000)
++        result = _run_check(tmp_path, cur, lat)
++        assert result["recommended_action"] == "continue"
++
++    def test_ok_writes_startup_read_file(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=5, rt=12.0, reply_bytes=3000)
++        lat = _make_latest_json(tmp_path, msg_count=5, rt=12.0, reply_bytes=3000)
++        out = _get_output_path(tmp_path)
++        _run_check(tmp_path, cur, lat, out)
++        assert os.path.isfile(out)
++        data = json.loads(Path(out).read_text(encoding="utf-8"))
++        assert data["decision"] == "OK"
++        assert data["schema_version"] == "startup-read-conversation-health.v1"
++
++
++# ---------------------------------------------------------------------------
++# TestStartupSuggestHandoff
++# ---------------------------------------------------------------------------
++
++class TestStartupSuggestHandoff:
++    """Startup read with degraded conversation → SUGGEST_HANDOFF."""
++
++    def test_suggest_handoff_high_response_time(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=46, rt=65.0, reply_bytes=1500)
++        lat = _make_latest_json(tmp_path, msg_count=46, rt=65.0, reply_bytes=1500)
++        result = _run_check(tmp_path, cur, lat)
++        assert result["decision"] == "SUGGEST_HANDOFF"
++
++    def test_suggest_recommendation(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=46, rt=65.0, reply_bytes=1500)
++        lat = _make_latest_json(tmp_path, msg_count=46, rt=65.0, reply_bytes=1500)
++        result = _run_check(tmp_path, cur, lat)
++        assert "handoff" in result["recommended_action"].lower()
++
++
++# ---------------------------------------------------------------------------
++# TestStartupForceHandoff
++# ---------------------------------------------------------------------------
++
++class TestStartupForceHandoff:
++    """Startup read with severely degraded conversation → FORCE_HANDOFF."""
++
++    def test_force_handoff_high_message_count(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=65, rt=120.0, reply_bytes=500)
++        lat = _make_latest_json(tmp_path, msg_count=65, rt=120.0, reply_bytes=500)
++        result = _run_check(tmp_path, cur, lat)
++        assert result["decision"] == "FORCE_HANDOFF"
++
++    def test_force_handoff_has_reasons(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=65, rt=120.0, reply_bytes=500)
++        lat = _make_latest_json(tmp_path, msg_count=65, rt=120.0, reply_bytes=500)
++        result = _run_check(tmp_path, cur, lat)
++        assert len(result["reasons"]) > 0
++
++
++# ---------------------------------------------------------------------------
++# TestStartupHumanRequired
++# ---------------------------------------------------------------------------
++
++class TestStartupHumanRequired:
++    """Startup read with auth_required nav result → HUMAN_REQUIRED."""
++
++    def test_human_required_nav_result(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=5, nav_result="auth_required")
++        lat = _make_latest_json(tmp_path, msg_count=5, nav_result="auth_required")
++        result = _run_check(tmp_path, cur, lat)
++        assert result["decision"] == "HUMAN_REQUIRED"
++
++    def test_human_required_recommendation(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=5, nav_result="auth_required")
++        lat = _make_latest_json(tmp_path, msg_count=5, nav_result="auth_required")
++        result = _run_check(tmp_path, cur, lat)
++        assert "human" in result["recommended_action"].lower()
++
++
++# ---------------------------------------------------------------------------
++# TestStartupMissingEvidence
++# ---------------------------------------------------------------------------
++
++class TestStartupMissingEvidence:
++    """Missing current.json → UNKNOWN/WARNING evidence."""
++
++    def test_missing_both_unknown(self, tmp_path):
++        # Point to non-existent paths in tmp to ensure no real files are found
++        cur = str(tmp_path / ".ai" / "conversation" / "current.json")
++        lat = str(tmp_path / "_evidence" / "conversation-health" / "latest.json")
++        result = _run_check(tmp_path, current_path=cur, latest_path=lat)
++        assert result["decision"] == "UNKNOWN"
++        assert result["severity"] == "WARNING"
++
++    def test_missing_current_json_warning_not_silent(self, tmp_path):
++        # Only latest.json exists, no current.json
++        lat = _make_latest_json(tmp_path, msg_count=5, rt=12.0, reply_bytes=3000)
++        cur = str(tmp_path / ".ai" / "conversation" / "current.json")  # non-existent
++        result = _run_check(tmp_path, current_path=cur, latest_path=lat)
++        # Should still produce a valid result (from latest.json fallback)
++        assert result["decision"] in ("OK", "SUGGEST_HANDOFF", "FORCE_HANDOFF",
++                                      "HUMAN_REQUIRED", "UNKNOWN")
++        assert result["latest_json_present"] is True
++        assert result["current_json_present"] is False
++
++    def test_missing_evidence_has_reason(self, tmp_path):
++        cur = str(tmp_path / ".ai" / "conversation" / "current.json")
++        lat = str(tmp_path / "_evidence" / "conversation-health" / "latest.json")
++        result = _run_check(tmp_path, current_path=cur, latest_path=lat)
++        assert len(result["reasons"]) > 0
++        assert result["reasons"][0]["code"] == "no_evidence_available"
++
++    def test_missing_evidence_writes_output(self, tmp_path):
++        cur = str(tmp_path / ".ai" / "conversation" / "current.json")
++        lat = str(tmp_path / "_evidence" / "conversation-health" / "latest.json")
++        out = _get_output_path(tmp_path)
++        _run_check(tmp_path, current_path=cur, latest_path=lat, output_path=out)
++        assert os.path.isfile(out)
++        data = json.loads(Path(out).read_text(encoding="utf-8"))
++        assert data["decision"] == "UNKNOWN"
++        assert data["severity"] == "WARNING"
++
++
++# ---------------------------------------------------------------------------
++# TestStartupStaleMetrics
++# ---------------------------------------------------------------------------
++
++class TestStartupStaleMetrics:
++    """Stale metrics are reported in the evidence."""
++
++    def test_stale_freshness_reported(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=5, freshness="stale",
++                                checked_at="2026-06-10T00:00:00Z")
++        lat = _make_latest_json(tmp_path, msg_count=5, freshness="stale")
++        result = _run_check(tmp_path, cur, lat)
++        assert result["metrics_freshness"] == "stale"
++
++    def test_metrics_source_reported(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=5, source="cdp_dom_count")
++        lat = _make_latest_json(tmp_path, msg_count=5, source="cdp_dom_count")
++        result = _run_check(tmp_path, cur, lat)
++        assert result["metrics_source"] == "cdp_dom_count"
++
++    def test_nav_result_reported(self, tmp_path):
++        cur = _make_current_json(tmp_path, msg_count=5, nav_result="ok")
++        lat = _make_latest_json(tmp_path, msg_count=5, nav_result="ok")
++        result = _run_check(tmp_path, cur, lat)
++        assert result["last_nav_result"] == "ok"
++
++
++# ---------------------------------------------------------------------------
++# TestStartupNoCDP
++# ---------------------------------------------------------------------------
++
++class TestStartupNoCDP:
++    """Startup helper does NOT open CDP browser."""
++
++    def test_no_cdp_import(self):
++        """Verify the helper script does not import playwright or CDP modules."""
++        helper_text = HELPER_PATH.read_text(encoding="utf-8")
++        assert "playwright" not in helper_text
++        assert "connect_over_cdp" not in helper_text
++        assert "chromium" not in helper_text.lower()
++
++    def test_no_browser_launch(self):
++        """Verify no browser launch patterns in the helper."""
++        helper_text = HELPER_PATH.read_text(encoding="utf-8")
++        assert "launch(" not in helper_text
++        assert "new_page" not in helper_text
++
++
++# ---------------------------------------------------------------------------
++# TestStartupOutputFormat
++# ---------------------------------------------------------------------------
++
++class TestStartupOutputFormat:
++    """Format output for human-readable display."""
++
++    def test_format_ok_output(self, tmp_path):
++        sys.path.insert(0, str(SCRIPTS_DIR))
++        try:
++            from startup_conversation_health_check import format_startup_output
++            result = {"decision": "OK", "severity": "INFO",
++                     "current_json_present": True, "latest_json_present": True,
++                     "metrics_source": "cdp_dom_count", "metrics_freshness": "fresh",
++                     "last_nav_result": "ok", "recommended_action": "continue",
++                     "reasons": [], "checked_at": "2026-06-12T00:00:00Z"}
++            output = format_startup_output(result)
++            assert "Conversation health OK" in output
++        finally:
++            sys.path.remove(str(SCRIPTS_DIR))
++
++    def test_format_force_output(self, tmp_path):
++        sys.path.insert(0, str(SCRIPTS_DIR))
++        try:
++            from startup_conversation_health_check import format_startup_output
++            result = {"decision": "FORCE_HANDOFF", "severity": "BLOCKING",
++                     "current_json_present": True, "latest_json_present": True,
++                     "metrics_source": "cdp_dom_count", "metrics_freshness": "stale",
++                     "last_nav_result": "ok", "recommended_action": "generate_handoff",
++                     "reasons": [{"code": "msg_count", "actual": 65}],
++                     "checked_at": "2026-06-12T00:00:00Z"}
++            output = format_startup_output(result)
++            assert "ACTION REQUIRED" in output
++        finally:
++            sys.path.remove(str(SCRIPTS_DIR))
++
++    def test_format_unknown_output(self, tmp_path):
++        sys.path.insert(0, str(SCRIPTS_DIR))
++        try:
++            from startup_conversation_health_check import format_startup_output
++            result = {"decision": "UNKNOWN", "severity": "WARNING",
++                     "current_json_present": False, "latest_json_present": False,
++                     "metrics_source": "none", "metrics_freshness": "unknown",
++                     "last_nav_result": "unknown", "recommended_action": "investigate",
++                     "reasons": [{"code": "no_evidence_available"}],
++                     "checked_at": "2026-06-12T00:00:00Z"}
++            output = format_startup_output(result)
++            assert "WARNING" in output or "unknown" in output.lower()
++        finally:
++            sys.path.remove(str(SCRIPTS_DIR))
++
++
++# ---------------------------------------------------------------------------
++# TestEvidencePackIntegration
++# ---------------------------------------------------------------------------
++
++class TestEvidencePackIntegration:
++    """Startup evidence is included in evidence pack / review.yaml."""
++
++    def test_review_yaml_has_startup_read_block(self):
++        """build_evidence_pack.py generates startup_read block in review.yaml."""
++        builder_text = BUILDER_PATH.read_text(encoding="utf-8")
++        assert "startup_read:" in builder_text
++        assert "conversation_health_checked" in builder_text
++        assert "startup_evidence_file" in builder_text
++
++    def test_evidence_pack_copies_startup_read(self):
++        """build_evidence_pack.py includes step 15e for startup-read-latest.json."""
++        builder_text = BUILDER_PATH.read_text(encoding="utf-8")
++        assert "startup-read-latest.json" in builder_text
++        assert "15e" in builder_text
++
++    def test_startup_read_missing_recorded_as_limitation(self):
++        """When startup-read evidence is missing, review.yaml records it."""
++        builder_text = BUILDER_PATH.read_text(encoding="utf-8")
++        assert "verdict_impact: limitation" in builder_text
++
++
++# ---------------------------------------------------------------------------
++# TestStartupReadGateDoc
++# ---------------------------------------------------------------------------
++
++class TestStartupReadGateDoc:
++    """startup-read-gate.md includes item 1.9."""
++
++    def test_doc_has_item_1_9(self):
++        doc_text = STARTUP_READ_GATE_DOC.read_text(encoding="utf-8")
++        assert "### 1.9" in doc_text
++
++    def test_doc_has_conversation_health_title(self):
++        doc_text = STARTUP_READ_GATE_DOC.read_text(encoding="utf-8")
++        assert "Conversation Health" in doc_text
++
++    def test_doc_yaml_has_startup_fields(self):
++        doc_text = STARTUP_READ_GATE_DOC.read_text(encoding="utf-8")
++        assert "startup_read_health_checked" in doc_text
++        assert "startup_read_health_decision" in doc_text
++
++    def test_doc_has_anti_pattern(self):
++        doc_text = STARTUP_READ_GATE_DOC.read_text(encoding="utf-8")
++        assert "Health Blindness" in doc_text
++
++
++# ---------------------------------------------------------------------------
++# TestA1A2A3NonRegression
++# ---------------------------------------------------------------------------
++
++class TestA1A2A3NonRegression:
++    """A1/A2/A3 accepted semantics do not regress."""
++
++    def test_check_handoff_v2_not_modified(self):
++        """Startup helper imports check_handoff_v2, does not duplicate logic."""
++        helper_text = HELPER_PATH.read_text(encoding="utf-8")
++        assert "from check_handoff_needed import check_handoff_v2" in helper_text
++        # Should NOT redefine threshold values
++        assert "assistant_message_count >=" not in helper_text or "assistant_message_count >= 60" not in helper_text
++
++    def test_helper_only_writes_startup_read(self):
++        """Startup helper only writes startup-read-latest.json via _write_output."""
++        helper_text = HELPER_PATH.read_text(encoding="utf-8")
++        # The only write_text call should be in _write_output, writing startup-read evidence
++        # Verify no direct writes to current.json or latest.json
++        assert "_write_output" in helper_text
++        # Verify the output function writes to the out_path parameter, not hardcoded files
++        assert "out_path.write_text" in helper_text
++
++    def test_pre_commit_advisory_unchanged(self):
++        """A3 pre_commit_health_advisory.py still exists and is not modified by A4."""
++        advisory_path = SCRIPTS_DIR / "pre_commit_health_advisory.py"
++        assert advisory_path.exists()

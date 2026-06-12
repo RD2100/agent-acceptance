@@ -1,0 +1,12 @@
+# Combined diff stat: a3269e1..HEAD
+# Command: git diff a3269e1..HEAD --stat
+
+.ai/current-task.yaml                              | 119 +++---
+ .ai/tasks/conversation-health-gate-a4.yaml         |  87 +++++
+ .../conversation-health/startup-read-latest.json   |  24 ++
+ docs/agent-runtime/startup-read-gate.md            |  17 +
+ hooks/sealed-files-manifest.json                   |   4 +-
+ scripts/build_evidence_pack.py                     |  59 +++
+ scripts/startup_conversation_health_check.py       | 281 ++++++++++++++
+ tests/test_startup_conversation_health_check.py    | 432 +++++++++++++++++++++
+ 8 files changed, 954 insertions(+), 69 deletions(-)

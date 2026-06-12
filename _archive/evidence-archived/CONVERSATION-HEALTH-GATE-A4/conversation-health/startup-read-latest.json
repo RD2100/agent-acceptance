@@ -1,0 +1,24 @@
+{
+  "schema_version": "startup-read-conversation-health.v1",
+  "checked_at": "2026-06-12T01:02:19.091635+00:00",
+  "current_json_present": true,
+  "latest_json_present": true,
+  "source_files_read": [
+    "D:\\agent-acceptance\\_evidence\\conversation-health\\latest.json",
+    "D:\\agent-acceptance\\.ai\\conversation\\current.json"
+  ],
+  "decision": "SUGGEST_HANDOFF",
+  "severity": "WARNING",
+  "recommended_action": "suggest_handoff",
+  "metrics_source": "cdp_dom_count",
+  "metrics_freshness": "fresh",
+  "last_nav_result": "ok",
+  "reasons": [
+    {
+      "code": "response_time_elevated",
+      "actual": 141.7,
+      "threshold": 60,
+      "policy": "suggest"
+    }
+  ]
+}

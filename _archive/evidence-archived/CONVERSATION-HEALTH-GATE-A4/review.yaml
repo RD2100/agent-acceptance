@@ -1,0 +1,63 @@
+verdict: EVIDENCE_COMPLETE
+task_id: CONVERSATION-HEALTH-GATE-A4
+generated: 2026-06-12T09:02:46.551939+08:00
+version: '1.0.0'
+commits: [e016d63]
+base_commit: a3269e1
+head_commit: e016d63
+
+evidence_files:
+  - ai-guard-scope-check-output.txt
+  - chain-evidence.json
+  - conversation-health/current-snapshot.json
+  - conversation-health/latest.json
+  - conversation-health/startup-read-latest.json
+  - deferred-files-register.yaml
+  - diff-stat-combined.txt
+  - diff-stat-e016d63.txt
+  - diff.patch
+  - final-report.md
+  - git-log.txt
+  - git-show-e016d63.txt
+  - git-status-after.txt
+  - pre-gpt-gate-evidence/
+  - review.md
+  - review.yaml
+  - sadp-audit-raw.txt
+  - safety-report.json
+  - secret-scan-output.txt
+  - test-output.txt
+
+post_commit_state:
+  modified_tracked: 0
+  untracked_total: 138
+  neg_009: 17
+  secret_scan: 5
+  session_artifacts: 116
+  grand_total: 138
+
+consistency_check:
+  all_files_agree: true
+  sum_check: 17 + 5 + 116 = 138 == untracked_total(138)
+
+conversation_health:
+  checked: true
+  decision: OK
+  status: active
+  latest_file: _evidence/conversation-health/latest.json
+  checked_at: "2026-06-12T06:58:52+08:00"
+  verdict_eligibility: eligible
+  pre_gpt_gate: true
+  snapshot_file: present
+  pre_gpt_evidence: present
+
+startup_read:
+  conversation_health_checked: true
+  decision: SUGGEST_HANDOFF
+  severity: WARNING
+  metrics_source: cdp_dom_count
+  metrics_freshness: fresh
+  last_nav_result: ok
+  recommended_action: suggest_handoff
+  startup_evidence_file: _evidence/conversation-health/startup-read-latest.json
+  verdict_impact: none

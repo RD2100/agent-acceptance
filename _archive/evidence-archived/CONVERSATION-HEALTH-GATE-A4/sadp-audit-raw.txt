@@ -1,0 +1,10 @@
+# SADP Pre-commit Hook Output (from commit e016d63 message)
+
+feat: CONVERSATION-HEALTH-GATE-A4 — Startup Read Gate Item 1.9 + Startup Conversation Health Evidence
+
+- startup-read-gate.md: added item 1.9 (Conversation Health State), YAML schema fields, anti-pattern
+- startup_conversation_health_check.py: lightweight helper, reads current/latest.json without CDP
+- build_evidence_pack.py: startup_read block in review.yaml + step 15e file copy
+- Tests: 32 new (OK/SUGGEST/FORCE/HUMAN/missing/stale/no-CDP/format/evidence-pack/doc/non-regression)
+- Runtime evidence: startup-read-latest.json generated (SUGGEST_HANDOFF, response_time 141.7s)
+- Regression: 1204 passed

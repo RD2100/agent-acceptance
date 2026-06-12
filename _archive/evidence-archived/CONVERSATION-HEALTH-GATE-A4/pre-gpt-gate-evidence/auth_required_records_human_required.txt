@@ -1,0 +1,12 @@
+# Scenario: auth_required_records_human_required
+# Description: auth_required nav result is recorded and triggers HUMAN_REQUIRED
+# Expected: exit_code=2
+# Actual exit: 2
+# Decision: HUMAN_REQUIRED
+# Severity: BLOCKING
+# Status: PASS
+#
+# Message: HUMAN_REQUIRED: nav_result_auth_required: auth_required (threshold: auth_required, policy: human)
+#
+# Reasons:
+#   - nav_result_auth_required: actual=auth_required threshold=auth_required policy=human
