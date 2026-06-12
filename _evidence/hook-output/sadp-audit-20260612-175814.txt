@@ -1,0 +1,25 @@
+﻿# SADP Audit Output - 2026-06-12T09:58:14Z
+# Exit code: 1
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 5
+[SADP-AUDIT] TaskSpecs found: 60
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] WARN: 1 file(s) not covered by any TaskSpec write_set:
+[SADP-AUDIT]   UNCOVERED: _reports/ai-guard-files-and-large-secret-scan-a1/EXECUTION_REPORT.md
+[SADP-AUDIT]   Ensure each changed file is listed in a TaskSpec write_set or Allowed Files.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT]   tests/test_ai_guard_staged_scope.py -> ai-guard-staged-scope-a1.yaml
+[SADP-AUDIT]   tests/test_hook_failure_semantics.py -> conversation-health-gate-a3.yaml
+[SADP-AUDIT]   tools/ai_guard.py -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review ERROR: DENIED: _reports/ai-guard-files-and-large-secret-scan-a1/EXECUTION_REPORT.md is on deny list  AI Guard: 1 error(s), 1 warning(s) - BLOCKED
+[SADP-AUDIT] ai_guard.py found security issues.
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review ERROR: DENIED: _reports/ai-guard-files-and-large-secret-scan-a1/EXECUTION_REPORT.md is on deny list ERROR: SCOPE: _reports/ai-guard-files-and-large-secret-scan-a1/EXECUTION_REPORT.md outside TaskSpec allow_write ERROR: SCOPE: tests/test_ai_guard_staged_scope.py outside TaskSpec allow_write ERROR: SCOPE: tests/test_hook_failure_semantics.py outside TaskSpec allow_write ERROR: SCOPE: tools/ai_guard.py outside TaskSpec allow_write  AI Guard: 5 error(s), 1 warning(s) - BLOCKED
+[SADP-AUDIT] ai_guard.py found TaskSpec scope issues.
+[SADP-AUDIT] STATUS: BLOCKED
+[SADP-AUDIT] Commit rejected. Fix the issues above and retry.
+[SADP-AUDIT] (Use --no-verify only with explicit human approval per core-001)
+

@@ -1,0 +1,31 @@
+﻿# SADP Audit Output - 2026-06-12T06:53:33Z
+# Exit code: 0
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 16
+[SADP-AUDIT] TaskSpecs found: 60
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 16 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   .ai/current-task.yaml -> current-task.yaml
+[SADP-AUDIT]   .ai/tasks/live-dispatch-readiness-sadp-ecs-closeout-a1.yaml -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE_PACK_LIVE_DISPATCH_FIX_A1.zip -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE_PACK_LIVE_DISPATCH_REVIEW_A1.zip -> current-task.yaml
+[SADP-AUDIT]   _evidence/LIVE-DISPATCH-READINESS-FIX-A1/evidence-manifest.json -> current-task.yaml
+[SADP-AUDIT]   _evidence/LIVE-DISPATCH-READINESS-FIX-A1/EXECUTION_REPORT.md -> current-task.yaml
+[SADP-AUDIT]   _evidence/LIVE-DISPATCH-READINESS-FIX-A1/gpt-review-raw.md -> current-task.yaml
+[SADP-AUDIT]   _evidence/LIVE-DISPATCH-READINESS-FIX-A1/gpt-review-submission.md -> current-task.yaml
+[SADP-AUDIT]   _evidence/LIVE-DISPATCH-READINESS-FIX-A1/review.yaml -> current-task.yaml
+[SADP-AUDIT]   _evidence/LIVE-DISPATCH-READINESS-FIX-A1/reviewer-provenance.json -> current-task.yaml
+[SADP-AUDIT]   _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/diff.patch -> current-task.yaml
+[SADP-AUDIT]   _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/evidence-manifest.json -> current-task.yaml
+[SADP-AUDIT]   _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/EXECUTION_REPORT.md -> current-task.yaml
+[SADP-AUDIT]   _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/git-status-after.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/LIVE-DISPATCH-READINESS-SADP-ECS-CLOSEOUT-A1/closeout-report.md -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] STATUS: PASS
+

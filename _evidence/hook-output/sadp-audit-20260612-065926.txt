@@ -1,0 +1,42 @@
+﻿# SADP Audit Output - 2026-06-11T22:59:26Z
+# Exit code: 1
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 24
+[SADP-AUDIT] TaskSpecs found: 54
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 24 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   .ai/current-task.yaml -> current-task.yaml
+[SADP-AUDIT]   .ai/tasks/conversation-health-gate-a1.yaml -> current-task.yaml
+[SADP-AUDIT]   .ai/tasks/conversation-health-gate-a2.yaml -> current-task.yaml
+[SADP-AUDIT]   _ask_next_task_v2.py -> current-task.yaml
+[SADP-AUDIT]   _capture_r4_verdict.py -> current-task.yaml
+[SADP-AUDIT]   _cdp_submit_helper.py -> current-task.yaml
+[SADP-AUDIT]   _evidence/conversation-health/current-snapshot.json -> current-task.yaml
+[SADP-AUDIT]   _evidence/conversation-health/latest.json -> current-task.yaml
+[SADP-AUDIT]   _evidence/next_task_reply.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/pre-gpt-gate-evidence/access_denied_records_force.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/pre-gpt-gate-evidence/auth_required_records_human_required.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/pre-gpt-gate-evidence/combined_summary.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/pre-gpt-gate-evidence/force_handoff_blocks_submit.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/pre-gpt-gate-evidence/human_required_blocks_submit.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/pre-gpt-gate-evidence/latest_json_written_for_pre_gpt_gate.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/pre-gpt-gate-evidence/missing_current_json_blocks_without_refresh.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/pre-gpt-gate-evidence/stale_metrics_warns_or_suggests.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/pre-gpt-gate-evidence/successful_metrics_refresh_updates_current_json.txt -> current-task.yaml
+[SADP-AUDIT]   _submit_health_gate_a1_r4.py -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> context-compression-a1.yaml
+[SADP-AUDIT]   scripts/build_evidence_pack.py -> current-task.yaml
+[SADP-AUDIT]   scripts/pre_gpt_gate.py -> current-task.yaml
+[SADP-AUDIT]   scripts/run_pre_gpt_gate_evidence.py -> current-task.yaml
+[SADP-AUDIT]   tests/test_pre_gpt_gate.py -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review ERROR: SCOPE: hooks/sealed-files-manifest.json outside TaskSpec allow_write  AI Guard: 1 error(s), 1 warning(s) - BLOCKED
+[SADP-AUDIT] ai_guard.py found TaskSpec scope issues.
+[SADP-AUDIT] STATUS: BLOCKED
+[SADP-AUDIT] Commit rejected. Fix the issues above and retry.
+[SADP-AUDIT] (Use --no-verify only with explicit human approval per core-001)
+
