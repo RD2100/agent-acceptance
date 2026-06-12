@@ -1,0 +1,33 @@
+# Conversation Health Evidence: composite_force
+# Actual exit: 1
+# Expected: exit=1 (FORCE_HANDOFF or HUMAN_REQUIRED blocks task)
+
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "FORCE_HANDOFF",
+  "severity": "BLOCKING",
+  "reasons": [
+    {
+      "code": "composite_degradation",
+      "actual": "rt=75,bytes=1500,rounds=2",
+      "threshold": "rt>=60&bytes<2000&rounds>=2",
+      "policy": "force_composite"
+    },
+    {
+      "code": "response_time_elevated",
+      "actual": 75,
+      "threshold": 60,
+      "policy": "suggest"
+    },
+    {
+      "code": "last_gpt_reply_bytes_low",
+      "actual": 1500,
+      "threshold": 2000,
+      "policy": "suggest"
+    }
+  ],
+  "recommended_action": "generate_handoff",
+  "checked_at": "2026-06-11T14:37:34Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp5l_vfbxm.json"
+}
+

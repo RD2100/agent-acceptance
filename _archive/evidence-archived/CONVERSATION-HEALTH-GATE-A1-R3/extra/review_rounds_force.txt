@@ -1,0 +1,21 @@
+# Conversation Health Evidence: review_rounds_force
+# Actual exit: 1
+# Expected: exit=1 (FORCE_HANDOFF or HUMAN_REQUIRED blocks task)
+
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "FORCE_HANDOFF",
+  "severity": "BLOCKING",
+  "reasons": [
+    {
+      "code": "review_round_count_exceeded",
+      "actual": 4,
+      "threshold": 3,
+      "policy": "force"
+    }
+  ],
+  "recommended_action": "generate_handoff",
+  "checked_at": "2026-06-11T14:37:33Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpq1_0tsk9.json"
+}
+

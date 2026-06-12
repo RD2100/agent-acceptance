@@ -1,0 +1,10 @@
+# SADP Pre-commit Hook Output (from commit 40e4aba message)
+
+fix: CONVERSATION-HEALTH-GATE-A1 R3 — regenerate negative-path evidence
+
+Regenerated 9 negative-path scenarios with corrected threshold semantics:
+- response_time and reply_bytes now show policy: "suggest" (not "force")
+- composite_degradation shows policy: "force_composite"
+- 9/9 scenarios ALL PASS
+
+🤖 Generated with [Qoder][https://qoder.com]
