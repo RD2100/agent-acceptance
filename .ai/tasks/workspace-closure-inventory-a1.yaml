@@ -5,7 +5,7 @@ status: in_progress
 type: audit
 mode: "@go edit"
 description: >
-  Generate a structured inventory of all ~204 untracked files in the workspace root.
+  Generate a structured inventory of all ~202 untracked files in the workspace root.
   Strictly read-only: no deletions, no moves, no archives, no commits of untracked files.
   Output: classification + suggested action + risk level for each file.
 
@@ -32,8 +32,6 @@ write_set:
   - ".ai/current-task.yaml"
   - ".ai/tasks/workspace-closure-inventory-a1.yaml"
   - "_reports/workspace-closure-inventory-a1/**"
-  - "_reports/POST-AI-GUARD-TASK-OUTLINE.md"
-  - "_reports/POST-AI-GUARD-TASK-OUTLINE.ascii.md"
   - "hooks/sealed-files-manifest.json"
 
 deny_paths:
@@ -53,7 +51,7 @@ constraints:
 gate_0:
   inventory_evidence:
     queried_sources:
-      - "git status --porcelain (204 untracked entries)"
+      - "git status --porcelain (202 untracked entries)"
       - "_evidence/ directory (38 subdirs, 34 ZIPs)"
       - "deferred-files-register.yaml (187 entries from ECS-A2)"
     matched_capabilities:
@@ -63,11 +61,11 @@ gate_0:
   pre_task_gate: passed
 
 acceptance_criteria:
-  - "Inventory covers all 204 untracked entries"
+  - "Inventory covers all 202 untracked entries"
   - "Each entry has: path, category, suggested_action, risk, has_zip, notes"
   - "Categories are exhaustive and non-overlapping"
   - "No file is deleted, moved, or modified"
   - "Inventory document is committed to git"
 
 live_dispatch_authorized: false
-next_recommended: "Batch cleanup per inventory (Phase 3, multiple TaskSpecs after human review)"
+next_recommended: "Batch cleanup per inventory (Phase 3, multiple TaskSpecs)"
