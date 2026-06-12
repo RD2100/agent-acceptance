@@ -36,6 +36,7 @@ write_set:
   - "_evidence/hook-output/**"
   - "_reports/SESSION-EXECUTION-REPORT.md"
   - "_reports/pre-execution-readiness-snapshot-a1/**"
+  - "_reports/hook-v241-real-invoke-probe-a1/**"
 
 deny_paths:
   - "scripts/multi_project_router.py"
