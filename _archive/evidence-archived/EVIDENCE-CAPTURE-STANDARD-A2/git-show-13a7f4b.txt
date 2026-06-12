@@ -1,0 +1,34 @@
+commit 13a7f4b55b7784043db6e0e282364f7158bb25c3
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Fri Jun 12 10:55:29 2026 +0800
+
+    fix: ECS-A2 R4 — zip_size_bytes integer type for schema compliance
+    
+    🤖 Generated with [Qoder][https://qoder.com]
+
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index fb49ca58..ffc1f624 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-12T10:51:03.4878439+08:00",
++    "generated":  "2026-06-12T10:55:30.5128693+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+diff --git a/scripts/build_evidence_pack.py b/scripts/build_evidence_pack.py
+index 762027f4..68c70b5d 100644
+--- a/scripts/build_evidence_pack.py
++++ b/scripts/build_evidence_pack.py
+@@ -1777,7 +1777,7 @@ def build_evidence_pack(
+         try:
+             with open(manifest_path, encoding="utf-8") as _mf:
+                 _manifest_data = json.load(_mf)
+-            _manifest_data["pack_info"]["zip_size_bytes"] = zip_info["size_bytes"]
++            _manifest_data["pack_info"]["zip_size_bytes"] = int(zip_info["size_bytes"])
+             _manifest_data["pack_info"]["zip_sha256"] = zip_info["sha256"]
+             with open(manifest_path, "w", encoding="utf-8") as _mf:
+                 json.dump(_manifest_data, _mf, indent=2, ensure_ascii=False)

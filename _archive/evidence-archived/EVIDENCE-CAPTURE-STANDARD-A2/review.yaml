@@ -1,0 +1,118 @@
+verdict: EVIDENCE_COMPLETE_WITH_LIMITATIONS
+task_id: EVIDENCE-CAPTURE-STANDARD-A2
+generated: 2026-06-12T11:07:40.169909+08:00
+version: '1.0.0'
+review_yaml_profile: ecs-v1
+test_mode: full_regression
+commits: [b474d4b, ceb9ed0, 148c550, 442ad78, c96de98]
+base_commit: 2d5f902
+head_commit: c96de98
+
+evidence_files:
+  - ai-guard-scope-check-output.txt
+  - chain-evidence.json
+  - conversation-health/current-snapshot.json
+  - conversation-health/latest.json
+  - conversation-health/startup-read-latest.json
+  - deferred-files-register.yaml
+  - diff-stat-148c550.txt
+  - diff-stat-442ad78.txt
+  - diff-stat-b474d4b.txt
+  - diff-stat-c96de98.txt
+  - diff-stat-ceb9ed0.txt
+  - diff-stat-combined.txt
+  - diff.patch
+  - final-report.md
+  - git-log.txt
+  - git-show-148c550.txt
+  - git-show-442ad78.txt
+  - git-show-b474d4b.txt
+  - git-show-c96de98.txt
+  - git-show-ceb9ed0.txt
+  - git-status-after.txt
+  - pre-gpt-gate-evidence/
+  - review.md
+  - review.yaml
+  - sadp-audit-raw.txt
+  - safety-report.json
+  - secret-scan-output.txt
+  - test-output.txt
+
+post_commit_state:
+  modified_tracked: 0
+  untracked_total: 187
+  neg_009: 17
+  secret_scan: 6
+  session_artifacts: 164
+  grand_total: 187
+
+consistency_check:
+  all_files_agree: true
+  computed: true
+  method: single_snapshot_source
+  sum_check: 17 + 6 + 164 = 187 == untracked_total(187)
+
+conversation_health:
+  checked: true
+  decision: OK
+  status: active
+  latest_file: _evidence/conversation-health/latest.json
+  checked_at: "2026-06-12T06:58:52+08:00"
+  verdict_eligibility: eligible
+  pre_gpt_gate: true
+  snapshot_file: present
+  pre_gpt_evidence: present
+
+startup_read:
+  conversation_health_checked: true
+  decision: SUGGEST_HANDOFF
+  severity: WARNING
+  metrics_source: cdp_dom_count
+  metrics_freshness: fresh
+  last_nav_result: ok
+  recommended_action: suggest_handoff
+  startup_evidence_file: _evidence/conversation-health/startup-read-latest.json
+  verdict_impact: none
+
+verdict_eligibility:
+  status: eligible_with_limitations
+  reasons:
+    - startup_read_suggest_handoff
+  blocking_signals: []
+  limitation_signals:
+    - startup_read_suggest_handoff
+
+evidence_completeness:
+  tier_0_required:
+    - git-log.txt
+    - git-status-after.txt
+    - deferred-files-register.yaml
+    - diff-stat-combined.txt
+    - diff.patch
+    - chain-evidence.json
+    - test-output.txt
+    - safety-report.json
+    - review.md
+    - review.yaml
+    - final-report.md
+    - sadp-audit-raw.txt
+  tier_0_present:
+    - git-log.txt
+    - git-status-after.txt
+    - deferred-files-register.yaml
+    - diff-stat-combined.txt
+    - diff.patch
+    - chain-evidence.json
+    - test-output.txt
+    - safety-report.json
+    - review.md
+    - review.yaml
+    - final-report.md
+    - sadp-audit-raw.txt
+  tier_0_missing: []
+  tier_1_conditional:
+    - conversation-health/latest.json
+    - conversation-health/startup-read-latest.json
+    - ai-guard-scope-check-output.txt
+    - secret-scan-output.txt
+  tier_1_missing: []

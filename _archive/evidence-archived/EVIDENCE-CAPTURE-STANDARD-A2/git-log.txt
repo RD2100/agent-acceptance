@@ -1,0 +1,15 @@
+c96de98b fix: ECS-A2 R5 — ZIP metadata convergence + report actual values + schema alignment
+13a7f4b5 fix: ECS-A2 R4 — zip_size_bytes integer type for schema compliance
+442ad785 fix: EVIDENCE-CAPTURE-STANDARD-A2 R4 — schema/manifest alignment + report display
+148c550e fix: EVIDENCE-CAPTURE-STANDARD-A2 R3 — resolve 6 narrow consistency issues
+ceb9ed04 fix: EVIDENCE-CAPTURE-STANDARD-A2 R2 — resolve 7 GPT review blockers
+b474d4bd feat: EVIDENCE-CAPTURE-STANDARD-A2 — canonical evidence pack contract, manifest, verdict eligibility, builder enforcement
+2d5f9020 chore: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1 — record historical verdict accepted_with_limitation
+50e0c2f3 chore: CONVERSATION-HEALTH-GATE-A4 — record GPT R1 verdict accepted_with_limitation
+e016d632 feat: CONVERSATION-HEALTH-GATE-A4 — Startup Read Gate Item 1.9 + Startup Conversation Health Evidence
+a3269e18 chore: CONVERSATION-HEALTH-GATE-A3 — record GPT R2 verdict accepted_with_limitation
+77e6320c fix: CONVERSATION-HEALTH-GATE-A3 R2 — resolve 4 GPT review blockers
+c5adb084 feat: CONVERSATION-HEALTH-GATE-A3 — Pre-Commit Advisory + Registry Reconciliation
+d9faf057 chore: CONVERSATION-HEALTH-GATE-A2 — record GPT verdict ACCEPTED (R3)
+be0491f8 fix: CONVERSATION-HEALTH-GATE-A2 R3 — clean workspace + summary parser + import path
+9336d56c fix: CONVERSATION-HEALTH-GATE-A2 R2 — resolve 4 GPT blockers

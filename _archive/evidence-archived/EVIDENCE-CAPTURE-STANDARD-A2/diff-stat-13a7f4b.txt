@@ -1,0 +1,6 @@
+# Diff stat for commit 13a7f4b
+# Command: git diff --stat 13a7f4b^..13a7f4b
+
+hooks/sealed-files-manifest.json | 2 +-
+ scripts/build_evidence_pack.py   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)

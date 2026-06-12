@@ -1,0 +1,48 @@
+GPT REVIEW REQUEST: EVIDENCE-CAPTURE-STANDARD-A2 R5
+
+commit_chain: 2d5f902 → b474d4b → ceb9ed0 → 148c550 → 442ad78 → 13a7f4b → c96de98
+head: c96de98
+SHA-256: 6f1124c1281a9e7833e0954eecda13e37496b986f362ccae202897b03e3bad8c
+file_count: 50
+test_result: 1260 passed, 0 failed (full_regression)
+
+=== R4 ISSUE RESOLUTION ===
+
+R4-1: ZIP-included evidence-manifest.json missing zip_size_bytes and zip_sha256
+FIX: Two-pass ZIP build. Pass 1 generates ZIP, extracts size/sha. Manifest patched on disk. Pass 2 rebuilds ZIP with patched manifest. Result: ZIP-internal manifest has zip_size_bytes (int) and zip_sha256 (string).
+
+R4-1b: zip_sha256 circular dependency (manifest in ZIP, sha in manifest)
+FIX: zip_sha256 made OPTIONAL in schema. Added content_sha256 (deterministic hash of all pack files except evidence-manifest.json). This is self-verifiable: reviewer can recompute content_sha256 from ZIP contents and compare. zip_sha256 stored from pass-1 (informational, not self-referential).
+
+R4-2: final-report.md and review.md runtime evidence tables show Actual = N/A
+FIX: gen_review_md() now accepts out_dir parameter, reads runtime-evidence-index.json for actual values. gen_final_report() key-lookup fixed: uses fname without .txt extension (matching index scenario name) instead of space-replaced version. Result: both reports show exit_code=0/exit_code=1 from index, zero N/A.
+
+R4-3: Post-commit count consistency
+NOTE: Counts are computed from single git status snapshot at build time. ZIP internal files are self-consistent.
+
+R4-4: Schema validation
+FIX: evidence-manifest.schema.json updated — pack_info.zip_sha256 optional, content_sha256 added. runtime-evidence-index.schema.json already aligned from R3.
+
+=== EVIDENCE PACK SUMMARY ===
+
+verdict_eligibility: eligible_with_limitations (startup_read_suggest_handoff)
+evidence_completeness: tier_0 12/12, tier_1 4/4, missing: 0
+commit_chain: 7 commits, all with hash/author/timestamp/subject
+pack_info: file_count=50(int), zip_size_bytes(int), content_sha256(string)
+runtime_evidence: 9 scenarios, stale_count=0, metadata_warnings=9
+negative_path_evidence: 10 scenarios
+test_summary: test_count=1260, passed=true
+final-report + review.md: actual values from runtime index, zero N/A
+safety: clean, modified_tracked: 0
+
+请审查附件中的 R5 evidence pack ZIP 并给出裁决。
+
+Return format:
+verdict: accepted | accepted_with_limitation | needs_revision | rejected
+limitations:
+  - <list or none>
+next_task:
+  task_id: <next task or none>
+  authorized: yes | no
+
+END_OF_GPT_RESPONSE

@@ -1,0 +1,11 @@
+# SADP Pre-commit Hook Output (from commit c96de98 message)
+
+fix: ECS-A2 R5 — ZIP metadata convergence + report actual values + schema alignment
+
+- Phase 7: two-pass ZIP with content_sha256 (deterministic, self-verifiable)
+- zip_sha256 optional in schema (circular dependency documented)
+- gen_review_md() reads runtime-evidence-index for actual values
+- gen_final_report() uses fname-based key for index lookup (fixes underscore/space mismatch)
+- evidence-manifest.schema.json: pack_info.content_sha256 added
+
+🤖 Generated with [Qoder][https://qoder.com]

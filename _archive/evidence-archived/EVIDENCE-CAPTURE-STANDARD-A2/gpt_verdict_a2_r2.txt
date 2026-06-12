@@ -1,0 +1,43 @@
+verdict: needs_revision
+
+limitations:
+
+R2 明显修复了 R1 的大部分问题：Tier 0 文件齐备，review.yaml 与 evidence-manifest.json 的顶层 verdict 已基本对齐，modified_tracked = 0，测试为 1260 passed, 0 failed，负路径文件也已进入 evidence pack。
+
+但 evidence-manifest.json 仍存在核心不一致：runtime_evidence.scenario_count = 0，而 runtime-evidence-index.json 实际包含 9 个 scenarios。这说明 R1-4 只修复了 index 文件本身，manifest 汇总层仍未正确读取 runtime index。
+
+runtime-evidence-index.json 内部也有矛盾：9 个 scenarios 都有 PASS/FAIL 状态，但 stale_count = 9，原因是全部缺少 generated_at；同时每个 scenario 又标记 is_stale: false。这会削弱 runtime evidence 的可信度。
+
+evidence-manifest.json 不能通过本次 diff 中新增的 schemas/agent-runtime/evidence-manifest.schema.json 校验，至少缺少 test_summary.test_count。这属于 schema / manifest contract 不一致。
+
+runtime-evidence-index.json 也不能通过本次 diff 中新增的 runtime-evidence-index.schema.json 校验，因为实际文件包含 stale_count、stale_signals 等 schema 未允许字段，同时若 schema 保持严格，source/generated_at/code_version: null 也不符合 string 类型预期。
+
+ZIP 中 review.yaml 出现重复条目。两个副本内容一致，所以不是阻断性问题，但说明打包阶段仍有重复写入或重复添加问题。用户声明 file_count=45，manifest pack_info.file_count=44，实际 unique files=44，也需要修正口径。
+
+post-commit 状态为 registered closure，而不是 clean workspace：modified_tracked=0，但仍有 169 个 untracked，其中 146 个 session artifacts。已登记，不阻断本轮技术修复，但不能声称 fully clean。
+
+next_task:
+task_id: EVIDENCE-CAPTURE-STANDARD-A2-R3
+authorized: yes
+
+建议 R3 只做窄范围修复，不要扩大功能：
+
+YAML
+required_fixes:
+  - make evidence-manifest.runtime_evidence read from runtime-evidence-index.json:
+      scenario_count: 9
+      scenarios: 9 indexed entries
+  - make runtime-evidence-index stale semantics internally consistent:
+      either provide generated_at/source/code_version for every scenario
+      or mark is_stale true consistently
+      or downgrade stale metadata to limitation with explicit rule
+  - align evidence-manifest.json with evidence-manifest.schema.json:
+      add test_summary.test_count
+      ensure all required schema fields are generated
+  - align runtime-evidence-index.json with runtime-evidence-index.schema.json:
+      either update schema to allow stale_count/stale_signals/null metadata
+      or update generated index to match strict schema
+  - remove duplicate review.yaml from ZIP generation
+  - align file_count across ZIP entries, unique file count, manifest pack_info, and final-report
+
+一句话裁定：R2 已经解决 R1 的主体问题，但 runtime evidence 汇总层、schema 一致性和 ZIP file_count 仍有实质不一致，因此不能 accepted；建议进入 R3 小范围修复。

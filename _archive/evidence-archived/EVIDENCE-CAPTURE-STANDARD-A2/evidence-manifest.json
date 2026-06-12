@@ -1,0 +1,254 @@
+{
+  "schema_version": "evidence-manifest.v1",
+  "task_id": "EVIDENCE-CAPTURE-STANDARD-A2",
+  "run_id": "",
+  "base_commit": "2d5f902",
+  "head_commit": "c96de98",
+  "commit_chain": [
+    {
+      "hash": "2d5f90202f5b8866f4f9eef6f4c3d2af77232044",
+      "author": "RD2100",
+      "timestamp": "2026-06-12T09:12:48+08:00",
+      "subject": "chore: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1 — record historical verdict accepted_with_limitation"
+    },
+    {
+      "hash": "b474d4bd4024441adfbf1f5e655a97654c957bf3",
+      "author": "RD2100",
+      "timestamp": "2026-06-12T09:57:47+08:00",
+      "subject": "feat: EVIDENCE-CAPTURE-STANDARD-A2 — canonical evidence pack contract, manifest, verdict eligibility, builder enforcement"
+    },
+    {
+      "hash": "ceb9ed04be49927b6d7c81b37ca3dcee4196d5fd",
+      "author": "RD2100",
+      "timestamp": "2026-06-12T10:18:45+08:00",
+      "subject": "fix: EVIDENCE-CAPTURE-STANDARD-A2 R2 — resolve 7 GPT review blockers"
+    },
+    {
+      "hash": "148c550e26c63b6fe22009a47fe41ec714a5b21f",
+      "author": "RD2100",
+      "timestamp": "2026-06-12T10:36:56+08:00",
+      "subject": "fix: EVIDENCE-CAPTURE-STANDARD-A2 R3 — resolve 6 narrow consistency issues"
+    },
+    {
+      "hash": "442ad785b92602f736be81d9ed9555290bb9f660",
+      "author": "RD2100",
+      "timestamp": "2026-06-12T10:51:02+08:00",
+      "subject": "fix: EVIDENCE-CAPTURE-STANDARD-A2 R4 — schema/manifest alignment + report display"
+    },
+    {
+      "hash": "13a7f4b55b7784043db6e0e282364f7158bb25c3",
+      "author": "RD2100",
+      "timestamp": "2026-06-12T10:55:29+08:00",
+      "subject": "fix: ECS-A2 R4 — zip_size_bytes integer type for schema compliance"
+    },
+    {
+      "hash": "c96de98b8b434edeb2e775f10fda6534bbeaef26",
+      "author": "RD2100",
+      "timestamp": "2026-06-12T11:07:27+08:00",
+      "subject": "fix: ECS-A2 R5 — ZIP metadata convergence + report actual values + schema alignment"
+    }
+  ],
+  "generated_at": "2026-06-12T11:07:40.169909+08:00",
+  "review_yaml_profile": "ecs-v1",
+  "required_files": {
+    "tier_0": [
+      "git-log.txt",
+      "git-status-after.txt",
+      "deferred-files-register.yaml",
+      "diff-stat-combined.txt",
+      "diff.patch",
+      "chain-evidence.json",
+      "test-output.txt",
+      "safety-report.json",
+      "review.md",
+      "review.yaml",
+      "final-report.md",
+      "sadp-audit-raw.txt"
+    ],
+    "tier_1": [
+      "conversation-health/latest.json",
+      "conversation-health/startup-read-latest.json",
+      "ai-guard-scope-check-output.txt",
+      "secret-scan-output.txt"
+    ]
+  },
+  "files_present": [
+    "ai-guard-scope-check-output.txt",
+    "chain-evidence.json",
+    "conversation-health/current-snapshot.json",
+    "conversation-health/latest.json",
+    "conversation-health/startup-read-latest.json",
+    "deferred-files-register.yaml",
+    "diff-stat-148c550.txt",
+    "diff-stat-442ad78.txt",
+    "diff-stat-b474d4b.txt",
+    "diff-stat-c96de98.txt",
+    "diff-stat-ceb9ed0.txt",
+    "diff-stat-combined.txt",
+    "diff.patch",
+    "extra/ai_guard_failure_blocks.txt",
+    "extra/ai_guard_failure_mismatch_rejected.txt",
+    "extra/combined-runtime-evidence.txt",
+    "extra/invalid_json_rejected.txt",
+    "extra/missing_ai_guard_rejected.txt",
+    "extra/missing_sadp_audit_rejected.txt",
+    "extra/null_exit_code_rejected.txt",
+    "extra/pass_with_warnings_forbidden.txt",
+    "extra/sadp_audit_failure_blocks.txt",
+    "extra/test_governance_failure_advisory.txt",
+    "final-report.md",
+    "git-log.txt",
+    "git-show-148c550.txt",
+    "git-show-442ad78.txt",
+    "git-show-b474d4b.txt",
+    "git-show-c96de98.txt",
+    "git-show-ceb9ed0.txt",
+    "git-status-after.txt",
+    "pre-gpt-gate-evidence/access_denied_records_force.txt",
+    "pre-gpt-gate-evidence/auth_required_records_human_required.txt",
+    "pre-gpt-gate-evidence/combined_summary.txt",
+    "pre-gpt-gate-evidence/force_handoff_blocks_submit.txt",
+    "pre-gpt-gate-evidence/human_required_blocks_submit.txt",
+    "pre-gpt-gate-evidence/latest_json_written_for_pre_gpt_gate.txt",
+    "pre-gpt-gate-evidence/legacy_helper_import_failure_blocks.txt",
+    "pre-gpt-gate-evidence/legacy_script_post_response_updates_current_json.txt",
+    "pre-gpt-gate-evidence/missing_current_json_blocks_without_refresh.txt",
+    "pre-gpt-gate-evidence/stale_metrics_warns_or_suggests.txt",
+    "pre-gpt-gate-evidence/successful_metrics_refresh_updates_current_json.txt",
+    "review.md",
+    "review.yaml",
+    "runtime-evidence-index.json",
+    "sadp-audit-raw.txt",
+    "safety-report.json",
+    "secret-scan-output.txt",
+    "test-output.txt"
+  ],
+  "files_missing": {
+    "tier_0": [],
+    "tier_1": []
+  },
+  "test_summary": {
+    "passed": true,
+    "test_count": 1260,
+    "summary_line": "1260 passed, 21 warnings in 46.57s",
+    "mode": "full_regression",
+    "log_included": true
+  },
+  "runtime_evidence": {
+    "index_present": true,
+    "scenario_count": 9,
+    "stale_count": 0,
+    "scenarios": [
+      "extra/ai_guard_failure_blocks.txt",
+      "extra/ai_guard_failure_mismatch_rejected.txt",
+      "extra/invalid_json_rejected.txt",
+      "extra/missing_ai_guard_rejected.txt",
+      "extra/missing_sadp_audit_rejected.txt",
+      "extra/null_exit_code_rejected.txt",
+      "extra/pass_with_warnings_forbidden.txt",
+      "extra/sadp_audit_failure_blocks.txt",
+      "extra/test_governance_failure_advisory.txt"
+    ]
+  },
+  "negative_path_evidence": {
+    "present": true,
+    "scenario_count": 10,
+    "scenarios": [
+      "extra/ai_guard_failure_blocks.txt",
+      "extra/ai_guard_failure_mismatch_rejected.txt",
+      "extra/combined-runtime-evidence.txt",
+      "extra/invalid_json_rejected.txt",
+      "extra/missing_ai_guard_rejected.txt",
+      "extra/missing_sadp_audit_rejected.txt",
+      "extra/null_exit_code_rejected.txt",
+      "extra/pass_with_warnings_forbidden.txt",
+      "extra/sadp_audit_failure_blocks.txt",
+      "extra/test_governance_failure_advisory.txt"
+    ]
+  },
+  "git_status": {
+    "modified_tracked": 0,
+    "untracked_total": 187,
+    "neg_009": 17,
+    "secret_scan": 6,
+    "session_artifacts": 164
+  },
+  "safety": {
+    "secret_scan_clean": true,
+    "ai_guard_clean": true,
+    "hook_integrity": "unknown"
+  },
+  "verdict_eligibility": {
+    "status": "eligible_with_limitations",
+    "reasons": [
+      "startup_read_suggest_handoff"
+    ],
+    "blocking_signals": [],
+    "limitation_signals": [
+      "startup_read_suggest_handoff"
+    ]
+  },
+  "evidence_completeness": {
+    "tier_0_required": [
+      "git-log.txt",
+      "git-status-after.txt",
+      "deferred-files-register.yaml",
+      "diff-stat-combined.txt",
+      "diff.patch",
+      "chain-evidence.json",
+      "test-output.txt",
+      "safety-report.json",
+      "review.md",
+      "review.yaml",
+      "final-report.md",
+      "sadp-audit-raw.txt"
+    ],
+    "tier_0_present": [
+      "git-log.txt",
+      "git-status-after.txt",
+      "deferred-files-register.yaml",
+      "diff-stat-combined.txt",
+      "diff.patch",
+      "chain-evidence.json",
+      "test-output.txt",
+      "safety-report.json",
+      "review.md",
+      "review.yaml",
+      "final-report.md",
+      "sadp-audit-raw.txt"
+    ],
+    "tier_0_missing": [],
+    "tier_1_conditional": [
+      "conversation-health/latest.json",
+      "conversation-health/startup-read-latest.json",
+      "ai-guard-scope-check-output.txt",
+      "secret-scan-output.txt"
+    ],
+    "tier_1_present": [
+      "conversation-health/latest.json",
+      "conversation-health/startup-read-latest.json",
+      "ai-guard-scope-check-output.txt",
+      "secret-scan-output.txt"
+    ],
+    "tier_1_missing": [],
+    "tier_2_optional": [
+      "extra/",
+      "evidence-manifest.json",
+      "runtime-evidence-index.json"
+    ]
+  },
+  "consistency_check": {
+    "all_files_agree": true,
+    "computed": true,
+    "method": "single_snapshot_source"
+  },
+  "limitations": [
+    "startup_read_suggest_handoff"
+  ],
+  "pack_info": {
+    "file_count": 50,
+    "zip_size_bytes": 120254,
+    "zip_sha256": "80899ed4a1b2cedc5c39bcfb32d11c9c442231fdce18d3ac60047db7d89419d7",
+    "content_sha256": "b3ee9b879f968c2f83c32c6d9c4a2f5d9b699d7a3de2f21d2bbaf1e1e099f214"
+  }
+}

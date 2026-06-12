@@ -1,0 +1,7 @@
+# Diff stat for commit ceb9ed0
+# Command: git diff --stat ceb9ed0^..ceb9ed0
+
+hooks/sealed-files-manifest.json        |  2 +-
+ scripts/build_evidence_pack.py          | 96 ++++++++++++++++++++++++---------
+ tests/test_evidence_capture_standard.py |  8 +--
+ 3 files changed, 76 insertions(+), 30 deletions(-)

@@ -1,0 +1,38 @@
+verdict: needs_revision
+
+limitations:
+
+R4 已修复 R3 的一部分关键问题：ZIP SHA-256 匹配，50 entries / 50 unique；commit_chain 已包含 6 个 commit，且每个 commit 都有 hash、author、timestamp、subject；Tier 0 为 12/12，Tier 1 为 4/4；runtime_evidence.scenario_count=9，stale_count=0；test_summary.test_count=1260；测试结果为 1260 passed, 0 failed；modified_tracked=0。
+
+但 evidence-manifest.json 中的 pack_info 仍只有 file_count: 50，缺少本轮声称已注入的 zip_size_bytes 和 zip_sha256。这意味着 R3-2/R4-hotfix 在 ZIP 内证据中并未真正生效，evidence-manifest.json 仍不能通过本轮 schema 要求。
+
+final-report.md 和 review.md 的 runtime evidence 表格仍显示 Actual = N/A，但 runtime-evidence-index.json 中已有真实值，例如 actual: exit_code=0 / exit_code=1。这说明 R3-4 声称的 “final-report 使用 index 中真实 actual values” 未在 ZIP 内体现。
+
+提交说明中的 pack_info.zip_size_bytes=116034, zip_sha256=ede18... 与 ZIP 内 evidence-manifest.json 不一致。当前应以 ZIP 内实际文件为准。
+
+R4 的 workspace 是 registered closure，不是 fully clean：modified_tracked=0，但仍有 182 个 untracked entries，已登记。这个不阻断 R4，但必须保留为 limitation。
+
+runtime-evidence-index.json 本身现在基本一致：9 个 scenarios、stale_count=0、metadata_warnings=9，可作为接受方向；问题主要在 manifest pack_info 和报告层展示未同步。
+
+next_task:
+task_id: EVIDENCE-CAPTURE-STANDARD-A2-R5
+authorized: yes
+
+R5 只需要极小修复：
+
+YAML
+required_fixes:
+  - make ZIP-included evidence-manifest.json actually contain:
+      pack_info:
+        file_count: 50
+        zip_size_bytes: 116034
+        zip_sha256: ede18bccb0a1987e74705fb0f5e8ade489b6794f64bae34212b3b4ecb0e31657
+  - ensure the post-ZIP manifest patch is written back into the actual ZIP, not only to the unpacked/output directory
+  - update final-report.md and review.md runtime evidence tables so Actual values come from runtime-evidence-index.json:
+      example:
+        ai_guard_failure_blocks: exit_code=0
+        ai_guard_failure_mismatch_rejected: exit_code=1
+  - rerun schema validation for evidence-manifest.json after ZIP finalization
+  - keep scope narrow; do not change runtime semantics or introduce new features
+
+一句话裁定：R4 只差最后一层“ZIP 内最终文件同步”问题；主体证据已经接近可接受，但 manifest 的 pack_info 和报告层 Actual 值仍与声明不一致，因此还需 R5 小修。

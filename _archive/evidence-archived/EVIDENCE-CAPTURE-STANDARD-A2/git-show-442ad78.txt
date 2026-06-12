@@ -1,0 +1,164 @@
+commit 442ad785b92602f736be81d9ed9555290bb9f660
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Fri Jun 12 10:51:02 2026 +0800
+
+    fix: EVIDENCE-CAPTURE-STANDARD-A2 R4 — schema/manifest alignment + report display
+    
+    - commit_chain entries include author, timestamp, subject from git log
+    - pack_info patched post-ZIP with zip_size_bytes and zip_sha256
+    - evidence-manifest.schema.json: scenarios.items accepts string or object
+    - gen_final_report() reads runtime-evidence-index actual values instead of N/A
+    
+    🤖 Generated with [Qoder][https://qoder.com]
+
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index 57c9700d..fb49ca58 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-12T10:36:57.4322956+08:00",
++    "generated":  "2026-06-12T10:51:03.4878439+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+@@ -572,7 +572,7 @@
+                              "path":  "schemas/agent-runtime/evidence-index.schema.json"
+                          },
+                          {
+-                             "sha256":  "8D96E9E2D5166A813E14E6F1B54046EDBE9ED8D8FA53C0310D5C3C88448AE7CB",
++                             "sha256":  "B5708AA0348306B39A5F5398A97DBB395AF278B6DEADE6E76B06232F77862077",
+                              "path":  "schemas/agent-runtime/evidence-manifest.schema.json"
+                          },
+                          {
+diff --git a/schemas/agent-runtime/evidence-manifest.schema.json b/schemas/agent-runtime/evidence-manifest.schema.json
+index cc041406..3146afb6 100644
+--- a/schemas/agent-runtime/evidence-manifest.schema.json
++++ b/schemas/agent-runtime/evidence-manifest.schema.json
+@@ -165,7 +165,7 @@
+           "type": "array",
+           "description": "Individual runtime evidence scenario summaries.",
+           "items": {
+-            "type": "object"
++            "type": ["string", "object"]
+           }
+         }
+       },
+diff --git a/scripts/build_evidence_pack.py b/scripts/build_evidence_pack.py
+index 2111c893..762027f4 100644
+--- a/scripts/build_evidence_pack.py
++++ b/scripts/build_evidence_pack.py
+@@ -222,6 +222,24 @@ def gather_git_data(repo: str, commits: List[str], base: str, head: str = "HEAD"
+         line.split()[0] for line in chain_out.split("\n") if line.strip()
+     ]
+ 
++    # Detailed chain data with author, timestamp, subject (for evidence-manifest.json)
++    chain_detail_out, _ = run(
++        ["git", "log", "--format=%H@@%an@@%aI@@%s", "--reverse", f"{base}^..{head}"],
++        cwd=repo,
++    )
++    data["chain_commits"] = []
++    for line in chain_detail_out.split("\n"):
++        if not line.strip():
++            continue
++        parts = line.split("@@", 3)
++        if len(parts) >= 4:
++            data["chain_commits"].append({
++                "hash": parts[0],
++                "author": parts[1],
++                "timestamp": parts[2],
++                "subject": parts[3],
++            })
++
+     # SADP audit from latest commit message (fallback if no --hook-log)
+     if commits:
+         sadp_out, _ = run(
+@@ -858,10 +876,11 @@ def gen_evidence_manifest(
+         except (OSError, json.JSONDecodeError, ValueError):
+             pass
+ 
+-    # Build commit chain
+-    chain = []
+-    for h in git_data.get("chain_hashes", []):
+-        chain.append({"hash": h})
++    # Build commit chain (prefer detailed data with author/timestamp/subject)
++    chain = git_data.get("chain_commits", [])
++    if not chain:
++        chain = [{"hash": h, "author": "", "timestamp": "", "subject": ""}
++                 for h in git_data.get("chain_hashes", [])]
+ 
+     manifest = {
+         "schema_version": "evidence-manifest.v1",
+@@ -1298,7 +1317,8 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
+ def gen_final_report(git_data: Dict, task_id: str, commits: List[str],
+                      base: str, test_summary: str, tests_passed: bool,
+                      zip_info: Optional[Dict], now: str,
+-                     extra_dir: Optional[str] = None) -> str:
++                     extra_dir: Optional[str] = None,
++                     out_dir: Optional[str] = None) -> str:
+     s = git_data["status"]
+     n_mod = len(s["modified"])
+     n_unt = len(s["untracked"])
+@@ -1378,6 +1398,22 @@ def gen_final_report(git_data: Dict, task_id: str, commits: List[str],
+         if has_combined:
+             count_label += " + 1 combined file"
+         if extra_files:
++            # Load runtime-evidence-index.json for actual values if available
++            _rt_idx_actuals: Dict[str, str] = {}
++            if out_dir:
++                _rt_idx_path = os.path.join(out_dir, "runtime-evidence-index.json")
++                if os.path.isfile(_rt_idx_path):
++                    try:
++                        with open(_rt_idx_path, encoding="utf-8") as _rt_idx_f:
++                            _rt_idx_data = json.load(_rt_idx_f)
++                            for _sc in _rt_idx_data.get("scenarios", []):
++                                _sc_name = _sc.get("name", "")
++                                _sc_actual = _sc.get("actual")
++                                if _sc_name and _sc_actual:
++                                    _rt_idx_actuals[_sc_name] = _sc_actual
++                    except (OSError, json.JSONDecodeError, ValueError):
++                        pass
++
+             lines.extend([
+                 "",
+                 "## Runtime Negative-Path Evidence",
+@@ -1406,7 +1442,8 @@ def gen_final_report(git_data: Dict, task_id: str, commits: List[str],
+                 if not expected:
+                     expected = "exit!=0"
+                 if not actual:
+-                    actual = "N/A"
++                    # Fall back to runtime-evidence-index actual value if available
++                    actual = _rt_idx_actuals.get(scenario, "N/A")
+                 lines.append(f"| {i} | {scenario} | {expected} | {actual} | PASS |")
+             if has_combined:
+                 lines.append(f"| — | combined evidence summary | — | — | included |")
+@@ -1728,12 +1765,26 @@ def build_evidence_pack(
+     # Overwrite final-report.md on disk with the version that includes ZIP info
+     final_with_zip = gen_final_report(git_data, task_id, commits, base,
+                                       test_summary, tests_passed, zip_info, now,
+-                                      extra_dir=extra_dir)
++                                      extra_dir=extra_dir, out_dir=out_dir)
+     # Write directly (not through writer, to avoid duplicating in written list)
+     final_path = os.path.join(out_dir, "final-report.md")
+     with open(final_path, "w", encoding="utf-8") as fh:
+         fh.write(final_with_zip)
+ 
++    # Re-read evidence-manifest.json and patch pack_info with ZIP metadata
++    manifest_path = os.path.join(out_dir, "evidence-manifest.json")
++    if os.path.isfile(manifest_path):
++        try:
++            with open(manifest_path, encoding="utf-8") as _mf:
++                _manifest_data = json.load(_mf)
++            _manifest_data["pack_info"]["zip_size_bytes"] = zip_info["size_bytes"]
++            _manifest_data["pack_info"]["zip_sha256"] = zip_info["sha256"]
++            with open(manifest_path, "w", encoding="utf-8") as _mf:
++                json.dump(_manifest_data, _mf, indent=2, ensure_ascii=False)
++            print("  evidence-manifest.json patched with zip_size_bytes and zip_sha256")
++        except (OSError, json.JSONDecodeError, KeyError) as _exc:
++            print(f"  [WARN] Could not patch evidence-manifest.json: {_exc}")
++
+     # ---- Phase 8: Summary ----
+     print("\n" + "=" * 60)
+     print("  EVIDENCE PACK BUILD COMPLETE")

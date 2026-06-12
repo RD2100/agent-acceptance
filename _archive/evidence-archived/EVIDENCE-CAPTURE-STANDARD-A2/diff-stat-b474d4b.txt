@@ -1,0 +1,16 @@
+# Diff stat for commit b474d4b
+# Command: git diff --stat b474d4b^..b474d4b
+
+.ai/current-task.yaml                              | 165 ++++-
+ .ai/tasks/evidence-capture-standard-a1.yaml        |  11 +-
+ .ai/tasks/evidence-capture-standard-a2.yaml        | 153 ++++
+ .../EVIDENCE-CAPTURE-STANDARD-A2/gpt_review_r1.txt | 480 ++++++++++++
+ .../EVIDENCE-CAPTURE-STANDARD-A2/gpt_review_r2.txt | 180 +++++
+ docs/agent-runtime/evidence-capture-standard.md    | 456 ++++++++++++
+ docs/agent-runtime/evidence-pack-review-rules.md   | 345 +++++++++
+ hooks/sealed-files-manifest.json                   |  18 +-
+ .../agent-runtime/evidence-manifest.schema.json    | 453 ++++++++++++
+ .../runtime-evidence-index.schema.json             | 115 +++
+ scripts/build_evidence_pack.py                     | 575 +++++++++++++-
+ tests/test_evidence_capture_standard.py            | 823 +++++++++++++++++++++
+ 12 files changed, 3718 insertions(+), 56 deletions(-)

@@ -1,0 +1,15 @@
+verdict: accepted_with_limitation
+
+limitations:
+
+verdict_eligibility 仍为 eligible_with_limitations，限制信号是 startup_read_suggest_handoff。
+
+当前是 registered closure，不是 fully clean workspace：modified_tracked=0，但仍有 187 个 untracked entries，已在 register 中登记。
+
+content_sha256 可复算且匹配，最终 ZIP SHA-256 也与提交值一致；但 evidence-manifest.json / final-report.md 中的 zip_sha256 与 zip_size_bytes 是 pass-1 informational 值，不等于最终上传 ZIP 的 SHA/size。由于 R5 已引入 content_sha256 解决自引用问题，这不阻断接受，但后续文案应明确标注为 informational。
+
+commit_chain 包含 13a7f4b，但 ZIP 中没有对应的 git-show-13a7f4b.txt / diff-stat-13a7f4b.txt。当前 combined diff、manifest、schema 与测试均已通过，不阻断 R5，但后续 evidence pack 最好对每个 in-scope commit 都生成对应 git-show。
+
+next_task:
+task_id: none
+authorized: no

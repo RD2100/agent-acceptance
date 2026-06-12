@@ -1,0 +1,224 @@
+commit 148c550e26c63b6fe22009a47fe41ec714a5b21f
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Fri Jun 12 10:36:56 2026 +0800
+
+    fix: EVIDENCE-CAPTURE-STANDARD-A2 R3 — resolve 6 narrow consistency issues
+    
+    - Manifest runtime_evidence.scenario_count reads from runtime-evidence-index.json (was hardcoded 0)
+    - Stale detection separated: code_version mismatch = stale; missing metadata = metadata_warnings
+    - test_summary.test_count parsed from pytest summary line
+    - runtime-evidence-index.schema.json updated: stale_count, stale_signals, metadata_warnings, nullable fields
+    - FileWriter.write() deduplicates entries (fixes duplicate review.yaml in ZIP)
+    - pack_info.file_count includes manifest itself (+1)
+    
+    🤖 Generated with [Qoder][https://qoder.com]
+
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index 3db70738..57c9700d 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-12T10:18:46.5666282+08:00",
++    "generated":  "2026-06-12T10:36:57.4322956+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+@@ -604,7 +604,7 @@
+                              "path":  "schemas/agent-runtime/run-spec.schema.json"
+                          },
+                          {
+-                             "sha256":  "4A5ECA94BE01609760B1A4C22C6FCF13B8B582EB1767A353439BDF7E53EA93B7",
++                             "sha256":  "5C76D75095CA28EDDE51752DF1B507895179AC2437E0661377E16EB0CE50BE8D",
+                              "path":  "schemas/agent-runtime/runtime-evidence-index.schema.json"
+                          },
+                          {
+diff --git a/schemas/agent-runtime/runtime-evidence-index.schema.json b/schemas/agent-runtime/runtime-evidence-index.schema.json
+index 78e540b1..aaa421eb 100644
+--- a/schemas/agent-runtime/runtime-evidence-index.schema.json
++++ b/schemas/agent-runtime/runtime-evidence-index.schema.json
+@@ -45,24 +45,24 @@
+             "description": "Execution status of the scenario."
+           },
+           "expected": {
+-            "type": "string",
++            "type": ["string", "null"],
+             "description": "Expected result description."
+           },
+           "actual": {
+-            "type": "string",
++            "type": ["string", "null"],
+             "description": "Actual result description."
+           },
+           "source": {
+-            "type": "string",
++            "type": ["string", "null"],
+             "description": "Command or script that produced the scenario result."
+           },
+           "generated_at": {
+-            "type": "string",
++            "type": ["string", "null"],
+             "format": "date-time",
+             "description": "ISO8601 timestamp when this scenario was generated."
+           },
+           "code_version": {
+-            "type": "string",
++            "type": ["string", "null"],
+             "description": "Head commit hash at the time this scenario was generated."
+           },
+           "is_stale": {
+@@ -76,6 +76,21 @@
+         },
+         "additionalProperties": false
+       }
++    },
++    "stale_count": {
++      "type": "integer",
++      "minimum": 0,
++      "description": "Number of scenarios with is_stale=true (code_version mismatch with head_commit)."
++    },
++    "stale_signals": {
++      "type": "array",
++      "items": { "type": "string" },
++      "description": "Human-readable list of staleness signals (code_version mismatches)."
++    },
++    "metadata_warnings": {
++      "type": "array",
++      "items": { "type": "string" },
++      "description": "Human-readable list of metadata completeness warnings (e.g. missing generated_at). These do not affect is_stale."
+     }
+   },
+   "additionalProperties": false,
+diff --git a/scripts/build_evidence_pack.py b/scripts/build_evidence_pack.py
+index 1e538aa7..2111c893 100644
+--- a/scripts/build_evidence_pack.py
++++ b/scripts/build_evidence_pack.py
+@@ -134,7 +134,8 @@ class FileWriter:
+             os.makedirs(parent, exist_ok=True)
+         with open(path, "w", encoding="utf-8") as fh:
+             fh.write(content)
+-        self.written.append(name)
++        if name not in self.written:
++            self.written.append(name)
+         size = len(content)
+         print(f"  [{len(self.written):>2}] {name}  ({size:,} chars)")
+         return path
+@@ -717,6 +718,7 @@ def gen_runtime_evidence_index(
+ 
+     scenarios: List[Dict[str, Any]] = []
+     stale_signals: List[str] = []
++    metadata_warnings: List[str] = []
+ 
+     for fname in sorted(os.listdir(extra_dir)):
+         if not fname.endswith(".txt"):
+@@ -781,7 +783,7 @@ def gen_runtime_evidence_index(
+                     f"{fname}: code_version={scenario['code_version']} != head={head_commit}"
+                 )
+             if not scenario["generated_at"]:
+-                stale_signals.append(f"{fname}: missing generated_at")
++                metadata_warnings.append(f"{fname}: missing generated_at")
+ 
+         except (OSError, ValueError) as exc:
+             scenario["status"] = "UNKNOWN"
+@@ -792,13 +794,16 @@ def gen_runtime_evidence_index(
+     if not scenarios:
+         return None
+ 
++    stale_count = sum(1 for s in scenarios if s.get("is_stale"))
++
+     index = {
+         "schema_version": "runtime-evidence-index.v1",
+         "generated_at": now,
+         "head_commit": head_commit,
+         "scenarios": scenarios,
+-        "stale_count": len(stale_signals),
++        "stale_count": stale_count,
+         "stale_signals": stale_signals,
++        "metadata_warnings": metadata_warnings,
+     }
+     return json.dumps(index, indent=2, ensure_ascii=False)
+ 
+@@ -829,6 +834,30 @@ def gen_evidence_manifest(
+     n_unt = len(s["untracked"])
+     sum_ok = (n_neg + n_sec + n_ses) == n_unt
+ 
++    # Parse test_count from summary line (e.g. "1260 passed, 21 warnings in 46.54s")
++    import re as _re
++    _tc_match = _re.search(r"(\d+)\s+passed", test_summary)
++    test_count = int(_tc_match.group(1)) if _tc_match else 0
++
++    # Read runtime-evidence-index.json to get scenario data
++    rt_scenario_count = 0
++    rt_scenarios: List[str] = []
++    rt_stale_count = 0
++    rt_index_path = os.path.join(repo, "_evidence", "EVIDENCE-CAPTURE-STANDARD-A2",
++                                  "runtime-evidence-index.json")
++
++    if os.path.isfile(rt_index_path):
++        try:
++            with open(rt_index_path, encoding="utf-8") as _rtf:
++                _rt_data = json.load(_rtf)
++                rt_scenarios_list = _rt_data.get("scenarios", [])
++                rt_scenario_count = len(rt_scenarios_list)
++                rt_scenarios = [s.get("file", s.get("name", ""))
++                                for s in rt_scenarios_list]
++                rt_stale_count = _rt_data.get("stale_count", 0)
++        except (OSError, json.JSONDecodeError, ValueError):
++            pass
++
+     # Build commit chain
+     chain = []
+     for h in git_data.get("chain_hashes", []):
+@@ -854,14 +883,16 @@ def gen_evidence_manifest(
+         },
+         "test_summary": {
+             "passed": tests_passed,
++            "test_count": test_count,
+             "summary_line": test_summary,
+             "mode": test_mode,
+             "log_included": "test-output.txt" in written_files,
+         },
+         "runtime_evidence": {
+             "index_present": "runtime-evidence-index.json" in written_files,
+-            "scenario_count": 0,
+-            "scenarios": [],
++            "scenario_count": rt_scenario_count,
++            "stale_count": rt_stale_count,
++            "scenarios": rt_scenarios,
+         },
+         "negative_path_evidence": {
+             "present": any(f.startswith("extra/") for f in written_files),
+@@ -889,7 +920,7 @@ def gen_evidence_manifest(
+         },
+         "limitations": verdict_eligibility.get("limitation_signals", []),
+         "pack_info": {
+-            "file_count": len(written_files),
++            "file_count": len(written_files) + 1,  # +1 for manifest itself
+         },
+     }
+     return json.dumps(manifest, indent=2, ensure_ascii=False)
+diff --git a/tests/test_evidence_capture_standard.py b/tests/test_evidence_capture_standard.py
+index cea5e387..799eccfa 100644
+--- a/tests/test_evidence_capture_standard.py
++++ b/tests/test_evidence_capture_standard.py
+@@ -545,7 +545,7 @@ class TestRuntimeEvidenceIndex:
+         assert any("code_version" in s for s in index["stale_signals"])
+ 
+     def test_stale_detection_missing_generated_at(self, tmp_path):
+-        """Scenario without '# Generated:' -> stale_signals contains 'missing generated_at'."""
++        """Scenario without '# Generated:' -> metadata_warnings contains 'missing generated_at'."""
+         extra = tmp_path / "extra"
+         extra.mkdir()
+         scenario_file = extra / "no_gen_time.txt"
+@@ -561,7 +561,8 @@ class TestRuntimeEvidenceIndex:
+             now="2026-06-12T10:00:00Z",
+         )
+         index = json.loads(raw)
+-        assert any("missing generated_at" in s for s in index["stale_signals"])
++        assert any("missing generated_at" in s for s in index["metadata_warnings"])
++        assert index["stale_count"] == 0  # missing metadata != stale
+ 
+     def test_skips_combined_files(self, tmp_path):
+         """File with 'combined' in name is skipped."""

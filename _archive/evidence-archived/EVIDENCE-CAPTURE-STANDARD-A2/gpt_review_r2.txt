@@ -1,0 +1,180 @@
+可以启动执行。整体 TaskSpec 已经收敛到可落地范围，不再过大，也没有把 SADP review schema、旧 linter、历史 pack 迁移等高风险内容塞进 A2。
+
+我的结论：
+
+YAML
+task_id: EVIDENCE-CAPTURE-STANDARD-A2
+status: authorized
+ask_before_starting: no
+execute_immediately: yes
+
+但建议在正式执行前做 5 个小修订，这些不改变方向，只是避免后续验收时产生歧义。
+
+需要微调的 5 点
+1. runtime-evidence-index.schema.json 不应再写“可选”
+
+你的 TaskSpec 后面已经要求：
+
+runtime-evidence-index.json generated from .txt scenarios
+
+并且 acceptance criteria 也要求 runtime negative-path evidence 进入 evidence pack。既然如此，schema 不应写成“可选”。
+
+建议改为：
+
+4. 新建 schemas/agent-runtime/runtime-evidence-index.schema.json
+
+不要写“可选”。否则执行智能体可能跳过，验收时又会出现“文档要求生成 index，但 schema 没有”的不一致。
+
+2. 把 consistency_check.all_files_agree 从硬编码 true 纳入 A2
+
+Gate 0 已发现：
+
+consistency_check.all_files_agree hardcoded true
+
+这属于 evidence pack 可信度核心问题，建议明确加入 build_evidence_pack.py 改造项：
+
+- consistency_check.all_files_agree 不得硬编码 true；
+- 必须由 review.yaml / final-report.md / safety-report.json / git-status-after.txt 等关键文件的实际字段一致性计算得出；
+- 如果无法计算，必须写明 unknown / not_checked，而不是 true。
+
+这个不算扩大范围，因为它直接服务于 “deterministic builder validation”。
+
+3. missing review.yaml / final-report.md 测试要避免循环逻辑
+
+因为 review.yaml 和 final-report.md 是 builder 自己生成的，测试“缺失 review.yaml → needs_more_evidence”时，不能简单在 builder 正常路径里删除它，否则会变成自相矛盾。
+
+建议写清楚：
+
+missing review.yaml / final-report.md 测试应作用于 evidence pack validation / manifest validation 阶段，
+而不是要求 builder 在正常生成路径中先生成又缺失。
+
+也就是说，A2 最好拆出一个内部函数，例如：
+
+validate_evidence_pack_contract(pack_dir_or_file_list)
+classify_evidence_completeness(...)
+compute_verdict_eligibility(...)
+
+测试可以对这些函数喂入缺失文件列表。
+
+4. stale_extra_evidence_detected 需要定义判定规则
+
+你列了这个 runtime evidence 场景，但还没有定义什么叫 stale。
+
+建议加一条规则：
+
+stale runtime evidence is detected when:
+- scenario header Code version != manifest.head_commit; or
+- scenario file generated_at is absent while runtime index requires it; or
+- scenario file is present in extra/ but not referenced by runtime-evidence-index.json.
+
+这样 builder 才能确定性判断，不会靠人工猜。
+
+5. --head 参数要明确影响哪些输出
+
+建议写清：
+
+--head must affect:
+- manifest.head_commit
+- commit_chain
+- diff.patch / git diff base..head
+- git-show.txt
+- runtime-evidence-index Code version comparison
+
+否则只把 head_commit 写进 manifest，但 diff 仍然用 HEAD，就会产生新的证据不一致。
+
+对 6 个问题的最终确认
+Q1：范围是否合适？
+
+合适。按你当前版本，加上上面 5 个微调后即可启动。
+保持 deny paths 是对的，尤其不要碰：
+
+pre_commit_*.py
+check_handoff_needed.py
+startup_conversation_health_check.py
+validate_hook_output.py
+pre-commit.governance.ps1
+sub-agent-dispatch-protocol.md
+evidence_pack_linter.py
+
+这能避免 ECS-A2 变成跨系统重构。
+
+Q2：verdict_eligibility 聚合信号是否够？
+
+基本够，但建议最终固定为：
+
+required_files_present
+schema_validity
+test_status
+full_regression_claim_vs_log
+runtime_claim_vs_artifact
+negative_path_claim_vs_artifact
+modified_tracked
+safety_status
+conversation_health
+startup_read
+hook_output_status when relevant
+limitations
+
+你现在的方案已经覆盖核心项，只需要把 schema_validity、runtime_claim_vs_artifact、full_regression_claim_vs_log 写得更显性。
+
+Q3：manifest schema 怎么处理？
+
+确认新建：
+
+schemas/agent-runtime/evidence-manifest.schema.json
+
+并在文档中声明：
+
+evidence-index.schema.json = legacy
+evidence-manifest.schema.json = ECS-A2 canonical schema
+
+不要强行复用旧 schema。
+
+Q4：必备文件列表以谁为准？
+
+确认采用你现在的分层方案：
+
+Tier 0: 所有 pack 必备
+Tier 1: 条件必备
+Tier 2: 可选
+
+不要再纠结 7/9/10/11 哪个数字对。这个分层方案比固定数量更稳。
+
+Q5：SADP 0.R.2 偏离是否本轮修？
+
+不修。你现在的处理方式正确：
+
+Relationship to SADP 0.R.2 Review YAML
+review_yaml_profile: ecs-v1
+后续另开 SADP-REVIEW-YAML-ALIGNMENT-A1
+
+这能避免破坏 17 个历史 review.yaml 和已 accepted 结论。
+
+Q6：runtime evidence 格式是否需要 JSON schema？
+
+确认采用双轨制：
+
+.txt scenario 文件继续保留
+header 标准化
+runtime-evidence-index.json 机器可读
+runtime-evidence-index.schema.json 校验 index
+
+这比强制所有 runtime evidence JSON 化更现实。
+
+最终授权建议
+
+可以授权立即执行，但建议把授权写成：
+
+YAML
+task_id: EVIDENCE-CAPTURE-STANDARD-A2
+authorized: 已授权
+execute_immediately: 是
+ask_before_starting: 否
+required_pre_execution_adjustments:
+  - runtime-evidence-index.schema.json 改为必做项
+  - consistency_check.all_files_agree 不得继续硬编码 true
+  - missing review/final-report 测试应基于 contract validation，而不是正常 builder 生成路径
+  - stale_extra_evidence_detected 必须定义确定性规则
+  - --head 必须影响 manifest、diff、git-show、commit_chain
+
+一句话：这份修订后的 TaskSpec 可以启动执行；只需把 runtime evidence index schema、consistency check、stale evidence 判定和 --head 语义写得更硬，避免 A2 验收时出现新的证据一致性 blocker。

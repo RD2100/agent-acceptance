@@ -1,0 +1,60 @@
+GPT REVIEW REQUEST: EVIDENCE-CAPTURE-STANDARD-A2 R3
+
+commit_chain: 2d5f902 → b474d4b → ceb9ed0 → 148c550
+head: 148c550
+SHA-256: 8d0592bb42e4a8ead7b6dbef4912d01efd4d69755d3d39ad5f57eed222f8b971
+file_count: 46
+test_result: 1260 passed, 0 failed (full_regression)
+
+=== R2 ISSUE RESOLUTION ===
+
+R2-1: runtime_evidence.scenario_count = 0, manifest doesn't read runtime index
+FIX: gen_evidence_manifest() now reads runtime-evidence-index.json from disk and extracts scenario_count, stale_count, and scenario file list. Result: scenario_count=9, stale_count=0, scenarios=[9 file paths].
+
+R2-2: stale_count=9 but is_stale=false for all scenarios (missing generated_at mixed into stale)
+FIX: Stale detection separated into two categories:
+  - code_version mismatch → is_stale=true, counted in stale_count, added to stale_signals
+  - missing generated_at → metadata_warnings only, NOT counted in stale_count
+Result: stale_count=0, metadata_warnings=9, is_stale=false for all. Internally consistent.
+
+R2-3: evidence-manifest.json missing test_summary.test_count
+FIX: test_count parsed from pytest summary line via regex. Result: test_count=1260.
+
+R2-4: runtime-evidence-index.json fails schema (extra fields, null values)
+FIX: runtime-evidence-index.schema.json updated:
+  - Added stale_count (integer), stale_signals (array), metadata_warnings (array) as optional properties
+  - Changed source, generated_at, code_version to type ["string", "null"]
+  - additionalProperties: false still enforced
+Result: generated index passes schema validation.
+
+R2-5: Duplicate review.yaml in ZIP
+FIX: FileWriter.write() now checks `if name not in self.written` before appending. Result: ZIP has 46 entries, 46 unique, no duplicates.
+
+R2-6: file_count mismatch (manifest vs actual)
+FIX: pack_info.file_count = len(written_files) + 1 (accounts for manifest itself). Result: file_count=46, ZIP entries=46.
+
+=== EVIDENCE PACK SUMMARY ===
+
+verdict_eligibility: eligible_with_limitations
+  blocking_signals: []
+  limitation_signals: [startup_read_suggest_handoff]
+evidence_completeness:
+  tier_0: 12/12, tier_1: 4/4, missing: 0
+runtime_evidence: index present, 9 scenarios, stale_count=0
+negative_path_evidence: present, 10 scenarios
+test_summary: test_count=1260, passed=true, mode=full_regression
+safety: secret_scan_clean, ai_guard_clean
+modified_tracked: 0
+consistency: PASS (17+6+146=169)
+
+请审查附件中的 R3 evidence pack ZIP 并给出裁决。
+
+Return format:
+verdict: accepted | accepted_with_limitation | needs_revision | rejected
+limitations:
+  - <list or none>
+next_task:
+  task_id: <next task or none>
+  authorized: yes | no
+
+END_OF_GPT_RESPONSE

@@ -1,0 +1,23 @@
+verdict: needs_revision
+limitations:
+
+The re-uploaded ZIP matches the stated SHA-256 and file_count, but it appears to be the same evidence pack previously reviewed; the core evidence inconsistencies remain unresolved.
+
+evidence-manifest.json and review.yaml both classify review.yaml and final-report.md as missing Tier 0 files even though both files are present in the ZIP.
+
+evidence-manifest.json reports verdict_eligibility.status: needs_more_evidence, while review.yaml top-level verdict remains EVIDENCE_COMPLETE, creating a direct internal contradiction.
+
+evidence-manifest.json reports negative_path_evidence.present: false and scenario_count: 0, even though extra/ contains 9 negative-path scenario files and runtime-evidence-index.json indexes them.
+
+runtime-evidence-index.json marks all indexed scenarios as status: UNKNOWN because required standardized headers are missing, while final-report.md reports the same scenarios as PASS.
+
+Tier 0 file classification does not match the approved TaskSpec: evidence-manifest.json, secret-scan output, git-status-before.txt, and task/current-task snapshot are not handled consistently as Tier 0 required files.
+
+verdict_eligibility and evidence_completeness appear to be computed before review.yaml, final-report.md, evidence-manifest.json, runtime-evidence-index.json, and conversation-health files are finalized, causing false missing-file classifications.
+
+modified_tracked > 0 is treated as a limitation path in implementation/tests, but the approved TaskSpec requires it to block clean eligibility unless a deferred decision record exists.
+next_task:
+task_id: EVIDENCE-CAPTURE-STANDARD-A2-R2
+authorized: yes
+
+END_OF_GPT_RESPONSE

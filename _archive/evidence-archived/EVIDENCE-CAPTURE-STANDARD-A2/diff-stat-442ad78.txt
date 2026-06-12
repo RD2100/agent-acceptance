@@ -1,0 +1,7 @@
+# Diff stat for commit 442ad78
+# Command: git diff --stat 442ad78^..442ad78
+
+hooks/sealed-files-manifest.json                   |  4 +-
+ .../agent-runtime/evidence-manifest.schema.json    |  2 +-
+ scripts/build_evidence_pack.py                     | 65 +++++++++++++++++++---
+ 3 files changed, 61 insertions(+), 10 deletions(-)

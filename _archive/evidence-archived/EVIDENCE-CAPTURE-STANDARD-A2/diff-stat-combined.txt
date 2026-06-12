@@ -1,0 +1,16 @@
+# Combined diff stat: 2d5f902..HEAD
+# Command: git diff 2d5f902..HEAD --stat
+
+.ai/current-task.yaml                              | 165 +++-
+ .ai/tasks/evidence-capture-standard-a1.yaml        |  11 +-
+ .ai/tasks/evidence-capture-standard-a2.yaml        | 153 ++++
+ .../EVIDENCE-CAPTURE-STANDARD-A2/gpt_review_r1.txt | 480 ++++++++++++
+ .../EVIDENCE-CAPTURE-STANDARD-A2/gpt_review_r2.txt | 180 +++++
+ docs/agent-runtime/evidence-capture-standard.md    | 456 ++++++++++++
+ docs/agent-runtime/evidence-pack-review-rules.md   | 345 +++++++++
+ hooks/sealed-files-manifest.json                   |  18 +-
+ .../agent-runtime/evidence-manifest.schema.json    | 457 ++++++++++++
+ .../runtime-evidence-index.schema.json             | 130 ++++
+ scripts/build_evidence_pack.py                     | 778 ++++++++++++++++++-
+ tests/test_evidence_capture_standard.py            | 826 +++++++++++++++++++++
+ 12 files changed, 3922 insertions(+), 77 deletions(-)

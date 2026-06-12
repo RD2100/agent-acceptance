@@ -1,0 +1,45 @@
+verdict: needs_revision
+
+limitations:
+
+R3 已实质修复 R2 的大部分问题：ZIP SHA-256 匹配，46 entries / 46 unique，无重复 review.yaml；Tier 0 为 12/12，Tier 1 为 4/4；runtime_evidence.scenario_count=9；stale_count=0；test_summary.test_count=1260；modified_tracked=0；测试结果为 1260 passed, 0 failed。
+
+runtime-evidence-index.json 现在可以通过本次 diff 中的 runtime-evidence-index.schema.json 校验，metadata_warnings=9 与 stale_count=0 的语义也基本一致。
+
+但 evidence-manifest.json 仍不能通过本次 diff 中的 schemas/agent-runtime/evidence-manifest.schema.json 校验。主要问题包括：commit_chain[*] 只有 hash，缺少 schema 要求的 author、timestamp、subject；pack_info 缺少 zip_size_bytes 和 zip_sha256；runtime_evidence.scenarios 在 manifest 中是字符串路径列表，但 schema 要求对象数组。
+
+用户提交说明中的 post-commit 一致性口径仍不准确：说明中写 17+6+146=169，但 ZIP 内 git-status-after.txt、deferred-files-register.yaml、safety-report.json、review.yaml、final-report.md 实际一致记录为 17+6+152=175。ZIP 内部是自洽的，但提交说明与证据包不一致。
+
+review.md / final-report.md 的 runtime negative-path 表格里 Actual 仍显示 N/A，而 runtime-evidence-index.json 中已有 actual: exit_code=...。这不是 blocker，但说明报告层展示还没有完全复用 index 的真实字段。
+
+当前 workspace 是 registered closure，不是 clean workspace：modified_tracked=0，但仍有 175 个 untracked entries，均已登记。本轮可作为 limitation 接受，但不能声称 fully clean。
+
+next_task:
+task_id: EVIDENCE-CAPTURE-STANDARD-A2-R4
+authorized: yes
+
+R4 只需要窄范围修复：
+
+YAML
+required_fixes:
+  - align evidence-manifest.json with evidence-manifest.schema.json:
+      commit_chain[*]:
+        - hash
+        - author
+        - timestamp
+        - subject
+      pack_info:
+        - file_count
+        - zip_size_bytes
+        - zip_sha256
+      runtime_evidence.scenarios:
+        - either generate object entries matching schema
+        - or relax schema to allow string path lists
+  - update final-report.md and review.md runtime evidence table so Actual uses runtime-evidence-index.json actual values instead of N/A
+  - ensure submission summary, final-report, review.yaml, safety-report, deferred register all use the same post-commit count:
+      current evidence value: 17 + 6 + 152 = 175
+  - rerun schema validation for both:
+      evidence-manifest.json
+      runtime-evidence-index.json
+
+一句话裁定：R3 基本完成了 R2 的功能性修复，但 manifest 仍与自己的 schema 不一致，所以还不能 accepted；进入 R4 小修即可。

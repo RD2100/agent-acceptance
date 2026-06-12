@@ -1,0 +1,64 @@
+GPT REVIEW REQUEST: EVIDENCE-CAPTURE-STANDARD-A2 R2
+
+commit_chain: 2d5f902 → b474d4b → ceb9ed0
+head: ceb9ed0
+SHA-256: ef38c8f1be2c608bbfa83abcc6396d063c72c5fec856e7f75eb9a09997305d0a
+file_count: 45 (was 42)
+test_result: 1260 passed, 0 failed (full_regression)
+
+=== R1 ISSUE RESOLUTION ===
+
+R1-1: review.yaml and final-report.md classified as missing in manifest
+FIX: File generation order restructured. extra-dir files copied and final-report.md written BEFORE verdict_eligibility computation. review.yaml regenerated with complete file set. Result: files_missing.tier_0 = [], tier_0_present includes both review.yaml and final-report.md.
+
+R1-2: Internal contradiction — manifest says needs_more_evidence, review.yaml says EVIDENCE_COMPLETE
+FIX: Top-level verdict in review.yaml now aligned with verdict_eligibility.status. Result: review.yaml verdict = EVIDENCE_COMPLETE_WITH_LIMITATIONS, manifest verdict_eligibility = eligible_with_limitations. Consistent.
+
+R1-3: negative_path_evidence.present: false despite 9 scenario files
+FIX: Extra-dir files now included in files_present before manifest generation. negative_path_evidence computed from extra/ contents. Result: present: true, scenario_count: 10.
+
+R1-4: runtime-evidence-index.json marks all scenarios as UNKNOWN
+FIX: Header parser updated to recognize existing format "# Validator exit code:" in addition to standardized "# Status:" header. Result: 9 scenarios indexed with PASS/FAIL status.
+
+R1-5: Tier 0 classification doesn't match TaskSpec
+FIX: TIER_0_FILES list matches the 12-file canonical list from approved TaskSpec. evidence_completeness computed against this list. Result: all 12 Tier 0 files present, 0 missing.
+
+R1-6: verdict_eligibility computed before files finalized
+FIX: Builder Phase 5 restructured: (1) extra-dir files copied, (2) final-report.md written, (3) runtime-evidence-index.json generated, (4) review.yaml regenerated with final data, (5) evidence-manifest.json computed last with complete writer.written. Result: all files finalized before eligibility computation.
+
+R1-7: modified_tracked > 0 should block not limit
+FIX: compute_verdict_eligibility() now checks for deferred-files-register.yaml. If present → limitation signal. If absent → blocking signal. Result: modified_tracked = 0 after commit (clean). Logic verified in tests.
+
+=== ADDITIONAL IMPROVEMENTS ===
+
+- consistency_check.all_files_agree: computed from actual data (not hardcoded)
+- conversation-health files (latest.json, startup-read-latest.json) now included in pack
+- pre-gpt-gate-evidence/ directory included (11 files)
+- Both commit diffs included (git-show-b474d4b.txt, git-show-ceb9ed0.txt)
+- evidence-manifest.json includes full commit chain [2d5f902, b474d4b, ceb9ed0]
+
+=== EVIDENCE PACK SUMMARY ===
+
+verdict_eligibility: eligible_with_limitations
+  - blocking_signals: []
+  - limitation_signals: [startup_read_suggest_handoff]
+evidence_completeness:
+  - tier_0_required: 12, present: 12, missing: 0
+  - tier_1_conditional: 4, present: 4, missing: 0
+  - tier_2_optional: 3 (extra/, evidence-manifest.json, runtime-evidence-index.json)
+negative_path_evidence: present (10 scenarios)
+runtime_evidence: index present (9 scenarios indexed)
+safety: secret_scan_clean, ai_guard_clean
+modified_tracked: 0
+
+请审查附件中的 R2 evidence pack ZIP 并给出裁决。
+
+Return format:
+verdict: accepted | accepted_with_limitation | needs_revision | rejected
+limitations:
+  - <list or none>
+next_task:
+  task_id: <next task or none>
+  authorized: yes | no
+
+END_OF_GPT_RESPONSE

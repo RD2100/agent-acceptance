@@ -1,0 +1,480 @@
+确认：ECS-A2 方向是对的，而且现在应该做。
+但我建议把它从“泛化的大标准任务”稍微收紧成：Evidence Pack Contract + Builder Enforcement + Manifest/Eligibility 机制。也就是说，A2 不要试图一次解决 SADP schema、旧 evidence pack、所有 linter、所有历史 review.yaml 的兼容问题；它应先把未来证据包的“最低可接受结构”和“缺证据如何降级”固定下来。
+
+总体判断
+
+你的 Gate 0 研究是充分的，尤其是三点判断很关键：
+
+1. builder 已经很大，但缺少可验证的 contract；
+2. review.yaml / final-report / full regression / runtime evidence 的标准不统一；
+3. 测试覆盖偏静态，没有真正验证 evidence pack 质量。
+
+所以 EVIDENCE-CAPTURE-STANDARD-A2 应该立项，而且优先级应为 P0。
+
+我建议将 A2 定义为：
+
+ECS-A2 = canonical evidence pack contract + manifest + verdict eligibility + builder self-validation
+
+而不是：
+
+ECS-A2 = 重写所有证据治理文档 + 修复 SADP review 协议 + 改造旧 evidence pack + 重构 linter
+
+后者会过大。
+
+Q1：ECS-A2 的范围是否合适？是否需要增减？
+结论：范围基本合适，但需要“加两项、减两项”。
+建议增加 1：evidence-manifest.schema.json
+
+你现在计划生成 evidence-manifest.json，这是对的。但如果没有 schema，manifest 很快又会变成新的自由格式。
+
+建议新增：
+
+schemas/agent-runtime/evidence-manifest.schema.json
+
+最小字段包括：
+
+YAML
+schema_version
+task_id
+run_id
+base_commit
+head_commit
+commit_chain
+generated_at
+required_files
+optional_files
+missing_files
+test_summary
+runtime_evidence
+negative_path_evidence
+git_status
+safety
+verdict_eligibility
+limitations
+
+这个 schema 不需要一开始非常复杂，但必须能支撑 builder 的 deterministic validation。
+
+建议增加 2：builder 增加 --head 或等价能力
+
+A1 limitation 里已经指出：
+
+builder 用 git diff base..HEAD，不支持显式 --head
+
+ECS-A2 正在做 manifest 与 commit chain 标准化，如果仍不能显式指定 head，会影响证据包可复现性。
+
+建议把这个纳入 A2：
+
+scripts/build_evidence_pack.py 支持 --head，可默认 HEAD。
+
+这不算范围膨胀，因为它直接服务于 manifest 的 base_commit/head_commit/commit_chain。
+
+建议减少 1：不要在 A2 修正 SADP 0.R.2 schema 偏离
+
+你发现 17 个历史 review.yaml 全部不符合 SADP 0.R.2，这个发现很重要，但不建议在 A2 直接修。
+
+原因是：
+
+1. 这会牵涉历史 pack、reviewer 协议、executor 协议；
+2. 可能破坏已经 accepted 的历史证据；
+3. A2 的核心是 evidence capture standard，不是 SADP review protocol migration。
+
+A2 可以做的是：
+
+记录 incompatibility；
+定义 ECS review.yaml v1；
+明确它不是 SADP 0.R.2 的替代；
+后续另开 SADP-REVIEW-YAML-ALIGNMENT-A1。
+建议减少 2：不要在 A2 修改 evidence_pack_linter.py
+
+你已经把它列入 out of scope，这是对的。
+
+A2 可以新增 builder 内部验证逻辑或一个轻量 validate_evidence_manifest()，但不要同时改旧 linter。否则会变成“双系统迁移”。
+
+调整后的 A2 范围
+
+建议 A2 固定为 7 件事：
+
+1. 新建 evidence-capture-standard.md
+2. 新建 evidence-pack-review-rules.md
+3. 新建 evidence-manifest.schema.json
+4. build_evidence_pack.py 生成 evidence-manifest.json
+5. review.yaml 增加顶层 verdict_eligibility + evidence_completeness
+6. runtime/negative-path scenario header 标准化，向后兼容 .txt
+7. 增加 builder/manifest/eligibility 的正负测试和 runtime evidence
+
+可选但建议纳入：
+
+8. build_evidence_pack.py 支持 --head
+Q2：verdict_eligibility 应该聚合哪些信号？
+
+你目前计划聚合：
+
+test_pass
+conversation_health
+startup_read
+required_files_present
+modified_tracked
+
+这个方向对，但还不够。建议分成 硬阻断信号、降级信号、记录信号 三类。
+
+第一类：硬阻断信号
+
+这些会导致：
+
+verdict_eligibility: needs_more_evidence 或 not_clean_acceptance
+
+建议包括：
+
+YAML
+hard_blocking_signals:
+  required_files_missing:
+    examples:
+      - review.yaml
+      - final-report.md
+      - git-status-after.txt
+      - test-output.txt
+      - diff.patch or git-show.txt
+
+  modified_tracked_gt_0_without_deferred_record: true
+
+  tests_failed_without_explanation: true
+
+  claimed_full_regression_but_log_missing: true
+
+  runtime_behavior_claimed_but_no_runtime_artifact: true
+
+  safety_error_present:
+    examples:
+      - secret scan real finding
+      - ai-guard error
+      - hook blocking stage failed
+
+  schema_invalid_manifest_or_review_yaml: true
+第二类：降级信号
+
+这些不一定 blocked，但不能 clean accepted：
+
+YAML
+limitation_signals:
+  startup_read_missing: limitation
+  conversation_health_suggest: limitation
+  advisory_stage_warning: limitation
+  only_targeted_tests_run: limitation
+  runtime_behavior_proved_by_tests_only: limitation
+  missing_optional_files: limitation
+  ai_guard_warning_explained: limitation
+
+对应结果通常是：
+
+accepted_with_limitation
+
+或者：
+
+needs_more_evidence
+
+取决于任务是否声称相关能力。
+
+第三类：记录信号
+
+这些只进入 manifest，不直接影响 eligibility：
+
+YAML
+record_only_signals:
+  untracked_total
+  session_artifacts
+  neg_009_count
+  generated_at
+  pack_size
+  zip_sha256
+  warning_count
+推荐 verdict_eligibility 枚举
+
+建议不要直接用最终审稿 verdict，而使用“资格状态”：
+
+YAML
+verdict_eligibility:
+  status: eligible_clean | eligible_with_limitations | needs_more_evidence | not_eligible
+  reasons: []
+  blocking_signals: []
+  limitation_signals: []
+
+这很重要。
+verdict_eligibility 不是最终 verdict，它只是告诉 reviewer：
+
+这个 evidence pack 是否具备被 ACCEPTED 的资格。
+
+最终 verdict 仍由 reviewer 判定。
+
+Q3：evidence-manifest.json 是否需要与 evidence-index.schema.json 对齐？还是创建新 schema？
+结论：先审阅 evidence-index.schema.json，但大概率应创建新 schema。
+
+原因是你已经发现：
+
+evidence_pack_linter.py 针对的是 closure-report based pack 格式；
+builder 生成的是新的 reusable parameterized pack；
+evidence-index.schema.json 存在但 builder 未使用。
+
+这说明旧 schema 很可能不是当前 builder 的自然模型。
+
+建议策略是：
+
+1. 先读取 evidence-index.schema.json；
+2. 如果它只是旧 closure-report index，就不要强行复用；
+3. 新建 evidence-manifest.schema.json；
+4. 在新文档中说明二者关系。
+
+推荐写法：
+
+evidence-index.schema.json:
+  legacy / existing index schema, retained for backward compatibility.
+
+evidence-manifest.schema.json:
+  canonical ECS-A2 manifest schema for new reusable evidence packs.
+
+如果旧 schema 中有可复用字段，例如：
+
+files
+hashes
+created_at
+task_id
+
+可以借鉴字段名，但不要为了兼容旧 schema 牺牲新标准。
+
+Q4：“必备文件”统一列表应该以哪个文档为准？
+结论：不要单纯以某一个文档为准，应采用“分层必备文件”。
+
+你问是否以 evidence-pack-standard.md 的 9 文件列表为准。我的建议是：以它为基础，但升级为 Tier 0 / Tier 1 / Tier 2。
+
+原因是不同任务的 evidence pack 不完全一样。比如纯文档任务不一定需要 runtime artifact，但 gate / hook / validator 任务必须需要 negative-path evidence。
+
+推荐统一列表
+Tier 0：所有 evidence pack 都必须有
+review.yaml
+final-report.md
+git-status-before.txt
+git-status-after.txt
+diff.patch 或 git-show.txt
+test-output.txt 或 no-test-rationale.md
+safety-report.json
+secret-scan output
+task spec / current-task snapshot
+evidence-manifest.json
+
+这相当于 10 个核心文件。
+
+Tier 1：条件必备
+
+当任务声称相关能力时必须有：
+
+runtime evidence index
+negative-path evidence
+hook-output/latest.json
+conversation-health/latest.json
+startup-read-latest.json
+full-regression log
+migration record
+schema validation output
+
+例如：
+
+如果声称 full regression passed，则 full regression log 必须入包。
+如果声称 runtime behavior，则 runtime artifact 必须入包。
+如果修改 hook，则 hook-output runtime evidence 必须入包。
+如果涉及 conversation health，则 conversation-health evidence 必须入包。
+Tier 2：可选但建议
+raw command logs
+screenshots
+debug output
+coverage output
+performance metrics
+intermediate generated files
+
+这样能解决 7/9/10/11 不一致的问题。
+不是强行选一个数字，而是定义：
+
+基础必备 + 条件必备 + 可选证据
+Q5：是否需要修正 review.yaml 与 SADP 0.R.2 schema 的偏离？
+结论：A2 不修，A2 只记录并隔离。后续另开任务。
+
+这是一个重要问题，但不应塞进 ECS-A2。
+
+建议 A2 做三件事：
+
+1. 在 evidence-capture-standard.md 中新增一节：
+   “Relationship to SADP 0.R.2 Review YAML”
+
+2. 明确：
+   ECS review.yaml 是 evidence pack metadata；
+   SADP 0.R.2 review.yaml 是 reviewer protocol artifact；
+   二者当前不等价。
+
+3. 在 manifest 中增加：
+   review_yaml_profile: "ecs-v1"
+
+后续另开：
+
+SADP-REVIEW-YAML-ALIGNMENT-A1
+
+目标是决定：
+
+1. 是否合并 ECS review.yaml 与 SADP 0.R.2 review.yaml；
+2. 是否引入 profile 字段；
+3. 是否迁移历史 review.yaml；
+4. 是否保留双格式。
+
+当前不要改历史 17 个 review.yaml，也不要为了 SADP schema 硬改 builder。否则风险过大。
+
+Q6：runtime evidence scenario 格式标准化是否需要 JSON schema？还是保持 .txt + header？
+结论：A2 推荐“双轨制”：继续支持 .txt，但新增 machine-readable index。
+
+不要一上来强制所有 runtime evidence 都改 JSON。这样会破坏现有 extra/*.txt 和很多历史场景。
+
+建议方案：
+
+1. 保持 scenario .txt 文件；
+2. 标准化 header；
+3. 生成 runtime-evidence-index.json；
+4. 为 index 建 schema。
+标准 .txt header
+
+例如：
+
+# Scenario: composite_force
+# Expected: decision=FORCE_HANDOFF, exit_code=1
+# Actual: decision=FORCE_HANDOFF, exit=1
+# Status: PASS
+# Source: scripts/run_conversation_health_evidence.py
+# Generated: 2026-06-12T...
+# Code version: <head_commit>
+对应 JSON index
+JSON
+{
+  "schema_version": "runtime-evidence-index.v1",
+  "scenarios": [
+    {
+      "name": "composite_force",
+      "file": "extra/composite_force.txt",
+      "expected": "decision=FORCE_HANDOFF, exit_code=1",
+      "actual": "decision=FORCE_HANDOFF, exit=1",
+      "status": "PASS",
+      "source": "scripts/run_conversation_health_evidence.py",
+      "generated_at": "2026-06-12T...",
+      "head_commit": "..."
+    }
+  ]
+}
+
+这样兼顾：
+
+人可读：.txt
+机器可读：runtime-evidence-index.json
+schema 可校验：runtime-evidence-index.schema.json
+
+A2 可以先实现 runtime-evidence-index.json，不必要求每个 scenario 文件本身都是 JSON。
+
+我建议修订后的 ECS-A2 TaskSpec 要点
+
+你原 TaskSpec 可以保留主体，但建议改成下面这个结构：
+
+Task: EVIDENCE-CAPTURE-STANDARD-A2
+
+Goal:
+Define and enforce a canonical evidence pack contract by adding evidence-manifest generation, top-level verdict eligibility, evidence completeness classification, runtime evidence indexing, and deterministic builder validation.
+
+Required:
+1. docs/agent-runtime/evidence-capture-standard.md
+2. docs/agent-runtime/evidence-pack-review-rules.md
+3. schemas/agent-runtime/evidence-manifest.schema.json
+4. optional: schemas/agent-runtime/runtime-evidence-index.schema.json
+5. build_evidence_pack.py generates evidence-manifest.json
+6. review.yaml gets top-level verdict_eligibility and evidence_completeness
+7. build_evidence_pack.py supports required/optional/not_applicable/missing classification
+8. builder distinguishes full_regression / targeted_tests / no_test_rationale
+9. runtime evidence .txt header standard + runtime-evidence-index.json
+10. tests for positive and negative eligibility paths
+
+Do not:
+- modify old packs
+- migrate SADP 0.R.2 review schema
+- modify evidence_pack_linter.py
+- change A1-A4 semantics
+- implement live dispatch enforcement
+最终回答六个问题
+Q1
+
+范围合适，但建议增加：
+
+evidence-manifest.schema.json
+runtime-evidence-index.json / schema
+builder --head
+
+建议减少：
+
+不要修 SADP 0.R.2 偏离
+不要改 evidence_pack_linter.py
+Q2
+
+verdict_eligibility 应聚合：
+
+required files
+schema validity
+test status
+full regression claim vs log
+runtime claim vs artifact
+negative-path requirement
+modified_tracked
+safety / secret / ai-guard status
+conversation_health / startup_read status
+hook output status when relevant
+limitations
+
+并分成：
+
+eligible_clean
+eligible_with_limitations
+needs_more_evidence
+not_eligible
+Q3
+
+先读 evidence-index.schema.json，但大概率新建：
+
+schemas/agent-runtime/evidence-manifest.schema.json
+
+旧 schema 保留为 legacy，不强行复用。
+
+Q4
+
+不要以单个文档为准。采用：
+
+Tier 0: 所有 pack 必备
+Tier 1: 条件必备
+Tier 2: 可选
+
+evidence-pack-standard.md 的 9 文件列表可以作为 Tier 0 的基础，但建议扩展到 10 项，加入 evidence-manifest.json。
+
+Q5
+
+A2 不修 SADP 0.R.2 偏离，只记录并建立 profile：
+
+review_yaml_profile: ecs-v1
+
+后续另开：
+
+SADP-REVIEW-YAML-ALIGNMENT-A1
+Q6
+
+采用双轨制：
+
+保留 .txt scenario 文件 + 标准 header；
+新增 runtime-evidence-index.json；
+为 index 建 schema。
+
+不要强制所有 runtime evidence 立刻 JSON 化。
+
+最终建议
+
+可以启动 ECS-A2，但 TaskSpec 应略微收敛为：
+
+ECS-A2 = manifest + eligibility + evidence completeness + runtime index + builder validation
+
+不要把 SADP review schema、历史 pack 迁移、旧 linter 统一塞进去。这样 A2 才能保持 P0 任务的可落地性。

@@ -1,0 +1,21 @@
+{
+  "task_id": "EVIDENCE-CAPTURE-STANDARD-A2",
+  "generated": "2026-06-12T11:07:40.169909+08:00",
+  "version": "1.0.0",
+  "test_result": "1260 passed, 21 warnings in 46.57s",
+  "tests_passed": true,
+  "post_commit_state": {
+    "modified_tracked": 0,
+    "untracked_total": 187,
+    "neg_009": 17,
+    "secret_scan": 6,
+    "session_artifacts": 164,
+    "grand_total": 187
+  },
+  "consistency_check": {
+    "git_status_matches_register": true,
+    "register_matches_safety_report": true,
+    "register_matches_review": true,
+    "register_matches_final_report": true
+  }
+}
