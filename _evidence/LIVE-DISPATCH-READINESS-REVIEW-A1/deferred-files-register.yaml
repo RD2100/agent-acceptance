@@ -1,0 +1,78 @@
+# Deferred Files Register
+# LIVE-DISPATCH-READINESS-REVIEW-A1
+# Files intentionally not committed as part of this review
+
+schema_version: "1.0.0"
+task_id: LIVE-DISPATCH-READINESS-REVIEW-A1
+created_at: "2026-06-12T12:30:00Z"
+reason: "Audit-only review; these files are pre-existing untracked artifacts"
+
+categories:
+  ad_hoc_scripts:
+    description: "Temporary Python/PowerShell scripts for CDP automation, evidence capture, and GPT submission"
+    count: ~35
+    risk: low
+    disposition: "Archive or delete after live dispatch is operational"
+    patterns:
+      - "_ask_*.py"
+      - "_capture_*.py"
+      - "_submit_*.py"
+      - "_build_*.py"
+      - "_cdp_*.py"
+      - "copy_*.ps1"
+      - "check_*.py"
+
+  evidence_directories:
+    description: "Per-task evidence packs accumulated across governance tasks"
+    count: ~20
+    risk: low
+    disposition: "Commit to git or archive to external storage"
+    examples:
+      - "_evidence/CONVERSATION-HEALTH-GATE-A1/"
+      - "_evidence/CONVERSATION-HEALTH-GATE-A2/"
+      - "_evidence/CONVERSATION-HEALTH-GATE-A3/"
+      - "_evidence/CONVERSATION-HEALTH-GATE-A4/"
+      - "_evidence/EVIDENCE-CAPTURE-STANDARD-A1/"
+      - "_evidence/EVIDENCE-CAPTURE-STANDARD-A2/"
+      - "_evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1/"
+      - "_evidence/SHARED-CDP-GPT-REVIEW-DRY-RUN-2-A1/"
+      - "_evidence/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/"
+      - "_evidence/WORKSPACE-CLEANUP-A1/"
+
+  evidence_pack_zips:
+    description: "Built evidence pack ZIP archives"
+    count: ~15
+    risk: low
+    disposition: "Build artifacts; can be regenerated from source"
+    patterns:
+      - "_evidence/*.zip"
+      - "evidence_packs/*.zip"
+
+  negative_test_fixtures:
+    description: "Duplicated test fixtures across project directories"
+    count: ~18
+    risk: low
+    disposition: "Deduplicate to single source location"
+    pattern: "negative-test-fixtures/NEG-009-secrets-read.json"
+
+  reports:
+    description: "Framework and review report documents"
+    count: ~5
+    risk: low
+    disposition: "Commit or archive"
+    path: "_reports/"
+
+  miscellaneous:
+    description: "Other untracked items (nul files, temp configs, etc.)"
+    count: ~100
+    risk: low
+    disposition: "Review individually; most are disposable"
+    examples:
+      - "nul (accidental Windows NUL device redirect)"
+      - "configs/ subdirectories"
+      - "scripts/_evidence/ subdirectory"
+      - "__pycache__/ contents"
+
+total_deferred_entries: 193
+modified_tracked_files: 1
+modified_tracked_note: ".ai/current-task.yaml -- expected sync for this review task"

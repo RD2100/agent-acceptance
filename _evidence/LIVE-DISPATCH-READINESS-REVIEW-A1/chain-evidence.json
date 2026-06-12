@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "LIVE-DISPATCH-READINESS-REVIEW-A1",
+  "generated_at": "2026-06-12T12:30:00Z",
+  "chain": [
+    {
+      "order": 1,
+      "evidence_id": "git-status-before",
+      "type": "git_state",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/git-status-before.txt",
+      "description": "Pre-review git status snapshot (192 lines, 0 modified tracked, 192 untracked)",
+      "created_at": "2026-06-12T12:09:00Z"
+    },
+    {
+      "order": 2,
+      "evidence_id": "registry-readiness",
+      "type": "audit_finding",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/registry-readiness.md",
+      "description": "6.1 Registry readiness check: 11 projects, capacity exceeded, duplicate conversation_id",
+      "verdict": "PARTIAL_PASS"
+    },
+    {
+      "order": 3,
+      "evidence_id": "binding-conflict",
+      "type": "audit_finding",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/binding-conflict-check.md",
+      "description": "6.2 Binding conflict check: duplicate conversation_id between dev-frame-writing and dev-frame-opencode",
+      "verdict": "FAIL"
+    },
+    {
+      "order": 4,
+      "evidence_id": "dry-run-review",
+      "type": "audit_finding",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/dry-run-evidence-review.md",
+      "description": "6.3 Dry-run evidence review: 1/10 dispatchable, fail-closed verified, 36h stale",
+      "verdict": "PASS_WITH_STALE_RISK"
+    },
+    {
+      "order": 5,
+      "evidence_id": "evidence-capture-readiness",
+      "type": "audit_finding",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/evidence-capture-readiness.md",
+      "description": "6.4 Evidence capture readiness: ECS-A2 accepted_with_limitation, 1260 tests pass",
+      "verdict": "PASS"
+    },
+    {
+      "order": 6,
+      "evidence_id": "hook-failure-semantics",
+      "type": "audit_finding",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/hook-failure-semantics-status.md",
+      "description": "6.5 Hook failure semantics: 4/5 proven, latest run all-pass, 100+ historical runs",
+      "verdict": "PASS"
+    },
+    {
+      "order": 7,
+      "evidence_id": "workspace-closure",
+      "type": "audit_finding",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/workspace-closure-status.md",
+      "description": "6.6 Workspace closure: dirty_not_closed, 194 untracked entries",
+      "verdict": "PARTIAL_PASS"
+    },
+    {
+      "order": 8,
+      "evidence_id": "deferred-files-register",
+      "type": "register",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/deferred-files-register.yaml",
+      "description": "Register of 193 intentionally deferred untracked files"
+    },
+    {
+      "order": 9,
+      "evidence_id": "safety-report",
+      "type": "safety_assessment",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/safety-report.json",
+      "description": "Safety assessment: no live dispatch executed, no routing/hook files modified",
+      "overall_status": "CONDITIONAL_PASS"
+    }
+  ],
+  "integrity": {
+    "total_evidence_items": 9,
+    "all_items_present": true,
+    "tamper_indicators_checked": false
+  }
+}
