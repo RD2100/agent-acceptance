@@ -1,0 +1,10 @@
+﻿# AI Guard Output - 2026-06-11T10:18:27Z
+# Exit code: 1 (blocking)
+# Timeout: 30s
+# Source: pre-commit hook (original)
+
+WARNING: RESTRICTED: hooks/pre-commit.governance.ps1 requires human review
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review
+
+AI Guard: 0 errors, 2 warning(s) - PASS with warnings
+
