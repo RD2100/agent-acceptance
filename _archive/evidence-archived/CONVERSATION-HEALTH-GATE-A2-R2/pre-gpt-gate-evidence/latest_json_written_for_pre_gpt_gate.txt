@@ -1,0 +1,9 @@
+# Scenario: latest_json_written_for_pre_gpt_gate
+# Description: Pre-GPT gate writes latest.json AND current-snapshot.json
+# Expected: latest.json exists AND current-snapshot.json exists
+# Actual value: latest=True, snapshot=True
+# Status: PASS
+#
+# latest.json decision: OK
+# snapshot conversation_id: evidence-test
+# snapshot source: pre_gpt_gate

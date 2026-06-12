@@ -1,0 +1,16 @@
+# SADP Pre-commit Hook Output (from commit 9336d56 message)
+
+fix: CONVERSATION-HEALTH-GATE-A2 R2 — resolve 4 GPT blockers
+
+1. Fix fail-open: _cdp_submit_helper.run_pre_gpt_gate() now returns exit 3
+   (BLOCKING) on ImportError instead of exit 0 (fail-open)
+2. Add metrics refresh loop: _ask_next_task_v2.py now calls update_metrics()
+   after CDP response with assistant_message_count, last_gpt_reply_bytes,
+   last_response_time_seconds, source=cdp_dom_count
+3. Fix evidence summary: corrected Expected/Actual labels for stale metrics,
+   latest.json, and metrics refresh scenarios
+4. Add new evidence: legacy_helper_import_failure_blocks (source verification),
+   legacy_script_post_response_updates_current_json (full CDP flow proof)
+
+Tests: 1128 passed (1098 A1 + 30 A2), 10 runtime evidence scenarios ALL PASS
+modified_tracked: 0

@@ -1,0 +1,12 @@
+# Scenario: access_denied_records_force
+# Description: access_denied nav result is recorded and triggers FORCE_HANDOFF
+# Expected: exit_code=1
+# Actual exit: 1
+# Decision: FORCE_HANDOFF
+# Severity: BLOCKING
+# Status: PASS
+#
+# Message: FORCE_HANDOFF: nav_result_access_denied: access_denied (threshold: access_denied_or_not_found, policy: force)
+#
+# Reasons:
+#   - nav_result_access_denied: actual=access_denied threshold=access_denied_or_not_found policy=force

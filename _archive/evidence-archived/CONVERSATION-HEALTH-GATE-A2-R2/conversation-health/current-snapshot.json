@@ -1,0 +1,20 @@
+{
+  "schema_version": "conversation-health.v1",
+  "conversation_id": "EXAMPLE_UUID",
+  "chat_url": "https://chatgpt.com/c/EXAMPLE_UUID-xxxx-xxxx-xxxx",
+  "status": "active",
+  "last_known_metrics": {
+    "assistant_message_count": 14,
+    "review_round_count": 1,
+    "last_response_time_seconds": 12.0,
+    "last_gpt_reply_bytes": 8841
+  },
+  "last_nav_result": "ok",
+  "last_health_decision": "OK",
+  "last_health_reasons": [],
+  "last_checked_at": "2026-06-12T06:58:52+08:00",
+  "metrics_source": "cdp_dom_count",
+  "metrics_freshness": "fresh",
+  "_snapshot_at": "2026-06-12T07:10:07+08:00",
+  "_snapshot_source": "pre_gpt_gate"
+}

@@ -1,0 +1,24 @@
+# Diff stat for commit 9336d56
+# Command: git diff --stat 9336d56^..9336d56
+
+.ai/current-task.yaml                              |   6 +
+ .ai/tasks/conversation-health-gate-a2.yaml         |   6 +
+ _ask_next_task_v2.py                               |  24 ++
+ _capture_a2_detailed.py                            | 105 +++++++
+ _capture_a2_verdict.py                             |  83 ++++++
+ _capture_a2_verdict_v2.py                          |  82 ++++++
+ _cdp_submit_helper.py                              |  16 +-
+ _check_a2_response.py                              |  46 +++
+ _evidence/conversation_health_gate_a2_verdict.txt  | 315 +++++++++++++++++++++
+ .../pre-gpt-gate-evidence/combined_summary.txt     |   6 +-
+ .../latest_json_written_for_pre_gpt_gate.txt       |   2 +-
+ .../legacy_helper_import_failure_blocks.txt        |  11 +
+ ...y_script_post_response_updates_current_json.txt |  10 +
+ ...missing_current_json_blocks_without_refresh.txt |   2 +-
+ .../stale_metrics_warns_or_suggests.txt            |   4 +-
+ ...essful_metrics_refresh_updates_current_json.txt |   2 +-
+ _submit_health_gate_a2.py                          |  95 +++++++
+ hooks/sealed-files-manifest.json                   |   2 +-
+ scripts/run_pre_gpt_gate_evidence.py               |  85 +++++-
+ tests/test_pre_gpt_gate.py                         |  83 ++++++
+ 20 files changed, 972 insertions(+), 13 deletions(-)
