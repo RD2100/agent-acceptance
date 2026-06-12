@@ -1,0 +1,143 @@
+=== LIVE-DISPATCH-READINESS-REVIEW-A1 — GPT REVIEW SUBMISSION R1 ===
+=== Task: Live Dispatch Readiness Review (Audit Only) ===
+=== Commit: 66ebc66f ===
+=== Date: 2026-06-12 ===
+=== Base: 7ddb641f ===
+
+## TASK DESCRIPTION
+
+Produce a formal Live Dispatch Readiness Review answering 10 readiness questions.
+Mode: audit_and_documentation_only — NO live dispatch executed, NO routing/hook files modified.
+Verdict options: READY_FOR_HUMAN_AUTHORIZATION_WITH_LIMITATIONS | NOT_READY_NEEDS_FIXES | BLOCKED
+
+## ACCEPTANCE CRITERIA
+
+1. live-dispatch-readiness-review.md exists with all 10 questions answered
+2. human authorization template exists
+3. rollback plan exists
+4. no live dispatch executed
+5. no runtime routing files modified
+6. safety-report.json is valid JSON
+7. review.yaml is valid YAML
+8. final-report.md states limitations plainly
+9. readiness_verdict is one of the three valid options
+
+## VERDICT: NOT_READY_NEEDS_FIXES
+
+Two blocking issues:
+1. Duplicate conversation_id between dev-frame-writing and dev-frame-opencode (HIGH)
+2. Registry capacity exceeded: 11 projects vs max 10 (MEDIUM)
+
+## SECTION RESULTS (6 sections)
+
+| Section | Verdict | Blocking? |
+|---|---|---|
+| 6.1 Registry readiness | PARTIAL_PASS | No |
+| 6.2 Binding conflict | FAIL | Yes |
+| 6.3 Dry-run evidence | PASS_WITH_STALE_RISK | No |
+| 6.4 Evidence capture | PASS | No |
+| 6.5 Hook failure semantics | PASS | No |
+| 6.6 Workspace closure | PARTIAL_PASS | No |
+
+## 10 READINESS QUESTIONS AND ANSWERS
+
+Q1: Is the project registry valid and complete?
+A: PARTIAL PASS. 11 projects registered (exceeds max 10). 4 active, 7 pending.
+
+Q2: Are conversation bindings conflict-free?
+A: FAIL. dev-frame-writing and dev-frame-opencode share conversation_id 6a297e5f.
+
+Q3: Has dry-run dispatch been proven?
+A: PASS with staleness risk. 1/10 dispatchable (tripmark). Fail-closed verified.
+
+Q4: Is evidence capture ready for live dispatch?
+A: PASS. ECS-A2 accepted_with_limitation, 1260 tests, 5 GPT review rounds.
+
+Q5: Are hook failure semantics proven?
+A: PASS. 4/5 capabilities proven. Latest run all-pass (v2.4.0).
+
+Q6: Is the workspace in acceptable closure state?
+A: PARTIAL PASS. 0 modified tracked, 193 untracked entries.
+
+Q7: What is the minimal live dispatch candidate?
+A: tripmark — only dispatchable project with full packet resolution.
+
+Q8: What is the rollback plan?
+A: 4-level rollback: abort (pre-send), post-send, post-commit, post-push.
+
+Q9: What limitations apply to live dispatch?
+A: Single project only, human auth required, fresh dry-run required, binding fix required.
+
+Q10: What evidence supports this review?
+A: 10 evidence items: git-status-before, 6 section audits, deferred register, safety report, chain of evidence.
+
+## SAFETY REPORT
+
+- live_dispatch_executed: false
+- routing_files_modified: false
+- hook_files_modified: false
+- deny_paths_respected: true
+- human_required_maintained: true
+- overall_safety_status: CONDITIONAL_PASS
+
+## FILES PRODUCED (19 files in commit 66ebc66f)
+
+Documentation (3):
+- docs/agent-runtime/live-dispatch-readiness-review.md (117 lines, 10 questions answered)
+- docs/agent-runtime/live-dispatch-human-authorization-template.md (88 lines)
+- docs/agent-runtime/live-dispatch-rollback-plan.md (127 lines)
+
+Evidence (15):
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/git-status-before.txt
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/registry-readiness.md
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/binding-conflict-check.md
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/dry-run-evidence-review.md
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/evidence-capture-readiness.md
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/hook-failure-semantics-status.md
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/workspace-closure-status.md
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/deferred-files-register.yaml
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/safety-report.json
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/chain-evidence.json
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/review.md
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/review.yaml
+- _evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/final-report.md
+- .ai/current-task.yaml (synced)
+- .ai/tasks/live-dispatch-readiness-review-a1.yaml
+
+## KEY EVIDENCE DATA
+
+Registry: 11 projects (4 active, 7 pending_binding)
+- Active: agent-acceptance, dev-frame-writing, dev-frame-opencode, tripmark
+- Duplicate conversation_id: dev-frame-writing + dev-frame-opencode both use 6a297e5f
+
+Dry-run (DRY_RUN_DISPATCH_10.json, 2026-06-11T00:01:04Z):
+- tripmark: dispatchable (exact tab match, packet fully built)
+- agent-acceptance: human_required_tab_unresolved
+- 8 others: non_dispatchable_pending
+
+Hook output (latest.json, v2.4.0, 2026-06-12T03:13:06Z):
+- overall_result: PASS
+- 5 stages: manifest-regen(0), sadp-audit(0/BLOCKING), ai-guard(0/BLOCKING), test-governance(0), conversation-health(0)
+
+ECS-A2 (evidence-capture-standard-a2.yaml):
+- status: accepted_with_limitation (5 GPT review rounds)
+- 1260 tests passed, 0 failed
+- 6 commits: b474d4b -> c96de98
+
+## GOVERNANCE GATE RESULTS (commit 66ebc66f)
+
+[1/4] Manifest auto-regeneration: OK
+[2/4] SADP audit: PASS (19 files, all covered by TaskSpec write_sets)
+[3/4] Test governance: PASS (ProtectedPaths, Secrets, BatchReferences all PASS)
+[4/4] Conversation health: OK (advisory)
+AI Guard: 0 errors, 1 warning (RESTRICTED: hooks/sealed-files-manifest.json)
+
+## LIMITATIONS STATED PLAINLY
+
+1. Audit-only: no live dispatch executed, no CDP probing performed
+2. Dry-run evidence is 36h old at time of review
+3. Binding fix identified but not performed (out of scope)
+4. Workspace not cleaned (out of scope)
+5. No runtime validation of router/resolver (code inspection only)
+
+=== END SUBMISSION ===

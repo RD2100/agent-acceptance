@@ -1,0 +1,73 @@
+Verdict: accepted_with_limitation
+Findings:
+
+live-dispatch-readiness-review.md exists with all 10 questions answered — PASS
+The submission lists docs/agent-runtime/live-dispatch-readiness-review.md and provides answers to all 10 readiness questions.
+
+human authorization template exists — PASS
+docs/agent-runtime/live-dispatch-human-authorization-template.md is listed.
+
+rollback plan exists — PASS
+docs/agent-runtime/live-dispatch-rollback-plan.md is listed, and Q8 states a 4-level rollback plan.
+
+no live dispatch executed — PASS
+safety-report.json states live_dispatch_executed: false. The submission also explicitly says this was audit-only.
+
+no runtime routing files modified — PASS
+The submission states no routing or hook files were modified. Governance gate output also reports SADP audit and test governance passed. No runtime dispatch/hook change is claimed.
+
+safety-report.json is valid JSON — PASS_WITH_LIMITATION
+The file is listed and key fields are shown. However, the raw JSON is not included, so validity is accepted based on submitted evidence rather than direct parsing.
+
+review.yaml is valid YAML — PASS_WITH_LIMITATION
+review.yaml is listed. The submission says review artifacts were produced, but raw YAML content is not shown, so this is accepted with the same evidence limitation.
+
+final-report.md states limitations plainly — PASS
+The listed limitations are explicit: audit-only, stale dry-run, binding fix not performed, workspace not cleaned, and no runtime router/resolver validation.
+
+readiness_verdict is one of the three valid options — PASS
+NOT_READY_NEEDS_FIXES is one of the allowed values.
+
+Blocking Issues:
+
+No blocking issue prevents acceptance of this audit/readiness review submission.
+
+However, the review correctly identifies blockers for live dispatch authorization:
+
+Duplicate conversation_id between dev-frame-writing and dev-frame-opencode.
+This justifies NOT_READY_NEEDS_FIXES.
+
+Registry capacity exceeded: 11 projects registered against max 10.
+This also supports not authorizing live dispatch yet.
+
+These are not blockers to accepting the review document; they are the substantive findings of the review.
+
+Limitations (if accepted_with_limitation):
+
+Raw safety-report.json and review.yaml contents are not provided, so JSON/YAML validity is accepted from submitted evidence rather than independently parsed.
+
+Dry-run evidence is explicitly stale, about 36 hours old at review time.
+
+The review is audit-only: no live dispatch, no CDP probing, and no runtime validation of router/resolver behavior was performed.
+
+Workspace closure is partial: 0 modified tracked files but 193 untracked entries.
+
+There is a minor evidence-count inconsistency: the submission says “19 files in commit,” but the listed groups appear as 3 documentation files plus 15 listed evidence/task files, totaling 18 visible entries. This should be reconciled in the final report or manifest, but it does not invalidate the readiness verdict.
+
+The verdict NOT_READY_NEEDS_FIXES is justified and should not be softened to ready status until the duplicate binding and registry capacity issues are fixed.
+
+Next Task (if any):
+
+LIVE-DISPATCH-READINESS-FIX-A1
+
+Recommended scope:
+
+Resolve duplicate conversation_id between dev-frame-writing and dev-frame-opencode.
+
+Reduce registry to max 10 projects or formally raise the capacity limit with policy evidence.
+
+Re-run fresh dry-run dispatch after binding cleanup.
+
+Reconcile the 19-file vs listed-file count mismatch.
+
+Re-submit readiness review only after fresh evidence confirms no binding conflicts.

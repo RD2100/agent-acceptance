@@ -116,4 +116,15 @@ verdict:
     - "Duplicate conversation_id between dev-frame-writing and dev-frame-opencode (6a297e5f)"
     - "Registry capacity exceeded: 11 projects vs max 10"
   minimal_candidate: tripmark
-  gpt_review: pending
+  gpt_review:
+    round: 1
+    verdict: accepted_with_limitation
+    commit: 66ebc66f
+    verdict_file: "_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/gpt_verdict_r1.txt"
+    limitations:
+      - "Raw safety-report.json and review.yaml not shown to GPT (validity accepted from evidence)"
+      - "Dry-run evidence 36h stale at review time"
+      - "Audit-only: no CDP probing or runtime validation"
+      - "Workspace partial closure (193 untracked)"
+      - "19 vs 18 file count minor inconsistency"
+    next_task_suggested: LIVE-DISPATCH-READINESS-FIX-A1
