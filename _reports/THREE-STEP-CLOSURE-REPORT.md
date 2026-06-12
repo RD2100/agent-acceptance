@@ -1,12 +1,11 @@
 ## Three-Step Closure Report -- CLOSEOUT + GATE0 + Human Gate
 
 **Date:** 2026-06-12
-**Actual branch HEAD at audit time:** a8e330e6
+**Snapshot base commit:** a8e330e6
 **Commit chain:** 576f198b / fa63543e / 1c22c70e / 83dd025e / d9e37a48 / a8e330e6
-**Self-reference note:** Earlier draft versions referenced amend hash `38a1006`,
-which is not an ancestor of the current HEAD. That hash was an intermediate
-amend cycle artifact. The authoritative HEAD is `a8e330e6`; verify with
-`git log --oneline -1`.
+**Note:** This report is preserved by subsequent commits. The snapshot base
+commit (`a8e330e6`) is the last commit whose content this report describes.
+Current branch HEAD may differ; always verify with `git log --oneline -1`.
 **Scope:** TASKSPEC-STATUS-CLOSEOUT-A1, MULTI-AGENT-GATE0-FRESH-SNAPSHOT-A1, Human Authorization Checklist
 
 ---
@@ -83,7 +82,7 @@ Each modified file received a `closeout_reason` field documenting the rationale.
 
 ### 2. MULTI-AGENT-GATE0-FRESH-SNAPSHOT-A1
 
-**HEAD:** a8e330e6
+**Snapshot base commit:** a8e330e6
 **Total tracked files:** 6,896
 
 #### 2.1 Infrastructure Artifacts
@@ -236,7 +235,7 @@ Tasks completed this session (including earlier HOOK-V241 probe):
 | 9 | Human Authorization Checklist | 576f198b | confirmed (all NO) |
 | 10 | Report fix patch (HEAD/count/enum) | fa63543e + 1c22c70e + 83dd025e | completed (4 corrections) |
 | 11 | Final audit accuracy patch | d9e37a48 | completed (HEAD/chain/worktree) |
-| 12 | GATE0 gap closure | a8e330e6 | completed (risk-register + verify-matrix) |
+| 12 | GATE0 artifact-gap closure | a8e330e6 | partial (risk-register + verify-matrix created; passport gap remains: verified 18 < 20) |
 | 13 | Passport renewal | a8e330e6 | completed (8 downgraded to unknown) |
 
 ---
@@ -244,7 +243,7 @@ Tasks completed this session (including earlier HOOK-V241 probe):
 ### 5. Worktree State
 
 ```
-HEAD: a8e330e6
+Snapshot base commit: a8e330e6
 Committed (three-step closure):
   576f198b: .ai/tasks/*.yaml (19 files, status updates)
   576f198b: .ai/current-task.yaml (write_set updated)
