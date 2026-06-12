@@ -1,0 +1,94 @@
+# Git Status After Final Commit
+# Task: EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1
+# Generated: 2026-06-11T18:35:32.875653+08:00
+# Command: git status --porcelain
+
+modified_tracked_files: 0
+  (none)
+
+untracked_files: 74
+  neg_009_deferred: 17
+    ?? _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-alpha/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-delta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-delta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-eta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-eta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-iota/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-iota/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-theta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-theta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+  secret_scan_denied: 5
+    ?? _evidence/R18-FOLLOWUP-FINAL/secret-scan-output.txt
+    ?? _evidence/R18-WORKSPACE-CLEANUP-FINAL/secret-scan-output.txt
+    ?? _evidence/R18-WORKSPACE-CLOSURE-SLIM/secret-scan-output.txt
+    ?? _evidence/R18-WORKSPACE-CLOSURE/secret-scan-output.txt
+    ?? _evidence/R18-catchup-commits/secret-scan-output.txt
+  session_artifacts: 52
+    ?? _ask_next_task.py
+    ?? _build_evidence_maintenance.py
+    ?? _build_uaws_evidence.py
+    ?? _capture_hfs.py
+    ?? _capture_hrv.py
+    ?? _capture_hrv_full.py
+    ?? _capture_hrv_v3.py
+    ?? _capture_hrv_v3b.py
+    ?? _capture_hrv_v3c.py
+    ?? _check_browser.py
+    ?? _check_browser2.py
+    ?? _debug_gpt.py
+    ?? _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V2/
+    ?? _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V3/
+    ?? _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1/
+    ?? _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1/
+    ?? _evidence/EVIDENCE-CAPTURE-STANDARD-A1/
+    ?? _evidence/EVIDENCE_PACK_EVIDENCE_CAPTURE_STANDARD_A1.zip
+    ?? _evidence/EVIDENCE_PACK_HOOK_FAILURE_RUNTIME_VALIDATION_A1.zip
+    ?? _evidence/EVIDENCE_PACK_HOOK_FAILURE_RUNTIME_VALIDATION_V2.zip
+    ?? _evidence/EVIDENCE_PACK_HOOK_FAILURE_RUNTIME_VALIDATION_V3.zip
+    ?? _evidence/EVIDENCE_PACK_HOOK_FAILURE_SEMANTICS_A1.zip
+    ?? _evidence/EVIDENCE_PACK_R18_EVIDENCE_MAINTENANCE_FINAL.zip
+    ?? _evidence/EVIDENCE_PACK_UNIVERSAL_AGENT_WORKFLOW_STANDARD_A1.zip
+    ?? _evidence/R18-EVIDENCE-MAINTENANCE-FINAL/
+    ?? _evidence/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/
+    ?? _evidence/gpt_page_debug.png
+    ?? _evidence/gpt_v3_nav_debug.png
+    ?? _evidence/gpt_v3_nav_debug_after_nav.png
+    ?? _evidence/gpt_v3_nav_debug_final.png
+    ?? _evidence/gpt_v3_verdict_debug.png
+    ?? _evidence/hfs_verdict.txt
+    ?? _evidence/hook-output/
+    ?? _evidence/hrv_v3_verdict.txt
+    ?? _evidence/hrv_verdict.txt
+    ?? _evidence/hrv_verdict_full.txt
+    ?? _evidence/next_task_reply.txt
+    ?? _evidence/runtime-negative-path-evidence/
+    ?? _reports/PROMPT_AGENT_FLOW_FRAMEWORK.md
+    ?? _reports/PROMPT_AGENT_PAPER_DEVELOPMENT.md
+    ?? _submit_ecs.py
+    ?? _submit_hfs.py
+    ?? _submit_hfs2.py
+    ?? _submit_hrv.py
+    ?? _submit_hrv_v2.py
+    ?? _submit_hrv_v3.py
+    ?? _submit_hrv_v4.py
+    ?? _submit_hrv_v5.py
+    ?? _submit_maintenance.py
+    ?? _submit_uaws.py
+    ?? nul
+    ?? scripts/_evidence/
+
+## Summary
+modified_tracked: 0
+untracked_total: 74
+  neg_009: 17
+  secret_scan: 5
+  session_artifacts: 52
+grand_total: 74

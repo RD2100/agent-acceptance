@@ -1,0 +1,45 @@
+verdict: EVIDENCE_COMPLETE
+task_id: EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1
+generated: 2026-06-11T18:35:32.875653+08:00
+version: '1.0.0'
+commits: [6c47d327, 7b8d9477, f95b95c4, 5755681d, d7b294d]
+base_commit: 20a4aa27
+head_commit: d7b294d
+
+evidence_files:
+  - ai-guard-scope-check-output.txt
+  - chain-evidence.json
+  - deferred-files-register.yaml
+  - diff-stat-5755681d.txt
+  - diff-stat-6c47d327.txt
+  - diff-stat-7b8d9477.txt
+  - diff-stat-combined.txt
+  - diff-stat-d7b294d.txt
+  - diff-stat-f95b95c4.txt
+  - diff.patch
+  - final-report.md
+  - git-log.txt
+  - git-show-5755681d.txt
+  - git-show-6c47d327.txt
+  - git-show-7b8d9477.txt
+  - git-show-d7b294d.txt
+  - git-show-f95b95c4.txt
+  - git-status-after.txt
+  - review.md
+  - review.yaml
+  - sadp-audit-raw.txt
+  - safety-report.json
+  - secret-scan-output.txt
+  - test-output.txt
+
+post_commit_state:
+  modified_tracked: 0
+  untracked_total: 74
+  neg_009: 17
+  secret_scan: 5
+  session_artifacts: 52
+  grand_total: 74
+
+consistency_check:
+  all_files_agree: true
+  sum_check: 17 + 5 + 52 = 74 == untracked_total(74)
