@@ -1,0 +1,25 @@
+﻿# SADP Audit Output - 2026-06-11T08:51:04Z
+# Exit code: 1
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 6
+[SADP-AUDIT] TaskSpecs found: 50
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 6 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   .ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml -> current-task.yaml
+[SADP-AUDIT]   docs/agent-runtime/hook-failure-semantics.md -> current-task.yaml
+[SADP-AUDIT]   hooks/pre-commit.governance.ps1 -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT]   schemas/agent-runtime/evidence-capture.schema.json -> current-task.yaml
+[SADP-AUDIT]   tests/test_hook_failure_semantics.py -> current-task.yaml
+[SADP-AUDIT] FAIL: TaskSpec missing valid gate_0.inventory_evidence: .ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml
+[SADP-AUDIT]   Required: gate_0.inventory_evidence.queried_sources + matched_capabilities.
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/pre-commit.governance.ps1 requires human review WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 2 warning(s) - PASS with warnings
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/pre-commit.governance.ps1 requires human review WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 2 warning(s) - PASS with warnings
+[SADP-AUDIT] STATUS: BLOCKED
+[SADP-AUDIT] Commit rejected. Fix the issues above and retry.
+[SADP-AUDIT] (Use --no-verify only with explicit human approval per core-001)
+

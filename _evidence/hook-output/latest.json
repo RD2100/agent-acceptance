@@ -1,0 +1,42 @@
+﻿{
+    "git_context":  {
+                        "branch":  "master",
+                        "commit_count":  289,
+                        "staged_file_count":  41
+                    },
+    "timestamp":  "2026-06-12T12:47:05Z",
+    "overall_result":  "PASS",
+    "hook_version":  "2.4.0",
+    "stages":  [
+                   {
+                       "name":  "manifest-regen",
+                       "output_file":  null,
+                       "duration_ms":  0,
+                       "exit_code":  0
+                   },
+                   {
+                       "name":  "sadp-audit",
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\sadp-audit-20260612-204705.txt",
+                       "duration_ms":  3621,
+                       "exit_code":  0
+                   },
+                   {
+                       "name":  "ai-guard",
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\ai-guard-20260612-204705.txt",
+                       "duration_ms":  2729,
+                       "exit_code":  0
+                   },
+                   {
+                       "name":  "test-governance",
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\test-governance-20260612-204705.txt",
+                       "duration_ms":  3149,
+                       "exit_code":  0
+                   },
+                   {
+                       "name":  "conversation-health",
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\conversation-health-20260612-204705.txt",
+                       "duration_ms":  64,
+                       "exit_code":  0
+                   }
+               ]
+}

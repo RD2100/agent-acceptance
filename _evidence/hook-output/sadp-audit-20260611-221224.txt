@@ -1,0 +1,47 @@
+﻿# SADP Audit Output - 2026-06-11T14:12:24Z
+# Exit code: 1
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 25
+[SADP-AUDIT] TaskSpecs found: 53
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] WARN: 1 file(s) not covered by any TaskSpec write_set:
+[SADP-AUDIT]   UNCOVERED: _cdp_submit_helper.py
+[SADP-AUDIT]   Ensure each changed file is listed in a TaskSpec write_set or Allowed Files.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   .ai/conversation/current.json.example -> current-task.yaml
+[SADP-AUDIT]   .ai/current-task.yaml -> current-task.yaml
+[SADP-AUDIT]   .ai/tasks/conversation-health-gate-a1.yaml -> current-task.yaml
+[SADP-AUDIT]   _evidence/conversation-health-evidence/combined-conversation-health-evidence.txt -> r18-evidence-maintenance-a1.yaml
+[SADP-AUDIT]   _evidence/conversation-health-evidence/composite_force.txt -> r18-evidence-maintenance-a1.yaml
+[SADP-AUDIT]   _evidence/conversation-health-evidence/invalid_json.txt -> r18-evidence-maintenance-a1.yaml
+[SADP-AUDIT]   _evidence/conversation-health-evidence/manual_estimate_no_force.txt -> r18-evidence-maintenance-a1.yaml
+[SADP-AUDIT]   _evidence/conversation-health-evidence/message_count_force_cdp.txt -> r18-evidence-maintenance-a1.yaml
+[SADP-AUDIT]   _evidence/conversation-health-evidence/missing_current_json.txt -> r18-evidence-maintenance-a1.yaml
+[SADP-AUDIT]   _evidence/conversation-health-evidence/nav_access_denied.txt -> r18-evidence-maintenance-a1.yaml
+[SADP-AUDIT]   _evidence/conversation-health-evidence/nav_auth_required.txt -> r18-evidence-maintenance-a1.yaml
+[SADP-AUDIT]   _evidence/conversation-health-evidence/review_rounds_force.txt -> r18-evidence-maintenance-a1.yaml
+[SADP-AUDIT]   _evidence/conversation-health-evidence/stale_metrics_suggest.txt -> r18-evidence-maintenance-a1.yaml
+[SADP-AUDIT]   _evidence/conversation-health-gate-consensus.md -> current-task.yaml
+[SADP-AUDIT]   configs/conversation-health-policy.yaml -> current-task.yaml
+[SADP-AUDIT]   docs/agent-runtime/conversation-health-gate.md -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT]   schemas/agent-runtime/conversation-health.schema.json -> current-task.yaml
+[SADP-AUDIT]   schemas/agent-runtime/conversation-health-decision.schema.json -> current-task.yaml
+[SADP-AUDIT]   scripts/build_evidence_pack.py -> current-task.yaml
+[SADP-AUDIT]   scripts/check_handoff_needed.py -> current-task.yaml
+[SADP-AUDIT]   scripts/run_conversation_health_evidence.py -> current-task.yaml
+[SADP-AUDIT]   scripts/sadp_pre_task_enforcer.py -> current-task.yaml
+[SADP-AUDIT]   tests/test_conversation_health_gate.py -> current-task.yaml
+[SADP-AUDIT] WARN: Template/sensitive file in diff: .ai/conversation/current.json.example
+[SADP-AUDIT]   Verify this file contains ONLY placeholders, never real keys.
+[SADP-AUDIT]   Use format: __REPLACE_WITH_YOUR_OWN_KEY__
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review ERROR: SCOPE: _cdp_submit_helper.py outside TaskSpec allow_write ERROR: SCOPE: _evidence/conversation-health-evidence/combined-conversation-health-evidence.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/conversation-health-evidence/composite_force.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/conversation-health-evidence/invalid_json.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/conversation-health-evidence/manual_estimate_no_force.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/conversation-health-evidence/message_count_force_cdp.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/conversation-health-evidence/missing_current_json.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/conversation-health-evidence/nav_access_denied.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/conversation-health-evidence/nav_auth_required.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/conversation-health-evidence/review_rounds_force.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/conversation-health-evidence/stale_metrics_suggest.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/conversation-health-gate-consensus.md outside TaskSpec allow_write  AI Guard: 12 error(s), 1 warning(s) - BLOCKED
+[SADP-AUDIT] ai_guard.py found TaskSpec scope issues.
+[SADP-AUDIT] STATUS: BLOCKED
+[SADP-AUDIT] Commit rejected. Fix the issues above and retry.
+[SADP-AUDIT] (Use --no-verify only with explicit human approval per core-001)
+
