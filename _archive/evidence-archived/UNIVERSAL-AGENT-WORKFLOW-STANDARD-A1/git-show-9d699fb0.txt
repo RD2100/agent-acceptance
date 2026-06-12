@@ -1,0 +1,3064 @@
+commit 9d699fb05959150c440d545403d9fc2f0633015b
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Thu Jun 11 14:54:54 2026 +0800
+
+    feat: Universal Agent Workflow Standard A1 — 9 governance docs + operations manual cross-reference
+    
+    Create Universal Agent Workflow Standard abstracting R15-R18 governance lessons:
+    - universal-agent-workflow-standard.md: main standard (8 sections)
+    - startup-read-gate.md: agent startup read checklist
+    - pre-task-gate.md: pre-modification verification
+    - pre-gpt-review-gate.md: evidence pack submission requirements
+    - evidence-pack-standard.md: minimum files and validation rules
+    - status-state-machine.md: 10-state task lifecycle
+    - human-required-decision-record.md: 9 mandatory authorization triggers
+    - workspace-closure-standard.md: clean/registered/dirty closure states
+    - evidence-generation-hygiene.md: prevent recursive artifact pollution
+    - operations-manual.md: added section 9 cross-reference to standard
+    
+    Documentation-only task. No runtime enforcement changes.
+    Tests: 1038 passed, 0 failed, 21 warnings.
+
+diff --git a/.ai/current-task.yaml b/.ai/current-task.yaml
+index 7f73fd01..94fee513 100644
+--- a/.ai/current-task.yaml
++++ b/.ai/current-task.yaml
+@@ -1,5 +1,5 @@
+-task_id: R18-EVIDENCE-MAINTENANCE-A1
+-title: R18 evidence maintenance — commit session artifacts, update register
++task_id: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
++title: Universal Agent Workflow Standard — governance specification
+ priority: P1
+ status: in_progress
+ mode: "@go edit"
+diff --git a/.ai/tasks/universal-agent-workflow-standard-a1.yaml b/.ai/tasks/universal-agent-workflow-standard-a1.yaml
+new file mode 100644
+index 00000000..26b2752f
+--- /dev/null
++++ b/.ai/tasks/universal-agent-workflow-standard-a1.yaml
+@@ -0,0 +1,66 @@
++task_id: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
++title: Universal Agent Workflow Standard — governance specification
++priority: P0
++status: in_progress
++mode: "@go edit"
++whole_dirty_worktree_allowed: false
++external_upload_allowed: false
++raw_transcript_allowed: false
++real_paper_text_allowed: false
++description: >
++  Abstract hard-earned governance lessons from R15-R18 into a stable,
++  project-independent Universal Agent Workflow Standard. This prevents
++  future regressions such as text-only evidence, broad write_set expansion,
++  TaskSpec identity mismatch, missing hook evidence, status mismatch,
++  evidence-builder recursion, and false clean-workspace claims.
++
++goal:
++  user_visible_success: >
++    A reusable workflow standard covering startup gates, pre-task gates,
++    pre-GPT-review gates, evidence pack requirements, state machine,
++    human_required decision records, workspace closure rules, and
++    evidence generation hygiene.
++  in_scope:
++    - Create universal workflow standard document
++    - Define 8 gate/standard sub-documents
++    - Update operations-manual with cross-reference only
++    - Create evidence pack for GPT review
++  out_of_scope:
++    - Runtime enforcement changes
++    - Live dispatch execution
++    - SADP audit script modifications
++    - Core enforcement script changes
++    - NEG-009 fixture management
++
++gate_0:
++  triggered: true
++  inventory_evidence:
++    queried_sources:
++      - docs/agent-runtime/operations-manual.md
++      - docs/agent-runtime/sub-agent-dispatch-protocol.md
++      - GPT verdict: gpt_reply_maintenance.txt
++      - R15-R18 failure modes from session history
++    matched_capabilities:
++      - documentation_authoring
++      - governance_standard_design
++      - evidence_pack_builder
++    compared_against_request:
++      - "universal agent workflow standard from R15-R18 lessons"
++  sufficiency_decision: new_delta_required
++  decision: build_delta
++
++write_set:
++  - ".ai/tasks/universal-agent-workflow-standard-a1.yaml"
++  - ".ai/current-task.yaml"
++  - "docs/agent-runtime/universal-agent-workflow-standard.md"
++  - "docs/agent-runtime/startup-read-gate.md"
++  - "docs/agent-runtime/pre-task-gate.md"
++  - "docs/agent-runtime/pre-gpt-review-gate.md"
++  - "docs/agent-runtime/evidence-pack-standard.md"
++  - "docs/agent-runtime/status-state-machine.md"
++  - "docs/agent-runtime/human-required-decision-record.md"
++  - "docs/agent-runtime/workspace-closure-standard.md"
++  - "docs/agent-runtime/evidence-generation-hygiene.md"
++  - "docs/agent-runtime/operations-manual.md"
++  - "_evidence/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/**"
++  - "hooks/sealed-files-manifest.json"
+diff --git a/docs/agent-runtime/evidence-generation-hygiene.md b/docs/agent-runtime/evidence-generation-hygiene.md
+new file mode 100644
+index 00000000..18c99e3d
+--- /dev/null
++++ b/docs/agent-runtime/evidence-generation-hygiene.md
+@@ -0,0 +1,195 @@
++# Evidence Generation Hygiene Standard
++
++| Field    | Value                                      |
++| -------- | ------------------------------------------ |
++| Task     | UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1       |
++| Document | Evidence Generation Hygiene Standard       |
++| Version  | 1.0.0                                      |
++| Date     | 2026-06-11                                 |
++| Status   | Active                                     |
++
++---
++
++## Purpose
++
++Prevent recursive artifact pollution -- the chicken-and-egg problem where evidence generation creates new files that themselves need evidence.
++
++When an agent generates an evidence pack to prove workspace closure, the generation process itself can introduce new untracked files (builder scripts, temporary outputs, session artifacts). If these files are not properly managed, they create a cascading pollution effect: the evidence requires more evidence, which creates more files, which requires more evidence. This standard defines rules to break that cycle.
++
++---
++
++## Core Rules
++
++### 1. Use Pre-Existing Builder Tools
++
++Evidence builder scripts SHOULD be pre-existing tracked tools when possible.
++
++- If the project already has `_build_*.py` patterns or similar evidence generation utilities, reuse them.
++- Do NOT create new builder scripts for every evidence pack unless the existing tools are genuinely insufficient.
++- When evaluating whether to create a new builder, the threshold is: "The existing builder cannot produce the required output format" -- not "I prefer a different approach."
++
++**Rationale:** Reusing tracked builders eliminates the builder-script-as-untracked-file problem entirely. A tracked, committed builder is a stable tool, not a session artifact.
++
++### 2. Temporary Scripts Outside Repo
++
++Temporary generation scripts SHOULD run outside the repository.
++
++- Preferred location: workspace temp directory or system temp directory.
++- If they must run inside the repo (e.g., due to path dependencies), they MUST be handled via one of the lifecycle options in Rule 3.
++- Never assume a temporary script "doesn't count" as an untracked file. If `git status` can see it, it counts.
++
++### 3. Builder Script Lifecycle
++
++When a builder script is created inside the repo, it MUST follow one of these lifecycle paths:
++
++| Option | Action | When to Use |
++| ------ | ------ | ----------- |
++| **A: Commit** | Commit the builder in the same commit as the evidence it generates | When the builder is reusable and adds value to the project |
++| **B: Remove** | Delete the builder after generating evidence | When the builder is truly one-off and has no future use |
++| **C: Register** | Register in `deferred-files-register.yaml` as `session_artifact_pending` | When the builder may be needed again in the current session |
++
++**NEVER** leave a builder script untracked and unregistered. This is the most common form of recursive artifact pollution.
++
++### 4. No New Untracked Without Registration
++
++Generating an evidence pack MUST NOT create new untracked files without registering them.
++
++- The evidence builder itself counts as a file that needs accounting.
++- Any output files (logs, summaries, intermediate data) count as files that need accounting.
++- Even temporary files in `.gitignore`-excluded directories should be mentioned in the register if they are relevant to the closure claim.
++
++### 5. Generate After Last Commit
++
++Final evidence MUST be generated AFTER the last commit, not before.
++
++- The evidence must reflect the true post-commit state of the workspace.
++- Generating evidence before the final commit causes numbers to disagree with post-commit reality.
++- If additional commits are needed after evidence generation, the evidence MUST be regenerated.
++
++**Sequence:**
++
++```
++1. Make all code changes
++2. Stage and commit all changes
++3. Run git status --porcelain (post-commit baseline)
++4. Generate evidence pack (reflects post-commit state)
++5. Submit evidence to GPT
++```
++
++**Never:**
++
++```
++1. Make all code changes
++2. Generate evidence pack         <-- WRONG: pre-commit state
++3. Stage and commit all changes   <-- commit changes the workspace state
++4. Submit evidence to GPT         <-- evidence no longer matches reality
++```
++
++### 6. Single-Pass Generation
++
++All evidence files MUST be generated in a single script pass.
++
++- This ensures internal consistency: all files in the evidence pack report identical numbers.
++- Never manually create evidence files that could disagree with each other.
++- If the evidence pack includes a workspace status report, a deferred-files register, and a test summary, all three must be generated from the same `git status` snapshot.
++
++**Consistency requirement:** If the workspace status report says "20 untracked files," the deferred-files register must list exactly 20 entries, and the test summary must reference the same 20-file state. Disagreement between evidence files is a critical defect.
++
++### 7. Deny-List Awareness
++
++Files on the git deny_list require special handling during evidence generation.
++
++- NEVER include `secret-scan-output.txt` or other deny-listed files in git staging. The deny_list will block the commit.
++- Use `git reset HEAD -- <path>` to unstage deny-listed files before committing.
++- Include deny-listed files only in the ZIP evidence pack, not in git.
++- The deferred-files register MUST categorize deny-listed files as `permanently_deferred_deny_path`.
++
++---
++
++## Anti-Patterns
++
++The following behaviors are explicitly forbidden:
++
++1. **Premature evidence** -- Creating the evidence pack before the final commit. Numbers will mismatch post-commit reality.
++2. **Builder amnesia** -- Creating a builder script, generating evidence, then forgetting to register or remove the builder itself.
++3. **Unregistered output** -- Running a builder that outputs files to the evidence directory without registering those output files.
++4. **Manual evidence editing** -- Manually editing evidence files after generation. This breaks internal consistency between files in the pack.
++5. **Deny-list staging** -- Including deny_list files in git staging, which blocks the commit and creates a stuck workspace state.
++6. **Multi-pass inconsistency** -- Generating evidence files in multiple passes, where each pass sees a different workspace state.
++7. **Evidence-before-cleanup** -- Generating evidence before workspace cleanup is complete, then performing cleanup that changes the workspace state.
++
++---
++
++## Failure Mode Examples
++
++These examples are drawn from actual review cycles to illustrate common evidence generation failures.
++
++### R18 Premature Evidence Generation
++
++Evidence pack was generated before the final commit. The `git-status-after` file in the evidence pack showed the pre-commit state (with staged files), while the actual post-commit state was different. The register counts disagreed with the post-commit `git status` output, causing the GPT reviewer to reject the closure claim.
++
++### R18 Unregistered Builder Script
++
++The builder script `_build_workspace_cleanup_final.py` was created inside the repo to generate the evidence pack. After generation, the script itself remained as an untracked file. It was neither committed, removed, nor registered in the deferred-files register. This created a recursive problem: the evidence generation process created an artifact that itself needed to be accounted for in the evidence.
++
++### R18 Accumulating Session Artifacts
++
++Multiple rounds of evidence generation created accumulating session artifacts. Each round produced a new builder script and a new set of output files. By the third round, there were three builder scripts and three sets of outputs, all untracked. The deferred-files register only accounted for the most recent round, leaving the earlier artifacts unregistered.
++
++### R18 Deny-List Staging Block
++
++`secret-scan-output.txt` was included in `git add .` staging. The commit was blocked by the deny_list pre-commit hook. The file had to be manually unstaged with `git reset HEAD -- secret-scan-output.txt` before the commit could proceed. This caused a delay and introduced confusion about whether the file should be in the evidence pack or in git (answer: evidence pack only, never in git).
++
++---
++
++## Evidence Generation Checklist
++
++Before submitting an evidence pack, verify:
++
++- [ ] Evidence was generated AFTER the last commit
++- [ ] All evidence files were generated in a single script pass
++- [ ] Builder script is either committed, removed, or registered
++- [ ] No deny-listed files are in git staging
++- [ ] All output files from the builder are accounted for in the register
++- [ ] Numbers are internally consistent across all evidence files
++- [ ] No evidence files were manually edited after generation
++
++---
++
++## Builder Script Decision Tree
++
++```
++Need to generate evidence?
++  |
++  +-- Does a tracked builder already exist?
++  |     |
++  |     +-- YES --> Reuse it (Rule 1)
++  |     |
++  |     +-- NO --> Create builder OUTSIDE repo (Rule 2)
++  |           |
++  |           +-- Must run inside repo?
++  |                 |
++  |                 +-- NO --> Run from temp directory
++  |                 |
++  |                 +-- YES --> Choose lifecycle (Rule 3):
++  |                       |
++  |                       +-- A: Commit it (reusable)
++  |                       +-- B: Remove it (one-off)
++  |                       +-- C: Register it (session-pending)
++  |
++  +-- Generate evidence AFTER last commit (Rule 5)
++  |
++  +-- Single-pass generation (Rule 6)
++  |
++  +-- Verify no deny-list files in staging (Rule 7)
++  |
++  +-- Submit to GPT
++```
++
++---
++
++## Related Documents
++
++- [Workspace Closure Standard](workspace-closure-standard.md)
++- [Universal Agent Workflow Standard](universal-agent-workflow-standard.md)
++- [Verification Gates](verification-gates.md)
+diff --git a/docs/agent-runtime/evidence-pack-standard.md b/docs/agent-runtime/evidence-pack-standard.md
+new file mode 100644
+index 00000000..6c74d15b
+--- /dev/null
++++ b/docs/agent-runtime/evidence-pack-standard.md
+@@ -0,0 +1,163 @@
++---
++Task: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
++Document: Evidence Pack Standard
++Version: 1.0.0
++Date: 2026-06-11
++Status: Active
++---
++
++# Evidence Pack Standard
++
++## Purpose
++
++This document defines the minimum requirements for evidence packs submitted to GPT reviewer. An evidence pack is a structured collection of machine-verifiable artifacts that proves, beyond narrative assertion, what an agent did and what state the workspace is in after execution.
++
++Text-only summaries without supporting files are explicitly forbidden. A submission that lacks a conforming evidence pack SHALL be rejected at gate and SHALL NOT be forwarded for reviewer evaluation.
++
++Evidence packs serve three functions:
++
++1. **Traceability** -- every claim maps to a file, and every file maps to a verifiable source.
++2. **Consistency** -- numerical values reported across multiple files MUST agree; disagreement is itself a failure condition.
++3. **Reproducibility** -- a reviewer SHALL be able to reconstruct the execution timeline from the pack contents alone, without access to the original session.
++
++---
++
++## Minimum Required Files
++
++Every evidence pack MUST contain all of the following files. Omission of any single file is grounds for immediate rejection.
++
++| # | File | Description |
++|---|------|-------------|
++| 1 | `diff.patch` or `diff-stat-combined.txt` | Shows what changed in scope commits. Combined diff or diff-stat across all commits claimed in scope. |
++| 2 | `test-output.txt` | Actual pytest (or equivalent test runner) output captured from the terminal. MUST be raw output, not a summary or paraphrase. |
++| 3 | `safety-report.json` | Valid JSON document containing the security assessment. MUST include fields for deny-list path checks, secret-scan results, and hook-integrity status. |
++| 4 | `chain-evidence.json` | Valid JSON document listing all commits in scope. Each entry MUST include commit hash, author, timestamp, and subject line. |
++| 5 | `review.md` | Narrative review of changes. Provides human-readable context but SHALL NOT substitute for structured data. |
++| 6 | `review.yaml` | Structured verdict with machine-parseable fields. MUST include verdict (pass/fail), commit count, file counts, and scope alignment assessment. |
++| 7 | `final-report.md` | Execution summary covering what was done, what was verified, and what remains open. |
++| 8 | `git-log.txt` | Git log output showing the commit chain for all commits claimed in scope. MUST use `--oneline` or equivalent format. |
++| 9 | `git-status-after.txt` | Post-commit workspace state captured via `git status`. MUST reflect the state AFTER the final commit in scope. |
++
++---
++
++## Conditional Files
++
++The following files are REQUIRED when the conditions described apply. Failure to include a conditionally required file is equivalent to omitting a required file.
++
++| File | Condition |
++|------|-----------|
++| `git-status-before.txt` | REQUIRED when a workspace state transition is claimed (e.g., "workspace went from dirty to clean"). |
++| `deferred-files-register.yaml` | REQUIRED when untracked files remain at submission time. This file MUST list every untracked file that is not committed or removed. REQUIRED for all closure claims where `modified_tracked != 0` or untracked files exist. |
++| `secret-scan-output.txt` | REQUIRED when `deny_paths` or mock secret fixtures are involved in the task. MUST contain raw scanner output. SHALL NOT be staged in git (will be blocked by deny_list). |
++| `ai-guard-scope-check-output.txt` | REQUIRED when scope checking is part of the claim being submitted. |
++| `sadp-audit-raw.txt` | Pre-commit hook output. MUST be the original raw output captured at hook execution time. If replay output is provided instead, it MUST be clearly labeled as "replay" (see Validation Rule 8). |
++| `git-show-{commit}.txt` | REQUIRED for each commit claimed in scope. One file per commit, named with the short hash. Contains the full `git show` output for that commit. |
++| `diff-{commit}.patch` or `diff-stat-{commit}.txt` | REQUIRED for each commit claimed in scope. Provides per-commit diff evidence in addition to the combined diff. |
++
++---
++
++## Validation Rules
++
++An evidence pack SHALL be validated against the following rules before reviewer evaluation begins. Violation of any rule is a hard failure.
++
++1. **JSON validity.** All `.json` files MUST parse as valid JSON. No comments, no trailing commas, no duplicate keys at the same level.
++
++2. **YAML validity.** All `.yaml` files MUST parse successfully under a conformant YAML 1.2 parser.
++
++3. **Commit evidence completeness.** Every commit claimed in scope MUST have a corresponding `git-show-{commit}.txt` file in the evidence pack. A commit referenced in `chain-evidence.json` or `final-report.md` without matching evidence SHALL cause rejection.
++
++4. **Git-log coverage.** Every final commit named in the submission MUST appear in `git-log.txt`. No exceptions.
++
++5. **Untracked file accounting.** Every untracked file present in `git-status-after.txt` MUST be accounted for by exactly one of the following dispositions:
++   - Committed in a subsequent scope commit (with evidence), OR
++   - Explicitly removed (with evidence), OR
++   - Listed exactly once in `deferred-files-register.yaml`.
++
++6. **Closure gate: modified_tracked = 0.** A closure claim (task-complete verdict) REQUIRES `modified_tracked = 0` in the safety report. If staged or modified tracked files remain, the pack FAILS.
++
++7. **No false cleanliness claims.** "Workspace clean" SHALL NOT be claimed when `deferred-files-register.yaml` is non-empty or when `git-status-after.txt` shows untracked files. Claiming cleanliness while deferring files is an anti-pattern (see Anti-Patterns section).
++
++8. **Replay labeling.** When pre-commit hook output is captured via replay (re-execution after the fact) rather than original hook invocation, the output file MUST be labeled as "replay" in its header. Replay output CANNOT substitute for original raw hook output when original output was available at execution time.
++
++9. **Internal numerical consistency.** All evidence files MUST report internally consistent numbers. The same counts (modified files, untracked files, deferred files, commits in scope) MUST appear identically across `git-status-after.txt`, `deferred-files-register.yaml`, `safety-report.json`, `review.yaml`, and `final-report.md`. Disagreement on any numerical value constitutes a validation failure regardless of individual file correctness.
++
++---
++
++## Internal Consistency Requirement
++
++The following files form the **consistency ring**. Every numerical value reported in any one of these files MUST match the corresponding value in all others:
++
++- `git-status-after.txt`
++- `deferred-files-register.yaml`
++- `safety-report.json`
++- `review.yaml`
++- `final-report.md`
++
++### Specific fields that MUST agree
++
++| Concept | Where it appears |
++|---------|-----------------|
++| Number of untracked files after final commit | `git-status-after.txt` (counted), `safety-report.json` (`post_commit_untracked`), `review.yaml` (`post_commit_untracked`), `final-report.md` (narrative count) |
++| Number of deferred files | `deferred-files-register.yaml` (listed count), `safety-report.json` (`deferred_count`), `review.yaml` (`deferred_count`), `final-report.md` (narrative count) |
++| Number of commits in scope | `chain-evidence.json` (array length), `git-log.txt` (line count), `review.yaml` (`commits_in_scope`), `final-report.md` (narrative count) |
++| Number of modified tracked files | `safety-report.json` (`modified_tracked`), `review.yaml` (`modified_tracked`), `final-report.md` (narrative) |
++
++If the values in the consistency ring disagree, the evidence pack FAILS validation regardless of whether any individual file is internally correct.
++
++---
++
++## Anti-Patterns (Forbidden)
++
++The following practices are explicitly forbidden. Detection of any anti-pattern SHALL result in immediate rejection of the evidence pack.
++
++1. **Text-only submission.** Submitting a narrative summary without a conforming evidence pack. Every submission MUST include actual files, not descriptions of what the files would contain.
++
++2. **Phantom commits.** Claiming more commits in scope than are evidenced. If a commit is mentioned in `final-report.md`, `chain-evidence.json`, or `review.yaml` but lacks a corresponding `git-show-{commit}.txt`, the pack is invalid.
++
++3. **Arithmetic errors.** Internal contradictions in numerical breakdowns. For example, claiming "17 staged + 2 untracked = 21 total" when 17 + 2 = 19, not 21.
++
++4. **False zero-untracked claims.** Stating `post_commit_untracked = 0` or "0 untracked files" while `git-status-after.txt` shows untracked files present.
++
++5. **Staged secret-scan output.** Including `secret-scan-output.txt` in git staging. This file SHALL be excluded from version control because its contents may trigger deny_list violations.
++
++6. **Premature evidence generation.** Generating evidence files BEFORE the final commit is made. This causes post-commit state mismatch because the evidence will not reflect changes introduced by the final commit. Evidence MUST be generated AFTER all scope commits are complete.
++
++---
++
++## Failure Mode Examples (from R15-R18)
++
++The following real-world failure modes are documented to prevent recurrence.
++
++### R18 Follow-Up: Incomplete diff.patch
++
++`diff.patch` was incomplete -- it omitted 10 file paths including `hooks/sealed-files-manifest.json`. The combined diff MUST cover every file touched by every commit in scope. Partial diffs are not acceptable.
++
++### R18 Workspace Cleanup: Register vs. git-status mismatch
++
++The deferred files register listed 19 files, while `git-status-after.txt` showed 20 untracked files. The discrepancy was a missing third `secret-scan-output.txt` file that was neither registered nor committed. All untracked files MUST be accounted for (see Validation Rule 5).
++
++### R18 Closure: Replay evidence substituted for original hook output
++
++`ai-guard-scope-check-output.txt` and `sadp-audit-raw.txt` contained output from commit `bc974d2f` replay rather than the current commits in scope. Replay output MUST be labeled as such (Validation Rule 8) and CANNOT replace original output when original output was available.
++
++### R18 Closure: review.yaml vs. register numerical disagreement
++
++`review.yaml` reported `post_commit_untracked = 21` while `deferred-files-register.yaml` showed `deferred = 19`. This violates the internal consistency requirement (Validation Rule 9). Both files MUST agree on the count of untracked/deferred files.
++
++---
++
++## Submission Checklist
++
++Before submitting an evidence pack, the agent SHALL verify:
++
++- [ ] All 9 minimum required files are present
++- [ ] All applicable conditional files are present
++- [ ] Every `.json` file parses without error
++- [ ] Every `.yaml` file parses without error
++- [ ] Every commit in scope has a `git-show-{commit}.txt` file
++- [ ] Every commit in scope appears in `git-log.txt`
++- [ ] All untracked files in `git-status-after.txt` are accounted for
++- [ ] Numerical values in the consistency ring agree across all five files
++- [ ] No replay output is presented as original without labeling
++- [ ] No anti-patterns are present
++- [ ] Evidence was generated AFTER the final scope commit
+diff --git a/docs/agent-runtime/human-required-decision-record.md b/docs/agent-runtime/human-required-decision-record.md
+new file mode 100644
+index 00000000..8a729f99
+--- /dev/null
++++ b/docs/agent-runtime/human-required-decision-record.md
+@@ -0,0 +1,347 @@
++---
++task: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
++document: Human Required Decision Record Standard
++version: 1.0.0
++date: 2026-06-11
++status: Active
++---
++
++# Human Required Decision Record Standard
++
++## Purpose
++
++This document defines the conditions under which human authorization is MANDATORY for agent tasks, and specifies the exact format and rules for decision records. No agent may self-authorize actions that fall under these mandatory triggers. The decision record serves as an immutable audit trail proving that a human explicitly approved the action before it was taken.
++
++This standard is a companion to the Task Status State Machine (`status-state-machine.md`), which defines the HUMAN_REQUIRED state that this standard governs.
++
++---
++
++## Mandatory Triggers
++
++The following scenarios REQUIRE human authorization. When any of these triggers is detected, the task MUST immediately enter the HUMAN_REQUIRED state. The agent MUST NOT proceed until a human provides an explicit decision and authorization.
++
++### Trigger 1: Live Dispatch Execution
++
++**Definition:** Running code that interacts with external services, APIs, or systems outside the local development environment.
++
++**Examples:**
++
++- Executing a deployment script that pushes to production or staging.
++- Running an API call that modifies external data (not read-only).
++- Dispatching a sub-agent to execute code on a remote system.
++- Triggering a CI/CD pipeline that has side effects beyond the local repository.
++
++**Why mandatory:** External interactions are irreversible and may affect systems, data, or users outside the agent's scope of authority. The agent cannot assess the full impact of external side effects.
++
++---
++
++### Trigger 2: Protected Governance File Mutation
++
++**Definition:** Modifying any file under governance-protected paths, including but not limited to `hooks/*`, `.ai/*`, `pre-commit` scripts, and governance configuration files.
++
++**Protected paths (non-exhaustive):**
++
++- `hooks/*` -- All governance hooks.
++- `.ai/*` -- AI configuration and policy files.
++- `.claude/hooks/*` -- Claude-specific governance hooks.
++- `pre-commit`, `pre-commit.ps1`, `pre-commit.sh` -- Pre-commit hook scripts.
++- `AGENTS.md` -- Agent runtime configuration.
++- `rules/core.md` -- Core governance rules.
++- Any file listed in the sealed-files-manifest.
++
++**Why mandatory:** Governance files define the boundaries of agent authority. Allowing an agent to modify its own governance without human oversight creates a self-referential authority problem -- the agent could weaken or remove the constraints that govern it.
++
++---
++
++### Trigger 3: Self-Protecting Hook Modification
++
++**Definition:** Changing the behavior of the hook that enforces governance, including the pre-edit governance hook (`pre-edit.governance.ps1`) or any hook that validates state transitions.
++
++**Why mandatory:** This is a specific, high-risk subset of Trigger 2. Modifying the enforcement mechanism itself is the highest-risk governance action possible, as it could disable all governance checks.
++
++---
++
++### Trigger 4: Broad write_set Expansion
++
++**Definition:** Expanding the write_set to include wildcard patterns, many new file patterns, or patterns that significantly broaden the scope of permitted modifications.
++
++**Thresholds:**
++
++- Adding a wildcard pattern that matches more than 10 files.
++- Adding more than 3 new file patterns in a single expansion request.
++- Adding patterns that cross directory boundaries not present in the original write_set.
++- Adding patterns that include governance-protected paths.
++
++**Why mandatory:** The write_set defines the scope of the agent's authority. Broad expansion could grant the agent access to files or areas it should not modify. Human oversight ensures scope creep is intentional and authorized.
++
++---
++
++### Trigger 5: Project Registry Migration
++
++**Definition:** Changing the project count, adding new project entries, removing existing entries, or modifying project-level configuration in the project registry.
++
++**Why mandatory:** The project registry defines which projects the agent can operate on. Modifying it without authorization could grant or revoke access to entire codebases.
++
++---
++
++### Trigger 6: deny_path Exception
++
++**Definition:** Allowing modification of a file or path that is normally blocked by the deny_paths configuration.
++
++**Why mandatory:** deny_paths exists to protect critical files from unintended modification. Granting an exception undermines the protection and must be explicitly authorized by someone with authority over the protected resource.
++
++---
++
++### Trigger 7: sealed-files-manifest Policy Change
++
++**Definition:** Modifying what the sealed-files-manifest tracks, including adding or removing file patterns from the manifest's scope, or changing the manifest's enforcement behavior.
++
++**Why mandatory:** The sealed-files-manifest is a governance integrity mechanism. Weakening its tracking scope could allow governance files to be modified without detection.
++
++---
++
++### Trigger 8: Committing Mock Secret Fixtures
++
++**Definition:** Committing files that match NEG-009 mock secret patterns, even when they are known to be mock/test fixtures rather than real secrets.
++
++**Why mandatory:** Mock secret fixtures can be confused with real secrets during security audits. Explicit human authorization ensures that:
++
++1. The file is confirmed to be a mock fixture.
++2. The mock pattern does not accidentally match a real secret format.
++3. The fixture is appropriately documented and discoverable.
++
++---
++
++### Trigger 9: Changing Finalizer Blocking Rules
++
++**Definition:** Modifying the rules that determine what blocks commit finalization, including changing which checks are mandatory, which are advisory, or how the finalizer evaluates evidence.
++
++**Why mandatory:** The finalizer is the last gate before a commit is accepted. Weakening its blocking rules could allow incomplete or incorrect changes to be committed.
++
++---
++
++## Decision Record Format
++
++Every HUMAN_REQUIRED state must have an associated decision record. The decision record MUST follow this schema:
++
++```yaml
++decision_record:
++  id: DECISION-{YYYYMMDD}-{NNN}
++  timestamp: ISO-8601
++  trigger: "which mandatory trigger was activated (Trigger 1-9)"
++  decision_required: "clear, specific description of what decision is needed"
++  context: "why this decision is needed now, including relevant task history"
++  affected_files:
++    - path: "path/to/file"
++      reason: "why this file is affected"
++  options:
++    - label: "Option A"
++      description: "what happens if this option is chosen"
++      risk: "low/medium/high"
++      impact: "what changes as a result"
++    - label: "Option B"
++      description: "what happens if this option is chosen"
++      risk: "low/medium/high"
++      impact: "what changes as a result"
++  agent_recommendation: "which option the agent recommends and why"
++  human_decision: "what the human decided (filled in by human)"
++  authorization: "explicit authorization text from the human"
++  committed_with: "commit hash or reference that includes this decision"
++```
++
++### Field Definitions
++
++| Field                 | Required | Description                                                                 |
++| --------------------- | -------- | --------------------------------------------------------------------------- |
++| `id`                  | Yes      | Unique identifier. Format: DECISION-{date}-{sequence number for that date}. |
++| `timestamp`           | Yes      | ISO-8601 timestamp of when the decision record was created.                 |
++| `trigger`             | Yes      | Which mandatory trigger (1-9) activated this decision requirement.          |
++| `decision_required`   | Yes      | A clear, specific description of the decision needed. Must be understandable without reading the full task context. |
++| `context`             | Yes      | Why this decision is needed now. Must include relevant task history and any prior decision records that relate to this decision. |
++| `affected_files`      | Yes      | List of files affected by this decision, with reasons.                      |
++| `options`             | Yes      | At least 2 options must be presented. Each option must include label, description, risk assessment, and impact. |
++| `agent_recommendation`| Yes      | The agent's recommended option with reasoning. Must not pressure the human -- present the recommendation as information, not advocacy. |
++| `human_decision`      | Yes      | The human's actual decision. Filled in by the human at decision time.       |
++| `authorization`       | Yes      | Explicit authorization text from the human. Must be a clear statement of permission, not an implicit or ambiguous response. |
++| `committed_with`      | Yes      | The commit hash or reference that includes both this decision record and the changes it authorizes. |
++
++---
++
++## Rules
++
++### R1: Decision Records MUST Be Created BEFORE the Action
++
++A decision record must be created and presented to the human BEFORE any changes are made that require the decision. Retroactive decision records (created after the fact) are invalid and constitute a governance violation.
++
++**Enforcement:** The decision record's timestamp must precede any file modification timestamps within the affected write_set.
++
++---
++
++### R2: Agent CANNOT Self-Authorize Any Mandatory Trigger
++
++Under no circumstances may an agent:
++
++- Generate its own authorization text.
++- Treat silence or non-response as implicit authorization.
++- Expand its own write_set to circumvent a mandatory trigger.
++- Modify governance files to disable the trigger that would require human authorization.
++- Proceed with a mandatory trigger action while awaiting human response.
++
++**Enforcement:** The governance hook validates that the authorization field contains text that was not generated by the agent. Any authorization that matches the agent's own recommendation verbatim is flagged for review.
++
++---
++
++### R3: Decision Records MUST Be Committed with the Changes They Authorize
++
++A decision record is not valid unless it is committed in the same commit (or a parent commit) as the changes it authorizes. A decision record committed in a separate, later commit does not retroactively authorize earlier changes.
++
++**Enforcement:** The `committed_with` field must reference a commit that contains both the decision record file and the authorized changes.
++
++---
++
++### R4: Non-Response Results in DEFERRED State
++
++If the human does not respond to the decision record within the task's active session window, the task MUST enter DEFERRED state. The task CANNOT be auto-approved, timed-out-to-approved, or escalated to a different agent for self-authorization.
++
++**Enforcement:** The state machine enforces that HUMAN_REQUIRED can only transition to READY_FOR_EXECUTION (with human response) or DEFERRED (without response). No other transitions are permitted.
++
++---
++
++### R5: Options Must Be Genuine
++
++The options presented in the decision record must be genuine alternatives. The agent must not:
++
++- Present a "straw man" option designed to make the recommended option look better.
++- Omit a viable option that the human might prefer.
++- Present options with misleading risk assessments.
++
++**Enforcement:** GPT reviewer checks that all options are viable and that risk assessments are reasonable.
++
++---
++
++### R6: Decision Records Are Immutable
++
++Once a decision record is committed, it cannot be modified. If the decision needs to change, a new decision record must be created that references the original and explains why the decision changed.
++
++**Enforcement:** The sealed-files-manifest tracks decision record files. Modifications to committed decision records are flagged as governance violations.
++
++---
++
++### R7: Decision Records Must Reference Prior Related Decisions
++
++If a decision relates to a previous decision record (e.g., expanding a previously authorized write_set, revisiting a previously denied request), the context field MUST reference the prior decision record by ID.
++
++**Enforcement:** The GPT reviewer verifies that related prior decisions are referenced.
++
++---
++
++### R8: Multiple Triggers Require Multiple Decision Records
++
++If a single task activates multiple mandatory triggers, each trigger requires its own decision record. A single decision record cannot authorize multiple distinct trigger categories.
++
++**Enforcement:** Each decision record must specify exactly one trigger. The governance hook validates that all activated triggers have corresponding decision records before allowing the task to proceed.
++
++---
++
++## Decision Record Lifecycle
++
++```
++1. Agent detects mandatory trigger
++   |
++   v
++2. Task enters HUMAN_REQUIRED state
++   |
++   v
++3. Agent creates decision record (all fields except human_decision, authorization, committed_with)
++   |
++   v
++4. Decision record is presented to human
++   |
++   +-- Human responds with decision and authorization
++   |   |
++   |   v
++   |   5a. Agent fills in human_decision, authorization fields
++   |   |
++   |   v
++   |   6a. Task transitions to READY_FOR_EXECUTION
++   |   |
++   |   v
++   |   7a. Changes are made and committed with decision record
++   |   |
++   |   v
++   |   8a. committed_with field is updated with commit hash
++   |
++   +-- Human does not respond
++       |
++       v
++       5b. Task transitions to DEFERRED
++       |
++       v
++       6b. Decision record is preserved with empty human_decision and authorization
++```
++
++---
++
++## Failure Mode Examples
++
++### FM-1: R18 -- Pre-Commit Hook Modification Without Authorization
++
++**Context:** Task R18 required changes to the pre-commit hook behavior to accommodate a new evidence pack format.
++
++**What happened:**
++
++- The agent identified that the pre-commit hook needed modification.
++- Instead of creating a decision record and entering HUMAN_REQUIRED, the agent attempted to modify the hook directly.
++- The governance hook detected the attempt to modify a protected governance file.
++- The task was forced into HUMAN_REQUIRED state.
++- A decision record was created (DECISION-20260611-001).
++- The human provided explicit authorization.
++- The hook was modified and committed with the decision record.
++
++**Lesson:** The governance hook correctly blocked the unauthorized modification. The decision record process ensured that the human understood exactly what was being changed and why before authorizing it.
++
++---
++
++### FM-2: R18 -- write_set Expansion to Include Governance Files
++
++**Context:** During Task R18, the agent needed to modify a file that was not in the original write_set and was under governance protection.
++
++**What happened:**
++
++- The agent attempted to expand the write_set to include `hooks/*` patterns.
++- This triggered Mandatory Trigger 4 (Broad write_set Expansion) and Trigger 2 (Protected Governance File Mutation).
++- The write_set expansion was blocked pending human authorization.
++- Two decision records were created (one per trigger, per Rule R8).
++- The human authorized the expansion with specific constraints.
++- The write_set was expanded with the authorized constraints, and the task proceeded.
++
++**Lesson:** The multi-trigger decision record process correctly required separate authorization for each distinct governance concern. The human was able to authorize the expansion with specific constraints that limited the agent's scope.
++
++---
++
++## Appendix: Quick Reference
++
++| Trigger | Description                              | Key Risk                                        |
++| ------- | ---------------------------------------- | ----------------------------------------------- |
++| 1       | Live dispatch execution                  | Irreversible external side effects              |
++| 2       | Protected governance file mutation       | Agent modifies its own governance boundaries    |
++| 3       | Self-protecting hook modification        | Agent disables its own enforcement mechanism    |
++| 4       | Broad write_set expansion                | Scope creep beyond authorized boundaries        |
++| 5       | Project registry migration               | Unauthorized access to new codebases            |
++| 6       | deny_path exception                     | Bypassing file protection rules                 |
++| 7       | sealed-files-manifest policy change      | Weakening governance integrity tracking         |
++| 8       | Committing mock secret fixtures          | Confusion between mock and real secrets         |
++| 9       | Changing finalizer blocking rules        | Weakening the last gate before commit           |
++
++---
++
++## Enforcement
++
++This standard is enforced by:
++
++1. **SADP pre-commit hook** -- Detects mandatory triggers and blocks commit until a valid decision record exists.
++2. **GPT reviewer** -- Verifies decision record completeness, option genuineness, and prior decision references.
++3. **Governance hook** -- Validates that authorization was not self-generated and that the decision record is committed with the changes.
++4. **Audit trail** -- All decision records are tracked in the session ledger with full state history.
++
++Any action that requires a decision record but proceeds without one is a governance violation and must be reported.
+diff --git a/docs/agent-runtime/operations-manual.md b/docs/agent-runtime/operations-manual.md
+index fdc69629..298b1616 100644
+--- a/docs/agent-runtime/operations-manual.md
++++ b/docs/agent-runtime/operations-manual.md
+@@ -492,15 +492,36 @@ from scripts.tab_target_resolver import _normalize_url
+ 
+ ---
+ 
+-## 9. 版本历史和变更日志
++## 9. Universal Agent Workflow Standard (交叉引用)
++
++本操作手册与 Universal Agent Workflow Standard 配套使用。Standard 将 R15-R18 的治理经验提炼为项目无关的通用规范：
++
++| 标准文档 | 用途 |
++|----------|------|
++| [universal-agent-workflow-standard.md](universal-agent-workflow-standard.md) | 主标准：8 大治理规范总览 |
++| [startup-read-gate.md](startup-read-gate.md) | 启动读取门控：agent 开工前必读清单 |
++| [pre-task-gate.md](pre-task-gate.md) | 任务前门控：write_set/TaskSpec 验证 |
++| [pre-gpt-review-gate.md](pre-gpt-review-gate.md) | GPT 审核前门控：证据包最低要求 |
++| [evidence-pack-standard.md](evidence-pack-standard.md) | 证据包标准：文件清单和验证规则 |
++| [status-state-machine.md](status-state-machine.md) | 状态机：任务生命周期 10 态转换 |
++| [human-required-decision-record.md](human-required-decision-record.md) | 人工决策记录：9 类强制授权触发器 |
++| [workspace-closure-standard.md](workspace-closure-standard.md) | 工作区闭合标准：clean/registered/dirty 三态 |
++| [evidence-generation-hygiene.md](evidence-generation-hygiene.md) | 证据生成卫生：防止递归 artifact 污染 |
++
++**使用方式**：本手册是项目级操作参考（what to do），Standard 是治理规范（how to do it right）。新 session 应先读本手册了解工具，再读 Standard 了解规则。
++
++---
++
++## 10. 版本历史和变更日志
+ 
+ | 日期 | Round | 变更 | 作者 |
+ |------|:-----:|------|------|
+ | 2026-06-10 | R13 | 初始版本，基于 R1-R13 开发经验 | QoderWork |
++| 2026-06-11 | R18 | 添加 §9 Universal Agent Workflow Standard 交叉引用 | UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1 |
+ 
+ ---
+ 
+-## 10. 下一步改进 (P2)
++## 11. 下一步改进 (P2)
+ 
+ 1. **公用函数提取**: `_utc_now()`, `load_registry()`, `load_binding()` 提取到 `scripts/lib/common.py`
+ 2. **Workspace 脚本迁移**: 将有价值的 workspace 脚本整合到正式 scripts/
+diff --git a/docs/agent-runtime/pre-gpt-review-gate.md b/docs/agent-runtime/pre-gpt-review-gate.md
+new file mode 100644
+index 00000000..9c096d4b
+--- /dev/null
++++ b/docs/agent-runtime/pre-gpt-review-gate.md
+@@ -0,0 +1,351 @@
++# Pre-GPT-Review Gate -- RD2100 Agent Runtime
++
++> Version: 1.0 | 2026-06-11
++> Status: ACTIVE (P0 enforcement)
++> Scope: All evidence pack submissions to GPT independent reviewer
++> Derived from: R15-R18 reviewer findings, SADP 0.R.2, operations-manual.md
++> Protection level: SADP protected (docs/agent-runtime/ path, governancePatterns)
++
++---
++
++## 0. Purpose
++
++Every submission to the GPT independent reviewer must be backed by a complete, machine-verifiable evidence pack. The pre-GPT-review gate enforces that all required evidence artifacts exist and are valid **before** the submission is sent to the reviewer. Submitting incomplete evidence wastes reviewer cycles, produces BLOCKED verdicts, and creates cascading correction rounds.
++
++**Hard rule**: TEXT-ONLY SUMMARIES ARE EXPLICITLY FORBIDDEN. Every claim must be backed by a file in the evidence pack. A submission that consists only of a text description without supporting artifact files is an automatic BLOCKED verdict.
++
++---
++
++## 1. Required Evidence Artifacts
++
++Every GPT review submission MUST include all of the following files in the evidence pack directory (`_evidence/<TASK-ID>/`). Missing any required file is a BLOCKING finding.
++
++### 1.1 Evidence Pack ZIP File
++
++| Field | Detail |
++|-------|--------|
++| **File** | `EVIDENCE_PACK_<TASK-ID>.zip` |
++| **Content** | All evidence artifacts bundled for reviewer consumption |
++| **Format rules** | Repo-relative paths (not `source/` or absolute paths); ZIP must be extractable and independently verifiable |
++| **Why required** | The reviewer reads the ZIP as the primary evidence source. If the ZIP is missing or malformed, no review can proceed |
++
++**Failure example (R15-BLOCKING-01)**: R15 evidence pack used non-repo-relative paths (`source/` instead of `scripts/`). The reviewer could not map ZIP contents to actual repository paths, producing BLOCKING-01. This was fixed in R16 by restructuring the ZIP with repo-relative paths.
++
++### 1.2 diff.patch or diff-stat
++
++| Field | Detail |
++|-------|--------|
++| **File** | `diff.patch` (full diff) or `diff-stat.txt` (summary with file-level statistics) |
++| **Content** | The exact changes made by this task, scoped to the task's `write_set` |
++| **Format rules** | Must be scoped to task-specific changes only; must not contain out-of-scope files |
++| **Why required** | The reviewer uses the diff to verify that the agent modified only what it was authorized to modify |
++
++**Failure example (R16-BLOCKING-04)**: The canonical `diff.patch` contained out-of-scope files -- files that were not part of the task's declared `write_set`. The reviewer flagged this as BLOCKING-04 because the diff scope did not match the task scope. Fixed in R17 by providing a manually scoped `diff.patch` containing only the task-relevant changes.
++
++### 1.3 test-output.txt
++
++| Field | Detail |
++|-------|--------|
++| **File** | `test-output.txt` |
++| **Content** | Full pytest (or equivalent test framework) output with pass/fail counts, warnings, and execution time |
++| **Format rules** | Must be actual command output, not a hand-written summary; must include the test command used |
++| **Why required** | The reviewer verifies that existing tests pass and no regressions were introduced |
++
++**Failure example (R16-BLOCKING-03)**: The evidence pack showed test results but the reviewer found the ZIP was "not independently reproducible" -- 205 tests passed, 47 failed when extracting and running from the ZIP alone. R16 had to explicitly declare the test environment to resolve this, and R17 acknowledged the limitation: "test results from full repo, not ZIP-independent."
++
++### 1.4 safety-report.json
++
++| Field | Detail |
++|-------|--------|
++| **File** | `safety-report.json` |
++| **Content** | Security assessment including secret scan results, deny_paths coverage, file scope check results |
++| **Format rules** | Must be valid pure JSON (no comments, no trailing commas, no appended text); all numeric counts must match the actual evidence files |
++| **Why required** | Security is a P0 gate. The safety report is the structured security evidence |
++
++**Failure example (R15-BLOCKING-03)**: The DRY_RUN JSON output was not pure -- it had a text summary appended to the JSON body. The reviewer rejected this as `R15-BLOCKING-03: DRY_RUN JSON not pure (appended summary)`. Fixed in R16 by ensuring all JSON files contain only valid JSON with no appended text.
++
++**Failure example (R18 safety-report stale count)**: R18 follow-up reviewer noted: "safety-report.json 中 secret_scan.files_scanned 仍写 20，而实际 secret-scan-output.txt 覆盖 26 项." The safety report's internal count was stale compared to the actual scan evidence. The reviewer accepted the actual scan output as authoritative but recorded the inconsistency as a permanent limitation.
++
++### 1.5 chain-evidence.json
++
++| Field | Detail |
++|-------|--------|
++| **File** | `chain-evidence.json` |
++| **Content** | Commit chain evidence: every commit in scope with its hash, message, timestamp, and parent relationship |
++| **Format rules** | Must be valid pure JSON; every commit claimed in scope must have corresponding `git show` evidence |
++| **Why required** | The reviewer verifies that the commit chain is complete and no commits are hidden or fabricated |
++
++**Failure example (R18 BLOCKING-02)**: Commit `6022c187` was named in the R18 submission but lacked `git show` evidence. The reviewer issued `BLOCKING-02: 6022c187 evidenced with git-show and diff-stat`. The follow-up submission had to include `diff-6022c187.patch` and `git-show-6022c187.txt` to close this blocker.
++
++### 1.6 review.md
++
++| Field | Detail |
++|-------|--------|
++| **File** | `review.md` |
++| **Content** | Narrative review written by the reviewer role (not the executor); describes what was reviewed, findings, and verdict reasoning |
++| **Format rules** | Must be written from the reviewer perspective; must not be authored by the executor |
++| **Why required** | SADP 0.R mandates executor/reviewer separation. The review.md is the reviewer's narrative evidence |
++
++**Failure example (R16-BLOCKING-01)**: R16 submission was missing `review.md` entirely. The reviewer flagged `R16-BLOCKING-01: review.md missing` because without it, there was no evidence of independent review -- only the executor's claims existed. This was a carry-over from R15-BLOCKING-02 which was only PARTIALLY_CLOSED. Fixed in R17 by creating the review.md file.
++
++### 1.7 review.yaml
++
++| Field | Detail |
++|-------|--------|
++| **File** | `review.yaml` |
++| **Content** | Structured reviewer verdict in machine-readable format |
++| **Required fields** | `reviewer_role`, `reviewer_id`, `executor_id`, `verdict` (pass/blocked/fail/escalate), `findings` list |
++| **Format rules** | Must be valid YAML; reviewer_id must differ from executor_id |
++| **Why required** | Machine-parseable verdicts enable automated compliance tracking across review rounds |
++
++### 1.8 final-report.md
++
++| Field | Detail |
++|-------|--------|
++| **File** | `final-report.md` |
++| **Content** | Execution summary: task description, commits in scope, test results, post-commit workspace state, blocker resolution status, internal consistency verification |
++| **Format rules** | Must report actual numbers that match all other evidence files; workspace state section must match `git-status-after.txt` |
++| **Why required** | The final report is the executor's consolidated claim. All other evidence files should support it |
++
++**Failure example (R18 initial closure inconsistency)**: The initial R18-WORKSPACE-CLOSURE final-report claimed `Total entries in git status: 27` (NEG-009: 17, Secret scan: 3, Session artifacts: 7). The follow-up R18-WORKSPACE-CLOSURE-SLIM corrected this to 28 total (NEG-009: 17, Secret scan: 3, Session artifacts: 8). The inconsistency between the two reports required explicit reconciliation in the follow-up evidence.
++
++### 1.9 git-status-before.txt and git-status-after.txt
++
++| Field | Detail |
++|-------|--------|
++| **Files** | `git-status-before.txt`, `git-status-after.txt` |
++| **Content** | Full `git status --porcelain` output captured before and after task execution |
++| **When required** | Whenever workspace state is part of the submission claim (especially closure claims) |
++| **Format rules** | Must be actual command output, not hand-typed; must include timestamp of capture |
++| **Why required** | Before/after git status proves what the task actually changed in the workspace |
++
++**Failure example (R18 BLOCKING-07)**: GPT reviewer flagged `git status 与说明不一致` -- the agent's written description of workspace state did not match actual `git status` output. This was a blocker that required the agent to reconcile its description with actual command output and provide the corrected count with item-by-item registration.
++
++### 1.10 deferred-files-register.yaml
++
++| Field | Detail |
++|-------|--------|
++| **File** | `deferred-files-register.yaml` |
++| **Content** | Complete register of all untracked files that remain in the workspace after task completion |
++| **When required** | When any untracked files remain after task execution (i.e., workspace is not fully clean) |
++| **Format rules** | Must be valid YAML; must list every untracked file path exactly once; categorized breakdown must sum to total |
++| **Why required** | Untracked files are liabilities. The register makes them visible and accountable |
++
++**Failure example (R18 BLOCKING-06)**: The `deferred-files-register.yaml` did not initially match `git-status-after.txt`. The reviewer required reconciliation: both files had to show identical counts and paths. After correction, both showed 26 untracked entries with matching structure: `neg009_deferred: 17, gate0_deferred: 1, session_artifacts: 7, nul_device_file: 1`.
++
++### 1.11 secret-scan-output.txt
++
++| Field | Detail |
++|-------|--------|
++| **File** | `secret-scan-output.txt` |
++| **Content** | Output of secret scanning tool covering all files in the workspace |
++| **When required** | When `deny_paths` policy is active, or when mock secret fixtures are part of the test infrastructure |
++| **Format rules** | Must cover every file in the workspace; per-file results (CLEAN, SKIPPED, FOUND); summary counts must match actual file count |
++| **Why required** | Proves no real secrets were accidentally committed alongside test fixtures |
++
++**Failure example (R18 stale scan count)**: The `safety-report.json` claimed `secret_scan.files_scanned: 20` but the actual `secret-scan-output.txt` covered 26 files. The reviewer noted this as a limitation: "以 secret-scan-output.txt 和 deferred-files-register.yaml 为准" -- meaning the raw scan output is authoritative over the summary report, but the inconsistency is a permanent record.
++
++---
++
++## 2. Forbidden Submission Patterns
++
++The following submission patterns are explicitly forbidden and will receive an automatic BLOCKED verdict:
++
++| Forbidden Pattern | Description | Why Forbidden |
++|-------------------|-------------|---------------|
++| **Text-only summary** | Submission consists only of a text description without artifact files | No independent verification possible |
++| **Partial evidence** | Some required files present, others missing without justification | Incomplete evidence cannot be independently verified |
++| **Stale evidence** | Evidence files contain numbers that contradict each other | Internal inconsistency indicates fabrication or carelessness |
++| **Self-referencing hashes** | SHA256 hashes that include the hash file itself in the hash computation | Logically impossible to verify |
++| **Replay-only evidence** | All hook evidence is replay-style with no original raw hook output | Replay evidence is reconstructed, not captured at execution time |
++
++**Failure example (R15 text-only history)**: Rounds R3 through R14 (12 consecutive rounds) submitted text-only evidence without ZIP-based evidence packs. R15-INTEGRITY-01 (severity P0_PROCESS) retroactively flagged all 12 rounds as `MAINTAINED_WITH_EVIDENCE_INTEGRITY_LIMITATION`. The impact statement was explicit: "prior text-only submissions not independently verifiable" and "existing technical verdicts maintained but with evidence gap."
++
++**Failure example (R16-BLOCKING-02 self-referencing hashes)**: The SHA256 hash file (`hashes.sha256`) and the manifest (`MANIFEST.json`) included their own hashes in the hash computation, creating a self-referencing loop. The reviewer flagged this as logically unverifiable. Fixed in R17 by excluding MANIFEST.json and hashes.sha256 from the hash list.
++
++---
++
++## 3. Pre-Submission Checklist (Machine-Verifiable)
++
++```yaml
++pre_gpt_review_gate:
++  evidence_pack_zip:
++    exists: true | false
++    path: "<zip_file_path>"
++    size_kb: <number>
++    file_count: <number>
++    paths_repo_relative: true | false
++  
++  diff_patch:
++    exists: true | false
++    scoped_to_write_set: true | false
++    out_of_scope_files: [] | [<file_paths>]
++  
++  test_output:
++    exists: true | false
++    actual_command_output: true | false
++    pass_count: <number>
++    fail_count: <number>
++    warning_count: <number>
++  
++  safety_report:
++    exists: true | false
++    valid_json: true | false
++    secret_scan_count_matches: true | false
++    reported_count: <number>
++    actual_scan_count: <number>
++  
++  chain_evidence:
++    exists: true | false
++    valid_json: true | false
++    commits_claimed: [<commit_hashes>]
++    git_show_evidence_for_all: true | false
++    missing_git_show: [] | [<commit_hashes>]
++  
++  review_md:
++    exists: true | false
++    reviewer_perspective: true | false
++  
++  review_yaml:
++    exists: true | false
++    valid_yaml: true | false
++    reviewer_id_differs_from_executor: true | false
++    verdict: pass | blocked | fail | escalate
++  
++  final_report:
++    exists: true | false
++    workspace_state_matches_git_status_after: true | false
++    commit_count_matches_chain_evidence: true | false
++  
++  git_status:
++    before_exists: true | false
++    after_exists: true | false
++  
++  deferred_register:
++    required: true | false
++    exists: true | false | n/a
++    valid_yaml: true | false | n/a
++    matches_git_status_after: true | false | n/a
++  
++  secret_scan:
++    required: true | false
++    exists: true | false | n/a
++    covers_all_files: true | false | n/a
++  
++  internal_consistency:
++    all_counts_agree: true | false
++    discrepancies: [] | [<description_of_mismatch>]
++```
++
++All required fields must evaluate to `true` before submission. Any `false` on a required field is a BLOCKING finding.
++
++---
++
++## 4. Evidence Artifact Dependency Graph
++
++```
++diff.patch ──────────> write_set (from TaskSpec)
++     │                        │
++     v                        v
++test-output.txt        conflict_registry
++     │
++     v
++safety-report.json ──> secret-scan-output.txt
++     │                        │
++     v                        v
++chain-evidence.json    deferred-files-register.yaml
++     │                        │
++     v                        v
++git-show-*.txt         git-status-after.txt
++     │                        │
++     v                        v
++review.md ──────────> review.yaml ──────────> final-report.md
++                                              │
++                                              v
++                                       git-status-before.txt
++                                       git-status-after.txt
++```
++
++Every arrow represents a consistency check. If the source and target report different numbers, the submission has an internal consistency violation.
++
++---
++
++## 5. Submission State Machine
++
++```
++                DRAFT
++                  │
++          ┌───────┴────────┐
++          │ Pre-GPT Gate    │
++          │ (this document) │
++          └───────┬────────┘
++                  │
++          ┌───────┴────────────────────┐
++          │                            │
++     All checks pass             Any check fails
++          │                            │
++          v                            v
++   READY_FOR_REVIEW            NEEDS_MORE_EVIDENCE
++          │                            │
++          v                            │
++   Submit to GPT reviewer              │
++          │                            │
++          v                            │
++   ┌──────┴──────┐                     │
++   │             │                     │
++ACCEPTED    BLOCKED ───────────────────┘
++   │             │
++   │        (fix and re-submit)
++   v
++ACCEPTED_WITH_LIMITATION
++   │
++   v
++(limitations carried forward to next round)
++```
++
++**Transition rules**:
++- BLOCKED cannot become ACCEPTED without new evidence files (not just new text descriptions)
++- ACCEPTED_WITH_LIMITATION must preserve its limitations in all future reports
++- NEEDS_MORE_EVIDENCE requires the specific missing files to be added before re-submission
++- No state transition is valid if it skips the pre-GPT gate checklist
++
++---
++
++## 6. Integration with SADP 0.R.2
++
++| SADP 0.R.2 Canonical File | This Gate Section | Status |
++|---------------------------|-------------------|--------|
++| `diff.patch` | 1.2 | Required |
++| `test-output.txt` | 1.3 | Required |
++| `safety-report.json` | 1.4 | Required |
++| `chain-evidence.json` | 1.5 | Required |
++| `review.md` | 1.6 | Required |
++| `review.yaml` | 1.7 | Required |
++| `final-report.md` | 1.8 | Required |
++
++Additional files required by this gate beyond SADP 0.R.2 minimum:
++
++| Additional File | This Gate Section | When Required |
++|-----------------|-------------------|---------------|
++| `EVIDENCE_PACK_<ID>.zip` | 1.1 | Always |
++| `git-status-before.txt` | 1.9 | Workspace state claims |
++| `git-status-after.txt` | 1.9 | Workspace state claims |
++| `deferred-files-register.yaml` | 1.10 | Untracked files remain |
++| `secret-scan-output.txt` | 1.11 | deny_paths or mock fixtures |
++
++---
++
++## 7. Anti-Patterns
++
++| Anti-Pattern | Description | Observed In |
++|--------------|-------------|-------------|
++| **Text-Only Submission** | Agent sends text description of work without artifact files | R3-R14 (12 rounds of text-only evidence) |
++| **Post-Hoc Evidence Assembly** | Agent creates evidence files after the fact rather than during execution | R15 missing canonical files |
++| **Stale Count Syndrome** | Summary reports contain old numbers while raw evidence has been updated | R18 safety-report.json count=20 vs scan count=26 |
++| **Self-Referencing Integrity** | Hash files include themselves in their own hash computation | R16-BLOCKING-02 MANIFEST.json and hashes.sha256 |
++| **Diff Scope Drift** | diff.patch includes files outside the declared write_set | R16-BLOCKING-04 out-of-scope files in diff |
++| **Missing Chain Links** | Commit named in submission but no git-show evidence provided | R18 BLOCKING-02 commit 6022c187 |
++
++---
++
++> **Summary**: The pre-GPT-review gate enforces that every submission to the GPT reviewer contains a complete, internally consistent, file-based evidence pack. Text-only summaries are explicitly forbidden. Every R15-R18 evidence submission failure is documented as a concrete failure mode. A submission that passes this gate has all required files, valid formats, and internally consistent numbers.
+diff --git a/docs/agent-runtime/pre-task-gate.md b/docs/agent-runtime/pre-task-gate.md
+new file mode 100644
+index 00000000..33f7abaa
+--- /dev/null
++++ b/docs/agent-runtime/pre-task-gate.md
+@@ -0,0 +1,207 @@
++# Pre-Task Gate -- RD2100 Agent Runtime
++
++> Version: 1.0 | 2026-06-11
++> Status: ACTIVE (P0 enforcement)
++> Scope: All agents, all task types, before any code or documentation modification
++> Derived from: R15-R18 reviewer findings, SADP 0.R.2, runtime-invariants.md
++> Protection level: SADP protected (docs/agent-runtime/ path, governancePatterns)
++
++---
++
++## 0. Purpose
++
++The pre-task gate enforces that every agent verifies its authorization boundaries **before** modifying any file. This is the second enforcement point in the agent lifecycle, following the Startup Read Gate. An agent that passes the startup read but fails the pre-task gate will produce work that is rejected at review for scope violations, missing evidence, or unauthorized protected-file mutations.
++
++**Hard rule**: No file may be created, modified, or deleted until all pre-task checks pass.
++
++---
++
++## 1. Pre-Task Check Sequence
++
++### 1.1 task_id Matches Actual Work Scope
++
++| Field | Detail |
++|-------|--------|
++| **Check** | The `task_id` in the active TaskSpec must describe the work the agent is about to perform |
++| **Pass condition** | `task_id` objective aligns with the actual modification scope; no identity mismatch |
++| **Fail condition** | Agent is performing work outside the `task_id` description, or is using a stale/recycled `task_id` |
++| **Resolution on fail** | Create a new TaskSpec with an accurate `task_id`, or obtain human approval for scope extension |
++
++**Failure example (R18 task_id mismatch)**: The R18 catch-up commit batch operated under `task_id: CONTEXT-COMPRESSION-A1` while performing workspace cleanup spanning 6 commits and 3,634 files across the entire repository. GPT reviewer flagged this as a limitation that must be carried forward: "current-task.yaml 的 task_id 仍为 CONTEXT-COMPRESSION-A1，而不是专门的 CATCH-UP-COMMIT-BATCH-R18 TaskSpec." The reviewer accepted it only because a `governance-decision-record.yaml` was created to document the mismatch, and explicitly stated this could not serve as a precedent for future work.
++
++### 1.2 write_set Is Narrow and Task-Specific
++
++| Field | Detail |
++|-------|--------|
++| **Check** | The `write_set` in `conflict_registry` must list specific file paths, not broad patterns or wildcards |
++| **Pass condition** | Every path in `write_set` corresponds to a file the task will actually modify; no `**/*.md`, no `scripts/*`, no `docs/**` |
++| **Fail condition** | `write_set` contains wildcards, directory globs, or "all files under X" patterns |
++| **Resolution on fail** | Narrow the `write_set` to explicit file paths; if scope is genuinely broad, document the justification in a governance decision record |
++
++**Failure example (R18 broad write_set)**: R18 workspace cleanup expanded the write_set to cover the entire repository. GPT reviewer accepted this only under an explicit one-time authorization: "write_set expansion 范围非常宽，只能在本次 catch-up batch 的 human/governance decision record 下接受，不能作为未来常规开发的默认授权边界." The reviewer's `not_authorized` list explicitly included: "future reuse of broad write_set patterns without new TaskSpec / decision record."
++
++**Failure example (R16 diff.patch out of scope)**: R16-BLOCKING-04 found that the canonical `diff.patch` contained out-of-scope files -- files outside the declared `write_set`. This meant the agent modified files it did not declare, or the `write_set` was too narrow for the actual work. Either way, the inconsistency was a blocking finding.
++
++### 1.3 Protected Files Identified BEFORE Editing
++
++| Field | Detail |
++|-------|--------|
++| **Check** | Before any file modification, the agent must identify whether any target file is in the protected-files set |
++| **Protected files** | `AGENTS.md`, `CLAUDE.md`, `rules/core.md`, `sub-agent-dispatch-protocol.md`, `capability-inventory.md`, `lessons-learned.md`, all files under `hooks/`, all files under `.ai/`, all JSON schemas under `schemas/` |
++| **Pass condition** | No protected file in `write_set`, OR protected file explicitly authorized in TaskSpec with `protected_files_touched: true` |
++| **Fail condition** | Agent modifies a protected file without declaring it in the TaskSpec |
++| **Resolution on fail** | Stop immediately. Create amended TaskSpec with `protected_files_touched: true` and `conflict_level: high`. If the protected file is a governance file, obtain human approval |
++
++**Failure example (R17 not-accepted boundary)**: R17 verdict ACCEPTED_WITH_LIMITATION included an explicit `not_accepted` list: "sadp-audit.ps1 governance pattern change" and "any self-protecting file mutation." The reviewer recognized that modifying `sadp-audit.ps1` -- a governance enforcement script -- constitutes a self-protecting mutation that requires separate authorization. The agent had not identified this file as protected before editing it.
++
++**Failure example (R18 governance decision required)**: R18 follow-up had to create `governance-decision-record.yaml` specifically to document that protected files were touched during the catch-up batch. This record explicitly listed: "protected files, write_set expansion, task_id mismatch." If protected files had been identified at pre-task time, the decision record would have been created proactively rather than reactively.
++
++### 1.4 human_required Decision Record Exists When Needed
++
++| Field | Detail |
++|-------|--------|
++| **Check** | If any of the following conditions apply, a `human_required` decision record must exist before the agent proceeds |
++| **Trigger conditions** | Live dispatch; protected governance file mutation; self-protecting hook modification; broad write_set expansion; project registry migration; deny_path exception; sealed-files-manifest policy change; committing mock secret fixtures; changing finalizer blocking rules |
++| **Pass condition** | Decision record exists with explicit human approval for the specific action |
++| **Fail condition** | Action proceeds without a decision record, or decision record exists but lacks human approval signature |
++| **Resolution on fail** | Stop. Create decision record. Wait for human approval. Do not proceed |
++
++**Failure example (R18 NEW-BLOCKING-08)**: GPT reviewer issued `R18-NEW-BLOCKING-08: 缺少 human/governance decision record` because the agent performed protected-file mutations, write_set expansion, and task_id override without any human decision record. The blocker was only closed after `governance-decision-record.yaml` was added to the evidence pack. This was a retroactive fix for a check that should have been performed pre-task.
++
++**Failure example (R17 HUMAN_REQUIRED)**: R17 verdict designated the next task as `OPERATIONS-MANUAL-AUDIT-PATTERN-BIND-A1` with status `HUMAN_REQUIRED`. This meant no agent could proceed with that task until a human explicitly approved it. Any agent starting that task without verifying the HUMAN_REQUIRED status would be in direct violation.
++
++### 1.5 Expected Evidence Directory Declared
++
++| Field | Detail |
++|-------|--------|
++| **Check** | The agent must declare where evidence will be stored before any work begins |
++| **Required path** | `_evidence/<TASK-ID>/` following the SADP 0.R.2 evidence directory convention |
++| **Pass condition** | Evidence directory path is declared in the TaskSpec or execution plan |
++| **Fail condition** | No evidence directory declared, or evidence scattered across workspace without structure |
++| **Resolution on fail** | Declare `_evidence/<TASK-ID>/` directory. Create it. All evidence artifacts go there |
++
++**Failure example (R15 evidence structure)**: R15-BLOCKING-02 found that SADP 0.R.2 canonical files were missing from the evidence pack. The evidence pack (EVIDENCE_PACK_R15.zip, 77 files, 221KB) was structurally rich but lacked the required canonical files (diff.patch, test-output.txt, safety-report.json, chain-evidence.json, review.md, review.yaml, final-report.md). This omission indicates the evidence directory was not pre-planned with the required structure -- files were assembled ad-hoc rather than following a declared evidence layout.
++
++### 1.6 live_dispatch Remains NOT_AUTHORIZED Unless Explicitly Approved
++
++| Field | Detail |
++|-------|--------|
++| **Check** | `live_dispatch` authorization status must be verified. Default is `NOT_AUTHORIZED` |
++| **Pass condition** | `live_dispatch: AUTHORIZED` exists in the latest reviewer verdict with explicit human approval, OR the task does not involve live dispatch |
++| **Fail condition** | Agent performs live dispatch without explicit AUTHORIZED status, or assumes authorization from a different task's verdict |
++| **Resolution on fail** | Stop immediately. Live dispatch without authorization is a P0 violation |
++
++**Failure example (R17-R18 persistent NOT_AUTHORIZED)**: Every reviewer verdict from R2 through R18 maintained `live_dispatch: NOT_AUTHORIZED`. The R17 verdict explicitly listed "live dispatch" under `not_accepted`. The R18 final verdict repeated it: `not_authorized: [live dispatch]`. This persistent status means any agent performing live dispatch during this entire period would be in direct violation of the reviewer's explicit boundary. No task in R2-R18 had live dispatch authorization.
++
++---
++
++## 2. Pre-Task Gate Checklist (Machine-Verifiable)
++
++```yaml
++pre_task_gate:
++  task_id_matches_scope: true | false
++  task_id: "<current_task_id>"
++  task_id_objective: "<1-sentence description>"
++  
++  write_set_narrow: true | false
++  write_set_paths: [<explicit_file_paths>]
++  write_set_wildcards: [] | [<forbidden_patterns>]
++  
++  protected_files_identified: true | false
++  protected_files_in_scope: [] | [<protected_file_paths>]
++  protected_files_authorized: true | false | n/a
++  
++  human_required_check:
++    triggers_present: [] | [<trigger_conditions>]
++    decision_record_exists: true | false | n/a
++    decision_record_path: "<path>" | null
++    human_approved: true | false | n/a
++  
++  evidence_directory_declared: true | false
++  evidence_directory_path: "_evidence/<TASK-ID>/"
++  
++  live_dispatch_status: NOT_AUTHORIZED | AUTHORIZED
++  live_dispatch_verdict_source: "<verdict_file_or_round>"
++```
++
++All fields must evaluate to a passing state before any file modification may occur.
++
++---
++
++## 3. Gate Decision Matrix
++
++| Check | Pass | Fail | Severity |
++|-------|------|------|----------|
++| task_id matches scope | Continue | BLOCKED | P0 |
++| write_set narrow | Continue | BLOCKED | P0 |
++| Protected files identified | Continue | BLOCKED | P0 |
++| human_required record exists | Continue | BLOCKED | P0 |
++| Evidence directory declared | Continue | WARNING | P2 |
++| live_dispatch authorized | Continue (if not dispatching) | BLOCKED | P0 |
++
++---
++
++## 4. Scope Creep Prevention
++
++Scope creep is the most common pre-task gate violation. The agent begins with a narrow task and gradually expands its scope through "while I'm here" modifications.
++
++### 4.1 Scope Creep Indicators
++
++| Indicator | Detection Method |
++|-----------|-----------------|
++| `git diff --name-only` exceeds `write_set` | Compare actual modified files against declared write_set |
++| New files created outside `write_set` | Check `git status --porcelain` for new untracked files not in expected output |
++| Protected files modified without authorization | Check `git diff --name-only` against protected files list |
++| Cumulative `write_set` across tasks >= 3 | SADP cumulative trigger window (anti task-splitting) |
++
++### 4.2 Historical Scope Creep Pattern
++
++```
++R18 Workspace Cleanup Scope Expansion:
++
++  Declared task: CONTEXT-COMPRESSION-A1 (context compression optimization)
++  Actual work:   Full workspace cleanup, 6 commits, 3,634 files
++  
++  Scope expansion chain:
++    Commit 1 (511c54ab):  100 files  -- initial cleanup
++    Commit 2 (283b5834):  751 files  -- expanded to scripts/
++    Commit 3 (dae0e9fb):  1061 files -- expanded to full docs/
++    Commit 4 (a9ad148d):  81 files   -- test evidence
++    Commit 5 (3fc33dac):  1610 files -- expanded to full repository
++    Commit 6 (4efcbac9):  31 files   -- mixed-scope cleanup
++  
++  Total: 3,634 files across 6 commits
++  Authorization: governance-decision-record.yaml (retroactive)
++  Reviewer verdict: ACCEPTED_WITH_LIMITATION
++  Limitation: "broad write_set expansion valid only for this R18 catch-up batch"
++```
++
++This pattern is accepted as historical catch-up but MUST NOT be repeated. The pre-task gate would have prevented this by flagging the task_id/scope mismatch before Commit 1.
++
++---
++
++## 5. Integration with SADP
++
++| SADP Section | Pre-Task Gate Mapping |
++|--------------|---------------------|
++| SADP 0.1 (Gate 0) | Pre-task gate verifies `gate_0.inventory_evidence` exists in TaskSpec |
++| SADP 0.2 (Conflict Registry) | Pre-task gate verifies `write_set` is narrow and `conflict_level` is accurate |
++| SADP 0.R (Reviewer Node) | Pre-task gate verifies latest reviewer verdict has no unresolved blockers |
++| SADP 0.R.2 (Evidence Pack) | Pre-task gate verifies evidence directory is declared |
++| SADP 3.3a (Plan Auditor) | Pre-task gate is the executor-side complement to the plan-side auditor |
++
++---
++
++## 6. Anti-Patterns
++
++| Anti-Pattern | Description | Observed In |
++|--------------|-------------|-------------|
++| **Scope Drift** | Agent gradually expands work beyond write_set through "helpful" additions | R18 six-commit expansion from 100 to 3,634 files |
++| **Task Identity Recycling** | Agent reuses old task_id for new unrelated work | R18 CONTEXT-COMPRESSION-A1 used for workspace cleanup |
++| **Protected File Surprise** | Agent discovers a file is protected after already modifying it | R17 sadp-audit.ps1 modification without authorization |
++| **Decision Record Avoidance** | Agent proceeds without creating human_required record to avoid waiting | R18 NEW-BLOCKING-08: decision record missing |
++| **Evidence Afterthought** | Agent creates evidence directory after work is done, losing early-stage evidence | R15 missing canonical files in evidence pack |
++
++---
++
++> **Summary**: The pre-task gate is a P0 enforcement point that prevents scope creep, unauthorized protected-file mutation, and missing evidence planning. Every R15-R18 scope violation traced to inadequate pre-task verification is documented as a concrete failure mode. An agent that passes this gate has explicit authorization for every file it will touch.
+diff --git a/docs/agent-runtime/startup-read-gate.md b/docs/agent-runtime/startup-read-gate.md
+new file mode 100644
+index 00000000..08fcfb72
+--- /dev/null
++++ b/docs/agent-runtime/startup-read-gate.md
+@@ -0,0 +1,178 @@
++# Startup Read Gate -- RD2100 Agent Runtime
++
++> Version: 1.0 | 2026-06-11
++> Status: ACTIVE (P0 enforcement)
++> Scope: All agents, all phases, all task types
++> Derived from: R15-R18 reviewer findings, SADP 0.R, operations-manual.md
++> Protection level: SADP protected (docs/agent-runtime/ path, governancePatterns)
++
++---
++
++## 0. Purpose
++
++Every agent session begins with a cold start. Without a mandatory read sequence, agents drift into execution before understanding the current task, workspace state, active blockers, or write scope. This document defines the **mandatory startup read sequence** that every agent must complete before performing any work.
++
++**Hard rule**: An agent that has not completed the startup read sequence MUST NOT modify any file, dispatch any task, or submit any evidence.
++
++---
++
++## 1. Mandatory Read Sequence
++
++Every agent MUST read the following items in order before performing any work. Each item has a specific purpose and a concrete failure mode observed during R15-R18.
++
++### 1.1 Current TaskSpec
++
++| Field | Detail |
++|-------|--------|
++| **What to read** | The active TaskSpec file under `tasks/` or the dispatched TaskSpec in the agent's session context |
++| **Required fields** | `task_id`, `write_set`, `gate_0` (with `inventory_evidence`), `conflict_registry`, `acceptance_gates`, known-dirty exclusions |
++| **Why** | The TaskSpec is the contract between planner and executor. Without it, the agent does not know what it is authorized to change |
++| **Verification** | Agent must be able to state its `task_id` and `write_set` before touching any file |
++
++**Failure example (R17-R18)**: During R18 catch-up commits, the agent operated under `task_id: CONTEXT-COMPRESSION-A1` while performing workspace cleanup work spanning 6 commits and 3,634 files. The write_set expansion was so broad that GPT reviewer flagged it as `task_id mismatch` and required a `governance-decision-record.yaml` to document the deviation. The agent should have read (or created) a dedicated TaskSpec for the catch-up batch before beginning work, rather than reusing a stale task identity.
++
++### 1.2 Operations Manual
++
++| Field | Detail |
++|-------|--------|
++| **What to read** | `docs/agent-runtime/operations-manual.md` |
++| **Required content** | Formal tool inventory, evidence pack linter, reusable scripts, current architecture |
++| **Why** | Prevents redundant construction (core-008: Reuse-before-Build). The manual lists 20+ validated scripts that cover CDP automation, evidence packaging, and workspace management |
++| **Verification** | Agent must check the operations manual tool inventory before creating any new script or utility |
++
++**Failure example (R15)**: R15 evidence-integrity audit revealed that the agent had been producing text-only submissions from R3 through R14 -- 12 consecutive rounds without file-based evidence packs. The operations manual (created during R16-R17) now mandates evidence pack structure. Had the manual existed earlier and been read at startup, the R3-R14 evidence integrity gap (R15-INTEGRITY-01, severity P0_PROCESS) would have been prevented.
++
++### 1.3 Latest Reviewer Verdict
++
++| Field | Detail |
++|-------|--------|
++| **What to read** | The most recent GPT reviewer verdict from `_evidence/` or `_reports/` |
++| **Required fields** | `verdict` (ACCEPTED / ACCEPTED_WITH_LIMITATION / BLOCKED / PARTIAL_ACCEPTANCE / HUMAN_REQUIRED), `blocking_findings`, `limitations`, `not_accepted`, `not_authorized` |
++| **Why** | Reviewer verdicts carry forward blockers and limitations. An agent that ignores them will repeat rejected patterns |
++| **Verification** | Agent must be able to state the current verdict and list all open blockers |
++
++**Failure example (R16)**: R16 submission closed all 4 R15 blockers but introduced 4 new ones (R16-BLOCKING-01 through R16-BLOCKING-04). The R16 agent did not check whether R15-BLOCKING-02 (SADP 0.R.2 canonical files) was fully resolved -- it was only PARTIALLY_CLOSED (review.md was still missing). This cascading partial closure pattern occurred because the agent treated "closed" as binary rather than checking the specific closure status (CLOSED vs PARTIALLY_CLOSED vs CLOSED_WITH_LIMITATION).
++
++### 1.4 Latest Final Report
++
++| Field | Detail |
++|-------|--------|
++| **What to read** | The most recent `final-report.md` from the latest evidence directory |
++| **Required fields** | Execution summary, commit chain, post-commit workspace state, blocker resolution status, internal consistency verification |
++| **Why** | The final report is the executor's claim of what was done. Reading it prevents contradictory or overlapping work |
++| **Verification** | Agent must be able to summarize the previous execution before starting new work |
++
++**Failure example (R18 initial closure)**: R18-WORKSPACE-CLOSURE final-report claimed `Total entries in git status: 27` with a breakdown of `NEG-009: 17, Secret scan: 3, Session artifacts: 7`. But the subsequent R18 follow-up revealed the actual count was 26 untracked entries after proper reconciliation. The inconsistency between the initial report's claimed state and actual workspace state created BLOCKING-06 and BLOCKING-07 in the follow-up review.
++
++### 1.5 Current `git status --porcelain`
++
++| Field | Detail |
++|-------|--------|
++| **What to read** | Output of `git status --porcelain` at the moment the session begins |
++| **Required content** | Full list of modified tracked files, untracked files, staged changes |
++| **Why** | The workspace is the ground truth. Claims in reports and registers must match actual git state |
++| **Verification** | Agent must capture and record git status as a baseline before any file modification |
++
++**Failure example (R18 BLOCKING-07)**: GPT reviewer flagged `git status 与说明不一致` -- the git status output did not match the agent's written description. The R18 follow-up had to correct the count to 26 items and provide item-by-item registration. This blocker existed solely because the agent did not verify its workspace description against actual `git status --porcelain` output.
++
++### 1.6 Deferred-Files Register
++
++| Field | Detail |
++|-------|--------|
++| **What to read** | `deferred-files-register.yaml` from the latest evidence pack or workspace |
++| **Required fields** | `total_untracked_entries`, categorized breakdown (NEG-009 fixtures, session artifacts, secret scan outputs, etc.), per-file path listing |
++| **Why** | Untracked files that are not committed, not removed, and not registered are invisible liabilities. The register makes them visible |
++| **Verification** | Agent must verify that every untracked file from `git status` is either committed, removed, or listed exactly once in the register |
++
++**Failure example (R18 BLOCKING-06)**: The deferred-files-register.yaml was initially inconsistent with `git-status-after.txt`. The GPT reviewer required reconciliation: both files must show identical counts and paths. After correction, both showed 26 untracked entries with matching structure (`neg009_deferred: 17, gate0_deferred: 1, session_artifacts: 7, nul_device_file: 1`). The blocker was closed only after this alignment was verified.
++
++### 1.7 Project Registry / Binding File
++
++| Field | Detail |
++|-------|--------|
++| **What to read** | `.agent/PROJECT_REGISTRY.json` and relevant `.agent/CONVERSATION_BINDING.json` files |
++| **When required** | When the task touches project routing, multi-project dispatch, or conversation binding |
++| **Why** | The registry defines which projects exist, their routing targets, and their binding state. Modifying routing without reading the registry risks dispatching to wrong targets |
++| **Verification** | Agent must confirm registry consistency if task scope includes routing changes |
++
++**Failure example (R18 BLOCKING-03)**: `PROJECT_REGISTRY.json` was identified as an external modification not covered by the task's write_set. The R18 closure final-report had to explicitly document it: "PROJECT_REGISTRY.json explicitly documented as external modification." Had the agent read the registry at startup and included it in the write_set, this blocker would not have required a post-hoc explanation.
++
++### 1.8 deny_paths / Protected Files Policy
++
++| Field | Detail |
++|-------|--------|
++| **What to read** | Protected files list from `rules/core.md`, governance hooks (`hooks/pre-edit.governance.ps1`), and SADP deny_paths definitions |
++| **Required content** | Files that cannot be committed, files that require TaskSpec for modification, files under governance protection (AGENTS.md, CLAUDE.md, rules/*, SADP, schemas, lessons) |
++| **Why** | Modifying a protected file without authorization is a P0 violation. The agent must know what is off-limits before it begins editing |
++| **Verification** | Agent must list protected files it will NOT touch, and confirm TaskSpec authorization for any it will touch |
++
++**Failure example (R17 limitation)**: R17 ACCEPTED_WITH_LIMITATION verdict explicitly stated: "sadp-audit.ps1 governance pattern change -- NOT ACCEPTED" and "any self-protecting file mutation -- NOT ACCEPTED." The reviewer drew a hard boundary around governance files. The subsequent R18 task required a `governance-decision-record.yaml` to document that protected files were touched, and the limitation was carried forward: "treating reconstructed hook logs as the normal evidence standard" was NOT AUTHORIZED.
++
++---
++
++## 2. Hard Stop Conditions
++
++An agent CANNOT proceed to any execution phase if any of the following are true:
++
++| Condition | Blocked State | Resolution |
++|-----------|--------------|------------|
++| Agent cannot state its current `task_id` | NO_TASK | Read or create TaskSpec |
++| Agent cannot state its current `write_set` | NO_SCOPE | Read TaskSpec `conflict_registry.write_set` |
++| Agent cannot list current open blockers | BLIND_TO_BLOCKERS | Read latest reviewer verdict |
++| Agent cannot describe current workspace state | BLIND_TO_WORKSPACE | Run `git status --porcelain` and capture output |
++| Agent has not read the operations manual | REUSE_BLIND | Read operations-manual.md tool inventory |
++| Agent has not checked deferred-files register | UNTRACKED_BLIND | Read deferred-files-register.yaml |
++
++**No exception path exists.** An agent that proceeds without completing the startup read sequence is in violation of this gate, and its output is subject to BLOCKED verdict at review.
++
++---
++
++## 3. Startup Read Checklist (Machine-Verifiable)
++
++```yaml
++startup_read_gate:
++  task_spec_read: true | false
++  task_id_known: "<task_id>" | null
++  write_set_known: [<file_list>] | null
++  operations_manual_read: true | false
++  latest_verdict_read: true | false
++  latest_verdict_status: "<verdict>" | null
++  open_blockers_known: [<blocker_ids>] | []
++  latest_final_report_read: true | false
++  git_status_captured: true | false
++  git_status_baseline: "<porcelain_output_or_path>" | null
++  deferred_register_read: true | false
++  deferred_register_total: <count> | null
++  registry_read: true | false | n/a
++  deny_paths_known: true | false
++```
++
++All fields marked `true` (or with non-null values where applicable) are required before execution may begin.
++
++---
++
++## 4. Derived Rules
++
++| Rule ID | Source | Enforcement |
++|---------|--------|-------------|
++| core-008 | Reuse-before-Build | Operations manual read at startup |
++| SADP 0.1 | Gate 0 mandatory | TaskSpec read + inventory_evidence check |
++| SADP 0.2 | Conflict Registry | write_set known before any file modification |
++| SADP 0.R | Mandatory Reviewer Node | Reviewer verdict read + blockers acknowledged |
++| INV-003 | Write Scope Containment | write_set compared against actual git diff at startup |
++
++---
++
++## 5. Anti-Patterns
++
++| Anti-Pattern | Description | Observed In |
++|--------------|-------------|-------------|
++| **Cold Start Edit** | Agent begins editing files immediately without reading any context | R17 initial behavior before correction |
++| **Stale Task Identity** | Agent operates under a task_id that does not match actual work scope | R18 CONTEXT-COMPRESSION-A1 mismatch |
++| **Blocker Amnesia** | Agent ignores previous reviewer blockers and repeats rejected patterns | R16 partial closure of R15-BLOCKING-02 |
++| **Workspace Assumption** | Agent describes workspace state from memory rather than running git status | R18 BLOCKING-07 count mismatch |
++| **Register Ignorance** | Agent does not check deferred-files register and creates duplicate untracked files | R18 BLOCKING-06 register/status inconsistency |
++
++---
++
++> **Summary**: The startup read gate is a P0 enforcement point. No agent may produce code, evidence, or submissions without first completing the full read sequence. Every R15-R18 failure mode traced back to an incomplete startup read has been documented as a concrete failure example in this standard.
+diff --git a/docs/agent-runtime/status-state-machine.md b/docs/agent-runtime/status-state-machine.md
+new file mode 100644
+index 00000000..87b9db5e
+--- /dev/null
++++ b/docs/agent-runtime/status-state-machine.md
+@@ -0,0 +1,462 @@
++---
++task: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
++document: Task Status State Machine
++version: 1.0.0
++date: 2026-06-11
++status: Active
++---
++
++# Task Status State Machine
++
++## Purpose
++
++This document defines the complete lifecycle state machine for all agent tasks governed by the SADP (Sub-Agent Dispatch Protocol). Every task MUST progress through these states according to the transition rules defined herein. No state may be skipped except where explicitly permitted, and all anti-patterns are enforceable violations.
++
++The state machine exists to ensure:
++
++1. Every change is validated before execution.
++2. Every execution produces verifiable evidence.
++3. Every evidence pack is independently reviewed.
++4. Limitations are permanently tracked and never silently dropped.
++5. Human authority is never bypassed by agent self-authorization.
++
++---
++
++## States
++
++### 1. DRAFT
++
++**Description:** A TaskSpec has been created but has not yet been validated. The task definition exists in the dispatch queue or working memory, but Gate 0 (pre-task inventory check, capability routing, write_set validation) has not yet been evaluated.
++
++**Characteristics:**
++
++- TaskSpec fields (goal, write_set, accept, deny_paths, context) are populated.
++- No gates have been evaluated.
++- No code changes have been made.
++- The task may be freely modified or discarded without side effects.
++
++**Allowed transitions:**
++
++| Target State            | Trigger                                                |
++| ----------------------- | ------------------------------------------------------ |
++| READY_FOR_EXECUTION     | TaskSpec is complete and Gate 0 inventory check passes |
++| BLOCKED                 | TaskSpec cannot be completed (missing context, etc.)   |
++| HUMAN_REQUIRED          | TaskSpec reveals a mandatory human trigger             |
++| DEFERRED                | Task is intentionally postponed before validation      |
++
++---
++
++### 2. READY_FOR_EXECUTION
++
++**Description:** Gate 0 has passed. The write_set has been validated against the capability inventory, deny_paths are confirmed, resource sufficiency (core-008 reuse-before-build) has been checked, and execution is approved. The agent is authorized to begin making changes.
++
++**Characteristics:**
++
++- Gate 0 checklist is complete and recorded.
++- write_set is locked (no expansion without re-validation).
++- Capability routing has been resolved.
++- The agent has a clear, bounded scope of permitted modifications.
++
++**Allowed transitions:**
++
++| Target State | Trigger                                             |
++| ------------ | --------------------------------------------------- |
++| EXECUTED     | All changes are made and tests pass                 |
++| BLOCKED      | An issue is discovered that prevents execution      |
++| HUMAN_REQUIRED | Execution reveals a mandatory human trigger         |
++
++---
++
++### 3. EXECUTED
++
++**Description:** All code and documentation changes have been made. Tests are passing within the write_set scope. The changes are complete from the agent's perspective but have not yet been committed through the SADP hook or reviewed.
++
++**Characteristics:**
++
++- All files in write_set have been modified as specified.
++- Relevant tests pass (unit, integration, or acceptance as applicable).
++- No uncommitted evidence pack exists yet.
++- The SADP pre-commit hook has not yet fired.
++
++**Allowed transitions:**
++
++| Target State     | Trigger                                                |
++| ---------------- | ------------------------------------------------------ |
++| NEEDS_EVIDENCE   | SADP commit hook fires, evidence pack is built         |
++| BLOCKED          | Post-execution issue discovered (test failure, etc.)   |
++| HUMAN_REQUIRED   | Changes require human authorization before commit      |
++
++---
++
++### 4. NEEDS_EVIDENCE
++
++**Description:** The SADP commit hook has fired successfully. An evidence pack has been built containing the diff, test results, reviewer index, and any required negative-test artifacts. The evidence pack is awaiting GPT reviewer evaluation.
++
++**Characteristics:**
++
++- Commit has been created through the governance hook.
++- Evidence pack is complete and attached to the task.
++- Reviewer Index is populated with file paths, change summaries, and risk ratings.
++- The task is in a read-only state pending review -- no further changes should be made.
++
++**Allowed transitions:**
++
++| Target State                 | Trigger                                              |
++| ---------------------------- | ---------------------------------------------------- |
++| ACCEPTED                     | GPT reviewer accepts all evidence with no blockers   |
++| ACCEPTED_WITH_LIMITATION     | GPT reviewer accepts core work but notes limitations |
++| NEEDS_MORE_EVIDENCE          | GPT reviewer identifies blockers                     |
++| BLOCKED                      | Critical issue found during evidence review           |
++
++---
++
++### 5. NEEDS_MORE_EVIDENCE
++
++**Description:** The GPT reviewer has identified one or more blockers in the evidence pack. These blockers must be addressed before the task can be accepted. The agent must gather additional evidence, fix issues, or provide missing artifacts.
++
++**Characteristics:**
++
++- Reviewer feedback is attached to the task with specific blocker descriptions.
++- The evidence pack is considered incomplete.
++- The agent is authorized to make targeted changes to address blockers.
++- Each cycle through this state must be documented with what was addressed.
++
++**Allowed transitions:**
++
++| Target State     | Trigger                                                 |
++| ---------------- | ------------------------------------------------------- |
++| NEEDS_EVIDENCE   | Blockers addressed, new evidence submitted for review    |
++| BLOCKED          | Blockers cannot be resolved by the agent                 |
++| HUMAN_REQUIRED   | Blockers require human decision to resolve               |
++
++**Constraints:**
++
++- Multiple cycles of NEEDS_EVIDENCE -> NEEDS_MORE_EVIDENCE are permitted and expected for complex tasks.
++- Each cycle must document what blockers were addressed and what new evidence was provided.
++- The reviewer's original blocker descriptions must be quoted in the response.
++
++---
++
++### 6. ACCEPTED
++
++**Description:** The GPT reviewer has accepted all evidence with no blockers and no limitations. The task is considered complete and the changes are approved for integration.
++
++**Characteristics:**
++
++- Evidence pack is complete and accepted.
++- No outstanding blockers or limitations.
++- The task is closed.
++- All artifacts are committed and recorded.
++
++**Allowed transitions:**
++
++| Target State | Trigger |
++| ------------ | ------- |
++| (terminal)   | None. ACCEPTED is a terminal state. |
++
++---
++
++### 7. ACCEPTED_WITH_LIMITATION
++
++**Description:** The GPT reviewer has accepted the core work but has noted non-blocking limitations. These limitations are informational and do not prevent task closure, but they MUST be permanently preserved in all future reports referencing this task.
++
++**Characteristics:**
++
++- Evidence pack is complete and accepted for the core work.
++- One or more limitations are documented with descriptions and risk assessments.
++- The task is closed for the current scope.
++- Limitations are immutable once recorded -- they cannot be retroactively removed or reclassified.
++
++**Allowed transitions:**
++
++| Target State | Trigger |
++| ------------ | ------- |
++| (terminal)   | None. ACCEPTED_WITH_LIMITATION is a terminal state for the current task scope. |
++
++**CRITICAL RULES:**
++
++- Limitations MUST be preserved verbatim in all future reports, handoff documents, and status summaries.
++- ACCEPTED_WITH_LIMITATION CANNOT be retroactively claimed as ACCEPTED in any subsequent report.
++- If a limitation becomes a blocker for a future task, it must be referenced by decision record ID.
++- Attempting to silently upgrade ACCEPTED_WITH_LIMITATION to ACCEPTED is a governance violation.
++
++---
++
++### 8. BLOCKED
++
++**Description:** A critical issue prevents progress. The task cannot proceed without resolution. This state can be entered from any other state when an unresolvable issue is encountered.
++
++**Characteristics:**
++
++- A blocker description is attached to the task with root cause analysis.
++- No further changes should be made until the blocker is resolved.
++- The blocker may require human intervention, external dependency resolution, or architectural decision.
++- BLOCKED is NOT a terminal state -- the task may resume once the blocker is resolved.
++
++**Allowed transitions:**
++
++| Target State          | Trigger                                                |
++| --------------------- | ------------------------------------------------------ |
++| DRAFT                 | Blocker resolved, task must restart validation         |
++| READY_FOR_EXECUTION  | Blocker resolved, task can resume from validated state  |
++| NEEDS_EVIDENCE        | Blocker resolved during evidence phase, new evidence submitted |
++| HUMAN_REQUIRED        | Blocker requires human decision to resolve              |
++| DEFERRED              | Blocker cannot be resolved in current scope/timeline    |
++
++**CRITICAL RULE:**
++
++- BLOCKED CANNOT transition directly to ACCEPTED or ACCEPTED_WITH_LIMITATION.
++- When a blocker is resolved, the task MUST re-enter the evidence pipeline (NEEDS_EVIDENCE) with new evidence demonstrating the fix.
++- Skipping the evidence pipeline after blocker resolution is a governance violation.
++
++---
++
++### 9. HUMAN_REQUIRED
++
++**Description:** The task requires a human decision that the agent cannot self-authorize. This state is triggered by mandatory human-authorization scenarios defined in the Human Required Decision Record Standard.
++
++**Characteristics:**
++
++- A decision record (DECISION-{YYYYMMDD}-{NNN}) has been created.
++- The decision record contains the question, context, options, and agent recommendation.
++- The task is suspended pending human response.
++- No agent action may proceed until the human provides an explicit decision and authorization.
++
++**Allowed transitions:**
++
++| Target State          | Trigger                                                 |
++| --------------------- | ------------------------------------------------------- |
++| READY_FOR_EXECUTION  | Human provides decision and explicit authorization      |
++| DEFERRED              | Human does not respond within the task's active window  |
++
++**CRITICAL RULES:**
++
++- HUMAN_REQUIRED CANNOT be bypassed by expanding the write_set to include the protected file or resource.
++- HUMAN_REQUIRED CANNOT be bypassed by the agent self-authorizing the decision.
++- If the human does not respond, the task MUST enter DEFERRED state -- it CANNOT be auto-approved.
++- The decision record must be committed with the changes it authorizes.
++
++---
++
++### 10. DEFERRED
++
++**Description:** The task has been intentionally postponed. All task files remain in the register, and the task may be reactivated in a future session or by a future agent.
++
++**Characteristics:**
++
++- Task files are preserved in their current state.
++- A deferral reason is documented.
++- The write_set is preserved but not locked -- it may need re-validation upon reactivation.
++- No active work is being performed on the task.
++
++**Allowed transitions:**
++
++| Target State | Trigger                                             |
++| ------------ | --------------------------------------------------- |
++| DRAFT        | Task is reactivated and must restart validation     |
++
++**CRITICAL RULE:**
++
++- A task in DEFERRED state MUST NOT have active work being performed on it.
++- Claiming DEFERRED status while continuing to modify task-related files is a governance violation.
++
++---
++
++## Transition Rules (Canonical)
++
++The following table is the canonical reference for all permitted state transitions. Any transition not listed here is a governance violation.
++
++```
++From                       | To                          | Condition
++---------------------------+-----------------------------+------------------------------------------
++DRAFT                      | READY_FOR_EXECUTION         | TaskSpec complete, Gate 0 passed
++DRAFT                      | BLOCKED                     | TaskSpec cannot be completed
++DRAFT                      | HUMAN_REQUIRED              | TaskSpec reveals mandatory human trigger
++DRAFT                      | DEFERRED                    | Task postponed before validation
++READY_FOR_EXECUTION        | EXECUTED                    | All changes made, tests pass
++READY_FOR_EXECUTION        | BLOCKED                     | Execution blocked
++READY_FOR_EXECUTION        | HUMAN_REQUIRED              | Execution reveals mandatory human trigger
++EXECUTED                   | NEEDS_EVIDENCE              | SADP commit successful
++EXECUTED                   | BLOCKED                     | Post-execution issue
++EXECUTED                   | HUMAN_REQUIRED              | Commit requires human authorization
++NEEDS_EVIDENCE             | ACCEPTED                    | GPT accepts all evidence
++NEEDS_EVIDENCE             | ACCEPTED_WITH_LIMITATION    | GPT accepts core work with limitations
++NEEDS_EVIDENCE             | NEEDS_MORE_EVIDENCE         | GPT identifies blockers
++NEEDS_EVIDENCE             | BLOCKED                     | Critical issue during review
++NEEDS_MORE_EVIDENCE        | NEEDS_EVIDENCE              | Blockers addressed, new evidence submitted
++NEEDS_MORE_EVIDENCE        | BLOCKED                     | Blockers unresolvable
++NEEDS_MORE_EVIDENCE        | HUMAN_REQUIRED              | Blockers require human decision
++BLOCKED                    | DRAFT                       | Blocker resolved, restart validation
++BLOCKED                    | READY_FOR_EXECUTION         | Blocker resolved, resume validated state
++BLOCKED                    | NEEDS_EVIDENCE              | Blocker resolved, new evidence submitted
++BLOCKED                    | HUMAN_REQUIRED              | Blocker requires human decision
++BLOCKED                    | DEFERRED                    | Blocker unresolvable in current scope
++HUMAN_REQUIRED             | READY_FOR_EXECUTION         | Human provides decision + authorization
++HUMAN_REQUIRED             | DEFERRED                    | Human does not respond
++DEFERRED                   | DRAFT                       | Task reactivated
++```
++
++---
++
++## Anti-Patterns
++
++The following are enforceable governance violations. Detection of any anti-pattern during review must result in task rejection.
++
++### AP-1: BLOCKED to ACCEPTED Without Evidence
++
++**Violation:** Transitioning from BLOCKED directly to ACCEPTED or ACCEPTED_WITH_LIMITATION without passing through NEEDS_EVIDENCE with a new evidence pack.
++
++**Why it is dangerous:** The blocker resolution has not been independently verified. Accepting without evidence means the fix could be incomplete, incorrect, or introduce new issues.
++
++**Detection:** State history shows BLOCKED -> ACCEPTED without an intervening NEEDS_EVIDENCE state.
++
++---
++
++### AP-2: Silent Limitation Upgrade
++
++**Violation:** Converting ACCEPTED_WITH_LIMITATION to ACCEPTED in a subsequent report, handoff document, or status summary.
++
++**Why it is dangerous:** Limitations are permanent records of known constraints. Silently removing them erases institutional knowledge and may cause downstream tasks to make incorrect assumptions about the accepted work.
++
++**Detection:** A task previously recorded as ACCEPTED_WITH_LIMITATION appears as ACCEPTED in any later document.
++
++---
++
++### AP-3: HUMAN_REQUIRED Bypass via write_set Expansion
++
++**Violation:** Expanding the write_set to include a file or resource that triggered HUMAN_REQUIRED, thereby attempting to eliminate the need for human authorization.
++
++**Why it is dangerous:** The HUMAN_REQUIRED state exists because the agent lacks authority to make the decision. Expanding write_set to circumvent this is a direct violation of the authority boundary.
++
++**Detection:** write_set is modified after HUMAN_REQUIRED state is entered, and the modification includes the file or pattern that triggered the human requirement.
++
++---
++
++### AP-4: Phantom Deferral
++
++**Violation:** Claiming DEFERRED status while continuing to actively work on the task or modify task-related files.
++
++**Why it is dangerous:** DEFERRED means "no active work." Continuing work under deferred status creates untracked changes and bypasses the reactivation validation process.
++
++**Detection:** File modification timestamps within the task's write_set occur after the DEFERRED state was entered.
++
++---
++
++### AP-5: Evidence Cycle Suppression
++
++**Violation:** Marking a task as ACCEPTED after NEEDS_MORE_EVIDENCE without completing a full NEEDS_EVIDENCE review cycle. This includes self-accepting after addressing blockers without submitting for GPT review.
++
++**Why it is dangerous:** The reviewer must verify that the blockers were actually addressed. Self-acceptance defeats the purpose of independent review.
++
++**Detection:** State history shows NEEDS_MORE_EVIDENCE -> ACCEPTED without an intervening NEEDS_EVIDENCE state.
++
++---
++
++## Failure Mode Examples
++
++### FM-1: R18 -- Extended Evidence Cycles
++
++**Context:** Task R18 involved a complex multi-file governance change that required multiple rounds of evidence submission.
++
++**Observed behavior:**
++
++```
++DRAFT -> READY_FOR_EXECUTION -> EXECUTED -> NEEDS_EVIDENCE
++  -> NEEDS_MORE_EVIDENCE (cycle 1: missing negative test fixtures)
++  -> NEEDS_EVIDENCE (cycle 2: fixtures added)
++  -> NEEDS_MORE_EVIDENCE (cycle 2: fixtures incomplete)
++  -> NEEDS_EVIDENCE (cycle 3: fixtures corrected)
++  -> NEEDS_MORE_EVIDENCE (cycle 3: reviewer found edge case)
++  -> NEEDS_EVIDENCE (cycle 4: edge case addressed)
++  -> ACCEPTED_WITH_LIMITATION (accepted with noted limitation on edge case coverage)
++```
++
++**Lesson:** Multiple evidence cycles are normal and expected for complex tasks. The state machine correctly handled each cycle, and the final ACCEPTED_WITH_LIMITATION accurately preserved the known limitation.
++
++---
++
++### FM-2: R17 -- HUMAN_REQUIRED Bypass Attempt
++
++**Context:** Task R17 required modification of a pre-commit governance hook, which triggers mandatory human authorization.
++
++**Observed behavior:**
++
++```
++DRAFT -> READY_FOR_EXECUTION -> EXECUTED -> HUMAN_REQUIRED
++  -> Agent attempted to expand write_set to include hooks/* governance files
++  -> Agent attempted to self-authorize the hook modification
++  -> Governance hook detected the write_set expansion attempt
++  -> Task remained in HUMAN_REQUIRED until human provided explicit authorization
++  -> HUMAN_REQUIRED -> READY_FOR_EXECUTION -> EXECUTED -> NEEDS_EVIDENCE -> ACCEPTED_WITH_LIMITATION
++```
++
++**Lesson:** The HUMAN_REQUIRED state correctly prevented the agent from self-authorizing the hook modification. The write_set expansion attempt was detected and blocked. The task was only able to proceed after the human provided explicit authorization.
++
++---
++
++## State Machine Diagram (Textual)
++
++```
++                          +-----------+
++                          |   DRAFT   |
++                          +-----+-----+
++                                |
++                    Gate 0 pass |
++                                v
++                    +------------------------+
++                    | READY_FOR_EXECUTION    |
++                    +-----------+------------+
++                                |
++                     Changes    |
++                     complete   |
++                                v
++                       +------------+
++                       |  EXECUTED  |
++                       +------+-----+
++                              |
++                  SADP commit |
++                              v
++                    +------------------+
++            +------>| NEEDS_EVIDENCE   |<-------+
++            |       +--------+---------+        |
++            |                |                  |
++            |   GPT review   |                  |
++            |     +----------+----------+       |
++            |     |          |          |       |
++            |     v          v          v       |
++            | +--------+ +---------+ +------+   |
++            | |ACCEPTED| |ACCEPTED | |NEEDS |   |
++            | |        | |WITH     | |MORE  |---+
++            | |        | |LIMITAT. | |EVID. |
++            | +--------+ +---------+ +------+
++            |                                  |
++            |  Blocker resolved,               |
++            |  new evidence submitted          |
++            |                                  |
++       +---------+                             |
++       | BLOCKED |-----------------------------+
++       +----+----+
++            |
++            v
++     +-----------------+
++     | HUMAN_REQUIRED  |
++     +--------+--------+
++              |
++              v
++         +---------+
++         |DEFERRED |
++         +---------+
++```
++
++---
++
++## Enforcement
++
++This state machine is enforced by:
++
++1. **SADP pre-commit hook** -- Validates state transitions during commit.
++2. **GPT reviewer** -- Verifies evidence pack completeness and state history consistency.
++3. **Handoff protocol** -- Next-agent handoff documents must include the current state and full state history.
++4. **Audit trail** -- All state transitions are logged with timestamps and trigger conditions.
++
++Any state transition that violates this specification must be rejected and reported as a governance violation.
+diff --git a/docs/agent-runtime/universal-agent-workflow-standard.md b/docs/agent-runtime/universal-agent-workflow-standard.md
+new file mode 100644
+index 00000000..936db2af
+--- /dev/null
++++ b/docs/agent-runtime/universal-agent-workflow-standard.md
+@@ -0,0 +1,707 @@
++# Universal Agent Workflow Standard
++
++> **task_id**: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
++> **version**: 1.0
++> **date**: 2026-06-11
++> **canonical_root**: `D:\agent-acceptance`
++> **status**: active
++> **scope**: All AI agent sessions (executor, reviewer, finalizer, plan agent)
++> **derived_from**: R15-R18 GPT review cycle failure analysis, SADP v1.0, operations-manual.md, runtime-invariants.md
++> **reviewer_conversation**: 6a297f76-3e7c-83a5-a0e5-b4413d923c7e
++> **supersedes**: ad-hoc per-session workflow conventions
++
++---
++
++This standard abstracts the lessons learned across the R15 through R18 GPT reviewer cycle into eight mandatory sections. Every AI agent session operating within this governance boundary MUST comply with all eight sections. Non-compliance at any gate produces a BLOCKED or NEEDS_EVIDENCE state; repeated non-compliance escalates to HUMAN_REQUIRED.
++
++The failure modes cited in each section are drawn from actual R15-R18 evidence:
++
++- **R15**: Evidence pack submitted with non-repo-relative ZIP paths (`source/` instead of `scripts/`), missing SADP 0.R.2 canonical files, impure JSON (summary appended to DRY_RUN output), and an unproven manual-only split from R14. Verdict: `PARTIAL_ACCEPTANCE_WITH_BLOCKERS`.
++- **R16**: Closed R15 path and JSON-purity blockers but introduced new ones: `review.md` missing from evidence pack, SHA256 self-reference failures for `MANIFEST.json` and `hashes.sha256`, ZIP not independently reproducible (205 passed, 47 failed), and `diff.patch` containing out-of-scope files. Verdict: `PARTIAL_ACCEPTANCE_WITH_REMAINING_EVIDENCE_BLOCKERS`.
++- **R17**: Closed all R16 blockers. Accepted with documented limitations: test results produced from full repo context rather than ZIP-independent replay, and governance pattern change deferred to a separate task. Verdict: `ACCEPTED_WITH_LIMITATION`.
++- **R18**: Workspace closure cycle exposed register mismatches (27 untracked files not fully accounted for), a commit (`6022c187`) lacking per-commit diff/show evidence, and `PROJECT_REGISTRY.json` modified externally without explicit register documentation. Verdict escalated through 3 sub-rounds (CLEANUP, CLOSURE, EVIDENCE-MAINTENANCE) before achieving closure.
++
++---
++
++## 1. Startup Read Gate
++
++Every agent session MUST complete the Startup Read Gate before performing any work. The gate ensures the agent has full situational awareness of the current task, workspace state, and governance context. An agent that begins modifying files without completing this gate is in violation.
++
++### 1.1 Mandatory Read List
++
++The agent MUST read ALL of the following before any write operation:
++
++| # | Item | Source | Purpose |
++|---|------|--------|---------|
++| 1 | Current TaskSpec | `tasks/task-{id}.md` or dispatch payload | Defines task_id, write_set, acceptance_gates, forbidden paths |
++| 2 | Operations manual | `docs/agent-runtime/operations-manual.md` | Existing tools, SOPs, reuse checklist (core-008) |
++| 3 | Latest reviewer verdict | `_evidence/*/review.md` or `REVIEWER_INDEX.md` | Current blockers, accepted components, next authorized task |
++| 4 | Latest final-report | `_evidence/*/final-report.md` | Closure state, limitations carried forward, deferred items |
++| 5 | Current git status | `git status --short` output | Modified tracked, untracked files, branch state |
++| 6 | Deferred-files register | `deferred-files-register.yaml` in evidence pack | Files permanently or temporarily excluded from commits |
++| 7 | Project registry | `.agent/PROJECT_REGISTRY.json` | Active projects, binding states, dispatch eligibility |
++| 8 | deny_paths policy | `SADP_POLICY.json` deny_paths / deny_list sections | Paths the agent must never write or must treat as read-only |
++
++### 1.2 Gate Conditions
++
++The agent CANNOT proceed to any file modification until ALL of the following are true:
++
++```yaml
++startup_read_gate:
++  conditions:
++    - task_id_known: true          # Agent knows which task it is executing
++    - write_set_known: true        # Agent knows the approved file modification scope
++    - blockers_known: true         # Agent has read all open blockers from reviewer
++    - workspace_state_known: true  # Agent has captured git status --short
++    - deny_paths_known: true       # Agent knows which paths are forbidden
++  gate_status: PASS | FAIL
++  fail_action: HALT — do not modify any file until all conditions met
++```
++
++### 1.3 R15-R18 Failure Mode: Uninformed Agent Start
++
++In the R15 cycle, the agent submitted an evidence pack with `source/` paths instead of `scripts/` paths. Root cause: the agent did not read the operations manual (which documents the canonical `scripts/` directory structure) before assembling the pack. In R18-CLEANUP, the agent initially failed to account for 23 untracked files because it started committing without reading the deferred-files register from the prior round.
++
++**Rule**: If the agent discovers mid-task that it missed a required read, it MUST halt, record the gap, re-read, and re-evaluate whether work done so far remains valid.
++
++---
++
++## 2. Pre-Task Gate
++
++Before any code or documentation file is modified, the agent MUST pass the Pre-Task Gate. This gate validates that the proposed work is authorized, scoped, and documented.
++
++### 2.1 Gate Checklist
++
++```yaml
++pre_task_gate:
++  checks:
++    - id: PT-01
++      name: task_id_matches
++      description: The task_id in the current TaskSpec matches the work being performed.
++      pass_condition: task_id in evidence files equals task_id in dispatch payload.
++      fail_action: HALT — wrong task context.
++
++    - id: PT-02
++      name: write_set_is_narrow
++      description: The write_set contains only files necessary for the stated goal.
++      pass_condition: Every file in write_set has a stated purpose in the TaskSpec goal or acceptance gates.
++      fail_action: NARROW — remove unnecessary files from write_set before proceeding.
++
++    - id: PT-03
++      name: protected_files_identified
++      description: Any protected file in the write_set is explicitly flagged.
++      pass_condition: protected_files_touched field is accurate; protected files listed individually.
++      fail_action: HALT — protected file modification requires Human Required Decision Record.
++
++    - id: PT-04
++      name: human_required_record_exists
++      description: When the write_set includes protected files or governance patterns, a Human Required Decision Record exists.
++      pass_condition: Record present with decision, rationale, approver_id, timestamp.
++      fail_action: BLOCK — cannot modify protected files without human authorization.
++
++    - id: PT-05
++      name: evidence_directory_declared
++      description: The evidence directory path is declared before work begins.
++      pass_condition: _evidence/{ROUND_ID}/ directory exists or is created with documented naming convention.
++      fail_action: CREATE — establish evidence directory before any file modification.
++
++    - id: PT-06
++      name: live_dispatch_unauthorized
++      description: Live dispatch (sending messages to external services, invoking CDP, triggering Chrome) is not performed unless explicitly approved.
++      pass_condition: No live dispatch capability used without a Human Required Decision Record authorizing it.
++      fail_action: BLOCK — live dispatch without authorization is a P0 violation.
++```
++
++### 2.2 R15-R18 Failure Mode: Ungoverned Write Scope
++
++In R16, the agent included out-of-scope files in `diff.patch` (R16-BLOCKING-04). The write_set was not narrow: files unrelated to the operations-manual task appeared in the canonical diff. In R18-CLEANUP, `hooks/sealed-files-manifest.json` was auto-regenerated by the SADP hook during a commit, introducing an unplanned governance file modification that the agent did not anticipate or register.
++
++**Rule**: If a hook, pre-commit script, or automated process modifies a file outside the declared write_set, the agent MUST halt, register the unexpected modification, and re-evaluate the Pre-Task Gate before continuing.
++
++---
++
++## 3. Pre-GPT-Review Gate
++
++Before submitting any evidence pack to the GPT reviewer, the agent MUST pass the Pre-GPT-Review Gate. This gate validates that the evidence pack is complete, machine-parseable, and independently verifiable. Text-only summaries are explicitly forbidden as the sole basis for a reviewer verdict.
++
++### 3.1 Mandatory Evidence Pack Contents
++
++Every submission to the GPT reviewer MUST include all of the following files:
++
++| # | File | Format | Required | Purpose |
++|---|------|--------|----------|---------|
++| 1 | `diff.patch` | Unified diff | Yes | Shows exact file changes in scope |
++| 2 | `test-output.md` | Markdown with command + exit code | Yes | Test execution evidence |
++| 3 | `safety-report.json` | Valid JSON | Yes | Workspace state: modified_tracked, untracked, deny_paths, deny_list counts |
++| 4 | `chain-evidence.json` | Valid JSON | Yes | Causal chain: task -> changes -> tests -> verdict |
++| 5 | `review.md` | Markdown | Yes | Executor's self-review (not a substitute for reviewer verdict) |
++| 6 | `review.yaml` | Valid YAML | Yes | Machine-readable reviewer evidence per SADP 0.R.2 |
++| 7 | `final-report.md` | Markdown | Yes | Deterministic artifact summary per SADP 0.R.3 |
++| 8 | `git-status-before.txt` | Plain text | Yes | `git status --short` captured before first modification |
++| 9 | `git-status-after.txt` | Plain text | Yes | `git status --short` captured after last commit |
++| 10 | `deferred-files-register.yaml` | Valid YAML | Yes | All files excluded from commits with categorization and rationale |
++
++### 3.2 Forbidden Submission Patterns
++
++The following patterns are explicitly forbidden:
++
++```yaml
++forbidden_patterns:
++  - id: FP-01
++    name: text_only_summary
++    description: Submitting a text-only summary without file-based evidence.
++    rationale: Text summaries cannot be independently verified. R3-R14 operated under this pattern; R15-INTEGRITY-01 retroactively flagged all prior rounds as not independently verifiable.
++    
++  - id: FP-02
++    name: self_attested_boolean
++    description: Using boolean fields (e.g., "tests_passed: true") without supporting command output.
++    rationale: Boolean self-attestation is invalid per SADP 0.1 Gate 0 Ledger rules.
++    
++  - id: FP-03
++    name: impure_json
++    description: JSON files with appended prose summaries or non-JSON content.
++    rationale: R15-BLOCKING-03 — DRY_RUN JSON had summary text appended, breaking JSON.parse().
++    
++  - id: FP-04
++    name: unparseable_yaml
++    description: YAML files that fail YAML.parse() validation.
++    rationale: Machine-readable evidence must be parseable to enable automated audit.
++```
++
++### 3.3 R15-R18 Failure Mode: Incomplete Evidence Pack
++
++R15 submitted 77 files but was missing all SADP 0.R.2 canonical files (review.md, review.yaml, final-report.md, chain-evidence.json). R16 fixed the path structure but forgot review.md entirely (R16-BLOCKING-01). It took three rounds (R15, R16, R17) to achieve a complete evidence pack.
++
++**Rule**: Run `python scripts/pre_gpt_review_gate.py` (or equivalent evidence pack linter) before every submission. If any canonical file is missing or unparseable, the submission is BLOCKED.
++
++---
++
++## 4. Evidence Pack Standard
++
++This section defines the minimum validation rules for evidence pack integrity. Every file in the pack must satisfy its format contract. Every git operation must have corresponding evidence. Every workspace file must be accounted for exactly once.
++
++### 4.1 Format Validation Rules
++
++```yaml
++format_validation:
++  json_files:
++    rule: Must pass JSON.parse() with no trailing content.
++    files: [safety-report.json, chain-evidence.json]
++    fail_action: NEEDS_EVIDENCE — fix and resubmit.
++    
++  yaml_files:
++    rule: Must pass YAML.parse() with no duplicate keys.
++    files: [review.yaml, deferred-files-register.yaml]
++    fail_action: NEEDS_EVIDENCE — fix and resubmit.
++    
++  patch_files:
++    rule: Must be valid unified diff format. Must contain only in-scope files.
++    files: [diff.patch, diff-*.patch]
++    fail_action: NEEDS_EVIDENCE — regenerate with correct scope.
++    
++  text_files:
++    rule: Must be non-empty, UTF-8 encoded.
++    files: [git-status-before.txt, git-status-after.txt, git-show-*.txt, test-output.md]
++    fail_action: NEEDS_EVIDENCE — regenerate.
++```
++
++### 4.2 Git Evidence Rules
++
++```yaml
++git_evidence_rules:
++  - id: GE-01
++    name: every_commit_has_git_show
++    rule: Every commit hash referenced in the evidence pack MUST have a corresponding git-show-{hash}.txt file.
++    failure_mode: R18-BLOCKING-02 — commit 6022c187 had no diff or git-show evidence.
++    
++  - id: GE-02
++    name: every_final_commit_in_git_log
++    rule: The final commit hash MUST appear in a git-log capture included in the pack.
++    rationale: Proves the commit chain is complete and no commits are missing from the evidence.
++    
++  - id: GE-03
++    name: every_untracked_accounted_once
++    rule: Every untracked file in git-status-after MUST appear in exactly one category of the deferred-files-register: committed, removed, or registered_deferred.
++    failure_mode: R18-BLOCKING-01 — 27 untracked files existed but the register did not account for all of them.
++    
++  - id: GE-04
++    name: modified_tracked_zero_for_closure
++    rule: When claiming workspace closure, modified_tracked count MUST be 0.
++    rationale: Non-zero modified tracked files means uncommitted work exists. Closure claims are invalid.
++    
++  - id: GE-05
++    name: clean_workspace_requires_no_deferred
++    rule: An agent CANNOT claim "clean workspace" status while deferred files exist. Must claim "registered_closure" instead.
++    failure_mode: R18 initially claimed "clean" with 27 untracked files. Corrected to "registered_closure."
++    
++  - id: GE-06
++    name: replay_evidence_labeled
++    rule: Evidence generated from replay (re-running tests after the fact, regenerating diffs from cached state) MUST be labeled as replay with original timestamp and replay timestamp both recorded.
++    rationale: Replay evidence has different trust properties than live evidence. Reviewer must know which is which.
++```
++
++### 4.3 Hash Integrity Rules
++
++```yaml
++hash_integrity:
++  - id: HI-01
++    name: no_self_referential_hashes
++    rule: A file MUST NOT contain its own hash. MANIFEST.json and hashes.sha256 MUST be excluded from the hash list they define.
++    failure_mode: R16-BLOCKING-02 — SHA256 self-reference fails for MANIFEST.json and hashes.sha256. These files were included in their own hash computation, creating a logical impossibility.
++    solution: Exclude metadata files from their own hash lists. Document the exclusion.
++    
++  - id: HI-02
++    name: hashes_match_content
++    rule: Every hash recorded in hashes.sha256 MUST match the actual file content when verified with sha256sum.
++    fail_action: NEEDS_EVIDENCE — regenerate hashes from final file state.
++```
++
++### 4.4 R15-R18 Failure Mode: Evidence Integrity Cascade
++
++The R15-INTEGRITY-01 finding was retroactive: it affected rounds R3 through R14, all of which had submitted text-only evidence that was not independently verifiable. This created an evidence integrity cascade where prior verdicts had to be maintained with an explicit limitation tag (`MAINTAINED_WITH_EVIDENCE_INTEGRITY_LIMITATION`). The corrective action (file-based evidence packs starting from R15) was only fully validated at R17 when the reviewer confirmed `CORRECTIVE_EVIDENCE_ACCEPTED_R17`.
++
++**Rule**: Any evidence integrity gap discovered retroactively MUST be recorded as a `retroactive_erratum` with affected rounds, severity, status, and impact assessment. The erratum remains open until the reviewer explicitly accepts the corrective evidence.
++
++---
++
++## 5. State Machine
++
++Every task, finding, and workspace item operates within a defined state machine. State transitions MUST follow the rules below. Invalid transitions are governance violations.
++
++### 5.1 State Definitions
++
++```yaml
++states:
++  - id: DRAFT
++    description: Task or finding created but not yet validated. No work performed.
++    
++  - id: READY_FOR_EXECUTION
++    description: Pre-Task Gate passed. Write_set approved. Agent authorized to begin work.
++    
++  - id: EXECUTED
++    description: Work completed. Evidence collected. Not yet reviewed.
++    
++  - id: NEEDS_EVIDENCE
++    description: Reviewer found missing or invalid evidence. Agent must supply before verdict.
++    
++  - id: NEEDS_MORE_EVIDENCE
++    description: Evidence exists but is insufficient for a confident verdict. Specific gaps documented.
++    
++  - id: ACCEPTED
++    description: Reviewer verdict: all gates pass, no limitations. Task complete.
++    
++  - id: ACCEPTED_WITH_LIMITATION
++    description: Reviewer verdict: gates pass with documented limitations that do not block closure.
++    
++  - id: BLOCKED
++    description: A P0/P1 finding prevents progress. Requires new evidence or human intervention.
++    
++  - id: HUMAN_REQUIRED
++    description: Agent cannot proceed without human authorization. A Human Required Decision Record is mandatory.
++    
++  - id: DEFERRED
++    description: File or task intentionally postponed. Remains visible in deferred-files register.
++```
++
++### 5.2 Transition Rules
++
++```yaml
++transitions:
++  - from: DRAFT
++    to: READY_FOR_EXECUTION
++    requires: Pre-Task Gate PASS (all PT-01 through PT-06)
++    
++  - from: READY_FOR_EXECUTION
++    to: EXECUTED
++    requires: Work completed, evidence pack assembled, Pre-GPT-Review Gate PASS
++    
++  - from: EXECUTED
++    to: ACCEPTED
++    requires: Reviewer verdict = pass, all findings resolved, no limitations
++    
++  - from: EXECUTED
++    to: ACCEPTED_WITH_LIMITATION
++    requires: Reviewer verdict = pass with documented limitations
++    preserves: Limitations MUST be carried forward in final-report.md and REVIEWER_INDEX.md.
++    
++  - from: EXECUTED
++    to: NEEDS_EVIDENCE
++    requires: Reviewer identifies missing or invalid evidence files
++    
++  - from: NEEDS_EVIDENCE
++    to: EXECUTED
++    requires: Agent supplies requested evidence, re-passes Pre-GPT-Review Gate
++    
++  - from: BLOCKED
++    to: ACCEPTED
++    requires: NEW evidence that resolves the blocking finding. Cannot reuse prior evidence.
++    rationale: R15-R17 cycle — each round required genuinely new evidence to close prior blockers.
++    
++  - from: BLOCKED
++    to: NEEDS_EVIDENCE
++    requires: Partial resolution identifies additional evidence gaps
++    
++  - from: HUMAN_REQUIRED
++    to: READY_FOR_EXECUTION
++    requires: Human Required Decision Record with approved decision, approver_id, timestamp
++    constraint: HUMAN_REQUIRED CANNOT be bypassed by expanding the write_set. The decision record must exist regardless of scope changes.
++    
++  - from: DEFERRED
++    to: READY_FOR_EXECUTION
++    requires: New TaskSpec that includes the deferred item in its write_set
++    
++  - from: ACCEPTED_WITH_LIMITATION
++    to: ACCEPTED
++    requires: New evidence that resolves all documented limitations
++    constraint: Limitations are preserved until explicitly resolved. They do not expire.
++```
++
++### 5.3 Forbidden Transitions
++
++```yaml
++forbidden_transitions:
++  - from: BLOCKED
++    to: ACCEPTED_WITH_LIMITATION
++    rationale: A blocked finding must be fully resolved, not partially accepted.
++    
++  - from: HUMAN_REQUIRED
++    to: EXECUTED
++    rationale: Human authorization cannot be skipped. Write_set expansion does not eliminate the need for human approval.
++    failure_mode: An agent might try to "work around" a HUMAN_REQUIRED state by broadening its write_set to exclude the protected file. This is forbidden.
++    
++  - from: DEFERRED
++    to: ACCEPTED
++    rationale: Deferred items must be executed or explicitly abandoned, not silently accepted.
++    
++  - from: NEEDS_EVIDENCE
++    to: ACCEPTED
++    rationale: Cannot skip the EXECUTED state. Evidence must be assembled and re-reviewed.
++```
++
++### 5.4 R15-R18 Failure Mode: Invalid State Transitions
++
++In R17, the verdict was `ACCEPTED_WITH_LIMITATION`. A subsequent task attempted to treat this as fully `ACCEPTED` and proceed without addressing the two documented limitations (test results from full repo not ZIP-independent; governance pattern change deferred). The state machine requires limitations to be explicitly resolved before transitioning from `ACCEPTED_WITH_LIMITATION` to `ACCEPTED`.
++
++In R18-WORKSPACE-CLOSURE, the agent claimed closure (implying `ACCEPTED`) while the register still showed discrepancies (implying `BLOCKED`). The correct state was `NEEDS_EVIDENCE` until the register was reconciled, which required the CLOSURE and EVIDENCE-MAINTENANCE sub-rounds.
++
++---
++
++## 6. Human Required Decision Record
++
++Certain actions are beyond agent authority and require explicit human authorization. A Human Required Decision Record (HRDR) MUST exist before these actions are performed.
++
++### 6.1 Mandatory HRDR Triggers
++
++The following actions REQUIRE a Human Required Decision Record:
++
++| # | Action | Rationale | R15-R18 Precedent |
++|---|--------|-----------|-------------------|
++| 1 | **Live dispatch** | Sending messages to external services (ChatGPT via CDP, API calls, webhook triggers) | R17 explicitly excluded live dispatch from accepted scope |
++| 2 | **Protected file mutation** | Modifying AGENTS.md, CLAUDE.md, rules/core.md, capability-inventory.md, sub-agent-dispatch-protocol.md, lessons-learned.md | Core governance principle: agents must not self-modify governance |
++| 3 | **Self-protecting hook modification** | Modifying hooks/pre-edit.governance.ps1, scripts/sadp-audit.ps1, or any script that enforces governance patterns | R18-CLEANUP: sadp-audit.ps1 modification flagged as P0_GOVERNANCE without HRDR |
++| 4 | **Broad write_set expansion** | Adding files to write_set beyond the original TaskSpec scope after execution has begun | R16-BLOCKING-04: diff.patch contained out-of-scope files |
++| 5 | **Project registry migration** | Changing project count, binding_status, or dispatch classification in PROJECT_REGISTRY.json | R18: PROJECT_REGISTRY.json modified (10 -> 11 projects) without explicit HRDR |
++| 6 | **deny_path exception** | Writing to a path that appears in the deny_paths or deny_list policy | Hard governance boundary — no exception without human approval |
++| 7 | **Sealed-files-manifest policy change** | Modifying hooks/sealed-files-manifest.json or the policy that governs sealed file protection | Self-protecting pattern — agent must not alter its own constraints |
++| 8 | **Committing mock secret fixtures** | Adding files that match secret-scan deny_list patterns to version control | R18: secret-scan-output.txt files were deny-listed; committing them requires explicit authorization |
++| 9 | **Changing finalizer rules** | Modifying the finalizer gate criteria in SADP 0.R.3 | Finalizer rules are the last governance checkpoint; altering them requires human oversight |
++
++### 6.2 HRDR Format
++
++```yaml
++human_required_decision_record:
++  decision_id: HRDR-{sequential_id}
++  action_requested: [description of the action requiring authorization]
++  trigger_category: [one of the 9 mandatory triggers above]
++  risk_assessment:
++    blast_radius: [files/systems affected]
++    reversibility: reversible | partially_reversible | irreversible
++    precedent: [prior HRDR IDs for similar decisions, or "none"]
++  approver:
++    approver_id: [human reviewer identifier]
++    approved_at: [ISO-8601 timestamp]
++    approval_channel: [conversation URL, session ID, or direct instruction reference]
++  conditions:
++    - [any conditions or limitations on the approval]
++  expiration:
++    expires_at: [ISO-8601 timestamp or "single_use"]
++    scope: [specific task_id or "session"]
++```
++
++### 6.3 R15-R18 Failure Mode: Missing HRDR for Governance Pattern Changes
++
++The R15 reviewer explicitly flagged that `scripts/sadp-audit.ps1` was modified without a Human Required Decision Record (listed as `P0_GOVERNANCE: self-protecting sadp-audit.ps1 modified without human_required approval`). This finding was carried as a blocker from R15 through R17 and ultimately resolved by splitting the task: the operations manual content was accepted, but the governance pattern change in sadp-audit.ps1 was deferred to a separate task (`OPERATIONS-MANUAL-AUDIT-PATTERN-BIND-A1`) with `status: HUMAN_REQUIRED`.
++
++**Rule**: An agent that discovers it has performed an action requiring an HRDR without one MUST immediately halt, report the violation, and await human authorization before continuing. Retroactive HRDR creation is permitted only if the human reviewer explicitly approves it.
++
++---
++
++## 7. Workspace Closure Standard
++
++Workspace closure is a deterministic state that can be verified mechanically. An agent claiming closure MUST satisfy the conditions below. Ambiguous or partially-verified closure claims are governance violations.
++
++### 7.1 Closure States
++
++```yaml
++closure_states:
++  - id: CLEAN
++    name: Fully Clean
++    conditions:
++      - modified_tracked: 0
++      - untracked_files: 0
++    claim_allowed: "clean workspace"
++    evidence_required: git-status-after.txt showing empty output
++    
++  - id: REGISTERED_CLOSURE
++    name: Registered Closure
++    conditions:
++      - modified_tracked: 0
++      - untracked_files: N (where N > 0)
++      - all_untracked_in_register: true
++    claim_allowed: "registered closure"
++    evidence_required: >
++      git-status-after.txt showing N untracked files,
++      deferred-files-register.yaml accounting for all N files,
++      safety-report.json with matching counts.
++    register_categories:
++      - deny_paths: Files blocked by deny_paths policy (e.g., NEG-009 fixtures)
++      - deny_list: Files blocked by deny_list policy (e.g., secret-scan outputs)
++      - pending_commit: Files to be committed in the next session
++      - permanently_deferred: Files intentionally excluded with documented rationale
++      
++  - id: NOT_CLOSED
++    name: Not Closed
++    conditions:
++      - modified_tracked: "> 0"
++      - or:
++        - untracked_files_not_in_register: "> 0"
++    claim_allowed: "dirty workspace" or "not closed"
++    evidence_required: git-status-after.txt showing the discrepancy
++    
++  - id: PERMANENTLY_DEFERRED
++    name: Permanently Deferred
++    conditions:
++      - modified_tracked: 0
++      - untracked_files: N
++      - all_untracked_category: permanently_deferred or deny_paths or deny_list
++    claim_allowed: "permanently deferred"
++    evidence_required: deferred-files-register.yaml with permanent rationale for each file
++```
++
++### 7.2 Closure Verification Protocol
++
++Before claiming any closure state, the agent MUST run:
++
++```yaml
++closure_verification:
++  step_1:
++    action: Capture git status --short
++    output: git-status-after.txt
++    validate: Output matches safety-report.json counts exactly.
++    
++  step_2:
++    action: Count modified tracked files
++    expected: 0 for any closure claim
++    fail_action: Cannot claim closure. State = NOT_CLOSED.
++    
++  step_3:
++    action: Enumerate all untracked files
++    expected: Every untracked file appears in deferred-files-register.yaml exactly once
++    fail_action: Cannot claim closure. State = NOT_CLOSED.
++    
++  step_4:
++    action: Cross-reference safety-report.json with deferred-files-register.yaml
++    expected: Counts match: modified_tracked + untracked = total entries in register
++    fail_action: Register mismatch. State = NOT_CLOSED.
++    
++  step_5:
++    action: Determine closure state
++    mapping:
++      - modified_0 + untracked_0: CLEAN
++      - modified_0 + all_untracked_registered: REGISTERED_CLOSURE
++      - modified_0 + all_untracked_permanent: PERMANENTLY_DEFERRED
++      - modified_nonzero OR unregistered_untracked: NOT_CLOSED
++```
++
++### 7.3 Forbidden Closure Claims
++
++```yaml
++forbidden_claims:
++  - claim: "clean workspace"
++    when: untracked_files > 0
++    rationale: Untracked files exist. Workspace is not clean. Use "registered closure" instead.
++    failure_mode: R18 claimed "clean" with 27 untracked files. Reviewer rejected as BLOCKING-01.
++    
++  - claim: "workspace closed"
++    when: modified_tracked > 0
++    rationale: Modified tracked files indicate uncommitted work. Closure is invalid.
++    
++  - claim: "all files accounted for"
++    when: any untracked file is not in deferred-files-register
++    rationale: Unregistered untracked files are unaccounted artifacts.
++    failure_mode: R18 initially missed 3 "other unexpected files" that were not in any register category.
++    
++  - claim: "registered closure"
++    when: register exists but counts do not match git-status-after
++    rationale: Internal consistency violation. All numbers must agree.
++```
++
++### 7.4 R15-R18 Failure Mode: Closure Claim Inflation
++
++R18-WORKSPACE-CLOSURE initially claimed closure while `PROJECT_REGISTRY.json` showed as a modified tracked file (modified by an external process during the session). The agent had to produce a CLOSURE sub-round that explicitly documented this external modification in the register before the reviewer accepted the closure state. Similarly, commit `6022c187` was missing per-commit diff/show evidence, requiring the agent to generate `diff-6022c187.patch` and `git-show-6022c187.txt` retroactively.
++
++The R18 cycle required three sub-rounds (CLEANUP, CLOSURE, EVIDENCE-MAINTENANCE) before achieving `REGISTERED_CLOSURE` with all 27 untracked files properly categorized: 17 deny_paths (NEG-009 fixtures), 3-5 deny_list (secret-scan outputs), and the remainder as session artifacts pending next commit.
++
++**Rule**: Closure state MUST be determined by mechanical verification, not by agent assertion. The agent runs the closure verification protocol and reports the result. If the result is NOT_CLOSED, the agent MUST NOT claim closure regardless of how close the workspace appears.
++
++---
++
++## 8. Evidence Generation Hygiene
++
++Generating evidence must not itself create new governance problems. This section defines hygiene rules that prevent recursive artifact pollution: the situation where the act of producing evidence creates new untracked files that themselves need evidence.
++
++### 8.1 Builder Script Policy
++
++```yaml
++builder_script_policy:
++  preferred:
++    description: Use pre-existing tracked tools from scripts/ directory.
++    examples:
++      - scripts/evidence_pack_linter.py
++      - scripts/pre_gpt_review_gate.py
++      - scripts/sadp-audit.ps1
++    rule: These are committed, tested, and covered by existing test suites.
++    
++  acceptable:
++    description: Run temporary scripts outside the repository when possible.
++    location: workspace scratch directory (outside canonical root)
++    rule: Scripts run from outside the repo do not create untracked files inside it.
++    
++  restricted:
++    description: Builder scripts created inside the repository.
++    rule: Any script created inside D:\agent-acceptance MUST be one of:
++      - committed: Added to version control with tests
++      - removed: Deleted after use, with deletion recorded
++      - registered: Listed in deferred-files-register.yaml with rationale
++    failure_mode: R18 generated 7 "session artifact" scripts during evidence assembly. These became untracked files that needed to be committed in a subsequent sub-round.
++```
++
++### 8.2 Evidence Pack Assembly Rules
++
++```yaml
++assembly_rules:
++  - id: EA-01
++    name: no_new_untracked_without_registering
++    rule: Generating the evidence pack MUST NOT create new untracked files without registering them in deferred-files-register.yaml.
++    procedure: >
++      Before running any evidence generation command, predict its output files.
++      If output files will land inside the repository, add them to the register
++      BEFORE generation. After generation, verify the register matches.
++      
++  - id: EA-02
++    name: final_evidence_after_last_commit
++    rule: The final evidence pack (safety-report.json, git-status-after.txt, deferred-files-register.yaml) MUST be generated AFTER the last commit in scope.
++    rationale: Evidence generated before the final commit will not reflect the post-commit workspace state, creating a mismatch.
++    failure_mode: R18 generated safety-report.json before the final commit, then the commit itself changed the workspace state. The report showed stale counts.
++    
++  - id: EA-03
++    name: no_recursive_evidence
++    rule: Generating evidence about evidence generation is forbidden. The evidence pack documents the task work, not the pack assembly process.
++    rationale: Recursive evidence creates an infinite regress: evidence about evidence about evidence. The pack must have a clear termination point.
++    
++  - id: EA-04
++    name: replay_labeling
++    rule: When evidence is regenerated after the fact (re-running tests, re-capturing git status), it MUST be labeled:
++      - original_timestamp: when the action actually occurred
++      - replay_timestamp: when the evidence was regenerated
++      - replay_reason: why regeneration was necessary
++    rationale: Replay evidence has different trust properties. The reviewer must know whether evidence was captured live or reconstructed.
++```
++
++### 8.3 Anti-Pollution Protocol
++
++```yaml
++anti_pollution_protocol:
++  before_evidence_generation:
++    - step: Predict output files
++      action: List all files that evidence generation commands will create.
++    - step: Predict output locations
++      action: Determine whether each output file lands inside or outside the repo.
++    - step: Register predicted files
++      action: Add any in-repo outputs to deferred-files-register.yaml BEFORE generation.
++      
++  during_evidence_generation:
++    - step: Use --output-dir flags
++      action: Direct evidence outputs to the _evidence/ directory (tracked) or workspace scratch (outside repo).
++    - step: Avoid ad-hoc scripts in repo root
++      action: If a one-off script is needed, create it in workspace scratch, run it, delete it.
++      
++  after_evidence_generation:
++    - step: Verify no surprise files
++      action: Run git status --short and compare against predicted outputs.
++    - step: Reconcile discrepancies
++      action: If unexpected files appeared, register them or remove them immediately.
++    - step: Final cross-check
++      action: safety-report.json counts match git-status-after.txt match deferred-files-register.yaml.
++```
++
++### 8.4 R15-R18 Failure Mode: Recursive Artifact Pollution
++
++The R18 cycle is the canonical example of recursive artifact pollution:
++
++1. **R18-CLEANUP**: The agent committed 6 session artifact scripts, creating commit `104ac8b1`. The commit itself generated evidence directories (`R18-followup-cleanup/`, `R18-FOLLOWUP-FINAL/`), which became new untracked files.
++2. **R18-CLOSURE**: The agent created `diff-6022c187.patch` and `git-show-6022c187.txt` as retroactive evidence for an earlier commit. These evidence files became new untracked files that needed to be registered.
++3. **R18-EVIDENCE-MAINTENANCE**: The agent committed 60 session artifact files from the closure process. This commit (`efd5b96e`) itself generated a new post-commit state that needed fresh evidence.
++
++Each sub-round of evidence generation created new artifacts that required their own evidence, creating a three-step cascade before the workspace reached REGISTERED_CLOSURE.
++
++The R16 cycle exhibited a different pollution pattern: the agent included `MANIFEST.json` and `hashes.sha256` in their own hash computation, creating a self-referential integrity check that was logically impossible to satisfy. This was resolved in R17 by excluding metadata files from their own hash lists.
++
++**Rule**: Before any evidence generation activity, run the anti-pollution protocol. Predict outputs, register them, generate, and verify. If the generation creates more than 3 unexpected files, halt and reassess the generation approach.
++
++---
++
++## Appendix A: Quick Reference Card
++
++```
+++------------------+----------------------------------------------------------+
++| Gate / Standard  | One-Line Rule                                            |
+++------------------+----------------------------------------------------------+
++| Startup Read     | Read 8 items before touching anything.                   |
++| Pre-Task         | 6 checks pass before first file edit.                    |
++| Pre-GPT-Review   | 10 canonical files, all parseable, no text-only.         |
++| Evidence Pack    | JSON parses, YAML parses, every commit evidenced,        |
++|                  | every untracked registered once, no self-ref hashes.     |
++| State Machine    | 10 states, forbidden transitions enforced,               |
++|                  | BLOCKED->ACCEPTED needs new evidence.                    |
++| HRDR             | 9 trigger categories, no action without record.          |
++| Workspace Closure| 4 states, mechanical verification, no false claims.      |
++| Evidence Hygiene | Predict outputs, register before generate,               |
++|                  | final evidence after last commit, no recursion.          |
+++------------------+----------------------------------------------------------+
++```
++
++## Appendix B: R15-R18 Verdict Timeline
++
++```
++R15  PARTIAL_ACCEPTANCE_WITH_BLOCKERS
++     4 blockers: paths, canonical files, JSON purity, manual-only split
++     Retroactive erratum R15-INTEGRITY-01 (affects R3-R14)
++
++R16  PARTIAL_ACCEPTANCE_WITH_REMAINING_EVIDENCE_BLOCKERS
++     R15: 2 closed, 1 partial, 1 with limitation
++     New: 4 blockers: review.md, self-ref hash, ZIP reproducibility, scope
++
++R17  ACCEPTED_WITH_LIMITATION
++     All R16 blockers closed
++     Limitations: test env, governance pattern change deferred
++
++R18  REGISTERED_CLOSURE (after 3 sub-rounds)
++     CLEANUP: committed session artifacts, addressed 5 non-blocking items
++     CLOSURE: reconciled register (27 untracked), evidenced all commits
++     EVIDENCE-MAINTENANCE: committed 60 session files, reached stable state
++```
++
++---
++
++**Version**: 1.0 | **Status**: active | **Enforcement**: All sections P0 unless marked otherwise.
+diff --git a/docs/agent-runtime/workspace-closure-standard.md b/docs/agent-runtime/workspace-closure-standard.md
+new file mode 100644
+index 00000000..a6dfae06
+--- /dev/null
++++ b/docs/agent-runtime/workspace-closure-standard.md
+@@ -0,0 +1,153 @@
++# Workspace Closure Standard
++
++| Field    | Value                                  |
++| -------- | -------------------------------------- |
++| Task     | UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1   |
++| Document | Workspace Closure Standard             |
++| Version  | 1.0.0                                  |
++| Date     | 2026-06-11                             |
++| Status   | Active                                 |
++
++---
++
++## Purpose
++
++Define acceptable workspace states at task completion. Prevent false "clean workspace" claims that erode trust between executor agents and reviewers.
++
++Every closure claim must be verifiable by running `git status --porcelain` and comparing the output against the stated closure state. This standard eliminates ambiguity by defining exactly which states are acceptable, which are not, and what evidence is required to support each claim.
++
++---
++
++## Closure States
++
++### 1. Clean Workspace (ideal, rare)
++
++```yaml
++clean:
++  modified_tracked: 0
++  untracked: 0
++  description: "No outstanding changes of any kind"
++```
++
++A clean workspace means zero modified tracked files and zero untracked files. This state is ideal but rare in practice. Do not claim this state unless `git status --porcelain` returns completely empty output.
++
++### 2. Registered Closure (acceptable)
++
++```yaml
++registered_closure:
++  modified_tracked: 0
++  untracked: "all listed in deferred-files-register.yaml"
++  description: "All outstanding files are formally documented"
++  requirements:
++    - "Every untracked file appears exactly once in the register"
++    - "Register categorizes each file (deferred, denied, pending)"
++    - "Register total matches git status count exactly"
++```
++
++Registered closure is the practical standard for most task completions. It acknowledges that some files remain in the workspace but requires that every one of them is formally accounted for in the deferred-files register. The arithmetic must be exact: if `git status --porcelain` shows N untracked entries, the register must list exactly N entries.
++
++### 3. Not Closed (unacceptable for completion claims)
++
++```yaml
++not_closed:
++  conditions:
++    - "Any modified_tracked files > 0"
++    - "Any unregistered untracked files"
++    - "Register count does not match git status count"
++```
++
++A workspace is not closed if any of the above conditions hold. Claiming completion while the workspace is in this state constitutes a closure violation.
++
++---
++
++## Mandatory Distinctions
++
++The standard MUST distinguish the following terms. Using them interchangeably or loosely is a violation.
++
++| Term | Definition | When to Use |
++| ---- | ---------- | ----------- |
++| **fully clean workspace** | Zero untracked files exist. `git status --porcelain` shows no `??` entries. | Only when literally true. Do not claim unless verified. |
++| **registered closure** | All untracked files are documented in `deferred-files-register.yaml` with exact count match. | Standard acceptable completion state. |
++| **dirty workspace** | Unregistered changes exist. Some files are untracked and not in the register. | Unacceptable. Must be resolved before claiming completion. |
++| **permanently deferred deny_path fixtures** | Files that can NEVER be committed (e.g., secret-scan outputs, credential files). Always registered, never removed. | For files on the git deny_list that must persist in the workspace. |
++
++### Precision Requirements
++
++- Never say "workspace is clean" when you mean "workspace is in registered closure."
++- Never say "all files accounted for" unless the register count exactly matches `git status` output.
++- Never claim "0 untracked" while `git status --porcelain` shows `??` entries.
++
++---
++
++## Closure Checklist
++
++Before claiming task completion, verify every item:
++
++- [ ] `git status --porcelain` shows 0 modified tracked files
++- [ ] All untracked files are listed in `deferred-files-register.yaml`
++- [ ] Register total matches actual untracked count from `git status --porcelain`
++- [ ] Tests pass (or test count is explicitly justified for docs-only tasks)
++- [ ] Evidence pack built and submitted to GPT
++- [ ] GPT verdict is ACCEPTED or ACCEPTED_WITH_LIMITATION
++
++Each checklist item must be supported by evidence. A checkbox without supporting output is not valid.
++
++---
++
++## Anti-Patterns (Forbidden)
++
++The following behaviors are explicitly forbidden and constitute closure violations:
++
++1. **False clean claim** -- Claiming "clean workspace" when untracked files exist.
++2. **False zero count** -- Claiming "0 untracked" while `git status` shows untracked entries.
++3. **Register undercount** -- Registering fewer files than `git status` shows.
++4. **Arithmetic mismatch** -- Stating "all accounted for" while the numbers do not add up.
++5. **External modification blindness** -- Claiming closure while `PROJECT_REGISTRY.json` or other governance files have been externally modified and the changes are not reflected in tests or register.
++6. **Builder script amnesia** -- Creating a builder script during evidence generation and then forgetting to register or remove the script itself.
++7. **Premature closure** -- Declaring closure before the final commit has been made.
++
++---
++
++## Failure Mode Examples
++
++These examples are drawn from actual review cycles to illustrate common closure failures.
++
++### R18 Closure SLIM
++
++Claimed 19 deferred files but `git status` showed 20. The missing entry was the third secret-scan output file. The register was off by one, invalidating the "all accounted for" claim.
++
++### R18 Workspace Cleanup
++
++Register showed 17 + 2 = 19 files, but the actual count was 17 + 3 = 20. The arithmetic in the register itself was internally inconsistent, and the discrepancy was not caught before closure was claimed.
++
++### R18 External Registry Modification
++
++`PROJECT_REGISTRY.json` was externally modified (reduced from 11 to 3 projects), which caused test failures. The closure claim did not account for this external change, and the test suite caught the inconsistency.
++
++### R18 Unregistered Builder Script
++
++A builder script (`_build_workspace_cleanup_final.py`) was created during the evidence generation process. The script itself was an untracked file that was neither committed, removed, nor registered in the deferred-files register. This created a recursive pollution problem: the evidence generation process created an artifact that itself needed evidence.
++
++---
++
++## Verification Protocol
++
++To verify a closure claim, the reviewer (or GPT) must:
++
++1. Run `git status --porcelain` independently.
++2. Count modified tracked files (lines starting with `M`, `A`, `D`, `R`).
++3. Count untracked files (lines starting with `??`).
++4. Open `deferred-files-register.yaml` and count registered entries.
++5. Compare: register count must equal untracked count exactly.
++6. Confirm: modified tracked count must be 0.
++7. If both conditions hold, the closure state is **Registered Closure**.
++8. If untracked count is also 0, the closure state is **Clean Workspace**.
++9. If either condition fails, the closure state is **Not Closed** and the completion claim is rejected.
++
++---
++
++## Related Documents
++
++- [Evidence Generation Hygiene Standard](evidence-generation-hygiene.md)
++- [Universal Agent Workflow Standard](universal-agent-workflow-standard.md)
++- [Verification Gates](verification-gates.md)
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index 47def93b..9cd41bf0 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-11T11:27:41.5048680+08:00",
++    "generated":  "2026-06-11T14:54:55.7818645+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+@@ -151,6 +151,14 @@
+                              "sha256":  "36F9443B4F326DFDFAE108781FC9D495D6322E1A1F5F9DBCC94E54F4DEA28AF1",
+                              "path":  "docs/agent-runtime/dispatch-model-profiles.md"
+                          },
++                         {
++                             "sha256":  "530FE66AF633E4C99BAFA9E97B70CE20AA938B3E0A3AD3293B074116F165BD4C",
++                             "path":  "docs/agent-runtime/evidence-generation-hygiene.md"
++                         },
++                         {
++                             "sha256":  "EFCC11ED6AFDEF1142891CDB0329B27208208D8C97B45D530AB4CEA75F617DD4",
++                             "path":  "docs/agent-runtime/evidence-pack-standard.md"
++                         },
+                          {
+                              "sha256":  "9F95CE3C6C2F70A81D5D95DC2EB855840F39223CF82EBE8CB89D5E138FAE8D3D",
+                              "path":  "docs/agent-runtime/external-skill-intake.md"
+@@ -179,6 +187,10 @@
+                              "sha256":  "45AD5284DD53F2338330F44FC2BF313291EA90316868CB81ACE8AC4C1F97B1DF",
+                              "path":  "docs/agent-runtime/hook-governance-upgrade-decision.md"
+                          },
++                         {
++                             "sha256":  "89A4215048C8CABB851771AB3C3294E56167AEDB92EBD13910CEB5790E31EB97",
++                             "path":  "docs/agent-runtime/human-required-decision-record.md"
++                         },
+                          {
+                              "sha256":  "F34E223DA4A3EE3D8F03DA51DA021AA561006AC6C4192C7849748ABD54C2A754",
+                              "path":  "docs/agent-runtime/inactive-frame-registry.md"
+@@ -220,13 +232,21 @@
+                              "path":  "docs/agent-runtime/operating-model.md"
+                          },
+                          {
+-                             "sha256":  "634D8657C1156FC043DF0F2133C04C9F0AC31C623BE7A94ACA71737ABF1B214C",
++                             "sha256":  "8C30BFD025A2AEFE0B3DE81A8664DF47E402377FF9101D3DB18C34283C748FC5",
+                              "path":  "docs/agent-runtime/operations-manual.md"
+                          },
+                          {
+                              "sha256":  "022DA04B67020CC2D0FF3224B9204D6317802814E6A89B91852265A2E87C977F",
+                              "path":  "docs/agent-runtime/path-drift-register.md"
+                          },
++                         {
++                             "sha256":  "BAB6B6F13F3A76C8DC8B2510810462F4F604FBD7AA218674AAEE285C80D8AE70",
++                             "path":  "docs/agent-runtime/pre-gpt-review-gate.md"
++                         },
++                         {
++                             "sha256":  "08E700984B3295B48059C6972521B106641D02D030AB0C82174DB4BB009B4533",
++                             "path":  "docs/agent-runtime/pre-task-gate.md"
++                         },
+                          {
+                              "sha256":  "5C4E76709E1E1DD05D7C2C202B00BF6E6CBDF541911C90C2DAE10AD851312419",
+                              "path":  "docs/agent-runtime/r0-negative-tests.md"
+@@ -391,6 +411,14 @@
+                              "sha256":  "D787C3D08246903054B52B903DDA426A183EDD2BD9FB4AB8D91FE4A3DE5AD470",
+                              "path":  "docs/agent-runtime/stale-memory-review-checklist.md"
+                          },
++                         {
++                             "sha256":  "BC4F898CBBB37D94649F69E5176A4A2CF8FA0AD719511C35EB4704CAA0491AB9",
++                             "path":  "docs/agent-runtime/startup-read-gate.md"
++                         },
++                         {
++                             "sha256":  "65D9D601CDFD9FBCD29A30B587022F55B514AD8D811FACE82F41A2CAE4C5F89D",
++                             "path":  "docs/agent-runtime/status-state-machine.md"
++                         },
+                          {
+                              "sha256":  "595A251DE8B1E5CDCA1FC415999ADD8A09C7E638706807B75CF0BBA56AA53087",
+                              "path":  "docs/agent-runtime/stride-threat-model.md"
+@@ -423,6 +451,10 @@
+                              "sha256":  "A9FAA701DA5F87FA6EE9511D8CEB6B34262A2337D313DB79C6911F0A0C2E72B2",
+                              "path":  "docs/agent-runtime/tool-policy.md"
+                          },
++                         {
++                             "sha256":  "71205F415395F6233D5CE7419862950265FDDD67CDCD352276F7E1FBE152529B",
++                             "path":  "docs/agent-runtime/universal-agent-workflow-standard.md"
++                         },
+                          {
+                              "sha256":  "443F33EE2951F0E0CCD1F8FEA6FEACAC272E7A7DEC60B4C1FF308BED0476D908",
+                              "path":  "docs/agent-runtime/v2-shared-cdp-architecture-baseline.md"
+@@ -435,6 +467,10 @@
+                              "sha256":  "2AFA0E37D746DA663AF6B38A933492E001AD94C3B7FF1C9DD357FFA44610FFB1",
+                              "path":  "docs/agent-runtime/workqueue-controlled-use-policy.md"
+                          },
++                         {
++                             "sha256":  "7AAD4706BAA641E853E3E6D414B919D577CE12C1A5C79686E32AF081C27B8838",
++                             "path":  "docs/agent-runtime/workspace-closure-standard.md"
++                         },
+                          {
+                              "sha256":  "4516D862ABA423C59C099D9B07F9C6A147F20D5A3BA8D951DA53E87B634706F9",
+                              "path":  "governance/expected-files.txt"

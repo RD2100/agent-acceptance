@@ -1,0 +1,18 @@
+# SADP Pre-commit Hook Output from 9d699fb0
+
+feat: Universal Agent Workflow Standard A1 — 9 governance docs + operations manual cross-reference
+
+Create Universal Agent Workflow Standard abstracting R15-R18 governance lessons:
+- universal-agent-workflow-standard.md: main standard (8 sections)
+- startup-read-gate.md: agent startup read checklist
+- pre-task-gate.md: pre-modification verification
+- pre-gpt-review-gate.md: evidence pack submission requirements
+- evidence-pack-standard.md: minimum files and validation rules
+- status-state-machine.md: 10-state task lifecycle
+- human-required-decision-record.md: 9 mandatory authorization triggers
+- workspace-closure-standard.md: clean/registered/dirty closure states
+- evidence-generation-hygiene.md: prevent recursive artifact pollution
+- operations-manual.md: added section 9 cross-reference to standard
+
+Documentation-only task. No runtime enforcement changes.
+Tests: 1038 passed, 0 failed, 21 warnings.

@@ -1,0 +1,16 @@
+# git diff --stat 9d699fb0^..9d699fb0
+
+.ai/current-task.yaml                              |   4 +-
+ .../universal-agent-workflow-standard-a1.yaml      |  66 ++
+ docs/agent-runtime/evidence-generation-hygiene.md  | 195 ++++++
+ docs/agent-runtime/evidence-pack-standard.md       | 163 +++++
+ .../human-required-decision-record.md              | 347 ++++++++++
+ docs/agent-runtime/operations-manual.md            |  25 +-
+ docs/agent-runtime/pre-gpt-review-gate.md          | 351 ++++++++++
+ docs/agent-runtime/pre-task-gate.md                | 207 ++++++
+ docs/agent-runtime/startup-read-gate.md            | 178 ++++++
+ docs/agent-runtime/status-state-machine.md         | 462 ++++++++++++++
+ .../universal-agent-workflow-standard.md           | 707 +++++++++++++++++++++
+ docs/agent-runtime/workspace-closure-standard.md   | 153 +++++
+ hooks/sealed-files-manifest.json                   |  40 +-
+ 13 files changed, 2892 insertions(+), 6 deletions(-)

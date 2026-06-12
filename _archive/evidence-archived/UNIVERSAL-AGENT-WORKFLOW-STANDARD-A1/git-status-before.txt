@@ -1,0 +1,6 @@
+# Git Status Before Commit 9d699fb0
+# Reconstructed from post-commit minus the committed files
+
+modified_tracked: 0 (PROJECT_REGISTRY.json restored before commit)
+untracked: ~41 (includes the 12 files that were about to be committed)
+note: Before commit, the 12 docs/task files were untracked.
