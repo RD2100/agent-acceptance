@@ -40,6 +40,8 @@ write_set:
   - "_codex_review_prompt.md"
   - "scripts/_evidence/**"
   - "hooks/sealed-files-manifest.json"
+  - "evidence_packs/**"
+  - "quarantine/**"
 
 deny_paths:
   - "scripts/multi_project_router.py"
@@ -73,7 +75,19 @@ acceptance_criteria:
   - "Untracked count reduced by >100 entries"
 
 verdict:
-  status: in_progress
+  status: completed
+  evidence:
+    initial_untracked: ~200
+    final_untracked: 46
+    committed_files: ~650
+    commits_created: 30
+    deferred_secret_named: 42
+    deferred_reason: "blocked by deny_paths **/*secret* — batch 3c/3d scope"
+  batches_completed:
+    - "3e: nul deletion + scripts/_evidence archive"
+    - "3a: 85 CDP scripts archived"
+    - "3b: 19+17 evidence dirs archived (ZIP-covered + remaining)"
+    - "3c: 7 evidence dirs + 377 hook-output + loose evidence + reports"
 
 live_dispatch_authorized: false
 next_recommended: "Phase 4 quality hardening (Codex P2/P3 items)"
