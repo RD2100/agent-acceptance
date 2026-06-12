@@ -1,5 +1,6 @@
 """Test ai_guard with real git fixtures: staged-only commit, full-tree audit, fail-closed."""
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -62,7 +63,7 @@ class TestTaskModeStagedOnly:
             # Must pass (no staged violations)
             assert code == 0, f"Expected pass, got exit={code}: {out}"
         finally:
-            subprocess.run(["rm", "-rf", d])
+            shutil.rmtree(d, ignore_errors=True)
 
     def test_staged_forbidden_marker_fails_closed(self):
         """Staged file with forbidden content must BLOCK."""
@@ -83,7 +84,7 @@ class TestTaskModeStagedOnly:
             assert code != 0, f"Staged forbidden file must fail closed. Got exit={code}"
             assert "BLOCKED" in out or "error" in out.lower(), f"Must block: {out}"
         finally:
-            subprocess.run(["rm", "-rf", d])
+            shutil.rmtree(d, ignore_errors=True)
 
     def test_task_mode_ignores_unstaged_secret(self):
         """Task mode must NOT scan unstaged files for secrets."""
@@ -103,7 +104,7 @@ class TestTaskModeStagedOnly:
             code, out = run_guard_in(repo, "task", str(tasks_dir / "test.yaml"))
             assert code == 0, f"Unstaged secret must not block in task mode. Got: {out}"
         finally:
-            subprocess.run(["rm", "-rf", d])
+            shutil.rmtree(d, ignore_errors=True)
 
 
 class TestAuditModeFull:
@@ -128,7 +129,7 @@ class TestAuditModeFull:
             assert code != 0 or "SECRET" in out, (
                 f"Audit must flag modified tracked secret. Got exit={code}: {out[:500]}")
         finally:
-            subprocess.run(["rm", "-rf", d])
+            shutil.rmtree(d, ignore_errors=True)
 
 
 class TestFilesMode:
@@ -143,7 +144,7 @@ class TestFilesMode:
             assert code == 0, f"Expected pass, got exit={code}: {out}"
             assert "0 file(s) checked" in out
         finally:
-            subprocess.run(["rm", "-rf", d])
+            shutil.rmtree(d, ignore_errors=True)
 
     def test_files_detects_secret_in_specified_file(self):
         """--files must detect secret pattern in the specified file."""
@@ -159,7 +160,7 @@ class TestFilesMode:
             assert code != 0, f"Must block on secret. Got exit={code}: {out}"
             assert "SECRET" in out
         finally:
-            subprocess.run(["rm", "-rf", d])
+            shutil.rmtree(d, ignore_errors=True)
 
     def test_files_does_not_scan_unlisted_file(self):
         """--files must NOT scan files that are not in the argument list."""
@@ -176,7 +177,7 @@ class TestFilesMode:
             assert code == 0, f"Must pass when only listing clean file. Got: {out}"
             assert "leak.txt" not in out
         finally:
-            subprocess.run(["rm", "-rf", d])
+            shutil.rmtree(d, ignore_errors=True)
 
     def test_files_deny_path_blocks(self):
         """--files must enforce deny_paths."""
@@ -192,7 +193,7 @@ class TestFilesMode:
             assert code != 0, f"deny_paths must block. Got exit={code}: {out}"
             assert "DENIED" in out
         finally:
-            subprocess.run(["rm", "-rf", d])
+            shutil.rmtree(d, ignore_errors=True)
 
     def test_files_restricted_path_warns(self):
         """--files must warn on restricted_paths but still pass."""
@@ -210,7 +211,7 @@ class TestFilesMode:
             assert code == 0, f"Restricted should warn, not block. Got: {out}"
             assert "RESTRICTED" in out
         finally:
-            subprocess.run(["rm", "-rf", d])
+            shutil.rmtree(d, ignore_errors=True)
 
     def test_files_normalizes_backslash(self):
         """--files must normalize backslash paths to forward slash."""
@@ -227,7 +228,7 @@ class TestFilesMode:
             assert code != 0, f"Backslash path must be normalized and caught. Got: {out}"
             assert "DENIED" in out
         finally:
-            subprocess.run(["rm", "-rf", d])
+            shutil.rmtree(d, ignore_errors=True)
 
 
 class TestFailClosed:
@@ -275,7 +276,7 @@ class TestLargeFileSecretScan:
             assert code != 0, f"Must detect secret in large file. Got exit={code}: {out[:500]}"
             assert "SECRET" in out
         finally:
-            subprocess.run(["rm", "-rf", d])
+            shutil.rmtree(d, ignore_errors=True)
 
     def test_large_file_without_secret_passes(self):
         """Large file without secrets must pass cleanly."""
@@ -293,4 +294,4 @@ class TestLargeFileSecretScan:
             code, out = run_guard_in(repo, "--files", "big.log")
             assert code == 0, f"Large clean file must pass. Got exit={code}: {out[:500]}"
         finally:
-            subprocess.run(["rm", "-rf", d])
+            shutil.rmtree(d, ignore_errors=True)

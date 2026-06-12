@@ -114,6 +114,14 @@ No hook changes needed — `--files` is now properly handled by `ai_guard.py`.
 - `build_evidence_pack.py` decomposition
 - P2/P3 items from Codex review (backslash test fragility, py_compile in CI, etc.)
 
+## Follow-up: Test Cleanup Portability (R2)
+
+After initial commit `1d820d3c`, reviewer (Codex) identified that 12 `finally` blocks used `subprocess.run(["rm", "-rf", d])` for temp directory cleanup — a Unix-ism that fails on pure Windows environments without coreutils.
+
+**Fix**: Replaced all 12 instances with `shutil.rmtree(d, ignore_errors=True)` and added `import shutil`. Change: +13/-12 in `tests/test_ai_guard_staged_scope.py`.
+
+**Verification**: 53 target tests re-run after fix — all pass. Zero `rm -rf` instances remain (confirmed via grep).
+
 ## Conclusion
 
 Both P1 governance bugs are fixed with minimal, targeted changes. All 53 target tests pass. Full suite has zero new regressions. The fix is backward-compatible with existing hook infrastructure.
