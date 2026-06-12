@@ -122,7 +122,20 @@ verdict:
     - "Hook failure semantics deferred to HOOK-FAILURE-SEMANTICS-FINALIZE-A1"
   live_dispatch_authorized: false
   next_recommended: "WORKSPACE-CLOSURE-UNTRACKED-TRIAGE-A1 (P1)"
-
+  gpt_closeout_review:
+    round: final
+    verdict: accepted_with_limitation
+    review_chain_upgrade: "needs_revision -> accepted_with_limitation"
+    live_dispatch_authorized: false
+    system_status: "ready for human authorization gate"
+    verdict_file: "_evidence/LIVE-DISPATCH-READINESS-SADP-ECS-CLOSEOUT-A1/gpt-closeout-verdict.md"
+    checklist:
+      - "REVIEW-A1 evidence pack: PASS"
+      - "FIX-A1 evidence pack: PASS"
+      - "FIX-A1 independent reviewer: PASS"
+      - "ExecutionReports: PASS_WITH_LIMITATION (post-hoc)"
+      - "No live dispatch: PASS"
+      - "Closeout verdict: PASS"
 verdict:
   status: completed
   closeout_verdict: accepted_with_limitation
@@ -149,3 +162,17 @@ verdict:
     - "Hook failure semantics deferred to HOOK-FAILURE-SEMANTICS-FINALIZE-A1"
   live_dispatch_authorized: false
   next_recommended: "WORKSPACE-CLOSURE-UNTRACKED-TRIAGE-A1 (P1)"
+  gpt_closeout_review:
+    round: final
+    verdict: accepted_with_limitation
+    review_chain_upgrade: "needs_revision -> accepted_with_limitation"
+    live_dispatch_authorized: false
+    system_status: "ready for human authorization gate"
+    verdict_file: "_evidence/LIVE-DISPATCH-READINESS-SADP-ECS-CLOSEOUT-A1/gpt-closeout-verdict.md"
+    checklist:
+      - "REVIEW-A1 evidence pack: PASS"
+      - "FIX-A1 evidence pack: PASS"
+      - "FIX-A1 independent reviewer: PASS"
+      - "ExecutionReports: PASS_WITH_LIMITATION (post-hoc)"
+      - "No live dispatch: PASS"
+      - "Closeout verdict: PASS"
