@@ -1,0 +1,6 @@
+# Diff stat for commit dcc31a7
+# Command: git diff --stat dcc31a7^..dcc31a7
+
+hooks/sealed-files-manifest.json | 2 +-
+ scripts/build_evidence_pack.py   | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)

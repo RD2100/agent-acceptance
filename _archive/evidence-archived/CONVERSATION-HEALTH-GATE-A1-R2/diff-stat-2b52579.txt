@@ -1,0 +1,14 @@
+# Diff stat for commit 2b52579
+# Command: git diff --stat 2b52579^..2b52579
+
+.ai/current-task.yaml                              |   2 +
+ .ai/tasks/conversation-health-gate-a1.yaml         |   2 +
+ _evidence/conversation-health/latest.json          |  23 +++++
+ configs/conversation-health-policy.yaml            |   5 +-
+ hooks/sealed-files-manifest.json                   |   4 +-
+ .../conversation-health-decision.schema.json       |   2 +-
+ scripts/build_evidence_pack.py                     | 101 +++++++++++++++------
+ scripts/check_handoff_needed.py                    |  36 +++-----
+ tests/test_conversation_health_gate.py             |  32 +++++++
+ tests/test_handoff_trigger.py                      |   6 +-
+ 10 files changed, 158 insertions(+), 55 deletions(-)

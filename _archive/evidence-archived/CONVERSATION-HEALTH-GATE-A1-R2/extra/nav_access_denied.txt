@@ -1,0 +1,21 @@
+# Conversation Health Evidence: nav_access_denied
+# Actual exit: 1
+# Expected: exit=1 (FORCE_HANDOFF or HUMAN_REQUIRED blocks task)
+
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "FORCE_HANDOFF",
+  "severity": "BLOCKING",
+  "reasons": [
+    {
+      "code": "nav_result_access_denied",
+      "actual": "access_denied",
+      "threshold": "access_denied_or_not_found",
+      "policy": "force"
+    }
+  ],
+  "recommended_action": "generate_handoff",
+  "checked_at": "2026-06-11T14:09:45Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpbl4gn_fs.json"
+}
+

@@ -1,0 +1,5 @@
+# SADP Pre-commit Hook Output (from commit dcc31a7 message)
+
+fix: evidence pack negative-path parser — handle '# Actual exit:' format
+
+🤖 Generated with [Qoder][https://qoder.com]
