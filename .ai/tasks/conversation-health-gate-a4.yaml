@@ -1,8 +1,8 @@
 task_id: CONVERSATION-HEALTH-GATE-A4
 type: feature
 priority: P1
-status: in_progress
-gpt_verdict: pending
+status: accepted_with_limitation
+gpt_verdict: accepted_with_limitation
 created: "2026-06-12T00:00:00Z"
 mode: "@go edit"
 whole_dirty_worktree_allowed: false
@@ -46,6 +46,8 @@ write_set:
   - "tests/test_startup_conversation_health_check.py"
   - "_evidence/conversation-health/startup-read-latest.json"
   - "_evidence/conversation_health_gate_a4_verdict.txt"
+  - "_evidence/CONVERSATION-HEALTH-GATE-A4/*"
+  - "_evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A4.zip"
   - "hooks/sealed-files-manifest.json"
 
 deny_paths:
@@ -85,3 +87,14 @@ acceptance_criteria:
   - No A1/A2/A3 behavior regresses
 
 depends_on: CONVERSATION-HEALTH-GATE-A3
+
+gpt_verdict_file: _evidence/conversation_health_gate_a4_verdict.txt
+gpt_evidence_zip: _evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A4.zip
+gpt_review_rounds: 1
+gpt_accepted_at: "2026-06-12T09:04:42Z"
+gpt_limitations:
+  - "No separate runtime scenario artifacts for negative paths (covered by tests, not standalone files)"
+  - "Raw .ai/conversation/current.json not in ZIP — startup 141.7s input not independently reconstructable"
+gpt_next_task: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
+gpt_next_task_authorized: true
+gpt_next_task_ask_first: true
