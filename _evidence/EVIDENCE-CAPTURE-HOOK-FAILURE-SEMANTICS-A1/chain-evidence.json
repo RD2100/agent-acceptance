@@ -1,0 +1,13 @@
+{
+  "task_id": "EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1",
+  "generated": "2026-06-11T16:53:12.709157+08:00",
+  "commits_in_scope": [
+    "20a4aa27",
+    "6c47d327"
+  ],
+  "task_commits": [
+    "6c47d32"
+  ],
+  "base_commit": "20a4aa2",
+  "head_commit": "6c47d32"
+}

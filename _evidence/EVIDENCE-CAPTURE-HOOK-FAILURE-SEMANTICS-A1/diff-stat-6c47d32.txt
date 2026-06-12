@@ -1,0 +1,10 @@
+# Diff stat for commit 6c47d32
+# Command: git diff --stat 6c47d32^..6c47d32
+
+...evidence-capture-hook-failure-semantics-a1.yaml |  63 ++++++
+ docs/agent-runtime/hook-failure-semantics.md       |  70 +++++++
+ hooks/pre-commit.governance.ps1                    |  70 ++++++-
+ hooks/sealed-files-manifest.json                   |  10 +-
+ schemas/agent-runtime/evidence-capture.schema.json |   4 +-
+ tests/test_hook_failure_semantics.py               | 229 +++++++++++++++++++++
+ 6 files changed, 431 insertions(+), 15 deletions(-)

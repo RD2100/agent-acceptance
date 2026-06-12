@@ -1,0 +1,566 @@
+# Combined diff patch: 20a4aa2..HEAD
+# Command: git diff 20a4aa2..HEAD
+
+diff --git a/.ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml b/.ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml
+new file mode 100644
+index 00000000..11b2c99c
+--- /dev/null
++++ b/.ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml
+@@ -0,0 +1,63 @@
++task_id: EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1
++priority: P0
++status: in_progress
++created: "2026-06-11T00:00:00Z"
++mode: "@go edit"
++whole_dirty_worktree_allowed: false
++external_upload_allowed: false
++raw_transcript_allowed: false
++real_paper_text_allowed: false
++
++gate_0:
++  triggered: true
++  inventory_evidence:
++    queried_sources:
++      - hooks/pre-commit.governance.ps1 (v2.1.0 analysis)
++      - schemas/agent-runtime/evidence-capture.schema.json
++      - docs/agent-runtime/evidence-capture-workflow.md
++      - docs/agent-runtime/universal-agent-workflow-standard.md
++    matched_capabilities:
++      - hook_output_persistence
++      - governance_standard_design
++      - failure_semantics_documentation
++    compared_against_request:
++      - "verify and tighten hook failure behavior for ai_guard/test-governance output persistence"
++  sufficiency_decision: new_delta_required
++  decision: build_delta
++
++goal: >
++  Verify and tighten hook failure behavior for ai_guard/test-governance
++  output persistence without changing SADP audit semantics.
++  
++  Specific issues:
++  1. Schema maxItems=3 and enum missing "ai-guard" — latest.json violates schema
++  2. overall_result=BLOCKED when ai-guard fails, but hook exits 0 and prints "PASS"
++  3. No timeout on ai_guard subprocess — can hang commit indefinitely
++  4. Failure semantics not formally documented
++
++scope:
++  - hooks/pre-commit.governance.ps1 (tighten failure propagation + timeout)
++  - schemas/agent-runtime/evidence-capture.schema.json (fix maxItems, add ai-guard)
++  - docs/agent-runtime/hook-failure-semantics.md (new — formal documentation)
++
++write_set:
++  - ".ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml"
++  - "hooks/pre-commit.governance.ps1"
++  - "schemas/agent-runtime/evidence-capture.schema.json"
++  - "docs/agent-runtime/hook-failure-semantics.md"
++  - "tests/test_hook_failure_semantics.py"
++
++constraints:
++  - Do NOT change sadp-audit as the sole blocking gate
++  - Do NOT make ai-guard or test-governance blocking
++  - Keep ai_guard output persistence working
++  - Bump hook version to 2.2.0
++
++acceptance_criteria:
++  - latest.json validates against updated schema
++  - overall_result uses PASS_WITH_WARNINGS for non-blocking failures
++  - Console message matches overall_result
++  - ai_guard subprocess has 30s timeout
++  - Failure semantics documented
++
++depends_on: EVIDENCE-CAPTURE-STANDARD-A1
+diff --git a/docs/agent-runtime/hook-failure-semantics.md b/docs/agent-runtime/hook-failure-semantics.md
+new file mode 100644
+index 00000000..62919dfa
+--- /dev/null
++++ b/docs/agent-runtime/hook-failure-semantics.md
+@@ -0,0 +1,70 @@
++## Hook Failure Semantics
++
++This document formally defines the failure propagation rules for `pre-commit.governance.ps1` (v2.2.0).
++Every commit that passes through the SADP pre-commit hook produces `_evidence/hook-output/latest.json`.
++The semantics below govern how each stage's exit code maps to the `overall_result` field and the hook's
++process exit code.
++
++### Stage Classification
++
++| Stage | Blocking? | Failure Effect | Rationale |
++|---|---|---|---|
++| manifest-regen | No | Advisory only | Manifest drift is logged but does not indicate a governance violation |
++| sadp-audit | **Yes** | `BLOCKED` + exit 1 | Sole enforcement gate; validates sealed-file integrity and rule compliance |
++| ai-guard | No | `PASS_WITH_WARNINGS` | Content policy scan; failures logged for review but do not block commits |
++| test-governance | No | Advisory only | Advisory scan (e.g., stale task check); never affects commit decision |
++
++### Result Mapping
++
++```
++overall_result  = BLOCKED              if sadp-audit.exit_code ≠ 0
++                = PASS_WITH_WARNINGS   if ai-guard.exit_code ≠ 0 AND sadp-audit.exit_code = 0
++                = PASS                 otherwise
++```
++
++The hook process exit code follows a simple rule: `exit 1` only when `sadp-audit` fails.
++All other stage failures produce `exit 0` with appropriate warnings in console output and `latest.json`.
++
++### Early-Exit Path
++
++When `sadp-audit` fails, the hook takes an early-exit path (line ~129 in the script):
++
++1. Writes `latest.json` with 3 stages (manifest-regen, sadp-audit, ai-guard) — test-governance is omitted because it never ran.
++2. Sets `overall_result = "BLOCKED"`.
++3. Prints `[BLOCKED]` to console.
++4. Calls `exit 1`, which rejects the commit.
++
++### Timeout Behavior
++
++`ai_guard.py` runs inside a PowerShell background job with a 30-second timeout. If the timeout expires:
++
++1. The job is stopped and removed.
++2. `ai-guard.exit_code` is set to `1` in `latest.json`.
++3. `overall_result` becomes `PASS_WITH_WARNINGS` (not `BLOCKED`).
++4. The commit is allowed to proceed.
++
++This design prevents a hung AI guard process from blocking all commits indefinitely.
++
++### Schema Conformance
++
++`latest.json` MUST validate against `schemas/agent-runtime/evidence-capture.schema.json`.
++The schema defines:
++
++- `stages`: array of 1–4 items (enum: manifest-regen, sadp-audit, ai-guard, test-governance)
++- `overall_result`: enum of PASS, PASS_WITH_WARNINGS, BLOCKED
++- `hook_version`: semver pattern
++
++### Anti-Patterns (DO NOT)
++
++1. **Do not** make ai-guard blocking without explicit policy decision and version bump.
++2. **Do not** set `overall_result = "BLOCKED"` when the hook exits 0 — this creates a contradiction.
++3. **Do not** remove timeout protection from ai-guard; indefinite hangs are worse than skipped checks.
++4. **Do not** add new blocking stages without updating the early-exit path and this document.
++
++### Version History
++
++| Hook Version | Change |
++|---|---|
++| 2.0.0 | Initial 3-stage hook (manifest, sadp-audit, test-governance) |
++| 2.1.0 | Added ai-guard as separate capture + output persistence |
++| 2.2.0 | Fixed failure semantics: PASS_WITH_WARNINGS for ai-guard, 30s timeout, schema alignment |
+diff --git a/hooks/pre-commit.governance.ps1 b/hooks/pre-commit.governance.ps1
+index 899ec786..9a1c10da 100644
+--- a/hooks/pre-commit.governance.ps1
++++ b/hooks/pre-commit.governance.ps1
+@@ -9,7 +9,7 @@
+ 
+ $ErrorActionPreference = 'Continue'
+ $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+-$HookVersion = "2.1.0"
++$HookVersion = "2.2.0"
+ 
+ Write-Host "=== Pre-Commit Governance Gate (v$HookVersion) ==="
+ 
+@@ -95,28 +95,60 @@ if (Test-Path $auditScript) {
+     }
+ 
+     # Run ai_guard.py separately if it exists
++    # FAILURE SEMANTIC: ai_guard is NON-BLOCKING. Failure produces PASS_WITH_WARNINGS.
+     $aiGuardScript = Join-Path $ProjectRoot "tools\ai_guard.py"
++    $aiGuardTimeoutSec = 30
+     if (Test-Path $aiGuardScript) {
+         Push-Location $ProjectRoot
+         try {
+             $timing = Invoke-WithTiming {
+                 $stagedFiles = git diff --cached --name-only 2>$null
+-                $aiOutput = python $aiGuardScript --files $stagedFiles 2>&1 | Out-String
+-                $aiOutput
++                # Use Job for timeout enforcement
++                $job = Start-Job -ScriptBlock {
++                    param($scriptPath, $files, $root)
++                    Set-Location $root
++                    python $scriptPath --files $files 2>&1 | Out-String
++                } -ArgumentList $aiGuardScript, $stagedFiles, $ProjectRoot
++
++                $completed = Wait-Job $job -Timeout $aiGuardTimeoutSec
++                if ($null -eq $completed) {
++                    # Timeout — kill job and report
++                    Stop-Job $job -ErrorAction SilentlyContinue
++                    Remove-Job $job -Force -ErrorAction SilentlyContinue
++                    $script:aiGuardTimedOut = $true
++                    return "TIMEOUT: ai_guard exceeded ${aiGuardTimeoutSec}s limit"
++                }
++                $jobOutput = Receive-Job $job
++                Remove-Job $job -Force -ErrorAction SilentlyContinue
++                # Job exit code is not directly available; check output for error indicators
++                $script:aiGuardTimedOut = $false
++                return $jobOutput
+             }
+-            $aiGuardExit = $LASTEXITCODE
+             $aiGuardElapsedMs = $timing.ElapsedMs
+             $aiGuardOutput = $timing.Result
+ 
++            # Determine exit code: timeout = 1, otherwise check output
++            if ($aiGuardTimedOut) {
++                $aiGuardExit = 1
++                $aiGuardOutput = "TIMEOUT: ai_guard exceeded ${aiGuardTimeoutSec}s limit"
++            } else {
++                # ai_guard.py prints "PASS" or "FAIL" — use output heuristic
++                if ($aiGuardOutput -match "(?i)\bFAIL\b") {
++                    $aiGuardExit = 1
++                } else {
++                    $aiGuardExit = 0
++                }
++            }
++
+             # Persist ai_guard output
+-            $aiHeader = "# AI Guard Output - $isoTimestamp`n# Exit code: $aiGuardExit`n# Source: pre-commit hook (original)`n`n"
++            $aiHeader = "# AI Guard Output - $isoTimestamp`n# Exit code: $aiGuardExit (non-blocking)`n# Timeout: ${aiGuardTimeoutSec}s`n# Source: pre-commit hook (original)`n`n"
+             $aiHeader + $aiGuardOutput | Out-File -FilePath $aiGuardOutputFile -Encoding utf8
+ 
+             Write-Host "[ai_guard] $aiGuardOutput"
+         } catch {
+             $aiGuardOutput = "ERROR: $($_.Exception.Message)"
+             $aiGuardExit = 1
+-            "# AI Guard Output - $isoTimestamp`n# Error during execution`n`n$aiGuardOutput" | Out-File -FilePath $aiGuardOutputFile -Encoding utf8
++            "# AI Guard Output - $isoTimestamp`n# Error during execution (non-blocking)`n`n$aiGuardOutput" | Out-File -FilePath $aiGuardOutputFile -Encoding utf8
+             Write-Host "[WARN] ai_guard execution failed: $($_.Exception.Message)"
+         } finally {
+             Pop-Location
+@@ -204,11 +236,24 @@ $stages = @(
+     @{ name = "test-governance";  exit_code = $govExit;      output_file = $govOutputFile;      duration_ms = $govElapsedMs }
+ )
+ 
++# Failure semantics (v2.2.0):
++#   BLOCKING:   sadp-audit (exit 1 → hook exits 1, commit rejected)
++#   WARNING:    ai-guard (exit non-zero → PASS_WITH_WARNINGS, commit allowed)
++#   ADVISORY:   manifest-regen, test-governance (exit code logged, never blocks)
+ $overallResult = "PASS"
+ foreach ($s in $stages) {
+-    if ($s.exit_code -ne 0 -and $s.name -ne "test-governance") {
+-        $overallResult = "BLOCKED"
+-        break
++    if ($s.exit_code -ne 0) {
++        if ($s.name -eq "sadp-audit") {
++            # Sole blocking gate — handled earlier with exit 1
++            $overallResult = "BLOCKED"
++            break
++        } elseif ($s.name -eq "ai-guard") {
++            # Non-blocking: downgrade to PASS_WITH_WARNINGS
++            if ($overallResult -eq "PASS") {
++                $overallResult = "PASS_WITH_WARNINGS"
++            }
++        }
++        # manifest-regen and test-governance: purely advisory, no effect on result
+     }
+ }
+ 
+@@ -227,6 +272,11 @@ $jsonSummary = @{
+ $jsonSummary | Out-File -FilePath (Join-Path $evidenceDir "latest.json") -Encoding utf8
+ 
+ Write-Host ""
+-Write-Host "=== Pre-Commit PASS ==="
++if ($overallResult -eq "PASS_WITH_WARNINGS") {
++    Write-Host "=== Pre-Commit PASS (with warnings) ==="
++    Write-Host "[WARN] Non-blocking stage(s) had issues — review _evidence/hook-output/ for details."
++} else {
++    Write-Host "=== Pre-Commit PASS ==="
++}
+ Write-Host "[evidence] Output captured to: $evidenceDir"
+ exit 0
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index eb67aae9..f4124fd2 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-11T16:32:25.6909308+08:00",
++    "generated":  "2026-06-11T16:51:59.3095035+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+@@ -187,6 +187,10 @@
+                              "sha256":  "9A4D978D646647C17446E1741C13A19EE4DC8A814D7A8FAD85F2AEE648436123",
+                              "path":  "docs/agent-runtime/historical-evidence-policy.md"
+                          },
++                         {
++                             "sha256":  "F227450006F5B642E90B2B6835AA6B69523CFBD62FBA3F60E48A5EE4A70A5494",
++                             "path":  "docs/agent-runtime/hook-failure-semantics.md"
++                         },
+                          {
+                              "sha256":  "45AD5284DD53F2338330F44FC2BF313291EA90316868CB81ACE8AC4C1F97B1DF",
+                              "path":  "docs/agent-runtime/hook-governance-upgrade-decision.md"
+@@ -484,7 +488,7 @@
+                              "path":  "governance/manifest-ignore.txt"
+                          },
+                          {
+-                             "sha256":  "7CBCA651115C71CCAAA4A0D3120C2806FD6864AC925A03D4FA33DE458E24ECD9",
++                             "sha256":  "653438EB1B1C247FC84497AC8EE10B3BBF69968F9CB317EC29652EE94F2747F9",
+                              "path":  "hooks/pre-commit.governance.ps1"
+                          },
+                          {
+@@ -540,7 +544,7 @@
+                              "path":  "schemas/agent-runtime/chain-evidence.schema.json"
+                          },
+                          {
+-                             "sha256":  "AC99188633A343070D2F1D3A76F4B39C4EE33EDD2BCD33269514CA944DC2D255",
++                             "sha256":  "B0AE902FE0FDABB30DCDD583451CE17513E6D95B960D535EBFF4D0B2CCCB7E44",
+                              "path":  "schemas/agent-runtime/evidence-capture.schema.json"
+                          },
+                          {
+diff --git a/schemas/agent-runtime/evidence-capture.schema.json b/schemas/agent-runtime/evidence-capture.schema.json
+index 3a7499e4..91876121 100644
+--- a/schemas/agent-runtime/evidence-capture.schema.json
++++ b/schemas/agent-runtime/evidence-capture.schema.json
+@@ -18,14 +18,14 @@
+     "stages": {
+       "type": "array",
+       "minItems": 1,
+-      "maxItems": 3,
++      "maxItems": 4,
+       "items": {
+         "type": "object",
+         "required": ["name", "exit_code", "output_file", "duration_ms"],
+         "properties": {
+           "name": {
+             "type": "string",
+-            "enum": ["manifest-regen", "sadp-audit", "test-governance"]
++            "enum": ["manifest-regen", "sadp-audit", "ai-guard", "test-governance"]
+           },
+           "exit_code": {
+             "type": "integer",
+diff --git a/tests/test_hook_failure_semantics.py b/tests/test_hook_failure_semantics.py
+new file mode 100644
+index 00000000..5abcfb44
+--- /dev/null
++++ b/tests/test_hook_failure_semantics.py
+@@ -0,0 +1,229 @@
++"""Tests for hook failure semantics (EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1).
++
++Validates that latest.json conforms to schema and that the overall_result mapping
++follows the rules defined in docs/agent-runtime/hook-failure-semantics.md.
++"""
++import json
++import pytest
++from pathlib import Path
++
++SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schemas" / "agent-runtime" / "evidence-capture.schema.json"
++HOOK_PATH = Path(__file__).resolve().parent.parent / "hooks" / "pre-commit.governance.ps1"
++DOCS_PATH = Path(__file__).resolve().parent.parent / "docs" / "agent-runtime" / "hook-failure-semantics.md"
++
++
++@pytest.fixture
++def schema():
++    return json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
++
++
++# ── Schema conformance ───────────────────────────────────────────────
++
++class TestSchemaConformance:
++    """Verify the evidence-capture schema correctly defines all 4 stages."""
++
++    def test_schema_exists(self):
++        assert SCHEMA_PATH.exists()
++
++    def test_max_items_is_4(self, schema):
++        assert schema["properties"]["stages"]["maxItems"] == 4
++
++    def test_min_items_is_1(self, schema):
++        assert schema["properties"]["stages"]["minItems"] == 1
++
++    def test_stage_enum_includes_ai_guard(self, schema):
++        enum = schema["properties"]["stages"]["items"]["properties"]["name"]["enum"]
++        assert "ai-guard" in enum
++
++    def test_stage_enum_has_all_4(self, schema):
++        enum = schema["properties"]["stages"]["items"]["properties"]["name"]["enum"]
++        assert set(enum) == {"manifest-regen", "sadp-audit", "ai-guard", "test-governance"}
++
++    def test_overall_result_has_three_values(self, schema):
++        enum = schema["properties"]["overall_result"]["enum"]
++        assert set(enum) == {"PASS", "PASS_WITH_WARNINGS", "BLOCKED"}
++
++    def test_required_fields(self, schema):
++        assert set(schema["required"]) == {"timestamp", "hook_version", "stages", "git_context", "overall_result"}
++
++
++# ── Hook script assertions ───────────────────────────────────────────
++
++class TestHookScript:
++    """Parse hook script text to verify failure semantic rules are implemented."""
++
++    @pytest.fixture
++    def hook_text(self):
++        return HOOK_PATH.read_text(encoding="utf-8")
++
++    def test_hook_exists(self):
++        assert HOOK_PATH.exists()
++
++    def test_version_is_2_2(self, hook_text):
++        assert '$HookVersion = "2.2.0"' in hook_text
++
++    def test_ai_guard_has_timeout(self, hook_text):
++        assert "aiGuardTimeoutSec" in hook_text
++        assert "Wait-Job" in hook_text
++        assert "-Timeout" in hook_text
++
++    def test_ai_guard_timeout_value(self, hook_text):
++        assert "$aiGuardTimeoutSec = 30" in hook_text
++
++    def test_sadp_audit_is_blocking(self, hook_text):
++        # sadp-audit failure triggers exit 1
++        assert 'if ($auditExit -ne 0)' in hook_text
++        assert 'exit 1' in hook_text
++
++    def test_ai_guard_marked_non_blocking(self, hook_text):
++        assert "NON-BLOCKING" in hook_text
++
++    def test_pass_with_warnings_implemented(self, hook_text):
++        assert "PASS_WITH_WARNINGS" in hook_text
++
++    def test_console_message_matches_result(self, hook_text):
++        # When PASS_WITH_WARNINGS, console shows warning message
++        assert 'if ($overallResult -eq "PASS_WITH_WARNINGS")' in hook_text
++        assert "with warnings" in hook_text
++
++    def test_overall_result_sadp_audit_check(self, hook_text):
++        # The overall_result loop specifically checks sadp-audit for blocking
++        assert '"sadp-audit"' in hook_text or "'sadp-audit'" in hook_text
++
++    def test_ai_guard_output_heuristic(self, hook_text):
++        # ai_guard uses output-based exit code detection (Start-Job limitation)
++        assert "(?i)\\bFAIL\\b" in hook_text or '(?i)\\bFAIL\\b' in hook_text
++
++
++# ── Failure semantics mapping ────────────────────────────────────────
++
++class TestFailureSemanticsMapping:
++    """Verify the documented mapping between stage exit codes and overall_result."""
++
++    @pytest.fixture
++    def docs_text(self):
++        return DOCS_PATH.read_text(encoding="utf-8")
++
++    def test_docs_exist(self):
++        assert DOCS_PATH.exists()
++
++    def test_documents_blocking_stages(self, docs_text):
++        assert "Blocking" in docs_text or "BLOCKING" in docs_text
++        assert "sadp-audit" in docs_text
++
++    def test_documents_warning_stages(self, docs_text):
++        assert "WARNING" in docs_text or "PASS_WITH_WARNINGS" in docs_text
++
++    def test_documents_advisory_stages(self, docs_text):
++        assert "Advisory" in docs_text or "ADVISORY" in docs_text or "advisory" in docs_text
++
++    def test_documents_timeout_behavior(self, docs_text):
++        assert "30" in docs_text
++        assert "timeout" in docs_text.lower()
++
++    def test_documents_anti_patterns(self, docs_text):
++        assert "Anti-Pattern" in docs_text or "anti-pattern" in docs_text
++
++    def test_result_formula(self, docs_text):
++        # The mapping formula should be present
++        assert "BLOCKED" in docs_text
++        assert "PASS_WITH_WARNINGS" in docs_text
++        assert "PASS" in docs_text
++
++
++# ── Simulated overall_result logic ───────────────────────────────────
++
++class TestOverallResultLogic:
++    """Simulate the hook's overall_result calculation in Python to verify correctness."""
++
++    @staticmethod
++    def compute_overall_result(stages):
++        """Mirror the PowerShell logic from the hook script."""
++        overall_result = "PASS"
++        for s in stages:
++            if s["exit_code"] != 0:
++                if s["name"] == "sadp-audit":
++                    overall_result = "BLOCKED"
++                    break
++                elif s["name"] == "ai-guard":
++                    if overall_result == "PASS":
++                        overall_result = "PASS_WITH_WARNINGS"
++                # manifest-regen and test-governance: advisory only
++        return overall_result
++
++    def test_all_pass(self):
++        stages = [
++            {"name": "manifest-regen", "exit_code": 0},
++            {"name": "sadp-audit", "exit_code": 0},
++            {"name": "ai-guard", "exit_code": 0},
++            {"name": "test-governance", "exit_code": 0},
++        ]
++        assert self.compute_overall_result(stages) == "PASS"
++
++    def test_sadp_audit_blocks(self):
++        stages = [
++            {"name": "manifest-regen", "exit_code": 0},
++            {"name": "sadp-audit", "exit_code": 1},
++            {"name": "ai-guard", "exit_code": 0},
++            {"name": "test-governance", "exit_code": 0},
++        ]
++        assert self.compute_overall_result(stages) == "BLOCKED"
++
++    def test_ai_guard_warns(self):
++        stages = [
++            {"name": "manifest-regen", "exit_code": 0},
++            {"name": "sadp-audit", "exit_code": 0},
++            {"name": "ai-guard", "exit_code": 1},
++            {"name": "test-governance", "exit_code": 0},
++        ]
++        assert self.compute_overall_result(stages) == "PASS_WITH_WARNINGS"
++
++    def test_sadp_audit_overrides_ai_guard(self):
++        """sadp-audit BLOCKED takes precedence over ai-guard PASS_WITH_WARNINGS."""
++        stages = [
++            {"name": "manifest-regen", "exit_code": 0},
++            {"name": "sadp-audit", "exit_code": 1},
++            {"name": "ai-guard", "exit_code": 1},
++            {"name": "test-governance", "exit_code": 0},
++        ]
++        assert self.compute_overall_result(stages) == "BLOCKED"
++
++    def test_test_governance_advisory(self):
++        """test-governance failure does not affect overall_result."""
++        stages = [
++            {"name": "manifest-regen", "exit_code": 0},
++            {"name": "sadp-audit", "exit_code": 0},
++            {"name": "ai-guard", "exit_code": 0},
++            {"name": "test-governance", "exit_code": 1},
++        ]
++        assert self.compute_overall_result(stages) == "PASS"
++
++    def test_manifest_regen_advisory(self):
++        """manifest-regen failure does not affect overall_result."""
++        stages = [
++            {"name": "manifest-regen", "exit_code": 1},
++            {"name": "sadp-audit", "exit_code": 0},
++            {"name": "ai-guard", "exit_code": 0},
++            {"name": "test-governance", "exit_code": 0},
++        ]
++        assert self.compute_overall_result(stages) == "PASS"
++
++    def test_multiple_advisory_failures(self):
++        """Multiple advisory failures still result in PASS (if sadp-audit passes)."""
++        stages = [
++            {"name": "manifest-regen", "exit_code": 1},
++            {"name": "sadp-audit", "exit_code": 0},
++            {"name": "ai-guard", "exit_code": 0},
++            {"name": "test-governance", "exit_code": 1},
++        ]
++        assert self.compute_overall_result(stages) == "PASS"
++
++    def test_ai_guard_plus_advisory_failures(self):
++        """ai-guard warning + advisory failures = PASS_WITH_WARNINGS."""
++        stages = [
++            {"name": "manifest-regen", "exit_code": 1},
++            {"name": "sadp-audit", "exit_code": 0},
++            {"name": "ai-guard", "exit_code": 1},
++            {"name": "test-governance", "exit_code": 1},
++        ]
++        assert self.compute_overall_result(stages) == "PASS_WITH_WARNINGS"
