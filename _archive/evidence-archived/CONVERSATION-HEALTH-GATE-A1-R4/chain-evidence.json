@@ -1,0 +1,21 @@
+{
+  "task_id": "CONVERSATION-HEALTH-GATE-A1",
+  "generated": "2026-06-11T22:44:23.773525+08:00",
+  "commits_in_scope": [
+    "8ccb4460",
+    "892d4456",
+    "2b52579f",
+    "dcc31a76",
+    "40e4aba4",
+    "fbb08f08"
+  ],
+  "task_commits": [
+    "892d445",
+    "2b52579",
+    "dcc31a7",
+    "40e4aba",
+    "fbb08f0"
+  ],
+  "base_commit": "8ccb446",
+  "head_commit": "fbb08f0"
+}

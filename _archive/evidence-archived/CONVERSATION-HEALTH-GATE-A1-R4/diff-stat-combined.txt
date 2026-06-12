@@ -1,0 +1,31 @@
+# Combined diff stat: 8ccb446..HEAD
+# Command: git diff 8ccb446..HEAD --stat
+
+.ai/conversation/current.json.example              |  18 +
+ .ai/current-task.yaml                              |  73 +-
+ .ai/tasks/conversation-health-gate-a1.yaml         |  86 +++
+ _cdp_submit_helper.py                              |  37 +
+ .../combined-conversation-health-evidence.txt      | 167 +++++
+ .../composite_force.txt                            |  33 +
+ .../conversation-health-evidence/invalid_json.txt  |   6 +
+ .../manual_estimate_no_force.txt                   |  21 +
+ .../message_count_force_cdp.txt                    |  21 +
+ .../missing_current_json.txt                       |  21 +
+ .../nav_access_denied.txt                          |  21 +
+ .../nav_auth_required.txt                          |  21 +
+ .../review_rounds_force.txt                        |  21 +
+ .../stale_metrics_suggest.txt                      |  21 +
+ _evidence/conversation-health-gate-consensus.md    | 311 +++++++++
+ _evidence/conversation-health/latest.json          |  23 +
+ configs/conversation-health-policy.yaml            |  25 +
+ docs/agent-runtime/conversation-health-gate.md     | 241 +++++++
+ hooks/sealed-files-manifest.json                   |  14 +-
+ .../conversation-health-decision.schema.json       |  29 +
+ .../agent-runtime/conversation-health.schema.json  |  29 +
+ scripts/build_evidence_pack.py                     | 140 +++-
+ scripts/check_handoff_needed.py                    | 762 ++++++++++++++++++++-
+ scripts/run_conversation_health_evidence.py        | 203 ++++++
+ scripts/sadp_pre_task_enforcer.py                  |  83 +++
+ tests/test_conversation_health_gate.py             | 292 ++++++++
+ tests/test_handoff_trigger.py                      |   6 +-
+ 27 files changed, 2656 insertions(+), 69 deletions(-)

@@ -1,0 +1,21 @@
+# Conversation Health Evidence: manual_estimate_no_force
+# Actual exit: 0
+# Expected: exit=0 (pre-task advisory: OK or SUGGEST)
+
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "SUGGEST_HANDOFF",
+  "severity": "WARNING",
+  "reasons": [
+    {
+      "code": "assistant_message_count_exceeded",
+      "actual": 70,
+      "threshold": 60,
+      "policy": "suggest_capped"
+    }
+  ],
+  "recommended_action": "suggest_handoff",
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp9d9707f7.json"
+}
+

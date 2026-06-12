@@ -1,0 +1,43 @@
+commit dcc31a763fb3f43be6380d8d9be4910dc707eaa5
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Thu Jun 11 22:31:55 2026 +0800
+
+    fix: evidence pack negative-path parser — handle '# Actual exit:' format
+    
+    🤖 Generated with [Qoder][https://qoder.com]
+
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index 12872831..a907f9cd 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-11T22:29:44.1236784+08:00",
++    "generated":  "2026-06-11T22:31:56.7231107+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+diff --git a/scripts/build_evidence_pack.py b/scripts/build_evidence_pack.py
+index e5f206f4..0dca0798 100644
+--- a/scripts/build_evidence_pack.py
++++ b/scripts/build_evidence_pack.py
+@@ -602,7 +602,7 @@ def gen_review_md(git_data: Dict, task_id: str, commits: List[str], base: str,
+                                 else:
+                                     expected = "exit!=0"
+                             elif line.startswith("# Actual exit:"):
+-                                actual = "exit=" + line.split("=")[1].strip()
++                                actual = "exit=" + line.split("# Actual exit:")[1].strip()
+                 except OSError:
+                     pass
+                 lines.append(f"| {i} | {scenario} | {expected} | {actual} | PASS |")
+@@ -824,7 +824,7 @@ def gen_final_report(git_data: Dict, task_id: str, commits: List[str],
+                                 else:
+                                     expected = "exit!=0"
+                             elif line.startswith("# Actual exit:"):
+-                                actual = "exit=" + line.split("=")[1].strip()
++                                actual = "exit=" + line.split("# Actual exit:")[1].strip()
+                 except OSError:
+                     pass
+                 lines.append(f"| {i} | {scenario} | {expected} | {actual} | PASS |")

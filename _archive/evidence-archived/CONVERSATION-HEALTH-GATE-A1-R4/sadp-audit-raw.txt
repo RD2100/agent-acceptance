@@ -1,0 +1,13 @@
+# SADP Pre-commit Hook Output (from commit fbb08f0 message)
+
+fix: CONVERSATION-HEALTH-GATE-A1 R4 — close schema/CLI/evidence gaps
+
+R4-1: Change policy="info" to "warning" for no_metrics_source branch
+R4-2: Add field normalization — last_response_time_seconds → response_time_seconds
+  in both check_handoff_v2() and CLI flatten logic
+R4-3: Regenerate negative-path evidence with schema-compliant field names
+  (composite_force uses last_response_time_seconds, not response_time_seconds)
+Tests: 1098 passed (+2: metrics_source_none_policy_is_warning,
+  schema_compliant_last_response_time_triggers_composite)
+
+🤖 Generated with [Qoder][https://qoder.com]

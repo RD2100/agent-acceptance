@@ -1,0 +1,21 @@
+# Conversation Health Evidence: nav_auth_required
+# Actual exit: 1
+# Expected: exit=1 (FORCE_HANDOFF or HUMAN_REQUIRED blocks task)
+
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "HUMAN_REQUIRED",
+  "severity": "BLOCKING",
+  "reasons": [
+    {
+      "code": "nav_result_auth_required",
+      "actual": "auth_required",
+      "threshold": "auth_required",
+      "policy": "human"
+    }
+  ],
+  "recommended_action": "human_review",
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmprdlw24sb.json"
+}
+

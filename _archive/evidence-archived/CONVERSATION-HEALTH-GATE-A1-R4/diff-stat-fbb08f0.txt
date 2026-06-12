@@ -1,0 +1,17 @@
+# Diff stat for commit fbb08f0
+# Command: git diff --stat fbb08f0^..fbb08f0
+
+.../combined-conversation-health-evidence.txt      | 32 +++++++++++-----------
+ .../composite_force.txt                            |  4 +--
+ .../manual_estimate_no_force.txt                   |  4 +--
+ .../message_count_force_cdp.txt                    |  4 +--
+ .../missing_current_json.txt                       |  2 +-
+ .../nav_access_denied.txt                          |  4 +--
+ .../nav_auth_required.txt                          |  4 +--
+ .../review_rounds_force.txt                        |  4 +--
+ .../stale_metrics_suggest.txt                      |  6 ++--
+ hooks/sealed-files-manifest.json                   |  2 +-
+ scripts/check_handoff_needed.py                    | 14 +++++++++-
+ scripts/run_conversation_health_evidence.py        |  2 +-
+ tests/test_conversation_health_gate.py             | 26 ++++++++++++++++++
+ 13 files changed, 73 insertions(+), 35 deletions(-)

@@ -1,0 +1,14 @@
+# Diff stat for commit 40e4aba
+# Command: git diff --stat 40e4aba^..40e4aba
+
+.../combined-conversation-health-evidence.txt      | 50 +++++++++++-----------
+ .../composite_force.txt                            | 22 +++++-----
+ .../manual_estimate_no_force.txt                   |  4 +-
+ .../message_count_force_cdp.txt                    |  4 +-
+ .../missing_current_json.txt                       |  2 +-
+ .../nav_access_denied.txt                          |  4 +-
+ .../nav_auth_required.txt                          |  4 +-
+ .../review_rounds_force.txt                        |  4 +-
+ .../stale_metrics_suggest.txt                      |  6 +--
+ hooks/sealed-files-manifest.json                   |  2 +-
+ 10 files changed, 51 insertions(+), 51 deletions(-)

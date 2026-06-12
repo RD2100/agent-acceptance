@@ -1,0 +1,21 @@
+# Conversation Health Evidence: stale_metrics_suggest
+# Actual exit: 0
+# Expected: exit=0 (pre-task advisory: OK or SUGGEST)
+
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "SUGGEST_HANDOFF",
+  "severity": "WARNING",
+  "reasons": [
+    {
+      "code": "metrics_stale",
+      "actual": 3878.7,
+      "threshold": 12,
+      "policy": "suggest"
+    }
+  ],
+  "recommended_action": "suggest_handoff",
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpvl86vdy0.json"
+}
+

@@ -1,0 +1,167 @@
+=== missing_current_json (exit=0, expected=0) ===
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "UNKNOWN",
+  "severity": "WARNING",
+  "reasons": [
+    {
+      "code": "metrics_file_missing",
+      "actual": "D:\\agent-acceptance\\_evidence\\conversation-health-evidence\\nonexistent_file.json",
+      "threshold": "exists",
+      "policy": "warning"
+    }
+  ],
+  "recommended_action": "suggest_handoff",
+  "checked_at": "2026-06-11T14:43:47Z",
+  "source": "D:\\agent-acceptance\\_evidence\\conversation-health-evidence\\nonexistent_file.json"
+}
+
+
+=== stale_metrics_suggest (exit=0, expected=0) ===
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "SUGGEST_HANDOFF",
+  "severity": "WARNING",
+  "reasons": [
+    {
+      "code": "metrics_stale",
+      "actual": 3878.7,
+      "threshold": 12,
+      "policy": "suggest"
+    }
+  ],
+  "recommended_action": "suggest_handoff",
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpvl86vdy0.json"
+}
+
+
+=== message_count_force_cdp (exit=1, expected=1) ===
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "FORCE_HANDOFF",
+  "severity": "BLOCKING",
+  "reasons": [
+    {
+      "code": "assistant_message_count_exceeded",
+      "actual": 65,
+      "threshold": 60,
+      "policy": "force"
+    }
+  ],
+  "recommended_action": "generate_handoff",
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpy7ybtmnv.json"
+}
+
+
+=== review_rounds_force (exit=1, expected=1) ===
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "FORCE_HANDOFF",
+  "severity": "BLOCKING",
+  "reasons": [
+    {
+      "code": "review_round_count_exceeded",
+      "actual": 4,
+      "threshold": 3,
+      "policy": "force"
+    }
+  ],
+  "recommended_action": "generate_handoff",
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpzlatrbh5.json"
+}
+
+
+=== nav_access_denied (exit=1, expected=1) ===
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "FORCE_HANDOFF",
+  "severity": "BLOCKING",
+  "reasons": [
+    {
+      "code": "nav_result_access_denied",
+      "actual": "access_denied",
+      "threshold": "access_denied_or_not_found",
+      "policy": "force"
+    }
+  ],
+  "recommended_action": "generate_handoff",
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmprgeujgqv.json"
+}
+
+
+=== nav_auth_required (exit=1, expected=1) ===
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "HUMAN_REQUIRED",
+  "severity": "BLOCKING",
+  "reasons": [
+    {
+      "code": "nav_result_auth_required",
+      "actual": "auth_required",
+      "threshold": "auth_required",
+      "policy": "human"
+    }
+  ],
+  "recommended_action": "human_review",
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmprdlw24sb.json"
+}
+
+
+=== invalid_json (exit=2, expected=2) ===
+ERROR: Invalid JSON in metrics file: Expecting property name enclosed in double quotes: line 1 column 3 (char 2)
+
+
+=== manual_estimate_no_force (exit=0, expected=0) ===
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "SUGGEST_HANDOFF",
+  "severity": "WARNING",
+  "reasons": [
+    {
+      "code": "assistant_message_count_exceeded",
+      "actual": 70,
+      "threshold": 60,
+      "policy": "suggest_capped"
+    }
+  ],
+  "recommended_action": "suggest_handoff",
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp9d9707f7.json"
+}
+
+
+=== composite_force (exit=1, expected=1) ===
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "FORCE_HANDOFF",
+  "severity": "BLOCKING",
+  "reasons": [
+    {
+      "code": "composite_degradation",
+      "actual": "rt=75,bytes=1500,rounds=2",
+      "threshold": "rt>=60&bytes<2000&rounds>=2",
+      "policy": "force_composite"
+    },
+    {
+      "code": "response_time_elevated",
+      "actual": 75,
+      "threshold": 60,
+      "policy": "suggest"
+    },
+    {
+      "code": "last_gpt_reply_bytes_low",
+      "actual": 1500,
+      "threshold": 2000,
+      "policy": "suggest"
+    }
+  ],
+  "recommended_action": "generate_handoff",
+  "checked_at": "2026-06-11T14:43:48Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp5eajrtbn.json"
+}
+

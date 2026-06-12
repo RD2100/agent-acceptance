@@ -1,0 +1,296 @@
+commit 40e4aba4de503ff3ee68e7a9c87198200ff91e1f
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Thu Jun 11 22:37:51 2026 +0800
+
+    fix: CONVERSATION-HEALTH-GATE-A1 R3 — regenerate negative-path evidence
+    
+    Regenerated 9 negative-path scenarios with corrected threshold semantics:
+    - response_time and reply_bytes now show policy: "suggest" (not "force")
+    - composite_degradation shows policy: "force_composite"
+    - 9/9 scenarios ALL PASS
+    
+    🤖 Generated with [Qoder][https://qoder.com]
+
+diff --git a/_evidence/conversation-health-evidence/combined-conversation-health-evidence.txt b/_evidence/conversation-health-evidence/combined-conversation-health-evidence.txt
+index 39e25257..92267c34 100644
+--- a/_evidence/conversation-health-evidence/combined-conversation-health-evidence.txt
++++ b/_evidence/conversation-health-evidence/combined-conversation-health-evidence.txt
+@@ -12,7 +12,7 @@
+     }
+   ],
+   "recommended_action": "suggest_handoff",
+-  "checked_at": "2026-06-11T14:09:44Z",
++  "checked_at": "2026-06-11T14:37:33Z",
+   "source": "D:\\agent-acceptance\\_evidence\\conversation-health-evidence\\nonexistent_file.json"
+ }
+ 
+@@ -25,14 +25,14 @@
+   "reasons": [
+     {
+       "code": "metrics_stale",
+-      "actual": 3878.2,
++      "actual": 3878.6,
+       "threshold": 12,
+       "policy": "suggest"
+     }
+   ],
+   "recommended_action": "suggest_handoff",
+-  "checked_at": "2026-06-11T14:09:44Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpf5kgchod.json"
++  "checked_at": "2026-06-11T14:37:33Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp0x7xy_yl.json"
+ }
+ 
+ 
+@@ -50,8 +50,8 @@
+     }
+   ],
+   "recommended_action": "generate_handoff",
+-  "checked_at": "2026-06-11T14:09:44Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpkp8_cmq3.json"
++  "checked_at": "2026-06-11T14:37:33Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpj46ja8cz.json"
+ }
+ 
+ 
+@@ -69,8 +69,8 @@
+     }
+   ],
+   "recommended_action": "generate_handoff",
+-  "checked_at": "2026-06-11T14:09:44Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpbp5spj7c.json"
++  "checked_at": "2026-06-11T14:37:33Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpq1_0tsk9.json"
+ }
+ 
+ 
+@@ -88,8 +88,8 @@
+     }
+   ],
+   "recommended_action": "generate_handoff",
+-  "checked_at": "2026-06-11T14:09:45Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpbl4gn_fs.json"
++  "checked_at": "2026-06-11T14:37:33Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpimi2cspe.json"
+ }
+ 
+ 
+@@ -107,8 +107,8 @@
+     }
+   ],
+   "recommended_action": "human_review",
+-  "checked_at": "2026-06-11T14:09:45Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpkls55zc8.json"
++  "checked_at": "2026-06-11T14:37:34Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp2vt_f7pa.json"
+ }
+ 
+ 
+@@ -130,8 +130,8 @@ ERROR: Invalid JSON in metrics file: Expecting property name enclosed in double
+     }
+   ],
+   "recommended_action": "suggest_handoff",
+-  "checked_at": "2026-06-11T14:09:45Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpy4y1jr4w.json"
++  "checked_at": "2026-06-11T14:37:34Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmposj1w7kh.json"
+ }
+ 
+ 
+@@ -142,26 +142,26 @@ ERROR: Invalid JSON in metrics file: Expecting property name enclosed in double
+   "severity": "BLOCKING",
+   "reasons": [
+     {
+-      "code": "response_time_exceeded",
++      "code": "composite_degradation",
++      "actual": "rt=75,bytes=1500,rounds=2",
++      "threshold": "rt>=60&bytes<2000&rounds>=2",
++      "policy": "force_composite"
++    },
++    {
++      "code": "response_time_elevated",
+       "actual": 75,
+       "threshold": 60,
+-      "policy": "force"
++      "policy": "suggest"
+     },
+     {
+       "code": "last_gpt_reply_bytes_low",
+       "actual": 1500,
+       "threshold": 2000,
+-      "policy": "force"
+-    },
+-    {
+-      "code": "composite_degradation",
+-      "actual": "rt=75,bytes=1500,rounds=2",
+-      "threshold": "rt>=60&bytes<2000&rounds>=2",
+-      "policy": "force_composite"
++      "policy": "suggest"
+     }
+   ],
+   "recommended_action": "generate_handoff",
+-  "checked_at": "2026-06-11T14:09:45Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp7fv27m36.json"
++  "checked_at": "2026-06-11T14:37:34Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp5l_vfbxm.json"
+ }
+ 
+diff --git a/_evidence/conversation-health-evidence/composite_force.txt b/_evidence/conversation-health-evidence/composite_force.txt
+index 00871055..8076dae3 100644
+--- a/_evidence/conversation-health-evidence/composite_force.txt
++++ b/_evidence/conversation-health-evidence/composite_force.txt
+@@ -8,26 +8,26 @@
+   "severity": "BLOCKING",
+   "reasons": [
+     {
+-      "code": "response_time_exceeded",
++      "code": "composite_degradation",
++      "actual": "rt=75,bytes=1500,rounds=2",
++      "threshold": "rt>=60&bytes<2000&rounds>=2",
++      "policy": "force_composite"
++    },
++    {
++      "code": "response_time_elevated",
+       "actual": 75,
+       "threshold": 60,
+-      "policy": "force"
++      "policy": "suggest"
+     },
+     {
+       "code": "last_gpt_reply_bytes_low",
+       "actual": 1500,
+       "threshold": 2000,
+-      "policy": "force"
+-    },
+-    {
+-      "code": "composite_degradation",
+-      "actual": "rt=75,bytes=1500,rounds=2",
+-      "threshold": "rt>=60&bytes<2000&rounds>=2",
+-      "policy": "force_composite"
++      "policy": "suggest"
+     }
+   ],
+   "recommended_action": "generate_handoff",
+-  "checked_at": "2026-06-11T14:09:45Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp7fv27m36.json"
++  "checked_at": "2026-06-11T14:37:34Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp5l_vfbxm.json"
+ }
+ 
+diff --git a/_evidence/conversation-health-evidence/manual_estimate_no_force.txt b/_evidence/conversation-health-evidence/manual_estimate_no_force.txt
+index 4fce06d8..364c65d3 100644
+--- a/_evidence/conversation-health-evidence/manual_estimate_no_force.txt
++++ b/_evidence/conversation-health-evidence/manual_estimate_no_force.txt
+@@ -15,7 +15,7 @@
+     }
+   ],
+   "recommended_action": "suggest_handoff",
+-  "checked_at": "2026-06-11T14:09:45Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpy4y1jr4w.json"
++  "checked_at": "2026-06-11T14:37:34Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmposj1w7kh.json"
+ }
+ 
+diff --git a/_evidence/conversation-health-evidence/message_count_force_cdp.txt b/_evidence/conversation-health-evidence/message_count_force_cdp.txt
+index edada0f3..671d5963 100644
+--- a/_evidence/conversation-health-evidence/message_count_force_cdp.txt
++++ b/_evidence/conversation-health-evidence/message_count_force_cdp.txt
+@@ -15,7 +15,7 @@
+     }
+   ],
+   "recommended_action": "generate_handoff",
+-  "checked_at": "2026-06-11T14:09:44Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpkp8_cmq3.json"
++  "checked_at": "2026-06-11T14:37:33Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpj46ja8cz.json"
+ }
+ 
+diff --git a/_evidence/conversation-health-evidence/missing_current_json.txt b/_evidence/conversation-health-evidence/missing_current_json.txt
+index 6eb2fd50..da0262cc 100644
+--- a/_evidence/conversation-health-evidence/missing_current_json.txt
++++ b/_evidence/conversation-health-evidence/missing_current_json.txt
+@@ -15,7 +15,7 @@
+     }
+   ],
+   "recommended_action": "suggest_handoff",
+-  "checked_at": "2026-06-11T14:09:44Z",
++  "checked_at": "2026-06-11T14:37:33Z",
+   "source": "D:\\agent-acceptance\\_evidence\\conversation-health-evidence\\nonexistent_file.json"
+ }
+ 
+diff --git a/_evidence/conversation-health-evidence/nav_access_denied.txt b/_evidence/conversation-health-evidence/nav_access_denied.txt
+index e1107649..36e411ba 100644
+--- a/_evidence/conversation-health-evidence/nav_access_denied.txt
++++ b/_evidence/conversation-health-evidence/nav_access_denied.txt
+@@ -15,7 +15,7 @@
+     }
+   ],
+   "recommended_action": "generate_handoff",
+-  "checked_at": "2026-06-11T14:09:45Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpbl4gn_fs.json"
++  "checked_at": "2026-06-11T14:37:33Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpimi2cspe.json"
+ }
+ 
+diff --git a/_evidence/conversation-health-evidence/nav_auth_required.txt b/_evidence/conversation-health-evidence/nav_auth_required.txt
+index cea7ff86..a378f37b 100644
+--- a/_evidence/conversation-health-evidence/nav_auth_required.txt
++++ b/_evidence/conversation-health-evidence/nav_auth_required.txt
+@@ -15,7 +15,7 @@
+     }
+   ],
+   "recommended_action": "human_review",
+-  "checked_at": "2026-06-11T14:09:45Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpkls55zc8.json"
++  "checked_at": "2026-06-11T14:37:34Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp2vt_f7pa.json"
+ }
+ 
+diff --git a/_evidence/conversation-health-evidence/review_rounds_force.txt b/_evidence/conversation-health-evidence/review_rounds_force.txt
+index 62b02322..e676b34d 100644
+--- a/_evidence/conversation-health-evidence/review_rounds_force.txt
++++ b/_evidence/conversation-health-evidence/review_rounds_force.txt
+@@ -15,7 +15,7 @@
+     }
+   ],
+   "recommended_action": "generate_handoff",
+-  "checked_at": "2026-06-11T14:09:44Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpbp5spj7c.json"
++  "checked_at": "2026-06-11T14:37:33Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpq1_0tsk9.json"
+ }
+ 
+diff --git a/_evidence/conversation-health-evidence/stale_metrics_suggest.txt b/_evidence/conversation-health-evidence/stale_metrics_suggest.txt
+index 5dc37c23..c5ba6578 100644
+--- a/_evidence/conversation-health-evidence/stale_metrics_suggest.txt
++++ b/_evidence/conversation-health-evidence/stale_metrics_suggest.txt
+@@ -9,13 +9,13 @@
+   "reasons": [
+     {
+       "code": "metrics_stale",
+-      "actual": 3878.2,
++      "actual": 3878.6,
+       "threshold": 12,
+       "policy": "suggest"
+     }
+   ],
+   "recommended_action": "suggest_handoff",
+-  "checked_at": "2026-06-11T14:09:44Z",
+-  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpf5kgchod.json"
++  "checked_at": "2026-06-11T14:37:33Z",
++  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmp0x7xy_yl.json"
+ }
+ 
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index a907f9cd..b5dc2c54 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-11T22:31:56.7231107+08:00",
++    "generated":  "2026-06-11T22:37:52.8187907+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",

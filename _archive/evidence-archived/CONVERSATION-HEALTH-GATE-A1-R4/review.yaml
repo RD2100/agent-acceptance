@@ -1,0 +1,53 @@
+verdict: EVIDENCE_COMPLETE
+task_id: CONVERSATION-HEALTH-GATE-A1
+generated: 2026-06-11T22:44:23.773525+08:00
+version: '1.0.0'
+commits: [892d445, 2b52579, dcc31a7, 40e4aba, fbb08f0]
+base_commit: 8ccb446
+head_commit: fbb08f0
+
+evidence_files:
+  - ai-guard-scope-check-output.txt
+  - chain-evidence.json
+  - deferred-files-register.yaml
+  - diff-stat-2b52579.txt
+  - diff-stat-40e4aba.txt
+  - diff-stat-892d445.txt
+  - diff-stat-combined.txt
+  - diff-stat-dcc31a7.txt
+  - diff-stat-fbb08f0.txt
+  - diff.patch
+  - final-report.md
+  - git-log.txt
+  - git-show-2b52579.txt
+  - git-show-40e4aba.txt
+  - git-show-892d445.txt
+  - git-show-dcc31a7.txt
+  - git-show-fbb08f0.txt
+  - git-status-after.txt
+  - review.md
+  - review.yaml
+  - sadp-audit-raw.txt
+  - safety-report.json
+  - secret-scan-output.txt
+  - test-output.txt
+
+post_commit_state:
+  modified_tracked: 0
+  untracked_total: 107
+  neg_009: 17
+  secret_scan: 5
+  session_artifacts: 85
+  grand_total: 107
+
+consistency_check:
+  all_files_agree: true
+  sum_check: 17 + 5 + 85 = 107 == untracked_total(107)
+
+conversation_health:
+  checked: true
+  decision: OK
+  status: active
+  latest_file: _evidence/conversation-health/latest.json
+  checked_at: "2026-06-11T22:14:45+08:00"
+  verdict_eligibility: eligible
