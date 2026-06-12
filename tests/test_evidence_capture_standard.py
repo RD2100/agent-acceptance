@@ -545,7 +545,7 @@ class TestRuntimeEvidenceIndex:
         assert any("code_version" in s for s in index["stale_signals"])
 
     def test_stale_detection_missing_generated_at(self, tmp_path):
-        """Scenario without '# Generated:' -> stale_signals contains 'missing generated_at'."""
+        """Scenario without '# Generated:' -> metadata_warnings contains 'missing generated_at'."""
         extra = tmp_path / "extra"
         extra.mkdir()
         scenario_file = extra / "no_gen_time.txt"
@@ -561,7 +561,8 @@ class TestRuntimeEvidenceIndex:
             now="2026-06-12T10:00:00Z",
         )
         index = json.loads(raw)
-        assert any("missing generated_at" in s for s in index["stale_signals"])
+        assert any("missing generated_at" in s for s in index["metadata_warnings"])
+        assert index["stale_count"] == 0  # missing metadata != stale
 
     def test_skips_combined_files(self, tmp_path):
         """File with 'combined' in name is skipped."""

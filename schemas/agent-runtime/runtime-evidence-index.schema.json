@@ -45,24 +45,24 @@
             "description": "Execution status of the scenario."
           },
           "expected": {
-            "type": "string",
+            "type": ["string", "null"],
             "description": "Expected result description."
           },
           "actual": {
-            "type": "string",
+            "type": ["string", "null"],
             "description": "Actual result description."
           },
           "source": {
-            "type": "string",
+            "type": ["string", "null"],
             "description": "Command or script that produced the scenario result."
           },
           "generated_at": {
-            "type": "string",
+            "type": ["string", "null"],
             "format": "date-time",
             "description": "ISO8601 timestamp when this scenario was generated."
           },
           "code_version": {
-            "type": "string",
+            "type": ["string", "null"],
             "description": "Head commit hash at the time this scenario was generated."
           },
           "is_stale": {
@@ -76,6 +76,21 @@
         },
         "additionalProperties": false
       }
+    },
+    "stale_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of scenarios with is_stale=true (code_version mismatch with head_commit)."
+    },
+    "stale_signals": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Human-readable list of staleness signals (code_version mismatches)."
+    },
+    "metadata_warnings": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Human-readable list of metadata completeness warnings (e.g. missing generated_at). These do not affect is_stale."
     }
   },
   "additionalProperties": false,

@@ -134,7 +134,8 @@ class FileWriter:
             os.makedirs(parent, exist_ok=True)
         with open(path, "w", encoding="utf-8") as fh:
             fh.write(content)
-        self.written.append(name)
+        if name not in self.written:
+            self.written.append(name)
         size = len(content)
         print(f"  [{len(self.written):>2}] {name}  ({size:,} chars)")
         return path
@@ -717,6 +718,7 @@ def gen_runtime_evidence_index(
 
     scenarios: List[Dict[str, Any]] = []
     stale_signals: List[str] = []
+    metadata_warnings: List[str] = []
 
     for fname in sorted(os.listdir(extra_dir)):
         if not fname.endswith(".txt"):
@@ -781,7 +783,7 @@ def gen_runtime_evidence_index(
                     f"{fname}: code_version={scenario['code_version']} != head={head_commit}"
                 )
             if not scenario["generated_at"]:
-                stale_signals.append(f"{fname}: missing generated_at")
+                metadata_warnings.append(f"{fname}: missing generated_at")
 
         except (OSError, ValueError) as exc:
             scenario["status"] = "UNKNOWN"
@@ -792,13 +794,16 @@ def gen_runtime_evidence_index(
     if not scenarios:
         return None
 
+    stale_count = sum(1 for s in scenarios if s.get("is_stale"))
+
     index = {
         "schema_version": "runtime-evidence-index.v1",
         "generated_at": now,
         "head_commit": head_commit,
         "scenarios": scenarios,
-        "stale_count": len(stale_signals),
+        "stale_count": stale_count,
         "stale_signals": stale_signals,
+        "metadata_warnings": metadata_warnings,
     }
     return json.dumps(index, indent=2, ensure_ascii=False)
 
@@ -829,6 +834,30 @@ def gen_evidence_manifest(
     n_unt = len(s["untracked"])
     sum_ok = (n_neg + n_sec + n_ses) == n_unt
 
+    # Parse test_count from summary line (e.g. "1260 passed, 21 warnings in 46.54s")
+    import re as _re
+    _tc_match = _re.search(r"(\d+)\s+passed", test_summary)
+    test_count = int(_tc_match.group(1)) if _tc_match else 0
+
+    # Read runtime-evidence-index.json to get scenario data
+    rt_scenario_count = 0
+    rt_scenarios: List[str] = []
+    rt_stale_count = 0
+    rt_index_path = os.path.join(repo, "_evidence", "EVIDENCE-CAPTURE-STANDARD-A2",
+                                  "runtime-evidence-index.json")
+
+    if os.path.isfile(rt_index_path):
+        try:
+            with open(rt_index_path, encoding="utf-8") as _rtf:
+                _rt_data = json.load(_rtf)
+                rt_scenarios_list = _rt_data.get("scenarios", [])
+                rt_scenario_count = len(rt_scenarios_list)
+                rt_scenarios = [s.get("file", s.get("name", ""))
+                                for s in rt_scenarios_list]
+                rt_stale_count = _rt_data.get("stale_count", 0)
+        except (OSError, json.JSONDecodeError, ValueError):
+            pass
+
     # Build commit chain
     chain = []
     for h in git_data.get("chain_hashes", []):
@@ -854,14 +883,16 @@ def gen_evidence_manifest(
         },
         "test_summary": {
             "passed": tests_passed,
+            "test_count": test_count,
             "summary_line": test_summary,
             "mode": test_mode,
             "log_included": "test-output.txt" in written_files,
         },
         "runtime_evidence": {
             "index_present": "runtime-evidence-index.json" in written_files,
-            "scenario_count": 0,
-            "scenarios": [],
+            "scenario_count": rt_scenario_count,
+            "stale_count": rt_stale_count,
+            "scenarios": rt_scenarios,
         },
         "negative_path_evidence": {
             "present": any(f.startswith("extra/") for f in written_files),
@@ -889,7 +920,7 @@ def gen_evidence_manifest(
         },
         "limitations": verdict_eligibility.get("limitation_signals", []),
         "pack_info": {
-            "file_count": len(written_files),
+            "file_count": len(written_files) + 1,  # +1 for manifest itself
         },
     }
     return json.dumps(manifest, indent=2, ensure_ascii=False)
