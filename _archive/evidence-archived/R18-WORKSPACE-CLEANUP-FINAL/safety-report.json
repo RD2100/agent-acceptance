@@ -1,0 +1,39 @@
+{
+  "task_id": "R18-WORKSPACE-CLEANUP-A1",
+  "date": "2026-06-11T10:45:37.960338",
+  "commits": [
+    "104ac8b1",
+    "f06ce965",
+    "6022c187"
+  ],
+  "total_committed_files": 67,
+  "scope_violations": 0,
+  "deny_path_violations": 0,
+  "overall_verdict": "PASS",
+  "per_commit": {
+    "104ac8b1": {
+      "files_staged": 44,
+      "verdict": "PASS"
+    },
+    "f06ce965": {
+      "files_staged": 8,
+      "verdict": "PASS"
+    },
+    "6022c187": {
+      "files_staged": 8,
+      "verdict": "PASS"
+    }
+  },
+  "denied_files_not_committed": [
+    "_evidence/R18-FOLLOWUP-FINAL/secret-scan-output.txt",
+    "_evidence/R18-WORKSPACE-CLEANUP-FINAL/secret-scan-output.txt",
+    "_evidence/R18-catchup-commits/secret-scan-output.txt"
+  ],
+  "denied_reason": "Files contain mock secret regex patterns that trigger ai_guard deny list. Included in evidence ZIP only.",
+  "deferred_files": {
+    "NEG-009": {
+      "count": 17,
+      "reason": "deny_paths - negative test fixtures"
+    }
+  }
+}

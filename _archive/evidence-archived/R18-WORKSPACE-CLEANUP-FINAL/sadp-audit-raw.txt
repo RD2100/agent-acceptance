@@ -1,0 +1,8 @@
+# SADP Audit Raw Output
+# Date: 2026-06-11T10:45:37.960338
+# Note: Run post-commit; shows current state (no staged changes expected)
+# Exit code: 0
+
+[SADP-AUDIT] No staged changes. PASS.
+
+--- STDERR ---

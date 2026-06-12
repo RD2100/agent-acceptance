@@ -1,0 +1,79 @@
+# ai_guard.py Scope Check Output
+# Date: 2026-06-11T10:45:37.960338
+# Task: R18-WORKSPACE-CLEANUP-A1
+# Write set patterns: 135
+# Files checked across commits ['104ac8b1', 'f06ce965', '6022c187']: 67
+
+## Checked Files:
+  [PASS] .agent/PROJECT_REGISTRY.json
+  [PASS] .ai/current-task.yaml
+  [PASS] .ai/tasks/r18-workspace-cleanup-a1.yaml
+  [PASS] _build_r18_followup_final.py
+  [PASS] _build_r18_workspace_cleanup.py
+  [PASS] _capture_followup_reply.py
+  [PASS] _evidence/EVIDENCE_PACK_R18_FOLLOWUP.zip
+  [PASS] _evidence/EVIDENCE_PACK_R18_FOLLOWUP_FINAL.zip
+  [PASS] _evidence/EVIDENCE_PACK_R18_WORKSPACE_CLEANUP.zip
+  [PASS] _evidence/EVIDENCE_PACK_R18_WORKSPACE_CLEANUP_FINAL.zip
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/ai-guard-scope-check-output.txt
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/chain-evidence.json
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/deferred-files-register.yaml
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/diff.patch
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/final-report.md
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/git-show-name-status-bc974d2f.txt
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/git-status-after.txt
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/gpt_reply_final.txt
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/hooks-sealed-files-manifest-diff.txt
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/review.md
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/review.yaml
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/sadp-audit-raw.txt
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/safety-report.json
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/staging-count-reconciliation.md
+  [PASS] _evidence/R18-FOLLOWUP-FINAL/test-output.txt
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP-FINAL/ai-guard-scope-check-output.txt
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP-FINAL/deferred-files-register.yaml
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP-FINAL/gpt_reply_final2.txt
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP-FINAL/sadp-audit-raw.txt
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP-FINAL/staging-count-reconciliation.md
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP/chain-evidence.json
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP/deferred-files-register.yaml
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP/diff.patch
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP/final-report.md
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP/git-show-name-status-104ac8b1.txt
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP/git-status-after.txt
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP/gpt_reply.txt
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP/review.md
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP/review.yaml
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP/sadp-hook-output.txt
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP/safety-report.json
+  [PASS] _evidence/R18-WORKSPACE-CLEANUP/test-output.txt
+  [PASS] _evidence/R18-followup-cleanup/chain-evidence.json
+  [PASS] _evidence/R18-followup-cleanup/diff.patch
+  [PASS] _evidence/R18-followup-cleanup/final-report.md
+  [PASS] _evidence/R18-followup-cleanup/git-log.txt
+  [PASS] _evidence/R18-followup-cleanup/git-show-name-status-bc974d2f.txt
+  [PASS] _evidence/R18-followup-cleanup/gpt_reply.txt
+  [PASS] _evidence/R18-followup-cleanup/review.md
+  [PASS] _evidence/R18-followup-cleanup/review.yaml
+  [PASS] _evidence/R18-followup-cleanup/safety-report.json
+  [PASS] _evidence/R18-followup-cleanup/test-output.txt
+  [PASS] _gen_r18_cleanup_evidence.py
+  [PASS] _reports/r18-workspace-cleanup-a1/chain-evidence.json
+  [PASS] _reports/r18-workspace-cleanup-a1/diff.patch
+  [PASS] _reports/r18-workspace-cleanup-a1/final-report.md
+  [PASS] _reports/r18-workspace-cleanup-a1/review.md
+  [PASS] _reports/r18-workspace-cleanup-a1/review.yaml
+  [PASS] _reports/r18-workspace-cleanup-a1/safety-report.json
+  [PASS] _reports/r18-workspace-cleanup-a1/test-output.txt
+  [PASS] _submit_r18_final.py
+  [PASS] _submit_r18_followup.py
+  [PASS] _submit_r18_followup_v2.py
+  [PASS] _submit_r18_workspace_cleanup.py
+  [PASS] _submit_workspace_final.py
+  [PASS] hooks/sealed-files-manifest.json
+  [PASS] tests/test_router_10_project_stress.py
+
+## Summary
+total_files_checked: 67
+scope_violations: 0
+verdict: PASS
