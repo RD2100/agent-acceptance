@@ -1,0 +1,21 @@
+﻿# Conversation Health Advisory - 2026-06-12T12:07:42Z
+# Exit code: 0 (advisory)
+# Source: pre-commit hook v2.4.0
+
+=== Conversation Health Advisory (A3 Layer 4) ===
+Checked at: 2026-06-12T12:09:33.337856+00:00
+Evidence source: D:\agent-acceptance\_evidence\conversation-health\latest.json
+
+Decision: SUGGEST_HANDOFF
+Severity: WARNING
+Recommendation: consider_handoff
+
+Reasons:
+  - [metrics_stale] 13.2 (policy: suggest)
+
+Source files:
+  latest_json: present
+  current_json: present (skipped, latest.json used)
+
+[ADVISORY] Conversation health OK
+
