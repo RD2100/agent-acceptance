@@ -2,10 +2,10 @@
     "git_context":  {
                         "branch":  "master",
                         "commit_count":  304,
-                        "staged_file_count":  17
+                        "staged_file_count":  19
                     },
-    "timestamp":  "2026-06-12T13:57:47Z",
-    "overall_result":  "BLOCKED",
+    "timestamp":  "2026-06-12T13:58:41Z",
+    "overall_result":  "PASS",
     "hook_version":  "2.4.0",
     "stages":  [
                    {
@@ -16,14 +16,26 @@
                    },
                    {
                        "name":  "sadp-audit",
-                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\sadp-audit-20260612-215747.txt",
-                       "duration_ms":  3895,
-                       "exit_code":  1
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\sadp-audit-20260612-215841.txt",
+                       "duration_ms":  3413,
+                       "exit_code":  0
                    },
                    {
                        "name":  "ai-guard",
-                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\ai-guard-20260612-215747.txt",
-                       "duration_ms":  3565,
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\ai-guard-20260612-215841.txt",
+                       "duration_ms":  3116,
+                       "exit_code":  0
+                   },
+                   {
+                       "name":  "test-governance",
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\test-governance-20260612-215841.txt",
+                       "duration_ms":  3685,
+                       "exit_code":  0
+                   },
+                   {
+                       "name":  "conversation-health",
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\conversation-health-20260612-215841.txt",
+                       "duration_ms":  81,
                        "exit_code":  0
                    }
                ]

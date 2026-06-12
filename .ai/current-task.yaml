@@ -1,7 +1,7 @@
 task_id: PHASE3D-GOVERNANCE-POLICY-REREVIEW-A1
 title: "Review allow_paths policy change from Phase 3d"
 priority: P1
-status: in_progress
+status: completed
 type: governance-review
 mode: "@go review"
 
@@ -69,11 +69,18 @@ gate_0:
       - "decision record creation"
 
 acceptance_criteria:
-  - "Each of 3 doc conflicts has explicit KEEP/NARROW/REVERT decision"
-  - "Documentation synced with final policy decision"
-  - "Decision record entry created for mock secret fixture commits"
-  - "AI_GUARD_FILE_LIST tested at hook level or test added"
-  - "Single clean commit, no mixing with unrelated changes"
+  - "Each of 3 doc conflicts has explicit KEEP/NARROW/REVERT decision"  # DONE: all NARROW
+  - "Documentation synced with final policy decision"  # DONE: 3 docs updated
+  - "Decision record entry created for mock secret fixture commits"  # DONE: DR-20260612
+  - "AI_GUARD_FILE_LIST tested at hook level or test added"  # DONE: 5 new tests
+  - "Single clean commit, no mixing with unrelated changes"  # DONE: 803bab1
+
+verdict:
+  status: completed
+  decision: NARROW (all 3 conflicts)
+  commit: 803bab17
+  reviewer_approval: confirmed
+  remaining_note: "hook-output rotating artifacts persist (regenerated per commit)"
 
 live_dispatch_authorized: false
 next_recommended: "Phase 4 quality hardening (after this review closes)"
