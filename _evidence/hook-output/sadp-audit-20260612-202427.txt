@@ -1,0 +1,53 @@
+﻿# SADP Audit Output - 2026-06-12T12:24:27Z
+# Exit code: 1
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 34
+[SADP-AUDIT] TaskSpecs found: 62
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 34 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/ai-guard-scope-check-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/chain-evidence.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/conversation-health/latest.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/deferred-files-register.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/diff.patch -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/diff-stat-2b52579.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/diff-stat-40e4aba.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/diff-stat-892d445.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/diff-stat-combined.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/diff-stat-dcc31a7.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/extra/combined-conversation-health-evidence.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/extra/composite_force.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/extra/invalid_json.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/extra/manual_estimate_no_force.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/extra/message_count_force_cdp.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/extra/missing_current_json.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/extra/nav_access_denied.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/extra/nav_auth_required.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/extra/review_rounds_force.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/extra/stale_metrics_suggest.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/final-report.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/git-log.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/git-show-2b52579.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/git-show-40e4aba.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/git-show-892d445.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/git-show-dcc31a7.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/git-status-after.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/review.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/review.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/sadp-audit-raw.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/safety-report.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/test-output.txt -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review ERROR: DENIED: _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/secret-scan-output.txt is on deny list  AI Guard: 1 error(s), 1 warning(s) - BLOCKED
+[SADP-AUDIT] ai_guard.py found security issues.
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review ERROR: DENIED: _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/secret-scan-output.txt is on deny list  AI Guard: 1 error(s), 1 warning(s) - BLOCKED
+[SADP-AUDIT] ai_guard.py found TaskSpec scope issues.
+[SADP-AUDIT] STATUS: BLOCKED
+[SADP-AUDIT] Commit rejected. Fix the issues above and retry.
+[SADP-AUDIT] (Use --no-verify only with explicit human approval per core-001)
+

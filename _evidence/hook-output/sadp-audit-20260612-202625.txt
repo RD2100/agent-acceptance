@@ -1,0 +1,138 @@
+﻿# SADP Audit Output - 2026-06-12T12:26:25Z
+# Exit code: 1
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 119
+[SADP-AUDIT] TaskSpecs found: 62
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 119 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/ai-guard-scope-check-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/chain-evidence.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/conversation-health/current-snapshot.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/conversation-health/latest.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/conversation-health/startup-read-latest.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/deferred-files-register.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/diff.patch -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/diff-stat-combined.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/diff-stat-e016d63.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/final-report.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/git-log.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/git-show-e016d63.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/git-status-after.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/GPT_CAPTURE_RECONCILIATION.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/GPT_REVIEW_CHAT_URL.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/gpt_review_prompt_a4_r1.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/GPT_REVIEW_RESULT.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/GPT_REVIEW_SUBMISSION_STATUS.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/GPT_REVIEW_UPLOAD_CONFIRMATION.png -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/pre-gpt-gate-evidence/access_denied_records_force.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/pre-gpt-gate-evidence/auth_required_records_human_required.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/pre-gpt-gate-evidence/combined_summary.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/pre-gpt-gate-evidence/force_handoff_blocks_submit.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/pre-gpt-gate-evidence/human_required_blocks_submit.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/pre-gpt-gate-evidence/latest_json_written_for_pre_gpt_gate.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/pre-gpt-gate-evidence/legacy_helper_import_failure_blocks.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/pre-gpt-gate-evidence/legacy_script_post_response_updates_current_json.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/pre-gpt-gate-evidence/missing_current_json_blocks_without_refresh.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/pre-gpt-gate-evidence/stale_metrics_warns_or_suggests.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/pre-gpt-gate-evidence/successful_metrics_refresh_updates_current_json.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/review.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/review.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/RUN_ID.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/sadp-audit-raw.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/safety-report.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/test-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/ai-guard-scope-check-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/chain-evidence.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/deferred-files-register.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/diff.patch -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/diff-stat-20a4aa2.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/diff-stat-combined.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/final-report.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/git-log.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/git-show-20a4aa2.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/git-status-after.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/gpt_reply_ecs.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/review.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/review.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/sadp-audit-raw.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/safety-report.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/test-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/ai-guard-scope-check-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/chain-evidence.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/conversation-health/current-snapshot.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/conversation-health/latest.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/conversation-health/startup-read-latest.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/deferred-files-register.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/diff.patch -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/diff-stat-13a7f4b.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/diff-stat-148c550.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/diff-stat-442ad78.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/diff-stat-b474d4b.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/diff-stat-c96de98.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/diff-stat-ceb9ed0.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/diff-stat-combined.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/evidence-manifest.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/extra/ai_guard_failure_blocks.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/extra/ai_guard_failure_mismatch_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/extra/combined-runtime-evidence.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/extra/invalid_json_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/extra/missing_ai_guard_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/extra/missing_sadp_audit_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/extra/null_exit_code_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/extra/pass_with_warnings_forbidden.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/extra/sadp_audit_failure_blocks.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/extra/test_governance_failure_advisory.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/final-report.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/git-log.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/git-show-13a7f4b.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/git-show-148c550.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/git-show-442ad78.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/git-show-b474d4b.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/git-show-c96de98.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/git-show-ceb9ed0.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/git-status-after.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/gpt_review_prompt_a2.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/gpt_review_r1.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/gpt_review_r2.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/gpt_verdict_a2.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/gpt_verdict_a2_r2.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/gpt_verdict_a2_r3.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/gpt_verdict_a2_r4.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/gpt_verdict_a2_r5.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/pre-gpt-gate-evidence/access_denied_records_force.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/pre-gpt-gate-evidence/auth_required_records_human_required.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/pre-gpt-gate-evidence/combined_summary.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/pre-gpt-gate-evidence/force_handoff_blocks_submit.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/pre-gpt-gate-evidence/human_required_blocks_submit.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/pre-gpt-gate-evidence/latest_json_written_for_pre_gpt_gate.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/pre-gpt-gate-evidence/legacy_helper_import_failure_blocks.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/pre-gpt-gate-evidence/legacy_script_post_response_updates_current_json.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/pre-gpt-gate-evidence/missing_current_json_blocks_without_refresh.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/pre-gpt-gate-evidence/stale_metrics_warns_or_suggests.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/pre-gpt-gate-evidence/successful_metrics_refresh_updates_current_json.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/r2_submission.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/r3_submission.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/r4_submission.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/r5_submission.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/review.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/review.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/runtime-evidence-index.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/sadp-audit-raw.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/safety-report.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/test-output.txt -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review ERROR: DENIED: _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/secret-scan-output.txt is on deny list ERROR: DENIED: _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/secret-scan-output.txt is on deny list ERROR: DENIED: _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/secret-scan-output.txt is on deny list  AI Guard: 3 error(s), 1 warning(s) - BLOCKED
+[SADP-AUDIT] ai_guard.py found security issues.
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review ERROR: DENIED: _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/secret-scan-output.txt is on deny list ERROR: DENIED: _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/secret-scan-output.txt is on deny list ERROR: DENIED: _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/secret-scan-output.txt is on deny list  AI Guard: 3 error(s), 1 warning(s) - BLOCKED
+[SADP-AUDIT] ai_guard.py found TaskSpec scope issues.
+[SADP-AUDIT] STATUS: BLOCKED
+[SADP-AUDIT] Commit rejected. Fix the issues above and retry.
+[SADP-AUDIT] (Use --no-verify only with explicit human approval per core-001)
+

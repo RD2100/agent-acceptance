@@ -1,0 +1,37 @@
+﻿# SADP Audit Output - 2026-06-12T12:31:10Z
+# Exit code: 1
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 18
+[SADP-AUDIT] TaskSpecs found: 62
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 18 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/ai-guard-scope-check-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/chain-evidence.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/deferred-files-register.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/diff.patch -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/diff-stat.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/final-report.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/git-log.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/git-show-9d699fb0.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/git-status-after.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/git-status-before.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/gpt_reply_uaws.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/review.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/review.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/sadp-audit-raw.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/safety-report.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/test-output.txt -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review ERROR: DENIED: _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/secret-scan-output.txt is on deny list  AI Guard: 1 error(s), 1 warning(s) - BLOCKED
+[SADP-AUDIT] ai_guard.py found security issues.
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review ERROR: DENIED: _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/secret-scan-output.txt is on deny list  AI Guard: 1 error(s), 1 warning(s) - BLOCKED
+[SADP-AUDIT] ai_guard.py found TaskSpec scope issues.
+[SADP-AUDIT] STATUS: BLOCKED
+[SADP-AUDIT] Commit rejected. Fix the issues above and retry.
+[SADP-AUDIT] (Use --no-verify only with explicit human approval per core-001)
+
