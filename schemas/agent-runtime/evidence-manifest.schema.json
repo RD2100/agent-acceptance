@@ -165,7 +165,7 @@
           "type": "array",
           "description": "Individual runtime evidence scenario summaries.",
           "items": {
-            "type": "object"
+            "type": ["string", "object"]
           }
         }
       },
