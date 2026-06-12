@@ -347,7 +347,7 @@
     "pack_info": {
       "type": "object",
       "description": "Metadata about the evidence pack archive itself.",
-      "required": ["file_count", "zip_size_bytes", "zip_sha256"],
+      "required": ["file_count", "zip_size_bytes"],
       "properties": {
         "file_count": {
           "type": "integer",
@@ -359,7 +359,11 @@
         },
         "zip_sha256": {
           "type": "string",
-          "description": "SHA-256 hash of the zip archive."
+          "description": "SHA-256 hash of the zip archive. Note: may differ from final ZIP if manifest was patched post-build."
+        },
+        "content_sha256": {
+          "type": "string",
+          "description": "SHA-256 hash of all pack files except evidence-manifest.json. Deterministic and self-verifiable."
         }
       },
       "additionalProperties": false

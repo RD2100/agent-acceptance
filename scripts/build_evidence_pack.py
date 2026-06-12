@@ -981,7 +981,8 @@ def gen_safety_report(git_data: Dict, task_id: str, test_summary: str,
 
 def gen_review_md(git_data: Dict, task_id: str, commits: List[str], base: str,
                   test_summary: str, tests_passed: bool, now: str,
-                  extra_dir: Optional[str] = None) -> str:
+                  extra_dir: Optional[str] = None,
+                  out_dir: Optional[str] = None) -> str:
     s = git_data["status"]
     n_mod = len(s["modified"])
     n_unt = len(s["untracked"])
@@ -1054,6 +1055,22 @@ def gen_review_md(git_data: Dict, task_id: str, commits: List[str], base: str,
                 "| # | Scenario | Expected | Actual | Result |",
                 "|---|----------|----------|--------|--------|",
             ])
+            # Load runtime-evidence-index for actual values
+            _rm_rt_actuals: Dict[str, str] = {}
+            if out_dir:
+                _rm_rt_path = os.path.join(out_dir, "runtime-evidence-index.json")
+                if os.path.isfile(_rm_rt_path):
+                    try:
+                        with open(_rm_rt_path, encoding="utf-8") as _rmf:
+                            _rm_rt_data = json.load(_rmf)
+                            for _sc in _rm_rt_data.get("scenarios", []):
+                                _n = _sc.get("name", "")
+                                _a = _sc.get("actual")
+                                if _n and _a:
+                                    _rm_rt_actuals[_n] = _a
+                    except (OSError, json.JSONDecodeError, ValueError):
+                        pass
+
             for i, fname in enumerate(scenario_files, 1):
                 scenario = fname.replace(".txt", "").replace("_", " ")
                 # Parse expected and actual from file content
@@ -1074,7 +1091,7 @@ def gen_review_md(git_data: Dict, task_id: str, commits: List[str], base: str,
                 if not expected:
                     expected = "exit!=0"
                 if not actual:
-                    actual = "N/A"
+                    actual = _rm_rt_actuals.get(fname.replace(".txt", ""), "N/A")
                 lines.append(f"| {i} | {scenario} | {expected} | {actual} | PASS |")
             if has_combined:
                 lines.append(f"| — | combined evidence summary | — | — | included |")
@@ -1443,7 +1460,7 @@ def gen_final_report(git_data: Dict, task_id: str, commits: List[str],
                     expected = "exit!=0"
                 if not actual:
                     # Fall back to runtime-evidence-index actual value if available
-                    actual = _rt_idx_actuals.get(scenario, "N/A")
+                    actual = _rt_idx_actuals.get(fname.replace(".txt", ""), "N/A")
                 lines.append(f"| {i} | {scenario} | {expected} | {actual} | PASS |")
             if has_combined:
                 lines.append(f"| — | combined evidence summary | — | — | included |")
@@ -1601,7 +1618,7 @@ def build_evidence_pack(
     writer.write("review.md",
                  gen_review_md(git_data, task_id, commits, base,
                                test_summary, tests_passed, now,
-                               extra_dir=extra_dir))
+                               extra_dir=extra_dir, out_dir=out_dir))
 
     # 15. review.yaml (ECS-A2: with verdict_eligibility + evidence_completeness)
     # Parse conversation health for eligibility computation
@@ -1756,22 +1773,33 @@ def build_evidence_pack(
     # ---- Phase 6: Consistency check ----
     consistent = verify_consistency(git_data)
 
-    # ---- Phase 7: Build ZIP ----
+    # ---- Phase 7: Build ZIP (two-pass for manifest zip metadata) ----
     print("\n=== Phase 7: Build ZIP ===")
 
-    # Now build the ZIP (includes final-report.md)
+    # First pass: build ZIP to get size for manifest patching
     zip_info = build_zip(writer, zip_path)
 
     # Overwrite final-report.md on disk with the version that includes ZIP info
     final_with_zip = gen_final_report(git_data, task_id, commits, base,
                                       test_summary, tests_passed, zip_info, now,
                                       extra_dir=extra_dir, out_dir=out_dir)
-    # Write directly (not through writer, to avoid duplicating in written list)
     final_path = os.path.join(out_dir, "final-report.md")
     with open(final_path, "w", encoding="utf-8") as fh:
         fh.write(final_with_zip)
 
-    # Re-read evidence-manifest.json and patch pack_info with ZIP metadata
+    # Compute content_sha256: hash of all pack files except evidence-manifest.json
+    _content_hash = hashlib.sha256()
+    for _fn in sorted(writer.written):
+        if _fn == "evidence-manifest.json":
+            continue
+        _fp = os.path.join(out_dir, _fn)
+        if os.path.isfile(_fp):
+            with open(_fp, "rb") as _hf:
+                _content_hash.update(_fn.encode("utf-8"))
+                _content_hash.update(_hf.read())
+    content_sha256 = _content_hash.hexdigest()
+
+    # Patch evidence-manifest.json on disk with ZIP metadata + content hash
     manifest_path = os.path.join(out_dir, "evidence-manifest.json")
     if os.path.isfile(manifest_path):
         try:
@@ -1779,11 +1807,18 @@ def build_evidence_pack(
                 _manifest_data = json.load(_mf)
             _manifest_data["pack_info"]["zip_size_bytes"] = int(zip_info["size_bytes"])
             _manifest_data["pack_info"]["zip_sha256"] = zip_info["sha256"]
+            _manifest_data["pack_info"]["content_sha256"] = content_sha256
             with open(manifest_path, "w", encoding="utf-8") as _mf:
                 json.dump(_manifest_data, _mf, indent=2, ensure_ascii=False)
-            print("  evidence-manifest.json patched with zip_size_bytes and zip_sha256")
+            print("  evidence-manifest.json patched with zip metadata + content_sha256")
         except (OSError, json.JSONDecodeError, KeyError) as _exc:
             print(f"  [WARN] Could not patch evidence-manifest.json: {_exc}")
+
+    # Second pass: rebuild ZIP with patched manifest
+    print("  (Second pass: final ZIP with patched manifest...)")
+    zip_info = build_zip(writer, zip_path)
+    print(f"  Final ZIP SHA-256: {zip_info['sha256']}")
+    print(f"  Content SHA-256: {content_sha256}")
 
     # ---- Phase 8: Summary ----
     print("\n" + "=" * 60)
