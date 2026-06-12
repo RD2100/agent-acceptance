@@ -1,0 +1,12 @@
+﻿# AI Guard Output - 2026-06-12T12:23:52Z
+# Exit code: 1 (blocking)
+# Timeout: 30s
+# Source: pre-commit hook (original)
+
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review
+ERROR: DENIED: _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/secret-scan-output.txt is on deny list
+ERROR: DENIED: _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/secret-scan-output.txt is on deny list
+ERROR: DENIED: _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1/secret-scan-output.txt is on deny list
+
+AI Guard: 3 error(s), 1 warning(s) - BLOCKED
+

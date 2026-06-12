@@ -1,0 +1,9 @@
+﻿# AI Guard Output - 2026-06-12T10:34:49Z
+# Exit code: 0 (blocking)
+# Timeout: 30s
+# Source: pre-commit hook (original)
+
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review
+
+AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+
