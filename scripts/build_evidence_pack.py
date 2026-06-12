@@ -641,6 +641,18 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
         "review.yaml",
         "final-report.md",
     ]
+    # Conditionally add conversation-health evidence files
+    health_evidence_dir_check = os.path.join(repo, "_evidence", "conversation-health")
+    if os.path.isfile(os.path.join(health_evidence_dir_check, "latest.json")):
+        evidence_files.append("conversation-health/latest.json")
+    if os.path.isfile(os.path.join(health_evidence_dir_check, "current-snapshot.json")):
+        evidence_files.append("conversation-health/current-snapshot.json")
+    if os.path.isfile(os.path.join(health_evidence_dir_check, "startup-read-latest.json")):
+        evidence_files.append("conversation-health/startup-read-latest.json")
+    pre_gpt_dir_check = os.path.join(repo, "_evidence", "pre-gpt-gate-evidence")
+    if os.path.isdir(pre_gpt_dir_check):
+        evidence_files.append("pre-gpt-gate-evidence/")
+
     for c in commits:
         evidence_files.append(f"git-show-{c}.txt")
         evidence_files.append(f"diff-stat-{c}.txt")
@@ -715,6 +727,44 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
             "  note: _evidence/conversation-health/latest.json not found",
             "  verdict_eligibility: needs_more_evidence",
             "  hard_requirement: true",
+        ]
+
+    # Startup-read conversation health evidence (CONVERSATION-HEALTH-GATE-A4)
+    startup_read_path = os.path.join(
+        repo, "_evidence", "conversation-health", "startup-read-latest.json"
+    )
+    if os.path.isfile(startup_read_path):
+        try:
+            with open(startup_read_path, encoding="utf-8") as _srf:
+                _srdata = json.loads(_srf.read())
+            lines += [
+                "",
+                "startup_read:",
+                f"  conversation_health_checked: true",
+                f"  decision: {_srdata.get('decision', 'UNKNOWN')}",
+                f"  severity: {_srdata.get('severity', 'UNKNOWN')}",
+                f"  metrics_source: {_srdata.get('metrics_source', 'none')}",
+                f"  metrics_freshness: {_srdata.get('metrics_freshness', 'unknown')}",
+                f"  last_nav_result: {_srdata.get('last_nav_result', 'unknown')}",
+                f"  recommended_action: {_srdata.get('recommended_action', 'investigate')}",
+                f"  startup_evidence_file: _evidence/conversation-health/startup-read-latest.json",
+                f"  verdict_impact: none",
+            ]
+        except (json.JSONDecodeError, OSError):
+            lines += [
+                "",
+                "startup_read:",
+                "  conversation_health_checked: false",
+                "  reason: startup-read-latest.json unreadable",
+                "  verdict_impact: limitation",
+            ]
+    else:
+        lines += [
+            "",
+            "startup_read:",
+            "  conversation_health_checked: false",
+            "  note: _evidence/conversation-health/startup-read-latest.json not found",
+            "  verdict_impact: limitation",
         ]
 
     return "\n".join(lines) + "\n"
@@ -1022,6 +1072,15 @@ def build_evidence_pack(
                 with open(_pgsrc, encoding="utf-8") as _pgfh:
                     writer.write(f"pre-gpt-gate-evidence/{_pgf}", _pgfh.read())
         print(f"  [15d] pre-gpt-gate-evidence/ included ({len(os.listdir(pre_gpt_evidence_dir))} files)")
+
+    # 15e. startup-read conversation health evidence (CONVERSATION-HEALTH-GATE-A4)
+    startup_read_file = os.path.join(health_evidence_dir, "startup-read-latest.json")
+    if os.path.isfile(startup_read_file):
+        with open(startup_read_file, encoding="utf-8") as _srf:
+            writer.write("conversation-health/startup-read-latest.json", _srf.read())
+        print("  [15e] conversation-health/startup-read-latest.json included")
+    else:
+        print("  [15e] conversation-health/startup-read-latest.json NOT FOUND")
 
     # 16. final-report.md (initially without ZIP info)
     #     We'll overwrite it after building the ZIP to include ZIP metadata.

@@ -108,6 +108,17 @@ Every agent MUST read the following items in order before performing any work. E
 
 **Failure example (R17 limitation)**: R17 ACCEPTED_WITH_LIMITATION verdict explicitly stated: "sadp-audit.ps1 governance pattern change -- NOT ACCEPTED" and "any self-protecting file mutation -- NOT ACCEPTED." The reviewer drew a hard boundary around governance files. The subsequent R18 task required a `governance-decision-record.yaml` to document that protected files were touched, and the limitation was carried forward: "treating reconstructed hook logs as the normal evidence standard" was NOT AUTHORIZED.
 
+### 1.9 Conversation Health State
+
+| Field | Detail |
+|-------|--------|
+| **What to read** | `.ai/conversation/current.json` and `_evidence/conversation-health/latest.json` (when present), plus conversation-health policy summary from `configs/conversation-health-policy.yaml` |
+| **Required fields** | Current decision (`OK` / `SUGGEST_HANDOFF` / `FORCE_HANDOFF` / `HUMAN_REQUIRED` / `UNKNOWN`), metrics freshness, `last_nav_result`, whether handoff or migration is required |
+| **Why** | The agent must know whether the current conversation is stale, degraded, or requires handoff before beginning work. Without this awareness, the agent may invest significant effort into a conversation that should be migrated. Startup Read Gate is an awareness/read gate — enforcement remains in A1 Pre-Task, A2 Pre-GPT, and Evidence Pack rules |
+| **Verification** | Agent must report the current conversation-health decision and freshness. `UNKNOWN` must not be silently treated as `OK` — it must be explicitly flagged as `WARNING` |
+
+**Failure example (A3 R2 limitation)**: A3 R2 evidence pack had no runtime artifact showing conversation-health with `exit_code!=0`. The GPT reviewer noted: "nonzero conversation-health advisory behavior is covered by tests and schema simulation, not by a real hook-output runtime artifact." Had the startup-read check been in place during A3, the agent would have had an additional evidence trail of conversation-health state transitions throughout the session.
+
 ---
 
 ## 2. Hard Stop Conditions
@@ -145,6 +156,11 @@ startup_read_gate:
   deferred_register_total: <count> | null
   registry_read: true | false | n/a
   deny_paths_known: true | false
+  startup_read_health_checked: true | false
+  startup_read_health_decision: "OK" | "SUGGEST_HANDOFF" | "FORCE_HANDOFF" | "HUMAN_REQUIRED" | "UNKNOWN" | null
+  startup_read_health_severity: "INFO" | "WARNING" | "BLOCKING" | null
+  startup_read_health_freshness: "fresh" | "stale" | "unknown" | null
+  startup_read_health_evidence_file: "_evidence/conversation-health/startup-read-latest.json" | null
 ```
 
 All fields marked `true` (or with non-null values where applicable) are required before execution may begin.
@@ -172,6 +188,7 @@ All fields marked `true` (or with non-null values where applicable) are required
 | **Blocker Amnesia** | Agent ignores previous reviewer blockers and repeats rejected patterns | R16 partial closure of R15-BLOCKING-02 |
 | **Workspace Assumption** | Agent describes workspace state from memory rather than running git status | R18 BLOCKING-07 count mismatch |
 | **Register Ignorance** | Agent does not check deferred-files register and creates duplicate untracked files | R18 BLOCKING-06 register/status inconsistency |
+| **Health Blindness** | Agent begins work without checking conversation-health state, missing stale/degraded signals | A3 R2 limitation — no startup evidence trail |
 
 ---
 

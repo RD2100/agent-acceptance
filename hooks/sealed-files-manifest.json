@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-12T08:23:39.0881591+08:00",
+    "generated":  "2026-06-12T09:02:35.7908303+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
@@ -424,7 +424,7 @@
                              "path":  "docs/agent-runtime/stale-memory-review-checklist.md"
                          },
                          {
-                             "sha256":  "BC4F898CBBB37D94649F69E5176A4A2CF8FA0AD719511C35EB4704CAA0491AB9",
+                             "sha256":  "094D558917790FE066DF475250D0A595D1600A464A8CAF8CBA7E3892F13191A8",
                              "path":  "docs/agent-runtime/startup-read-gate.md"
                          },
                          {
