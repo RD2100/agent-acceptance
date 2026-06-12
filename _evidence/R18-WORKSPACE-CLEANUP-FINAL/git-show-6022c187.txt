@@ -1,8 +1,0 @@
-M	_evidence/EVIDENCE_PACK_R18_WORKSPACE_CLEANUP_FINAL.zip
-A	_evidence/R18-WORKSPACE-CLEANUP-FINAL/ai-guard-scope-check-output.txt
-M	_evidence/R18-WORKSPACE-CLEANUP-FINAL/deferred-files-register.yaml
-A	_evidence/R18-WORKSPACE-CLEANUP-FINAL/gpt_reply_final2.txt
-A	_evidence/R18-WORKSPACE-CLEANUP-FINAL/sadp-audit-raw.txt
-A	_evidence/R18-WORKSPACE-CLEANUP-FINAL/staging-count-reconciliation.md
-A	_submit_workspace_final.py
-M	hooks/sealed-files-manifest.json

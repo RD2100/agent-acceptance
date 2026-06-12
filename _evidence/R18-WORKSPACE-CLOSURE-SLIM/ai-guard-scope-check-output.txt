@@ -1,1 +1,0 @@
-ai_guard.py --scope-check returned empty output

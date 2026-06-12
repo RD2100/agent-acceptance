@@ -1,0 +1,6 @@
+# Runtime Negative-Path Evidence: ai_guard_failure_blocks
+# Validator exit code: 2
+# Expected: 0 (correct semantics)
+
+C:\Users\RD\AppData\Local\Programs\Python\Python310\python.exe: can't open file 'D:\\agent-acceptance\\scripts\\scripts\\validate_hook_output.py': [Errno 2] No such file or directory
+

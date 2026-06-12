@@ -1,35 +1,44 @@
-task_id: HOOK-FAILURE-SEMANTICS-FINALIZE-A1
-title: "Finalize hook failure semantics documentation for v2.4.0"
-priority: P1
-status: completed
-type: documentation
+task_id: PHASE3-BATCH-CLEANUP-A1
+title: "Phase 3 batch cleanup per WORKSPACE-CLOSURE-INVENTORY-A1"
+priority: P2
+status: in_progress
+type: maintenance
 mode: "@go edit"
 description: >
-  Supplement hook-failure-semantics.md with decision tree, --files flag docs,
-  missing script fallback table, and schema conformance notes.
-  Merge with existing EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1 TaskSpec.
+  Execute batch cleanup of untracked workspace files per approved v2 outline.
+  Batches: 3e (nul + scripts/_evidence), 3a (CDP scripts), 3b (evidence dirs with ZIPs).
 
 goal:
   user_visible_success: >
-    hook-failure-semantics.md is complete, consistent with v2.4.0 implementation,
-    and covers all edge cases (decision tree, timeout, missing scripts, --files flag).
+    Untracked file count reduced from 200 to ~29 top-level entries.
+    CDP scripts, evidence directories with ZIP coverage, and nul file cleaned up.
   in_scope:
-    - Add decision tree for overall_result computation
-    - Document ai-guard --files flag invocation
-    - Add missing script fallback behavior table
-    - Note output_file path deviation (absolute vs relative)
-    - Note BOM encoding for latest.json
-    - Expand anti-patterns (7 rules)
-    - Update TaskSpec to completed
+    - Delete nul file (Windows reserved name)
+    - Move scripts/_evidence/ to _archive/scripts-evidence/
+    - Move 85 CDP temp scripts to _archive/cdp-scripts/
+    - Move 19 evidence directories with ZIP coverage to _archive/evidence-archived/
+    - Commit all remaining untracked evidence files, reports, fixtures
   out_of_scope:
-    - No changes to hook script
-    - No changes to schema
-    - No changes to ai_guard.py
+    - Batch 3c (ZIP iteration cleanup) - deferred
+    - Batch 3d (NEG-009 fixture dedup) - deferred
+    - No changes to governance hooks or schemas
 
 write_set:
-  - "docs/agent-runtime/hook-failure-semantics.md"
-  - ".ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml"
-  - ".ai/current-task.yaml"
+  - "_archive/**"
+  - "_evidence/**"
+  - "_projects/**"
+  - "_reports/**"
+  - ".ai/**"
+  - "nul"
+  - "READY_FOR_HUMAN_AUTHORIZATION_WITH_LIMITATIONS"
+  - "_ask_*.py"
+  - "_capture_*.py"
+  - "_submit_*.py"
+  - "_build_*.py"
+  - "_check_*.py"
+  - "_debug_*.py"
+  - "_codex_review_prompt.md"
+  - "scripts/_evidence/**"
   - "hooks/sealed-files-manifest.json"
 
 deny_paths:
@@ -41,37 +50,30 @@ deny_paths:
   - ".agent/PROJECT_REGISTRY.json"
 
 constraints:
-  - "Documentation only"
-  - "Must be consistent with v2.4.0 implementation"
-  - "53 target tests must pass"
+  - "Archive only (no permanent deletion)"
+  - "All moves reversible via _archive/ directory"
+  - "Must not modify governance hooks or schemas"
 
 gate_0:
   inventory_evidence:
     queried_sources:
-      - "hooks/pre-commit.governance.ps1 (v2.4.0, 327 lines)"
-      - "schemas/agent-runtime/evidence-capture.schema.json"
-      - "docs/agent-runtime/hook-failure-semantics.md (139 lines base)"
-      - "tests/test_hook_failure_semantics.py (37 tests)"
-      - "_evidence/hook-output/latest.json (v2.4.0 actual)"
+      - "_reports/workspace-closure-inventory-a1/INVENTORY.md (407 lines)"
+      - "_reports/POST-AI-GUARD-TASK-OUTLINE.md (v2, 179 lines)"
     matched_capabilities:
-      - "hook failure semantics documentation"
-      - "ai_guard --files mode"
+      - "workspace inventory classification"
+      - "batch cleanup strategy"
   startup_read: completed
   pre_task_gate: passed
 
 acceptance_criteria:
-  - "Decision tree covers all 5 stages with early-exit path"
-  - "--files flag invocation documented"
-  - "Missing script fallback table covers all 5 scripts"
-  - "output_file path deviation noted"
-  - "BOM encoding note added"
-  - "Anti-patterns expanded to 7 rules"
-  - "53 target tests pass"
+  - "nul file deleted"
+  - "scripts/_evidence/ archived"
+  - "85 CDP scripts archived"
+  - "19 evidence directories with ZIPs archived"
+  - "Untracked count reduced by >100 entries"
 
 verdict:
-  status: completed
-  test_results: "53 passed (37 hook + 16 ai_guard)"
-  doc_delta: "+decision tree, +--files section, +fallback table, +path note, +BOM note, +2 anti-patterns"
+  status: in_progress
 
 live_dispatch_authorized: false
-next_recommended: "Phase 3 batch cleanup per WORKSPACE-CLOSURE-INVENTORY-A1"
+next_recommended: "Phase 4 quality hardening (Codex P2/P3 items)"

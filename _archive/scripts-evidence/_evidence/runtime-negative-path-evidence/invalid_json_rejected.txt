@@ -1,0 +1,6 @@
+# Runtime Negative-Path Evidence: invalid_json_rejected
+# Validator exit code: 2
+# Expected: nonzero (mismatch rejected)
+
+C:\Users\RD\AppData\Local\Programs\Python\Python310\python.exe: can't open file 'D:\\agent-acceptance\\scripts\\scripts\\validate_hook_output.py': [Errno 2] No such file or directory
+
