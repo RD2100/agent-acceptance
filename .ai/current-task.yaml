@@ -1,100 +1,66 @@
-task_id: CONVERSATION-HEALTH-GATE-A4
-type: feature
-priority: P1
+task_id: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
+title: Universal Agent Workflow Standard — governance specification
+priority: P0
 status: accepted_with_limitation
-gpt_verdict: accepted_with_limitation
-created: "2026-06-12T00:00:00Z"
 mode: "@go edit"
 whole_dirty_worktree_allowed: false
 external_upload_allowed: false
 raw_transcript_allowed: false
 real_paper_text_allowed: false
+description: >
+  Abstract hard-earned governance lessons from R15-R18 into a stable,
+  project-independent Universal Agent Workflow Standard. This prevents
+  future regressions such as text-only evidence, broad write_set expansion,
+  TaskSpec identity mismatch, missing hook evidence, status mismatch,
+  evidence-builder recursion, and false clean-workspace claims.
+
+goal:
+  user_visible_success: >
+    A reusable workflow standard covering startup gates, pre-task gates,
+    pre-GPT-review gates, evidence pack requirements, state machine,
+    human_required decision records, workspace closure rules, and
+    evidence generation hygiene.
+  in_scope:
+    - Create universal workflow standard document
+    - Define 8 gate/standard sub-documents
+    - Update operations-manual with cross-reference only
+    - Create evidence pack for GPT review
+  out_of_scope:
+    - Runtime enforcement changes
+    - Live dispatch execution
+    - SADP audit script modifications
+    - Core enforcement script changes
+    - NEG-009 fixture management
 
 gate_0:
   triggered: true
   inventory_evidence:
     queried_sources:
-      - docs/agent-runtime/startup-read-gate.md (8 items 1.1-1.8, 4-row table template, YAML schema 14 fields)
-      - scripts/build_evidence_pack.py (8-phase pack builder, review.yaml gen_review_yaml(), conversation_health block exists)
-      - scripts/check_handoff_needed.py (check_handoff_v2(metrics, policy, mode, composite, source_label) -> decision dict)
-      - .ai/conversation/current.json (schema conversation-health.v1, last_known_metrics nested, metrics at top level)
-      - _evidence/conversation-health/latest.json (superset of current.json, includes last_health_decision/severity)
-      - configs/conversation-health-policy.yaml (thresholds: force 60 msgs/3 rounds, suggest 45 msgs/60s/2000 bytes)
+      - docs/agent-runtime/operations-manual.md
+      - docs/agent-runtime/sub-agent-dispatch-protocol.md
+      - GPT verdict: gpt_reply_maintenance.txt
+      - R15-R18 failure modes from session history
     matched_capabilities:
-      - check_handoff_v2 (decision engine, stdlib-only, direct import)
-      - load_policy (YAML config loader with DEFAULT_POLICY fallback)
-      - load_metrics (current.json reader, returns (dict, error_string))
-      - build_evidence_pack gen_review_yaml (existing conversation_health block, add startup_read block)
+      - documentation_authoring
+      - governance_standard_design
+      - evidence_pack_builder
     compared_against_request:
-      - "Startup Read Gate Item 1.9 + Startup Conversation Health Evidence + Evidence Pack Integration"
+      - "universal agent workflow standard from R15-R18 lessons"
   sufficiency_decision: new_delta_required
   decision: build_delta
 
-goal: >
-  Integrate conversation-health awareness into the Startup Read Gate as item 1.9,
-  create a lightweight startup helper that reads current.json/latest.json without
-  opening CDP, writes auditable startup-read-latest.json evidence, and integrate
-  startup-read evidence into build_evidence_pack.py (review.yaml + evidence files).
-  This task closes the startup-read-gate item deferred from A3.
-
 write_set:
-  - ".ai/tasks/conversation-health-gate-a4.yaml"
+  - ".ai/tasks/universal-agent-workflow-standard-a1.yaml"
   - ".ai/current-task.yaml"
+  - "docs/agent-runtime/universal-agent-workflow-standard.md"
   - "docs/agent-runtime/startup-read-gate.md"
-  - "scripts/startup_conversation_health_check.py"
-  - "scripts/build_evidence_pack.py"
-  - "tests/test_startup_conversation_health_check.py"
-  - "_evidence/conversation-health/startup-read-latest.json"
-  - "_evidence/conversation_health_gate_a4_verdict.txt"
-  - "_evidence/CONVERSATION-HEALTH-GATE-A4/*"
-  - "_evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A4.zip"
+  - "docs/agent-runtime/pre-task-gate.md"
+  - "docs/agent-runtime/pre-gpt-review-gate.md"
+  - "docs/agent-runtime/evidence-pack-standard.md"
+  - "docs/agent-runtime/status-state-machine.md"
+  - "docs/agent-runtime/human-required-decision-record.md"
+  - "docs/agent-runtime/workspace-closure-standard.md"
+  - "docs/agent-runtime/evidence-generation-hygiene.md"
+  - "docs/agent-runtime/operations-manual.md"
+  - "_evidence/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/**"
   - "hooks/sealed-files-manifest.json"
-
-deny_paths:
-  - "**/NEG-009-secrets-read.json"
-  - "**/*real-secret*"
-  - "**/.env"
-  - "**/.env.*"
-
-constraints:
-  - Do NOT modify check_handoff_needed.py (reuse via import only)
-  - Do NOT modify A1 Pre-Task Hard Gate semantics
-  - Do NOT modify A2 Pre-GPT blocking semantics
-  - Do NOT modify A3 pre-commit advisory semantics
-  - Startup helper MUST NOT open CDP browser
-  - Startup helper MUST NOT be a hard blocking gate (awareness/read only)
-  - Startup helper MUST NOT duplicate threshold logic from check_handoff_needed.py
-  - Missing current.json → exit 0 with UNKNOWN/WARNING evidence (not silent pass)
-  - Do NOT weaken existing A1 hard requirement for _evidence/conversation-health/latest.json
-  - Evidence pack must include review.yaml, final-report.md, test-output, git-status-after, safety-report
-
-acceptance_criteria:
-  - docs/agent-runtime/startup-read-gate.md includes item 1.9 Conversation Health Check
-  - Item 1.9 follows established 4-row table template (What/Required/Why/Verification)
-  - YAML schema in Section 3 extended with startup_read_health_* fields
-  - scripts/startup_conversation_health_check.py exists and writes startup-read-latest.json
-  - Startup helper reads current.json + latest.json without CDP
-  - Startup helper reuses check_handoff_v2() via import (no threshold duplication)
-  - Missing current.json produces UNKNOWN/WARNING evidence (not silent pass)
-  - FORCE_HANDOFF/HUMAN_REQUIRED clearly reported with recommended action
-  - build_evidence_pack.py includes startup-read evidence when present
-  - review.yaml includes startup_read block with conversation_health_checked field
-  - Tests cover all 6 scenarios: OK, SUGGEST, FORCE, HUMAN, missing, stale
-  - Tests verify evidence pack integration (startup_read in review.yaml)
-  - Runtime evidence provided for positive and negative scenarios
-  - Full regression passes (A1 + A2 + A3 + A4)
-  - modified_tracked is 0 after commit
-  - No A1/A2/A3 behavior regresses
-
-depends_on: CONVERSATION-HEALTH-GATE-A3
-
-gpt_verdict_file: _evidence/conversation_health_gate_a4_verdict.txt
-gpt_evidence_zip: _evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A4.zip
-gpt_review_rounds: 1
-gpt_accepted_at: "2026-06-12T09:04:42Z"
-gpt_limitations:
-  - "No separate runtime scenario artifacts for negative paths (covered by tests, not standalone files)"
-  - "Raw .ai/conversation/current.json not in ZIP — startup 141.7s input not independently reconstructable"
-gpt_next_task: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
-gpt_next_task_authorized: true
-gpt_next_task_ask_first: true

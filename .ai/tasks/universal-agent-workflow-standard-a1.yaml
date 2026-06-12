@@ -1,7 +1,7 @@
 task_id: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
 title: Universal Agent Workflow Standard — governance specification
 priority: P0
-status: in_progress
+status: accepted_with_limitation
 mode: "@go edit"
 whole_dirty_worktree_allowed: false
 external_upload_allowed: false
