@@ -1,0 +1,13 @@
+{
+  "task_id": "EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-CLEANUP-A1",
+  "generated": "2026-06-11T21:15:02.117524+08:00",
+  "commits_in_scope": [
+    "804ae3b9",
+    "8ccb4460"
+  ],
+  "task_commits": [
+    "8ccb446"
+  ],
+  "base_commit": "804ae3b",
+  "head_commit": "8ccb446"
+}

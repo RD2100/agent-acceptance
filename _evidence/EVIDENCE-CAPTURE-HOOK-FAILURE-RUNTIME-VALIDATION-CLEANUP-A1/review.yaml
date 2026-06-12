@@ -1,0 +1,37 @@
+verdict: EVIDENCE_COMPLETE
+task_id: EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-CLEANUP-A1
+generated: 2026-06-11T21:15:02.117524+08:00
+version: '1.0.0'
+commits: [8ccb446]
+base_commit: 804ae3b
+head_commit: 8ccb446
+
+evidence_files:
+  - ai-guard-scope-check-output.txt
+  - chain-evidence.json
+  - deferred-files-register.yaml
+  - diff-stat-8ccb446.txt
+  - diff-stat-combined.txt
+  - diff.patch
+  - final-report.md
+  - git-log.txt
+  - git-show-8ccb446.txt
+  - git-status-after.txt
+  - review.md
+  - review.yaml
+  - sadp-audit-raw.txt
+  - safety-report.json
+  - secret-scan-output.txt
+  - test-output.txt
+
+post_commit_state:
+  modified_tracked: 0
+  untracked_total: 81
+  neg_009: 17
+  secret_scan: 5
+  session_artifacts: 59
+  grand_total: 81
+
+consistency_check:
+  all_files_agree: true
+  sum_check: 17 + 5 + 59 = 81 == untracked_total(81)

@@ -1,0 +1,10 @@
+# Diff stat for commit 8ccb446
+# Command: git diff --stat 8ccb446^..8ccb446
+
+.ai/current-task.yaml                              | 60 +++++++++-----------
+ ...capture-hook-failure-runtime-validation-a1.yaml |  4 +-
+ ...hook-failure-runtime-validation-cleanup-a1.yaml | 65 ++++++++++++++++++++++
+ hooks/sealed-files-manifest.json                   |  2 +-
+ scripts/build_evidence_pack.py                     | 65 ++++++++++++++++++++--
+ scripts/validate_hook_output.py                    |  7 +++
+ 6 files changed, 162 insertions(+), 41 deletions(-)
