@@ -1,10 +1,11 @@
 ## Three-Step Closure Report -- CLOSEOUT + GATE0 + Human Gate
 
 **Date:** 2026-06-12
-**HEAD:** 38a1006 (fix: correct enum count 8->9 + report HEAD update)
-**Note:** Report HEAD field is self-referential. The value shown is the
-penultimate amend hash. The commit containing this final text will have
-a different hash due to the content change. Verify actual HEAD with
+**Actual branch HEAD at audit time:** 83dd025e
+**Commit chain:** 576f198b / fa63543e / 1c22c70e / 83dd025e
+**Self-reference note:** Earlier draft versions referenced amend hash `38a1006`,
+which is not an ancestor of the current HEAD. That hash was an intermediate
+amend cycle artifact. The authoritative HEAD is `83dd025e`; verify with
 `git log --oneline -1`.
 **Scope:** TASKSPEC-STATUS-CLOSEOUT-A1, MULTI-AGENT-GATE0-FRESH-SNAPSHOT-A1, Human Authorization Checklist
 
@@ -82,7 +83,7 @@ Each modified file received a `closeout_reason` field documenting the rationale.
 
 ### 2. MULTI-AGENT-GATE0-FRESH-SNAPSHOT-A1
 
-**HEAD:** 38a1006
+**HEAD:** 83dd025e
 **Total tracked files:** 6,896
 
 #### 2.1 Infrastructure Artifacts
@@ -205,27 +206,30 @@ Tasks completed this session (including earlier HOOK-V241 probe):
 | 7 | TASKSPEC-STATUS-CLOSEOUT-A1 | 576f198b | completed (19 files updated) |
 | 8 | MULTI-AGENT-GATE0-FRESH-SNAPSHOT-A1 | 576f198b | completed (read-only) |
 | 9 | Human Authorization Checklist | 576f198b | confirmed (all NO) |
-| 10 | Report fix patch (HEAD/count/enum) | fa63543e + 38a1006 | completed (4 corrections) |
+| 10 | Report fix patch (HEAD/count/enum) | fa63543e + 1c22c70e + 83dd025e | completed (4 corrections) |
 
 ---
 
 ### 5. Worktree State
 
 ```
-HEAD: 38a1006
+HEAD: 83dd025e
 Committed (three-step closure):
   576f198b: .ai/tasks/*.yaml (19 files, status updates)
   576f198b: .ai/current-task.yaml (write_set updated)
   576f198b: _reports/THREE-STEP-CLOSURE-REPORT.md (initial)
   fa63543e: .ai/tasks/conversation-health-gate-a1.yaml (complete->completed)
   fa63543e: .ai/tasks/conversation-health-gate-a2.yaml (complete->completed)
-  38a1006: _reports/THREE-STEP-CLOSURE-REPORT.md (enum count 9 + HEAD self-ref fix)
+  1c22c70e: _reports/THREE-STEP-CLOSURE-REPORT.md (enum count 9)
+  83dd025e: _reports/THREE-STEP-CLOSURE-REPORT.md (HEAD self-ref note + chain correction)
   hooks/sealed-files-manifest.json (auto-regenerated each commit)
-Untracked (rotating hook-output artifacts):
-  _evidence/hook-output/ai-guard-<timestamp>.txt
-  _evidence/hook-output/sadp-audit-<timestamp>.txt
-  _evidence/hook-output/conversation-health-<timestamp>.txt
-  _evidence/hook-output/test-governance-<timestamp>.txt
+Working tree status:
+  Not git-clean. Only rotating hook-output artifacts remain:
+  M _evidence/hook-output/latest.json
+  ?? _evidence/hook-output/ai-guard-<timestamp>.txt
+  ?? _evidence/hook-output/sadp-audit-<timestamp>.txt
+  ?? _evidence/hook-output/conversation-health-<timestamp>.txt
+  ?? _evidence/hook-output/test-governance-<timestamp>.txt
 ```
 
 No residual probe files. No staged files pending.
