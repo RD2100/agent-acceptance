@@ -1,8 +1,8 @@
 task_id: CONVERSATION-HEALTH-GATE-A3
 type: feature
 priority: P1
-status: in_progress
-gpt_verdict: pending
+status: accepted_with_limitation
+gpt_verdict: accepted_with_limitation
 created: "2026-06-12T00:00:00Z"
 mode: "@go edit"
 whole_dirty_worktree_allowed: false
@@ -56,6 +56,9 @@ write_set:
   - "_evidence/conversation-health/current-snapshot.json"
   - "_evidence/hook-output/*"
   - "_evidence/conversation_health_gate_a3_verdict.txt"
+  - "_evidence/conversation_health_gate_a3_r2_verdict.txt"
+  - "_evidence/CONVERSATION-HEALTH-GATE-A3-R2/*"
+  - "_evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A3_R2.zip"
 
 deny_paths:
   - "**/NEG-009-secrets-read.json"
@@ -85,3 +88,15 @@ acceptance_criteria:
   - No A1/A2 behavior regresses
 
 depends_on: CONVERSATION-HEALTH-GATE-A2
+
+gpt_verdict_file: _evidence/conversation_health_gate_a3_r2_verdict.txt
+gpt_evidence_zip: _evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A3_R2.zip
+gpt_review_rounds: 2
+gpt_accepted_at: "2026-06-12T08:21:03Z"
+gpt_limitations:
+  - "Evidence pack missing standard review.yaml, final-report.md, git-status-after.txt, safety-report.json"
+  - "1172 full regression count stated but full regression log not in ZIP"
+  - "No real runtime artifact with conversation-health exit_code!=0 (test simulation covers it)"
+gpt_next_task: CONVERSATION-HEALTH-GATE-A4
+gpt_next_task_authorized: true
+gpt_next_task_ask_first: true

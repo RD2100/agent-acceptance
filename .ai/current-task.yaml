@@ -1,8 +1,8 @@
 task_id: CONVERSATION-HEALTH-GATE-A3
 type: feature
 priority: P1
-status: in_progress
-gpt_verdict: pending
+status: accepted_with_limitation
+gpt_verdict: accepted_with_limitation
 created: "2026-06-12T00:00:00Z"
 mode: "@go edit"
 whole_dirty_worktree_allowed: false
@@ -28,7 +28,7 @@ gate_0:
       - _check_conversation_health (pre-task pattern, directly reusable)
       - test-governance advisory pattern (mirror for conversation-health stage)
     compared_against_request:
-      - "Pre-Commit Advisory + Registry Reconciliation + Startup Read Gate Item 7"
+      - "Pre-Commit Advisory + Registry Reconciliation (startup-read-gate item 7 deferred)"
   sufficiency_decision: new_delta_required
   decision: build_delta
 
@@ -37,7 +37,8 @@ goal: >
   Gate system. Add conversation-health as an ADVISORY stage to the pre-commit
   hook that audits and warns but never blocks. Implement registry reconciliation
   that cross-checks conversation-health state against CONVERSATION_BINDING.json.
-  Integrate conversation-health awareness into the startup read gate (item 7).
+  Note: startup-read-gate item 7 (conversation-health awareness) is deferred to
+  a follow-up task (A4 or later) — out of scope for A3.
 
 write_set:
   - ".ai/tasks/conversation-health-gate-a3.yaml"
@@ -55,6 +56,9 @@ write_set:
   - "_evidence/conversation-health/current-snapshot.json"
   - "_evidence/hook-output/*"
   - "_evidence/conversation_health_gate_a3_verdict.txt"
+  - "_evidence/conversation_health_gate_a3_r2_verdict.txt"
+  - "_evidence/CONVERSATION-HEALTH-GATE-A3-R2/*"
+  - "_evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A3_R2.zip"
 
 deny_paths:
   - "**/NEG-009-secrets-read.json"
@@ -84,3 +88,15 @@ acceptance_criteria:
   - No A1/A2 behavior regresses
 
 depends_on: CONVERSATION-HEALTH-GATE-A2
+
+gpt_verdict_file: _evidence/conversation_health_gate_a3_r2_verdict.txt
+gpt_evidence_zip: _evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A3_R2.zip
+gpt_review_rounds: 2
+gpt_accepted_at: "2026-06-12T08:21:03Z"
+gpt_limitations:
+  - "Evidence pack missing standard review.yaml, final-report.md, git-status-after.txt, safety-report.json"
+  - "1172 full regression count stated but full regression log not in ZIP"
+  - "No real runtime artifact with conversation-health exit_code!=0 (test simulation covers it)"
+gpt_next_task: CONVERSATION-HEALTH-GATE-A4
+gpt_next_task_authorized: true
+gpt_next_task_ask_first: true
