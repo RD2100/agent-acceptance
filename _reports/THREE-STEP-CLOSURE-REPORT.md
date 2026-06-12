@@ -3,9 +3,9 @@
 **Date:** 2026-06-12
 **HEAD:** 38a1006 (fix: correct enum count 8->9 + report HEAD update)
 **Note:** Report HEAD field is self-referential. The value shown is the
-commit containing this report after final amend. Subsequent amends to
-correct the hash create a new hash; this is an inherent limitation of
-self-referencing reports. Verify with `git log --oneline -1`.
+penultimate amend hash. The commit containing this final text will have
+a different hash due to the content change. Verify actual HEAD with
+`git log --oneline -1`.
 **Scope:** TASKSPEC-STATUS-CLOSEOUT-A1, MULTI-AGENT-GATE0-FRESH-SNAPSHOT-A1, Human Authorization Checklist
 
 ---
