@@ -1,0 +1,46 @@
+# Deferred Files Register - R18-FOLLOWUP-CLEANUP-A1 FINAL
+# Generated: 2026-06-11T09:47:16.483978
+# Commit: bc974d2f
+
+intentionally_deferred:
+  count: 17
+  reason: deny_paths - NEG-009-secrets-read.json contains mock secret patterns
+  files:
+    - "_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-alpha/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-delta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-delta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-eta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-eta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-gamma/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-iota/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-iota/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-theta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-theta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-zeta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json"
+    - "_projects/project-zeta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json"
+
+other_untracked_session_artifacts:
+  count: 9
+  files:
+    - "NUL"
+    - "_build_r18_followup_final.py"
+    - "_capture_followup_reply.py"
+    - "_evidence/EVIDENCE_PACK_R18_FOLLOWUP.zip"
+    - "_evidence/R18-FOLLOWUP-FINAL/"
+    - "_evidence/R18-catchup-commits/secret-scan-output.txt"
+    - "_evidence/R18-followup-cleanup/"
+    - "_submit_r18_followup.py"
+    - "_submit_r18_followup_v2.py"
+
+nul_device_file:
+  exists: True
+  note: Windows NUL device artifact, cannot be staged by git
+
+modified_tracked_files:
+  count: 1
+    - "M .agent/PROJECT_REGISTRY.json"

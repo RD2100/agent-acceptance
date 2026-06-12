@@ -1,0 +1,17 @@
+{
+  "report_id": "R18-FOLLOWUP-safety",
+  "date": "2026-06-11",
+  "task_id": "R18-FOLLOWUP-CLEANUP-A1",
+  "files_staged": 229,
+  "write_set_patterns": 132,
+  "scope_violations": 0,
+  "deny_path_violations": 0,
+  "scope_violation_files": [],
+  "deny_violation_files": [],
+  "overall_verdict": "PASS",
+  "staging_count_reconciliation": {
+    "git_diff_stat_files": 238,
+    "safety_report_staged_files": 229,
+    "explanation": "git diff --stat counts rename pairs as 2; safety-report uses git diff --name-only which resolves to 1 per rename. See staging-count-reconciliation.md for details."
+  }
+}
