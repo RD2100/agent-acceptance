@@ -1,0 +1,22 @@
+# Diff stat for commit f06ce965
+# Command: git diff --stat f06ce965^..f06ce965
+
+.ai/current-task.yaml                              |     1 +
+ _build_r18_workspace_cleanup.py                    |   214 +
+ _evidence/EVIDENCE_PACK_R18_WORKSPACE_CLEANUP.zip  |   Bin 0 -> 622522 bytes
+ .../R18-WORKSPACE-CLEANUP/chain-evidence.json      |    31 +
+ .../deferred-files-register.yaml                   |    40 +
+ _evidence/R18-WORKSPACE-CLEANUP/diff.patch         | 78058 +++++++++++++++++++
+ _evidence/R18-WORKSPACE-CLEANUP/final-report.md    |    31 +
+ .../git-show-name-status-104ac8b1.txt              |    44 +
+ .../R18-WORKSPACE-CLEANUP/git-status-after.txt     |    22 +
+ _evidence/R18-WORKSPACE-CLEANUP/gpt_reply.txt      |   107 +
+ _evidence/R18-WORKSPACE-CLEANUP/review.md          |    27 +
+ _evidence/R18-WORKSPACE-CLEANUP/review.yaml        |    12 +
+ .../R18-WORKSPACE-CLEANUP/sadp-hook-output.txt     |    18 +
+ _evidence/R18-WORKSPACE-CLEANUP/safety-report.json |    20 +
+ _evidence/R18-WORKSPACE-CLEANUP/test-output.txt    |     4 +
+ _gen_r18_cleanup_evidence.py                       |   170 +
+ _submit_r18_workspace_cleanup.py                   |   140 +
+ hooks/sealed-files-manifest.json                   |     2 +-
+ 18 files changed, 78940 insertions(+), 1 deletion(-)
