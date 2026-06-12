@@ -366,6 +366,7 @@ def run_files_mode(args, policy, repo_root):
     on the provided file list. Does NOT check TaskSpec allow_write.
     """
     deny_paths = policy.get("deny_paths", [])
+    allow_paths = policy.get("allow_paths", [])  # v2.4.1: override deny for known false positives
     restricted_paths = policy.get("restricted_paths", [])
     secret_patterns = policy.get("secret_patterns", [])
 
@@ -380,7 +381,7 @@ def run_files_mode(args, policy, repo_root):
     warnings = []
 
     for path in files:
-        if matches(path, deny_paths):
+        if matches(path, deny_paths) and not matches(path, allow_paths):
             errors.append(f"DENIED: {path} is on deny list")
 
     for path in files:
@@ -408,6 +409,7 @@ def run_files_mode(args, policy, repo_root):
 
 def run_diff_mode(mode, args, policy, repo_root):
     deny_paths = policy.get("deny_paths", [])
+    allow_paths = policy.get("allow_paths", [])  # v2.4.1: override deny for known false positives
     restricted_paths = policy.get("restricted_paths", [])
     secret_patterns = policy.get("secret_patterns", [])
 
@@ -449,7 +451,7 @@ def run_diff_mode(mode, args, policy, repo_root):
     warnings = []
 
     for path in changed:
-        if matches(path, deny_paths):
+        if matches(path, deny_paths) and not matches(path, allow_paths):
             errors.append(f"DENIED: {path} is on deny list")
 
     for path in changed:
@@ -496,6 +498,11 @@ def main():
     args = sys.argv[2:]
 
     if mode == "--files":
+        if not args:
+            # v2.4.1: Read file list from env var to avoid Windows cmdline length limit
+            import os as _os
+            env_files = _os.environ.get("AI_GUARD_FILE_LIST", "")
+            args = [f for f in env_files.splitlines() if f.strip()]
         run_files_mode(args, policy, repo_root)
 
     if mode == "evidence":

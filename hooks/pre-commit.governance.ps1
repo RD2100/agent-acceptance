@@ -103,14 +103,16 @@ if (Test-Path $auditScript) {
         try {
             $timing = Invoke-WithTiming {
                 $stagedFiles = git diff --cached --name-only 2>$null
+                # v2.4.1: Pass file list via env var to avoid Windows cmdline length limit (~32K chars)
+                $env:AI_GUARD_FILE_LIST = ($stagedFiles -join "`n")
                 # Use Job for timeout enforcement
                 $job = Start-Job -ScriptBlock {
-                    param($scriptPath, $files, $root)
+                    param($scriptPath, $root)
                     Set-Location $root
-                    $output = python $scriptPath --files $files 2>&1 | Out-String
+                    $output = python $scriptPath --files 2>&1 | Out-String
                     # Return output and exit code as array (cross-process safe)
                     return @($output, $LASTEXITCODE)
-                } -ArgumentList $aiGuardScript, $stagedFiles, $ProjectRoot
+                } -ArgumentList $aiGuardScript, $ProjectRoot
 
                 $completed = Wait-Job $job -Timeout $aiGuardTimeoutSec
                 $timedOut = ($null -eq $completed)

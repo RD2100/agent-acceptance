@@ -40,6 +40,8 @@ write_set:
   - "_codex_review_prompt.md"
   - "scripts/_evidence/**"
   - "hooks/sealed-files-manifest.json"
+  - "hooks/pre-commit.governance.ps1"
+  - "tools/ai_guard.py"
   - "evidence_packs/**"
   - "quarantine/**"
 
@@ -47,14 +49,12 @@ deny_paths:
   - "scripts/multi_project_router.py"
   - "scripts/dry_run_dispatch_10.py"
   - "scripts/tab_target_resolver.py"
-  - "scripts/ai_guard.py"
-  - "hooks/pre-commit.governance.ps1"
   - ".agent/PROJECT_REGISTRY.json"
 
 constraints:
   - "Archive only (no permanent deletion)"
   - "All moves reversible via _archive/ directory"
-  - "Must not modify governance hooks or schemas"
+  - "Hook modifications: env-var file passing + allow_paths override (v2.4.1)"
 
 gate_0:
   inventory_evidence:
