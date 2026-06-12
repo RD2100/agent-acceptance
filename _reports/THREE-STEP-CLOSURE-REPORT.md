@@ -1,11 +1,11 @@
 ## Three-Step Closure Report -- CLOSEOUT + GATE0 + Human Gate
 
 **Date:** 2026-06-12
-**Actual branch HEAD at audit time:** 83dd025e
-**Commit chain:** 576f198b / fa63543e / 1c22c70e / 83dd025e
+**Actual branch HEAD at audit time:** a8e330e6
+**Commit chain:** 576f198b / fa63543e / 1c22c70e / 83dd025e / d9e37a48 / a8e330e6
 **Self-reference note:** Earlier draft versions referenced amend hash `38a1006`,
 which is not an ancestor of the current HEAD. That hash was an intermediate
-amend cycle artifact. The authoritative HEAD is `83dd025e`; verify with
+amend cycle artifact. The authoritative HEAD is `a8e330e6`; verify with
 `git log --oneline -1`.
 **Scope:** TASKSPEC-STATUS-CLOSEOUT-A1, MULTI-AGENT-GATE0-FRESH-SNAPSHOT-A1, Human Authorization Checklist
 
@@ -83,7 +83,7 @@ Each modified file received a `closeout_reason` field documenting the rationale.
 
 ### 2. MULTI-AGENT-GATE0-FRESH-SNAPSHOT-A1
 
-**HEAD:** 83dd025e
+**HEAD:** a8e330e6
 **Total tracked files:** 6,896
 
 #### 2.1 Infrastructure Artifacts
@@ -95,22 +95,24 @@ Each modified file received a `closeout_reason` field documenting the rationale.
 | Sealed Files Manifest | CURRENT | 178 sealed files, regenerated 2026-06-12 |
 | Capability Inventory | PRESENT | 29 capabilities registered |
 | Governance Manifest | LEGACY | Archived; active authority = sealed-files-manifest.json |
-| Risk Register | NOT FOUND | No risk register artifact exists in repo |
-| Verify Matrix | NOT FOUND | No verify matrix artifact exists in repo |
+| Risk Register | CREATED (a8e330e6) | .ai/risk-register.yaml, 6 risks (RR-001~RR-006) |
+| Verify Matrix | CREATED (a8e330e6) | .ai/verify-matrix.yaml, 10 checks (VM-001~VM-010) |
 | paper_authorization.json | EXISTS | Present in `.ai/` (contents not read) |
 
 #### 2.2 Capability Passport Summary
 
 | Passport Status | Count | Details |
 |----------------|-------|---------|
-| verified | 26 | All local + most external capabilities |
+| verified | 18 | All local_static + CAP-021 (codex-security) + CAP-029 |
 | degraded | 1 | CAP-014 WorkQueue (usable_for_gate0: false) |
 | stale | 1 | CAP-017 Phase 6 SourceLock (usable_for_gate0: false) |
+| unknown | 8 | CAP-001, CAP-020, CAP-022~027 (not installed in codex) |
 | broken | 0 | -- |
 
-**Expiry watch:** 8 external dependency capabilities have `last_verified_at: 2026-05-28`
-with 30-day expiry. They become stale on 2026-06-27 (15 days from snapshot date).
-CAP-029 (dev-frame-opencode) was re-verified 2026-06-10.
+**Expiry watch (updated 2026-06-12):** 8 external dependency capabilities were
+downgraded from verified to unknown after `codex plugin list` re-verification
+showed they are not installed. Only CAP-021 (codex-security) remains verified
+among external deps. CAP-029 was verified 2026-06-10 (separate cycle).
 
 #### 2.3 Test Suite
 
@@ -151,7 +153,7 @@ environment. Not regression from this session's changes.
 | AGENTS.md exists + references rules | PASS | |
 | policy.yaml complete | PASS | |
 | Sealed manifest current | PASS | |
-| Capability inventory >= 20 verified | PASS | 18 verified (note: 8 downgraded to unknown) |
+| Capability inventory >= 20 verified | **GAP** | 18 verified (was 26; 8 downgraded to unknown after codex plugin list re-verification showed not installed) |
 | Test suite >= 95% pass | PASS | 99.5% (1269/1275) |
 | No P0/P1 open findings | PASS | |
 | Risk register present | **CLOSED** | Created .ai/risk-register.yaml (6 risks: RR-001~RR-006) |
@@ -161,7 +163,7 @@ environment. Not regression from this session's changes.
 | External caps not expired | **CORRECTED** | Passport renewed; 8/10 external deps downgraded to unknown (not installed) |
 | Live dispatch authorized | **NO** | HUMAN_REQUIRED |
 
-**Overall GATE0 verdict: CONDITIONAL PASS with 0 open gaps (2 accepted risks).**
+**Overall GATE0 verdict: CONDITIONAL PASS -- 0 missing-artifact gaps; 1 passport gap (verified count 18 < 20 threshold after 8 external deps downgraded to unknown); 3 open tracked risks (RR-001 passport accuracy, RR-004 test failures, RR-005 schema enum); live dispatch still blocked by HUMAN_REQUIRED.**
 
 Risk register and verify matrix created. CAP-014/CAP-017 re-verified and
 accepted as known limitations. Passport renewal exposed accuracy gap:
@@ -234,15 +236,15 @@ Tasks completed this session (including earlier HOOK-V241 probe):
 | 9 | Human Authorization Checklist | 576f198b | confirmed (all NO) |
 | 10 | Report fix patch (HEAD/count/enum) | fa63543e + 1c22c70e + 83dd025e | completed (4 corrections) |
 | 11 | Final audit accuracy patch | d9e37a48 | completed (HEAD/chain/worktree) |
-| 12 | GATE0 gap closure | (pending commit) | completed (risk-register + verify-matrix) |
-| 13 | Passport renewal | (pending commit) | completed (8 downgraded to unknown) |
+| 12 | GATE0 gap closure | a8e330e6 | completed (risk-register + verify-matrix) |
+| 13 | Passport renewal | a8e330e6 | completed (8 downgraded to unknown) |
 
 ---
 
 ### 5. Worktree State
 
 ```
-HEAD: 83dd025e
+HEAD: a8e330e6
 Committed (three-step closure):
   576f198b: .ai/tasks/*.yaml (19 files, status updates)
   576f198b: .ai/current-task.yaml (write_set updated)
@@ -251,6 +253,11 @@ Committed (three-step closure):
   fa63543e: .ai/tasks/conversation-health-gate-a2.yaml (complete->completed)
   1c22c70e: _reports/THREE-STEP-CLOSURE-REPORT.md (enum count 9)
   83dd025e: _reports/THREE-STEP-CLOSURE-REPORT.md (HEAD self-ref note + chain correction)
+  d9e37a48: _reports/THREE-STEP-CLOSURE-REPORT.md (final audit accuracy: HEAD/chain/worktree)
+  a8e330e6: .ai/risk-register.yaml (6 risks: RR-001~RR-006)
+  a8e330e6: .ai/verify-matrix.yaml (10 checks: VM-001~VM-010)
+  a8e330e6: docs/agent-runtime/capability-inventory.md (passport renewal)
+  a8e330e6: _reports/THREE-STEP-CLOSURE-REPORT.md (gap closure + passport findings)
   hooks/sealed-files-manifest.json (auto-regenerated each commit)
 Working tree status:
   Not git-clean. Only rotating hook-output artifacts remain:
