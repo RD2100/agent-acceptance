@@ -1,0 +1,11 @@
+# Diff stat for commit 20a4aa2
+# Command: git diff --stat 20a4aa2^..20a4aa2
+
+.ai/current-task.yaml                              |    4 +-
+ .ai/tasks/evidence-capture-standard-a1.yaml        |   61 ++
+ docs/agent-runtime/evidence-capture-workflow.md    |  387 ++++++++
+ hooks/pre-commit.governance.ps1                    |  159 ++-
+ hooks/sealed-files-manifest.json                   |   12 +-
+ schemas/agent-runtime/evidence-capture.schema.json |   72 ++
+ scripts/build_evidence_pack.py                     | 1011 ++++++++++++++++++++
+ 7 files changed, 1699 insertions(+), 7 deletions(-)

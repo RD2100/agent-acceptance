@@ -1,0 +1,37 @@
+verdict: EVIDENCE_COMPLETE
+task_id: EVIDENCE-CAPTURE-STANDARD-A1
+generated: 2026-06-11T16:33:48.103664+08:00
+version: '1.0.0'
+commits: [20a4aa2]
+base_commit: 9d699fb0
+head_commit: 20a4aa2
+
+evidence_files:
+  - ai-guard-scope-check-output.txt
+  - chain-evidence.json
+  - deferred-files-register.yaml
+  - diff-stat-20a4aa2.txt
+  - diff-stat-combined.txt
+  - diff.patch
+  - final-report.md
+  - git-log.txt
+  - git-show-20a4aa2.txt
+  - git-status-after.txt
+  - review.md
+  - review.yaml
+  - sadp-audit-raw.txt
+  - safety-report.json
+  - secret-scan-output.txt
+  - test-output.txt
+
+post_commit_state:
+  modified_tracked: 0
+  untracked_total: 36
+  neg_009: 17
+  secret_scan: 5
+  session_artifacts: 14
+  grand_total: 36
+
+consistency_check:
+  all_files_agree: true
+  sum_check: 17 + 5 + 14 = 36 == untracked_total(36)

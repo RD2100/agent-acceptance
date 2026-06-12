@@ -1,0 +1,68 @@
+# Deferred Files Register -- EVIDENCE-CAPTURE-STANDARD-A1
+# Generated: 2026-06-11T16:33:48.103664+08:00
+# MUST match git-status-after.txt exactly.
+
+categories:
+
+  neg_009_deferred:
+    description: NEG-009 negative test fixtures on deny_paths
+    reason: Mock secret patterns blocked by SADP hook ai_guard.py deny_paths
+    count: 17
+    files:
+      - _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-alpha/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-delta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-delta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-eta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-eta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-iota/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-iota/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-theta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-theta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+      - _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+
+  secret_scan_denied:
+    description: secret-scan-output.txt files on deny_list
+    reason: Contain mock secret regex patterns (AIza*, AKIA*, BEGIN PRIVATE KEY)
+    count: 5
+    files:
+      - _evidence/R18-FOLLOWUP-FINAL/secret-scan-output.txt
+      - _evidence/R18-WORKSPACE-CLEANUP-FINAL/secret-scan-output.txt
+      - _evidence/R18-WORKSPACE-CLOSURE-SLIM/secret-scan-output.txt
+      - _evidence/R18-WORKSPACE-CLOSURE/secret-scan-output.txt
+      - _evidence/R18-catchup-commits/secret-scan-output.txt
+
+  session_artifacts_pending:
+    description: Current session artifacts to be committed in next session
+    reason: Generated during task execution
+    count: 14
+    files:
+      - _ask_next_task.py
+      - _build_evidence_maintenance.py
+      - _build_uaws_evidence.py
+      - _check_browser.py
+      - _evidence/EVIDENCE-CAPTURE-STANDARD-A1/
+      - _evidence/EVIDENCE_PACK_EVIDENCE_CAPTURE_STANDARD_A1.zip
+      - _evidence/EVIDENCE_PACK_R18_EVIDENCE_MAINTENANCE_FINAL.zip
+      - _evidence/EVIDENCE_PACK_UNIVERSAL_AGENT_WORKFLOW_STANDARD_A1.zip
+      - _evidence/R18-EVIDENCE-MAINTENANCE-FINAL/
+      - _evidence/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/
+      - _evidence/hook-output/
+      - _evidence/next_task_reply.txt
+      - _submit_maintenance.py
+      - _submit_uaws.py
+
+summary:
+  modified_tracked: 0
+  untracked_total: 36
+  neg_009: 17
+  secret_scan: 5
+  session_artifacts: 14
+  grand_total: 36
+  consistency_check: PASS (matches git-status-after.txt)

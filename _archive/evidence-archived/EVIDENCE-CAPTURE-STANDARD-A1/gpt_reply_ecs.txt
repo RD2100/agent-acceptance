@@ -1,0 +1,156 @@
+EVIDENCE-CAPTURE-STANDARD-A1 Reviewer Verdict
+YAML
+verdict: ACCEPTED_WITH_LIMITATION
+task_id: EVIDENCE-CAPTURE-STANDARD-A1
+commit_reviewed: 20a4aa2
+zip_sha256_verified: ca6e7c9a421f10f87b4bf18e46da06d811e0e56e5b5e267aaf3ebac2a4b3f06e
+zip_file_count: 16
+commit_file_count: 7
+test_evidence: 1038 passed, 0 failed, 21 warnings
+runtime_dispatch: NOT_AUTHORIZED
+
+我已核查 EVIDENCE_PACK_EVIDENCE_CAPTURE_STANDARD_A1.zip。SHA256 与你提供的一致，ZIP 内实际为 16 个文件。diff.patch 与 git-show-20a4aa2.txt 均显示 7 个文件变更，路径完全一致。
+
+本轮可以接受，裁定为 ACCEPTED_WITH_LIMITATION。
+
+1. 本轮已接受内容
+
+20a4aa2 的 7 个变更文件为：
+
+.ai/current-task.yaml
+.ai/tasks/evidence-capture-standard-a1.yaml
+docs/agent-runtime/evidence-capture-workflow.md
+hooks/pre-commit.governance.ps1
+hooks/sealed-files-manifest.json
+schemas/agent-runtime/evidence-capture.schema.json
+scripts/build_evidence_pack.py
+
+核心交付物成立：
+
+交付物	裁定
+scripts/build_evidence_pack.py	接受。 已形成参数化 reusable builder，支持 --task-id、--commits、--base、--out、--zip、--hook-log。
+hooks/pre-commit.governance.ps1 v2.1.0	接受，带治理限制。 已添加 hook output persistence，写入 _evidence/hook-output/，并生成 latest.json。
+schemas/agent-runtime/evidence-capture.schema.json	接受。 为 hook-output JSON 提供 schema。
+docs/agent-runtime/evidence-capture-workflow.md	接受。 说明 Phase A hook output persistence、Phase B evidence pack builder、one-off scripts 迁移。
+evidence pack self-hosting	接受，带限制。 本 evidence pack 确实由新 builder 生成，可作为首次 real-world test。
+
+测试证据记录：
+
+1038 passed, 21 warnings in 46.06s
+2. 证据一致性核查
+
+diff.patch 与 git-show-20a4aa2.txt 对齐：
+
+YAML
+diff_paths: 7
+git_show_paths: 7
+matched: true
+
+chain-evidence.json、safety-report.json、review.yaml、deferred-files-register.yaml 均可解析。
+
+git-status-after.txt 与 deferred-files-register.yaml 匹配。证据包显示的真实 post-commit 状态是：
+
+YAML
+modified_tracked: 0
+untracked_total: 36
+neg_009: 17
+secret_scan: 5
+session_artifacts: 14
+all_untracked_registered: true
+
+这里要注意：你提交说明中写的是 34 untracked，但 ZIP 内证据实际一致记录为 36 untracked。因为 git-status-after.txt、deferred-files-register.yaml、safety-report.json、review.yaml、final-report.md 都一致为 36，所以我以 ZIP 证据为准。这不是 blocker，但需要修正汇报口径。
+
+3. Hook output persistence 核查
+
+hooks/pre-commit.governance.ps1 的变更是 additive 的，核心结构仍是三阶段：
+
+[1/3] Manifest auto-regeneration
+[2/3] SADP audit
+[3/3] Governance advisory
+
+新增内容包括：
+
+YAML
+hook_output_persistence:
+  evidence_dir: _evidence/hook-output/
+  hook_version: 2.1.0
+  captured_outputs:
+    - sadp-audit-{timestamp}.txt
+    - ai-guard-{timestamp}.txt
+    - test-governance-{timestamp}.txt
+    - latest.json
+
+sadp-audit-raw.txt 中的 latest.json 记录了本次 hook execution：
+
+YAML
+hook_version: 2.1.0
+overall_result: PASS
+staged_file_count: 7
+stages:
+  manifest-regen: exit_code 0
+  sadp-audit: exit_code 0
+  ai-guard: exit_code 0
+  test-governance: exit_code 0
+
+这相比此前 replay-style evidence 是明显进步，可以视为 hook output persistence 已落地。
+
+4. 仍需保留的 limitations
+
+本轮接受，但不是无条件 clean acceptance。需要保留以下限制：
+
+YAML
+limitations:
+  - hooks/pre-commit.governance.ps1 是 governance-sensitive hook 文件；本轮因任务目标明确包含 hook output persistence，可接受，但后续修改仍需 human/governance review。
+  - ai_guard 输出显示 2 个 RESTRICTED warning：hooks/pre-commit.governance.ps1 与 hooks/sealed-files-manifest.json require human review；本轮已由 reviewer 显式接受，但不能常态化绕过。
+  - sadp-audit-raw.txt 当前主要包含 latest.json 摘要及 output_file 路径，没有把 sadp-audit/ai_guard/test-governance 三个原始 stage output 文件内容一并打入 ZIP。
+  - post-commit workspace 是 registered closure，不是 fully clean workspace：仍有 36 个 untracked entries。
+  - 本轮修改了 hook 行为，虽声称 additive only，但仍属于治理链路变更；后续应补一个小测试验证“hook failure propagation”，尤其是 ai_guard 非零退出时是否应阻断 commit。
+  - builder 目前通过 `git diff {base}..HEAD` 生成 combined diff，而不是严格使用最后一个 `--commits` hash；在 HEAD 等于目标 head 时可用，未来最好支持显式 `--head` 或使用最后一个 commit 作为 diff 上界。
+
+其中最重要的是第 5 点：pre-commit.governance.ps1 新增了单独 ai_guard capture，但当前脚本最终只明确因 sadp-audit 非零而 exit 1；如果单独 ai_guard 失败，它会进入 JSON 的 overall_result=BLOCKED，但脚本末尾仍可能 exit 0。如果这个 ai_guard 只是辅助证据，这可以接受；如果它被视为 enforcement stage，则需要后续修复。
+
+5. Final Decision
+YAML
+evidence_capture_standard_a1_decision:
+  verdict: ACCEPTED_WITH_LIMITATION
+
+  accepted_commit:
+    - 20a4aa2
+
+  accepted_artifacts:
+    - scripts/build_evidence_pack.py
+    - hooks/pre-commit.governance.ps1 v2.1.0 output persistence
+    - schemas/agent-runtime/evidence-capture.schema.json
+    - docs/agent-runtime/evidence-capture-workflow.md
+    - .ai/tasks/evidence-capture-standard-a1.yaml
+
+  accepted_evidence:
+    - diff.patch
+    - git-show-20a4aa2.txt
+    - chain-evidence.json
+    - safety-report.json
+    - test-output.txt
+    - sadp-audit-raw.txt
+    - deferred-files-register.yaml
+    - review.md
+    - review.yaml
+    - final-report.md
+
+  accepted_state:
+    modified_tracked: 0
+    untracked_total: 36
+    all_untracked_registered: true
+    closure_type: registered_closure
+
+  not_accepted_as_part_of_this_task:
+    - live dispatch
+    - treating hook governance files as ordinary docs
+    - claiming fully clean workspace
+    - claiming 34 untracked when evidence shows 36
+    - treating latest.json alone as full raw stage-output archive
+
+  recommended_next_task:
+    task_id: EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1
+    goal: verify and, if necessary, tighten hook failure behavior for ai_guard/test-governance output persistence without changing SADP audit semantics
+
+一句话结论：EVIDENCE-CAPTURE-STANDARD-A1 可以接受；它把一次性 evidence builder 脚本收敛为可复用工具，并实现了 hook output persistence。限制是：本轮仍是 registered closure 而非 clean workspace，hook 文件属于治理敏感变更，且最新证据包只包含 hook summary，不包含三个 stage 的完整原始输出内容。
