@@ -1,0 +1,15 @@
+# SADP Pre-commit Hook Output (from commit be0491f message)
+
+fix: CONVERSATION-HEALTH-GATE-A2 R3 — clean workspace + summary parser + import path
+
+1. Clean modified_tracked: reverted latest.json + current-snapshot.json
+   post-commit (evidence generation no longer dirties tracked files)
+2. Fix summary table parser: build_evidence_pack.py now handles both
+   "# Actual exit:" and "# Actual value:" labels; uses raw Expected
+   text instead of hardcoding exit!=0 for all scenarios
+3. Fix post-response import path: _ask_next_task_v2.py now uses
+   sys.path injection (same as _cdp_submit_helper.py) for
+   pre_gpt_gate import; on failure, writes evidence JSON instead of
+   silently printing warning
+
+Tests: 1128 passed, modified_tracked: 0

@@ -1,0 +1,14 @@
+# Diff stat for commit be0491f
+# Command: git diff --stat be0491f^..be0491f
+
+.ai/current-task.yaml                              |   2 +
+ .ai/tasks/conversation-health-gate-a2.yaml         |   2 +
+ _ask_next_task_v2.py                               |  36 +-
+ _capture_a2_r2_verdict.py                          | 110 ++++++
+ _evidence/conversation_health_gate_a2_verdict.txt  | 401 +++++++++++----------
+ ...missing_current_json_blocks_without_refresh.txt |   2 +-
+ .../stale_metrics_warns_or_suggests.txt            |   4 +-
+ _submit_health_gate_a2_r2.py                       |  84 +++++
+ hooks/sealed-files-manifest.json                   |   2 +-
+ scripts/build_evidence_pack.py                     |  36 +-
+ 10 files changed, 461 insertions(+), 218 deletions(-)
