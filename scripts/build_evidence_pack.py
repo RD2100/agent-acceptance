@@ -1777,7 +1777,7 @@ def build_evidence_pack(
         try:
             with open(manifest_path, encoding="utf-8") as _mf:
                 _manifest_data = json.load(_mf)
-            _manifest_data["pack_info"]["zip_size_bytes"] = zip_info["size_bytes"]
+            _manifest_data["pack_info"]["zip_size_bytes"] = int(zip_info["size_bytes"])
             _manifest_data["pack_info"]["zip_sha256"] = zip_info["sha256"]
             with open(manifest_path, "w", encoding="utf-8") as _mf:
                 json.dump(_manifest_data, _mf, indent=2, ensure_ascii=False)
