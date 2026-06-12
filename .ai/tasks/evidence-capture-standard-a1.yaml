@@ -1,7 +1,16 @@
 task_id: EVIDENCE-CAPTURE-STANDARD-A1
 title: Evidence capture standardization — reusable builder + hook output persistence
 priority: P1
-status: in_progress
+status: accepted_with_limitation
+gpt_verdict_file: "_evidence/EVIDENCE-CAPTURE-STANDARD-A1/gpt_reply_ecs.txt"
+gpt_evidence_zip: "_evidence/EVIDENCE_PACK_EVIDENCE_CAPTURE_STANDARD_A1.zip"
+gpt_review_rounds: 1
+gpt_limitations:
+  - "hook governance file is governance-sensitive"
+  - "sadp-audit-raw.txt does not include full raw stage-output"
+  - "registered closure, not fully clean workspace"
+  - "builder uses git diff base..HEAD, not explicit --head"
+gpt_next_task: EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1
 mode: "@go edit"
 whole_dirty_worktree_allowed: false
 external_upload_allowed: false

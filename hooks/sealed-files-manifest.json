@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-12T09:12:49.6777404+08:00",
+    "generated":  "2026-06-12T09:57:48.4029338+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
@@ -156,12 +156,20 @@
                              "path":  "docs/agent-runtime/dispatch-model-profiles.md"
                          },
                          {
+                             "sha256":  "16C37E01153FE23E96A6542685CFAE1EA741AB9D40024CEFD8350451D183204D",
+                             "path":  "docs/agent-runtime/evidence-capture-standard.md"
+                         },
+                         {
                              "sha256":  "38F85D2696C95E6A79BAC588A5D5F5FD16C6F3E0ADF3A15CE32CA1BFCEE8CB11",
                              "path":  "docs/agent-runtime/evidence-capture-workflow.md"
                          },
                          {
                              "sha256":  "530FE66AF633E4C99BAFA9E97B70CE20AA938B3E0A3AD3293B074116F165BD4C",
                              "path":  "docs/agent-runtime/evidence-generation-hygiene.md"
+                         },
+                         {
+                             "sha256":  "66BB7F08A931F8AEDDB9A3655F5BA887935E7D61FD39CB9F98B517C3AC8DD5D9",
+                             "path":  "docs/agent-runtime/evidence-pack-review-rules.md"
                          },
                          {
                              "sha256":  "EFCC11ED6AFDEF1142891CDB0329B27208208D8C97B45D530AB4CEA75F617DD4",
@@ -564,6 +572,10 @@
                              "path":  "schemas/agent-runtime/evidence-index.schema.json"
                          },
                          {
+                             "sha256":  "8D96E9E2D5166A813E14E6F1B54046EDBE9ED8D8FA53C0310D5C3C88448AE7CB",
+                             "path":  "schemas/agent-runtime/evidence-manifest.schema.json"
+                         },
+                         {
                              "sha256":  "D8C2BCBFCB737EC086BD520D5F88FB0F2D93EF7BC551FC8CB95E051607CEB661",
                              "path":  "schemas/agent-runtime/execution-report.schema.json"
                          },
@@ -590,6 +602,10 @@
                          {
                              "sha256":  "005C08EC71B619DE84C843E6FE81F54534354BFDACD057B2AE43C664D3F3E2F7",
                              "path":  "schemas/agent-runtime/run-spec.schema.json"
+                         },
+                         {
+                             "sha256":  "4A5ECA94BE01609760B1A4C22C6FCF13B8B582EB1767A353439BDF7E53EA93B7",
+                             "path":  "schemas/agent-runtime/runtime-evidence-index.schema.json"
                          },
                          {
                              "sha256":  "8B6D46C502905B74B2B07A59642EF8C6A4F8A613A9F417915B7B0248DEB8436B",

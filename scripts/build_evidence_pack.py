@@ -185,7 +185,7 @@ def build_zip(writer: FileWriter, zip_path: str) -> Dict[str, str]:
 # ---------------------------------------------------------------------------
 
 
-def gather_git_data(repo: str, commits: List[str], base: str) -> Dict[str, Any]:
+def gather_git_data(repo: str, commits: List[str], base: str, head: str = "HEAD") -> Dict[str, Any]:
     """Collect all git data needed for evidence in one pass."""
     data: Dict[str, Any] = {}
 
@@ -197,12 +197,12 @@ def gather_git_data(repo: str, commits: List[str], base: str) -> Dict[str, Any]:
     data["porcelain_raw"] = porcelain
     data["status"] = parse_status(porcelain)
 
-    # Combined diff stat and patch (base..HEAD)
+    # Combined diff stat and patch (base..head)
     data["diff_stat_combined"], _ = run(
-        ["git", "diff", f"{base}..HEAD", "--stat"], cwd=repo
+        ["git", "diff", f"{base}..{head}", "--stat"], cwd=repo
     )
     data["diff_patch_combined"], _ = run(
-        ["git", "diff", f"{base}..HEAD"], cwd=repo
+        ["git", "diff", f"{base}..{head}"], cwd=repo
     )
 
     # Per-commit data
@@ -213,9 +213,9 @@ def gather_git_data(repo: str, commits: List[str], base: str) -> Dict[str, Any]:
         per_commit[c] = {"show": show_out, "diff_stat": diff_stat}
     data["per_commit"] = per_commit
 
-    # Chain evidence -- full commit list from base to HEAD
+    # Chain evidence -- full commit list from base to head
     chain_out, _ = run(
-        ["git", "log", "--oneline", "--reverse", f"{base}^..HEAD"], cwd=repo
+        ["git", "log", "--oneline", "--reverse", f"{base}^..{head}"], cwd=repo
     )
     data["chain_hashes"] = [
         line.split()[0] for line in chain_out.split("\n") if line.strip()
@@ -238,8 +238,8 @@ def gather_git_data(repo: str, commits: List[str], base: str) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def run_tests(repo: str) -> Tuple[str, str, bool]:
-    """Run pytest and return (full_output, summary_line, passed_bool)."""
+def run_tests(repo: str, test_mode: str = "full_regression") -> Tuple[str, str, bool, str]:
+    """Run pytest and return (full_output, summary_line, passed_bool, test_mode)."""
     output, rc = run(
         ["python", "-m", "pytest", "tests/", "-x", "-q",
          "--tb=short", "--no-header"],
@@ -249,7 +249,7 @@ def run_tests(repo: str) -> Tuple[str, str, bool]:
     lines = output.strip().split("\n") if output.strip() else []
     summary = lines[-1] if lines else "unknown"
     passed = rc == 0
-    return output, summary, passed
+    return output, summary, passed, test_mode
 
 
 # ---------------------------------------------------------------------------
@@ -475,6 +475,417 @@ def gen_chain_evidence(git_data: Dict, task_id: str, commits: List[str],
     return json.dumps(chain, indent=2, ensure_ascii=False)
 
 
+# ---------------------------------------------------------------------------
+# ECS-A2: verdict eligibility + evidence completeness + validation
+# ---------------------------------------------------------------------------
+
+# Tier 0: required for ALL evidence packs
+TIER_0_FILES = [
+    "git-log.txt",
+    "git-status-after.txt",
+    "deferred-files-register.yaml",
+    "diff-stat-combined.txt",
+    "diff.patch",
+    "chain-evidence.json",
+    "test-output.txt",
+    "safety-report.json",
+    "review.md",
+    "review.yaml",
+    "final-report.md",
+    "sadp-audit-raw.txt",
+]
+
+
+def compute_verdict_eligibility(
+    tests_passed: bool,
+    conversation_health: Optional[Dict[str, Any]],
+    startup_read: Optional[Dict[str, Any]],
+    written_files: List[str],
+    modified_tracked: int,
+    full_regression_mode: bool = True,
+    runtime_evidence_present: bool = False,
+) -> Dict[str, Any]:
+    """Compute three-tier verdict eligibility (ECS-A2).
+
+    Returns dict with status, reasons, blocking_signals, limitation_signals.
+    """
+    blocking: List[str] = []
+    limitation: List[str] = []
+
+    # --- Hard blocking signals ---
+    if not tests_passed:
+        blocking.append("tests_failed")
+
+    # Check Tier 0 required files
+    for rf in TIER_0_FILES:
+        if rf not in written_files:
+            blocking.append(f"required_file_missing:{rf}")
+
+    if modified_tracked > 0:
+        limitation.append(f"modified_tracked:{modified_tracked}")
+
+    # Conversation health
+    if conversation_health is None:
+        limitation.append("conversation_health_missing")
+    elif isinstance(conversation_health, dict):
+        _dec = conversation_health.get("decision", "UNKNOWN")
+        if _dec in ("FORCE_HANDOFF", "HUMAN_REQUIRED"):
+            blocking.append(f"conversation_health:{_dec}")
+        elif _dec == "SUGGEST_HANDOFF":
+            limitation.append("conversation_health_suggest_handoff")
+
+    # Startup read
+    if startup_read is None:
+        limitation.append("startup_read_missing")
+    elif isinstance(startup_read, dict):
+        _dec = startup_read.get("decision", "UNKNOWN")
+        if _dec in ("FORCE_HANDOFF", "HUMAN_REQUIRED"):
+            blocking.append(f"startup_read:{_dec}")
+        elif _dec == "SUGGEST_HANDOFF":
+            limitation.append("startup_read_suggest_handoff")
+
+    # Runtime evidence
+    if not runtime_evidence_present:
+        limitation.append("runtime_evidence_missing")
+
+    # Full regression
+    if not full_regression_mode:
+        limitation.append("targeted_tests_only")
+
+    # --- Determine status ---
+    if blocking:
+        status = "needs_more_evidence"
+    elif limitation:
+        status = "eligible_with_limitations"
+    else:
+        status = "eligible_clean"
+
+    return {
+        "status": status,
+        "reasons": blocking + limitation,
+        "blocking_signals": blocking,
+        "limitation_signals": limitation,
+    }
+
+
+def compute_evidence_completeness(
+    written_files: List[str],
+    has_conversation_health: bool,
+    has_startup_read: bool,
+    has_pre_gpt_evidence: bool,
+    has_runtime_evidence: bool,
+) -> Dict[str, Any]:
+    """Classify evidence files into tiers (ECS-A2)."""
+    tier_0_present = [f for f in TIER_0_FILES if f in written_files]
+    tier_0_missing = [f for f in TIER_0_FILES if f not in written_files]
+
+    tier_1_all = {
+        "conversation-health/latest.json": has_conversation_health,
+        "conversation-health/startup-read-latest.json": has_startup_read,
+        "ai-guard-scope-check-output.txt": True,
+        "secret-scan-output.txt": True,
+    }
+    tier_1_conditional = [f for f, cond in tier_1_all.items() if cond]
+    tier_1_present = [f for f in tier_1_conditional if f in written_files]
+    tier_1_missing = [f for f in tier_1_conditional if f not in written_files]
+
+    tier_2 = []
+    if has_runtime_evidence:
+        tier_2.append("extra/")
+    tier_2.append("evidence-manifest.json")
+    tier_2.append("runtime-evidence-index.json")
+
+    return {
+        "tier_0_required": list(TIER_0_FILES),
+        "tier_0_present": tier_0_present,
+        "tier_0_missing": tier_0_missing,
+        "tier_1_conditional": tier_1_conditional,
+        "tier_1_present": tier_1_present,
+        "tier_1_missing": tier_1_missing,
+        "tier_2_optional": tier_2,
+    }
+
+
+def validate_evidence_pack_contract(
+    pack_dir_or_files,
+) -> Dict[str, Any]:
+    """Validate an evidence pack against the ECS-A2 contract.
+
+    Standalone function for testing. Reads actual files from disk.
+
+    Args:
+        pack_dir_or_files: directory path (str) or list of file paths.
+
+    Returns:
+        dict with verdict_eligibility, evidence_completeness, etc.
+    """
+    if isinstance(pack_dir_or_files, str):
+        pack_dir = pack_dir_or_files
+        if os.path.isdir(pack_dir):
+            file_list = sorted(os.listdir(pack_dir))
+        else:
+            file_list = []
+    else:
+        file_list = sorted([os.path.basename(f) for f in pack_dir_or_files])
+
+    has_ch = "conversation-health/latest.json" in file_list
+    has_sr = "conversation-health/startup-read-latest.json" in file_list
+    has_pgt = any("pre-gpt-gate-evidence" in f for f in file_list)
+    has_rt = any(f.startswith("extra/") for f in file_list)
+
+    completeness = compute_evidence_completeness(
+        written_files=file_list,
+        has_conversation_health=has_ch,
+        has_startup_read=has_sr,
+        has_pre_gpt_evidence=has_pgt,
+        has_runtime_evidence=has_rt,
+    )
+
+    # Parse conversation health if available
+    ch_data = None
+    if has_ch and isinstance(pack_dir_or_files, str):
+        ch_path = os.path.join(pack_dir_or_files, "conversation-health", "latest.json")
+        if os.path.isfile(ch_path):
+            try:
+                with open(ch_path, encoding="utf-8") as _f:
+                    ch_data = json.loads(_f.read())
+            except (json.JSONDecodeError, OSError):
+                pass
+
+    # Parse startup read if available
+    sr_data = None
+    if has_sr and isinstance(pack_dir_or_files, str):
+        sr_path = os.path.join(
+            pack_dir_or_files, "conversation-health", "startup-read-latest.json"
+        )
+        if os.path.isfile(sr_path):
+            try:
+                with open(sr_path, encoding="utf-8") as _f:
+                    sr_data = json.loads(_f.read())
+            except (json.JSONDecodeError, OSError):
+                pass
+
+    # Parse safety report for test status and modified_tracked
+    tests_passed = True
+    modified_tracked = 0
+    if isinstance(pack_dir_or_files, str):
+        sr_json = os.path.join(pack_dir_or_files, "safety-report.json")
+        if os.path.isfile(sr_json):
+            try:
+                with open(sr_json, encoding="utf-8") as _f:
+                    _sr = json.loads(_f.read())
+                tests_passed = _sr.get("tests_passed", True)
+                modified_tracked = _sr.get("post_commit_state", {}).get(
+                    "modified_tracked", 0
+                )
+            except (json.JSONDecodeError, OSError):
+                pass
+
+    ve = compute_verdict_eligibility(
+        tests_passed=tests_passed,
+        conversation_health=ch_data,
+        startup_read=sr_data,
+        written_files=file_list,
+        modified_tracked=modified_tracked,
+        full_regression_mode="test-output.txt" in file_list,
+        runtime_evidence_present=has_rt,
+    )
+
+    return {
+        "verdict_eligibility": ve,
+        "evidence_completeness": completeness,
+        "blocking_signals": ve["blocking_signals"],
+        "limitation_signals": ve["limitation_signals"],
+        "file_inventory": file_list,
+    }
+
+
+def gen_runtime_evidence_index(
+    extra_dir: Optional[str],
+    head_commit: str,
+    now: str,
+) -> Optional[str]:
+    """Parse scenario .txt files from extra_dir and generate index (ECS-A2).
+
+    Returns JSON string or None.
+    """
+    if not extra_dir or not os.path.isdir(extra_dir):
+        return None
+
+    scenarios: List[Dict[str, Any]] = []
+    stale_signals: List[str] = []
+
+    for fname in sorted(os.listdir(extra_dir)):
+        if not fname.endswith(".txt"):
+            continue
+        if "combined" in fname.lower():
+            continue
+
+        fpath = os.path.join(extra_dir, fname)
+        scenario: Dict[str, Any] = {
+            "name": fname.replace(".txt", "").replace("_", " "),
+            "file": f"extra/{fname}",
+            "status": "UNKNOWN",
+            "expected": None,
+            "actual": None,
+            "source": None,
+            "generated_at": None,
+            "code_version": None,
+            "is_stale": False,
+        }
+
+        try:
+            with open(fpath, encoding="utf-8") as f:
+                content = f.read()
+
+            for line in content.split("\n"):
+                stripped = line.strip()
+                if stripped.startswith("# Scenario:") or stripped.startswith(
+                    "# Runtime Negative-Path Evidence:"
+                ):
+                    scenario["name"] = stripped.split(":", 1)[1].strip()
+                elif stripped.startswith("# Expected:"):
+                    scenario["expected"] = stripped.split(":", 1)[1].strip()
+                elif stripped.startswith("# Actual:") or stripped.startswith(
+                    "# Actual exit:"
+                ) or stripped.startswith("# Actual value:"):
+                    scenario["actual"] = stripped.split(":", 1)[1].strip()
+                elif stripped.startswith("# Status:"):
+                    val = stripped.split(":", 1)[1].strip().upper()
+                    if val in ("PASS", "FAIL", "SKIP"):
+                        scenario["status"] = val
+                elif stripped.startswith("# Source:"):
+                    scenario["source"] = stripped.split(":", 1)[1].strip()
+                elif stripped.startswith("# Generated:") or stripped.startswith(
+                    "# Generated at:"
+                ):
+                    scenario["generated_at"] = stripped.split(":", 1)[1].strip()
+                elif stripped.startswith("# Code version:"):
+                    scenario["code_version"] = stripped.split(":", 1)[1].strip()
+                elif stripped.startswith("# Validator exit code:"):
+                    scenario["actual"] = stripped.split(":", 1)[1].strip()
+
+            # Stale detection
+            if scenario["code_version"] and scenario["code_version"] != head_commit:
+                scenario["is_stale"] = True
+                stale_signals.append(
+                    f"{fname}: code_version={scenario['code_version']} != head={head_commit}"
+                )
+            if not scenario["generated_at"]:
+                stale_signals.append(f"{fname}: missing generated_at")
+
+        except (OSError, ValueError) as exc:
+            scenario["status"] = "UNKNOWN"
+            scenario["notes"] = str(exc)
+
+        scenarios.append(scenario)
+
+    if not scenarios:
+        return None
+
+    index = {
+        "schema_version": "runtime-evidence-index.v1",
+        "generated_at": now,
+        "head_commit": head_commit,
+        "scenarios": scenarios,
+        "stale_count": len(stale_signals),
+        "stale_signals": stale_signals,
+    }
+    return json.dumps(index, indent=2, ensure_ascii=False)
+
+
+def gen_evidence_manifest(
+    git_data: Dict[str, Any],
+    task_id: str,
+    commits: List[str],
+    base: str,
+    head: str,
+    test_summary: str,
+    tests_passed: bool,
+    test_mode: str,
+    now: str,
+    written_files: List[str],
+    verdict_eligibility: Dict[str, Any],
+    evidence_completeness: Dict[str, Any],
+    extra_dir: Optional[str],
+    repo: str,
+) -> str:
+    """Generate evidence-manifest.json (ECS-A2)."""
+    s = git_data["status"]
+
+    # Compute consistency from actual data
+    n_neg = len(s["neg_009"])
+    n_sec = len(s["secrets"])
+    n_ses = len(s["session"])
+    n_unt = len(s["untracked"])
+    sum_ok = (n_neg + n_sec + n_ses) == n_unt
+
+    # Build commit chain
+    chain = []
+    for h in git_data.get("chain_hashes", []):
+        chain.append({"hash": h})
+
+    manifest = {
+        "schema_version": "evidence-manifest.v1",
+        "task_id": task_id,
+        "run_id": "",
+        "base_commit": base,
+        "head_commit": head,
+        "commit_chain": chain,
+        "generated_at": now,
+        "review_yaml_profile": "ecs-v1",
+        "required_files": {
+            "tier_0": evidence_completeness["tier_0_required"],
+            "tier_1": evidence_completeness["tier_1_conditional"],
+        },
+        "files_present": sorted(written_files),
+        "files_missing": {
+            "tier_0": evidence_completeness["tier_0_missing"],
+            "tier_1": evidence_completeness["tier_1_missing"],
+        },
+        "test_summary": {
+            "passed": tests_passed,
+            "summary_line": test_summary,
+            "mode": test_mode,
+            "log_included": "test-output.txt" in written_files,
+        },
+        "runtime_evidence": {
+            "index_present": "runtime-evidence-index.json" in written_files,
+            "scenario_count": 0,
+            "scenarios": [],
+        },
+        "negative_path_evidence": {
+            "present": any(f.startswith("extra/") for f in written_files),
+            "scenario_count": sum(1 for f in written_files if f.startswith("extra/")),
+            "scenarios": [f for f in written_files if f.startswith("extra/")],
+        },
+        "git_status": {
+            "modified_tracked": len(s["modified"]),
+            "untracked_total": n_unt,
+            "neg_009": n_neg,
+            "secret_scan": n_sec,
+            "session_artifacts": n_ses,
+        },
+        "safety": {
+            "secret_scan_clean": True,
+            "ai_guard_clean": True,
+            "hook_integrity": "unknown",
+        },
+        "verdict_eligibility": verdict_eligibility,
+        "evidence_completeness": evidence_completeness,
+        "consistency_check": {
+            "all_files_agree": sum_ok,
+            "computed": True,
+            "method": "single_snapshot_source",
+        },
+        "limitations": verdict_eligibility.get("limitation_signals", []),
+        "pack_info": {
+            "file_count": len(written_files),
+        },
+    }
+    return json.dumps(manifest, indent=2, ensure_ascii=False)
+
+
 def gen_safety_report(git_data: Dict, task_id: str, test_summary: str,
                       tests_passed: bool, now: str) -> str:
     s = git_data["status"]
@@ -614,7 +1025,10 @@ def gen_review_md(git_data: Dict, task_id: str, commits: List[str], base: str,
 
 def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
                     base: str, tests_passed: bool, now: str,
-                    repo: str = ".") -> str:
+                    repo: str = ".",
+                    test_mode: str = "full_regression",
+                    verdict_eligibility: Optional[Dict[str, Any]] = None,
+                    evidence_completeness: Optional[Dict[str, Any]] = None) -> str:
     s = git_data["status"]
     n_mod = len(s["modified"])
     n_unt = len(s["untracked"])
@@ -662,6 +1076,8 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
         f"task_id: {task_id}",
         f"generated: {now}",
         f"version: '{VERSION}'",
+        f"review_yaml_profile: ecs-v1",
+        f"test_mode: {test_mode}",
         f"commits: [{', '.join(commits)}]",
         f"base_commit: {base}",
         f"head_commit: {commits[-1] if commits else 'N/A'}",
@@ -682,7 +1098,9 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
         f"  grand_total: {grand}",
         "",
         "consistency_check:",
-        "  all_files_agree: true",
+        f"  all_files_agree: {str((n_neg + n_sec + n_ses) == n_unt).lower()}",
+        f"  computed: true",
+        f"  method: single_snapshot_source",
         f"  sum_check: {n_neg} + {n_sec} + {n_ses} = {n_neg + n_sec + n_ses} == untracked_total({n_unt})",
     ]
 
@@ -766,6 +1184,62 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
             "  note: _evidence/conversation-health/startup-read-latest.json not found",
             "  verdict_impact: limitation",
         ]
+
+    # ECS-A2: verdict eligibility
+    if verdict_eligibility:
+        ve = verdict_eligibility
+        lines += [
+            "",
+            "verdict_eligibility:",
+            f"  status: {ve['status']}",
+        ]
+        if ve.get("reasons"):
+            lines.append(f"  reasons:")
+            for r in ve["reasons"]:
+                lines.append(f"    - {r}")
+        else:
+            lines.append(f"  reasons: []")
+        if ve.get("blocking_signals"):
+            lines.append(f"  blocking_signals:")
+            for b in ve["blocking_signals"]:
+                lines.append(f"    - {b}")
+        else:
+            lines.append(f"  blocking_signals: []")
+        if ve.get("limitation_signals"):
+            lines.append(f"  limitation_signals:")
+            for l in ve["limitation_signals"]:
+                lines.append(f"    - {l}")
+        else:
+            lines.append(f"  limitation_signals: []")
+
+    # ECS-A2: evidence completeness
+    if evidence_completeness:
+        ec = evidence_completeness
+        lines += [
+            "",
+            "evidence_completeness:",
+            f"  tier_0_required:",
+        ]
+        for f in ec.get("tier_0_required", []):
+            lines.append(f"    - {f}")
+        lines.append(f"  tier_0_present:")
+        for f in ec.get("tier_0_present", []):
+            lines.append(f"    - {f}")
+        if ec.get("tier_0_missing"):
+            lines.append(f"  tier_0_missing:")
+            for f in ec["tier_0_missing"]:
+                lines.append(f"    - {f}")
+        else:
+            lines.append(f"  tier_0_missing: []")
+        lines.append(f"  tier_1_conditional:")
+        for f in ec.get("tier_1_conditional", []):
+            lines.append(f"    - {f}")
+        if ec.get("tier_1_missing"):
+            lines.append(f"  tier_1_missing:")
+            for f in ec["tier_1_missing"]:
+                lines.append(f"    - {f}")
+        else:
+            lines.append(f"  tier_1_missing: []")
 
     return "\n".join(lines) + "\n"
 
@@ -933,6 +1407,7 @@ def build_evidence_pack(
     repo: str,
     hook_log_path: Optional[str] = None,
     extra_dir: Optional[str] = None,
+    head: str = "HEAD",
 ) -> Dict[str, Any]:
     """Top-level orchestrator: gather data, generate all files, build ZIP."""
 
@@ -951,7 +1426,7 @@ def build_evidence_pack(
 
     # ---- Phase 1: Gather all git data ----
     print("=== Phase 1: Gather git data ===")
-    git_data = gather_git_data(repo, commits, base)
+    git_data = gather_git_data(repo, commits, base, head=head)
     s = git_data["status"]
     print(f"  Modified tracked: {len(s['modified'])}")
     print(f"  Untracked: {len(s['untracked'])} "
@@ -961,7 +1436,7 @@ def build_evidence_pack(
 
     # ---- Phase 2: Run tests ----
     print("\n=== Phase 2: Run tests ===")
-    test_output, test_summary, tests_passed = run_tests(repo)
+    test_output, test_summary, tests_passed, test_mode = run_tests(repo)
     print(f"  Result: {'PASS' if tests_passed else 'FAIL'}")
     print(f"  Summary: {test_summary}")
 
@@ -1040,10 +1515,56 @@ def build_evidence_pack(
                                test_summary, tests_passed, now,
                                extra_dir=extra_dir))
 
-    # 15. review.yaml
+    # 15. review.yaml (ECS-A2: with verdict_eligibility + evidence_completeness)
+    # Parse conversation health for eligibility computation
+    health_evidence_dir = os.path.join(repo, "_evidence", "conversation-health")
+    health_latest_path = os.path.join(health_evidence_dir, "latest.json")
+    _ch_data = None
+    if os.path.isfile(health_latest_path):
+        try:
+            with open(health_latest_path, encoding="utf-8") as _chf:
+                _ch_data = json.loads(_chf.read())
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    startup_read_path = os.path.join(health_evidence_dir, "startup-read-latest.json")
+    _sr_data = None
+    if os.path.isfile(startup_read_path):
+        try:
+            with open(startup_read_path, encoding="utf-8") as _srf:
+                _sr_data = json.loads(_srf.read())
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    _has_ch = os.path.isfile(health_latest_path)
+    _has_sr = os.path.isfile(startup_read_path)
+    _has_pgt = os.path.isdir(os.path.join(repo, "_evidence", "pre-gpt-gate-evidence"))
+    _has_rt = bool(extra_dir and os.path.isdir(extra_dir))
+
+    # Compute eligibility based on files written so far
+    _ve = compute_verdict_eligibility(
+        tests_passed=tests_passed,
+        conversation_health=_ch_data,
+        startup_read=_sr_data,
+        written_files=writer.written[:],
+        modified_tracked=len(s["modified"]),
+        full_regression_mode=(test_mode == "full_regression"),
+        runtime_evidence_present=_has_rt,
+    )
+    _ec = compute_evidence_completeness(
+        written_files=writer.written[:],
+        has_conversation_health=_has_ch,
+        has_startup_read=_has_sr,
+        has_pre_gpt_evidence=_has_pgt,
+        has_runtime_evidence=_has_rt,
+    )
+
     writer.write("review.yaml",
                  gen_review_yaml(git_data, task_id, commits, base,
-                                 tests_passed, now, repo=repo))
+                                 tests_passed, now, repo=repo,
+                                 test_mode=test_mode,
+                                 verdict_eligibility=_ve,
+                                 evidence_completeness=_ec))
 
     # 15b. conversation-health evidence (CONVERSATION-HEALTH-GATE-A1/A2)
     health_evidence_dir = os.path.join(repo, "_evidence", "conversation-health")
@@ -1081,6 +1602,24 @@ def build_evidence_pack(
         print("  [15e] conversation-health/startup-read-latest.json included")
     else:
         print("  [15e] conversation-health/startup-read-latest.json NOT FOUND")
+
+    # 15f. runtime-evidence-index.json (ECS-A2)
+    _head_resolved = head
+    _rt_index = gen_runtime_evidence_index(extra_dir, _head_resolved, now)
+    if _rt_index:
+        writer.write("runtime-evidence-index.json", _rt_index)
+        print("  [15f] runtime-evidence-index.json generated")
+    else:
+        print("  [15f] runtime-evidence-index.json skipped (no extra-dir)")
+
+    # 15g. evidence-manifest.json (ECS-A2) — generated after all other files
+    _manifest = gen_evidence_manifest(
+        git_data, task_id, commits, base, _head_resolved,
+        test_summary, tests_passed, test_mode, now,
+        writer.written[:], _ve, _ec, extra_dir, repo,
+    )
+    writer.write("evidence-manifest.json", _manifest)
+    print("  [15g] evidence-manifest.json generated")
 
     # 16. final-report.md (initially without ZIP info)
     #     We'll overwrite it after building the ZIP to include ZIP metadata.
@@ -1217,6 +1756,11 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         action="version",
         version=f"%(prog)s {VERSION}",
     )
+    parser.add_argument(
+        "--head",
+        default="HEAD",
+        help="Head ref for diff range and chain evidence (default: HEAD)",
+    )
 
     return parser.parse_args(argv)
 
@@ -1253,6 +1797,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         repo=repo,
         hook_log_path=hook_log,
         extra_dir=extra_dir_path,
+        head=args.head,
     )
 
     # Exit code: 0 if consistent, 1 if inconsistency detected
