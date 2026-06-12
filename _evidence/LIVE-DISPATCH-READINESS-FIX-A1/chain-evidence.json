@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "LIVE-DISPATCH-READINESS-FIX-A1",
+  "generated_at": "2026-06-12T06:00:00Z",
+  "chain": [
+    {
+      "order": 1,
+      "evidence_id": "git-status-before",
+      "type": "git_state",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-FIX-A1/git-status-before.txt"
+    },
+    {
+      "order": 2,
+      "evidence_id": "binding-fix",
+      "type": "fix_evidence",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-FIX-A1/binding-fix-evidence.md",
+      "description": "Suspended dev-frame-writing to resolve duplicate conversation_id"
+    },
+    {
+      "order": 3,
+      "evidence_id": "fresh-dry-run",
+      "type": "dry_run_evidence",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-FIX-A1/DRY_RUN_DISPATCH_10_FRESH.json",
+      "description": "Fresh dry-run at 2026-06-12T05:58:45Z: 2 dispatchable, 0 collisions"
+    },
+    {
+      "order": 4,
+      "evidence_id": "safety-report",
+      "type": "safety_assessment",
+      "path": "_evidence/LIVE-DISPATCH-READINESS-FIX-A1/safety-report.json"
+    }
+  ]
+}

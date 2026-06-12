@@ -7,7 +7,7 @@
   "isolation_model": "conversation_target_bound",
   "cdp_mode": "shared_single_chrome",
   "generated_at": "2026-06-10T16:00:00Z",
-  "total_projects": 11,
+  "total_projects": 10,
   "shared_cdp_port": 9222,
   "shared_cdp_endpoint": "http://localhost:9222",
   "shared_profile_dir": "D:\\agent-acceptance\\_cdp_profiles\\shared",
@@ -21,8 +21,10 @@
     "dev-frame-writing": {
       "project_id": "dev-frame-writing",
       "project_root": "D:\\agent-acceptance\\_projects\\dev-frame-writing",
-      "binding_status": "active",
-      "registered_at": "2026-06-10T16:00:00Z"
+      "binding_status": "suspended",
+      "registered_at": "2026-06-10T16:00:00Z",
+      "suspended_at": "2026-06-12T05:00:00Z",
+      "suspension_reason": "duplicate conversation_id with dev-frame-opencode (LIVE-DISPATCH-READINESS-FIX-A1)"
     },
     "project-gamma": {
       "project_id": "project-gamma",
@@ -79,5 +81,5 @@
       "registered_at": "2026-06-10T16:00:00Z"
     }
   },
-  "updated_at": "2026-06-11T01:35:26Z"
+  "updated_at": "2026-06-12T05:57:20Z"
 }

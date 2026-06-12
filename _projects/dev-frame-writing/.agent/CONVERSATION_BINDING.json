@@ -8,7 +8,7 @@
     {
       "agent_id": "agent-writing-001",
       "role": "executor",
-      "binding_status": "active",
+      "binding_status": "suspended",
       "conversation_id": "6a297e5f-c9c8-83a8-b413-a8fc414e0e85",
       "chat_url": "https://chatgpt.com/c/6a297e5f-c9c8-83a8-b413-a8fc414e0e85",
       "cdp_endpoint": "http://localhost:9222",

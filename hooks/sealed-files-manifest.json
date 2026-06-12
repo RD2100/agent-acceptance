@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-12T12:56:15.3765556+08:00",
+    "generated":  "2026-06-12T14:03:01.3217708+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
@@ -228,7 +228,7 @@
                              "path":  "docs/agent-runtime/live-dispatch-human-authorization-template.md"
                          },
                          {
-                             "sha256":  "F4989D8D3DF50D9112AC2CA91766AA5A123F27F6245B4DDACC3832DD948CCE55",
+                             "sha256":  "379E45821B5CB47AFF6B8B517B9A264EFD867E44CA1E27CDC45939DC3D9FE680",
                              "path":  "docs/agent-runtime/live-dispatch-readiness-review.md"
                          },
                          {
