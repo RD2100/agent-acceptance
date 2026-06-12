@@ -522,7 +522,10 @@ def compute_verdict_eligibility(
             blocking.append(f"required_file_missing:{rf}")
 
     if modified_tracked > 0:
-        limitation.append(f"modified_tracked:{modified_tracked}")
+        if "deferred-files-register.yaml" in written_files:
+            limitation.append(f"modified_tracked_with_deferred:{modified_tracked}")
+        else:
+            blocking.append(f"modified_tracked_no_deferred:{modified_tracked}")
 
     # Conversation health
     if conversation_health is None:
@@ -763,7 +766,13 @@ def gen_runtime_evidence_index(
                 elif stripped.startswith("# Code version:"):
                     scenario["code_version"] = stripped.split(":", 1)[1].strip()
                 elif stripped.startswith("# Validator exit code:"):
-                    scenario["actual"] = stripped.split(":", 1)[1].strip()
+                    try:
+                        exit_code = int(stripped.split(":", 1)[1].strip())
+                        scenario["actual"] = f"exit_code={exit_code}"
+                        if scenario["status"] == "UNKNOWN":
+                            scenario["status"] = "PASS" if exit_code == 0 else "FAIL"
+                    except ValueError:
+                        pass
 
             # Stale detection
             if scenario["code_version"] and scenario["code_version"] != head_commit:
@@ -1036,7 +1045,18 @@ def gen_review_yaml(git_data: Dict, task_id: str, commits: List[str],
     n_sec = len(s["secrets"])
     n_ses = len(s["session"])
     grand = n_mod + n_unt
-    verdict = "EVIDENCE_COMPLETE" if tests_passed else "EVIDENCE_COMPLETE_TESTS_FAILED"
+    if verdict_eligibility:
+        _ve_status = verdict_eligibility.get("status", "")
+        if _ve_status == "eligible_clean":
+            verdict = "EVIDENCE_COMPLETE"
+        elif _ve_status == "eligible_with_limitations":
+            verdict = "EVIDENCE_COMPLETE_WITH_LIMITATIONS"
+        elif _ve_status == "needs_more_evidence":
+            verdict = "NEEDS_MORE_EVIDENCE"
+        else:
+            verdict = "EVIDENCE_COMPLETE" if tests_passed else "EVIDENCE_COMPLETE_TESTS_FAILED"
+    else:
+        verdict = "EVIDENCE_COMPLETE" if tests_passed else "EVIDENCE_COMPLETE_TESTS_FAILED"
 
     # Build evidence file list
     evidence_files = [
@@ -1603,34 +1623,7 @@ def build_evidence_pack(
     else:
         print("  [15e] conversation-health/startup-read-latest.json NOT FOUND")
 
-    # 15f. runtime-evidence-index.json (ECS-A2)
-    _head_resolved = head
-    _rt_index = gen_runtime_evidence_index(extra_dir, _head_resolved, now)
-    if _rt_index:
-        writer.write("runtime-evidence-index.json", _rt_index)
-        print("  [15f] runtime-evidence-index.json generated")
-    else:
-        print("  [15f] runtime-evidence-index.json skipped (no extra-dir)")
-
-    # 15g. evidence-manifest.json (ECS-A2) — generated after all other files
-    _manifest = gen_evidence_manifest(
-        git_data, task_id, commits, base, _head_resolved,
-        test_summary, tests_passed, test_mode, now,
-        writer.written[:], _ve, _ec, extra_dir, repo,
-    )
-    writer.write("evidence-manifest.json", _manifest)
-    print("  [15g] evidence-manifest.json generated")
-
-    # 16. final-report.md (initially without ZIP info)
-    #     We'll overwrite it after building the ZIP to include ZIP metadata.
-
-    # ---- Phase 6: Consistency check ----
-    consistent = verify_consistency(git_data)
-
-    # ---- Phase 7: Build ZIP ----
-    print("\n=== Phase 7: Build ZIP ===")
-
-    # Copy extra-dir files into output (e.g., negative-path evidence)
+    # 15f-pre: Copy extra-dir files (moved from Phase 7 for accurate manifest)
     if extra_dir and os.path.isdir(extra_dir):
         print(f"  Copying extra files from: {extra_dir}")
         for fname in sorted(os.listdir(extra_dir)):
@@ -1641,11 +1634,62 @@ def build_evidence_pack(
                     content = fh.read()
                 writer.write(dst_name, content)
 
-    # Write final-report.md without ZIP info first (so it's in the ZIP)
+    # 15f-pre2: Write final-report.md (preliminary, without ZIP info)
     final_no_zip = gen_final_report(git_data, task_id, commits, base,
                                     test_summary, tests_passed, None, now,
                                     extra_dir=extra_dir)
     writer.write("final-report.md", final_no_zip)
+
+    # 15f. runtime-evidence-index.json (ECS-A2)
+    _head_resolved = head
+    _rt_index = gen_runtime_evidence_index(extra_dir, _head_resolved, now)
+    if _rt_index:
+        writer.write("runtime-evidence-index.json", _rt_index)
+        print("  [15f] runtime-evidence-index.json generated")
+    else:
+        print("  [15f] runtime-evidence-index.json skipped (no extra-dir)")
+
+    # 15g. Re-compute verdict_eligibility + evidence_completeness with full file set
+    _ve_final = compute_verdict_eligibility(
+        tests_passed=tests_passed,
+        conversation_health=_ch_data,
+        startup_read=_sr_data,
+        written_files=writer.written[:],
+        modified_tracked=len(s["modified"]),
+        full_regression_mode=(test_mode == "full_regression"),
+        runtime_evidence_present=any(f.startswith("extra/") for f in writer.written),
+    )
+    _ec_final = compute_evidence_completeness(
+        written_files=writer.written[:],
+        has_conversation_health=_has_ch,
+        has_startup_read=_has_sr,
+        has_pre_gpt_evidence=_has_pgt,
+        has_runtime_evidence=any(f.startswith("extra/") for f in writer.written),
+    )
+
+    # 15h. Re-generate review.yaml with accurate verdict_eligibility + evidence_completeness
+    writer.write("review.yaml",
+                 gen_review_yaml(git_data, task_id, commits, base,
+                                 tests_passed, now, repo=repo,
+                                 test_mode=test_mode,
+                                 verdict_eligibility=_ve_final,
+                                 evidence_completeness=_ec_final))
+    print("  [15h] review.yaml regenerated with final verdict_eligibility")
+
+    # 15i. evidence-manifest.json (ECS-A2) — generated with complete file set
+    _manifest = gen_evidence_manifest(
+        git_data, task_id, commits, base, _head_resolved,
+        test_summary, tests_passed, test_mode, now,
+        writer.written[:], _ve_final, _ec_final, extra_dir, repo,
+    )
+    writer.write("evidence-manifest.json", _manifest)
+    print("  [15i] evidence-manifest.json generated with complete file set")
+
+    # ---- Phase 6: Consistency check ----
+    consistent = verify_consistency(git_data)
+
+    # ---- Phase 7: Build ZIP ----
+    print("\n=== Phase 7: Build ZIP ===")
 
     # Now build the ZIP (includes final-report.md)
     zip_info = build_zip(writer, zip_path)
