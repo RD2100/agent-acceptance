@@ -1,39 +1,35 @@
-task_id: WORKSPACE-CLOSURE-INVENTORY-A1
-title: "Read-only workspace untracked file inventory"
+task_id: HOOK-FAILURE-SEMANTICS-FINALIZE-A1
+title: "Finalize hook failure semantics documentation for v2.4.0"
 priority: P1
-status: in_progress
-type: audit
+status: completed
+type: documentation
 mode: "@go edit"
 description: >
-  Generate a structured inventory of all ~204 untracked files in the workspace root.
-  Strictly read-only: no deletions, no moves, no archives, no commits of untracked files.
-  Output: classification + suggested action + risk level for each file.
+  Supplement hook-failure-semantics.md with decision tree, --files flag docs,
+  missing script fallback table, and schema conformance notes.
+  Merge with existing EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1 TaskSpec.
 
 goal:
   user_visible_success: >
-    A complete inventory covering all untracked files with classification,
-    suggested action, and risk assessment, ready for human review before
-    any cleanup actions.
+    hook-failure-semantics.md is complete, consistent with v2.4.0 implementation,
+    and covers all edge cases (decision tree, timeout, missing scripts, --files flag).
   in_scope:
-    - Scan all untracked files via git status --porcelain
-    - Classify each file into categories
-    - Check evidence directory vs ZIP coverage
-    - Assign suggested action (KEEP/COMMIT/ARCHIVE/DISCARD)
-    - Assign risk level (LOW/MEDIUM/HIGH)
-    - Output structured inventory document
+    - Add decision tree for overall_result computation
+    - Document ai-guard --files flag invocation
+    - Add missing script fallback behavior table
+    - Note output_file path deviation (absolute vs relative)
+    - Note BOM encoding for latest.json
+    - Expand anti-patterns (7 rules)
+    - Update TaskSpec to completed
   out_of_scope:
-    - No file deletions
-    - No file moves or renames
-    - No archives
-    - No git add or commit of untracked files
-    - No policy changes
+    - No changes to hook script
+    - No changes to schema
+    - No changes to ai_guard.py
 
 write_set:
+  - "docs/agent-runtime/hook-failure-semantics.md"
+  - ".ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml"
   - ".ai/current-task.yaml"
-  - ".ai/tasks/workspace-closure-inventory-a1.yaml"
-  - "_reports/workspace-closure-inventory-a1/**"
-  - "_reports/POST-AI-GUARD-TASK-OUTLINE.md"
-  - "_reports/POST-AI-GUARD-TASK-OUTLINE.ascii.md"
   - "hooks/sealed-files-manifest.json"
 
 deny_paths:
@@ -45,29 +41,37 @@ deny_paths:
   - ".agent/PROJECT_REGISTRY.json"
 
 constraints:
-  - "Strictly read-only on untracked files"
-  - "No modifications to any untracked file"
-  - "Inventory must cover 100% of untracked entries"
-  - "Each entry must have: path, category, action, risk, has_zip, notes"
+  - "Documentation only"
+  - "Must be consistent with v2.4.0 implementation"
+  - "53 target tests must pass"
 
 gate_0:
   inventory_evidence:
     queried_sources:
-      - "git status --porcelain (204 untracked entries)"
-      - "_evidence/ directory (38 subdirs, 34 ZIPs)"
-      - "deferred-files-register.yaml (187 entries from ECS-A2)"
+      - "hooks/pre-commit.governance.ps1 (v2.4.0, 327 lines)"
+      - "schemas/agent-runtime/evidence-capture.schema.json"
+      - "docs/agent-runtime/hook-failure-semantics.md (139 lines base)"
+      - "tests/test_hook_failure_semantics.py (37 tests)"
+      - "_evidence/hook-output/latest.json (v2.4.0 actual)"
     matched_capabilities:
-      - "Evidence pack ZIP coverage checker"
-      - "Deferred files register cross-reference"
+      - "hook failure semantics documentation"
+      - "ai_guard --files mode"
   startup_read: completed
   pre_task_gate: passed
 
 acceptance_criteria:
-  - "Inventory covers all 204 untracked entries"
-  - "Each entry has: path, category, suggested_action, risk, has_zip, notes"
-  - "Categories are exhaustive and non-overlapping"
-  - "No file is deleted, moved, or modified"
-  - "Inventory document is committed to git"
+  - "Decision tree covers all 5 stages with early-exit path"
+  - "--files flag invocation documented"
+  - "Missing script fallback table covers all 5 scripts"
+  - "output_file path deviation noted"
+  - "BOM encoding note added"
+  - "Anti-patterns expanded to 7 rules"
+  - "53 target tests pass"
+
+verdict:
+  status: completed
+  test_results: "53 passed (37 hook + 16 ai_guard)"
+  doc_delta: "+decision tree, +--files section, +fallback table, +path note, +BOM note, +2 anti-patterns"
 
 live_dispatch_authorized: false
-next_recommended: "Batch cleanup per inventory (Phase 3, multiple TaskSpecs after human review)"
+next_recommended: "Phase 3 batch cleanup per WORKSPACE-CLOSURE-INVENTORY-A1"

@@ -64,6 +64,74 @@ overall_result  = BLOCKED    if sadp-audit or ai-guard has exit_code ≠ 0
 The hook process exit code follows a simple rule: `exit 1` when any required stage fails.
 All required stages must fail closed — no silent pass on failure.
 
+### Decision Tree
+
+```
+Start
+  |
+  v
+[manifest-regen] -- always runs, advisory. Log exit_code, continue.
+  |
+  v
+[sadp-audit] -- BLOCKING. If exit_code != 0:
+  |                -> Write latest.json with 3 stages (manifest, sadp, ai-guard)
+  |                -> overall_result = BLOCKED
+  |                -> exit 1 (EARLY EXIT: stages 4-5 never run)
+  |              If exit_code == 0: continue.
+  v
+[ai-guard] -- BLOCKING. Invoked as: python tools/ai_guard.py --files <staged_files>
+  |            If exit_code != 0 (including timeout):
+  |                -> overall_result = BLOCKED
+  |                -> continue to stages 4-5 (advisory stages still run for logging)
+  |              If exit_code == 0: continue.
+  v
+[test-governance] -- ADVISORY. Runs with -Mode advisory. Log exit_code, continue.
+  |
+  v
+[conversation-health] -- ADVISORY (A3 Layer 4). Fail-graceful. Log exit_code, continue.
+  |
+  v
+Compute overall_result:
+  If sadp-audit.exit_code != 0 OR ai-guard.exit_code != 0:
+    overall_result = BLOCKED, exit 1
+  Else:
+    overall_result = PASS, exit 0
+```
+
+Note: sadp-audit early-exit is the only path where latest.json has fewer than 5 stages.
+In all other cases (including ai-guard failure), all 5 stages run and appear in latest.json.
+
+### ai-guard Invocation: --files Flag
+
+Since v2.4.0, the hook invokes ai_guard.py with explicit file scoping:
+
+```powershell
+$stagedFiles = git diff --cached --name-only 2>$null
+python tools/ai_guard.py --files $stagedFiles
+```
+
+The `--files` mode (added in AI-GUARD-FILES-MODE-AND-LARGE-FILE-SCAN-A1) ensures ai_guard
+scans only the staged files, not the entire working tree. This mode runs `deny_paths`,
+`restricted_paths`, and `secret_patterns` checks on the listed files. It does NOT check
+TaskSpec `allow_write` scope (scope enforcement is handled by sadp-audit).
+
+### Missing Script Fallback Behavior
+
+When a required script is not found, the hook degrades gracefully:
+
+| Missing Script | Behavior | Exit Code | Impact on overall_result |
+|---|---|---|---|
+| `Update-GovernanceManifest.ps1` | Logs warning, continues | 0 | Advisory — no impact |
+| `sadp-audit.ps1` | Logs warning, skips audit, ai-guard also skipped | 0 | No blocking gate runs — PASS if ai-guard also skipped |
+| `tools/ai_guard.py` | Logs info, skips AI guard | 0 | No blocking gate runs — PASS if sadp-audit also passes |
+| `Test-Governance.ps1` | Logs warning, skips governance scan | 0 | Advisory — no impact |
+| `pre_commit_health_advisory.py` | Logs advisory skip message | 0 | Advisory — no impact |
+
+**Important**: If both `sadp-audit.ps1` and `ai_guard.py` are missing, no blocking gate runs
+and the hook passes all commits unconditionally. This is by design — the hook is a governance
+tool, not a security boundary. The absence of governance scripts indicates the project has not
+been bootstrapped with SADP governance.
+
 ### Early-Exit Path
 
 When `sadp-audit` fails, the hook takes an early-exit path (line ~161 in the script):
@@ -106,6 +174,15 @@ The schema defines:
 - `overall_result`: enum of PASS, BLOCKED
 - `hook_version`: semver pattern
 
+**output_file path note**: The schema describes `output_file` as a relative path, but the
+current hook implementation (v2.4.0) writes absolute paths (e.g., `D:\agent-acceptance\_evidence\hook-output\sadp-audit-*.txt`). This is a known deviation from the schema description
+but does not affect validation — the schema type is `string` or `null`, not a format-constrained
+path. Consumers should handle both absolute and relative paths. A future schema revision
+should clarify this.
+
+**BOM note**: `latest.json` is written by PowerShell's `ConvertTo-Json | Out-File -Encoding utf8`,
+which produces UTF-8 with BOM. Consumers should read with `utf-8-sig` encoding to handle the BOM.
+
 ### Output Validation
 
 `scripts/validate_hook_output.py` validates `latest.json` against the schema:
@@ -126,6 +203,8 @@ It also performs semantic checks (e.g., verifying that nonzero blocking-stage ex
 3. **Do not** remove timeout protection from ai-guard; indefinite hangs are worse than blocked commits.
 4. **Do not** add new stages without updating this document and the schema.
 5. **Do not** represent replay-style evidence as raw console output.
+6. **Do not** invoke ai_guard.py without the `--files` flag — bare mode falls through to full git-diff scan, which may scan unintended files or miss staged-only changes.
+7. **Do not** assume `output_file` paths are relative — current implementation writes absolute paths.
 
 ### Version History
 

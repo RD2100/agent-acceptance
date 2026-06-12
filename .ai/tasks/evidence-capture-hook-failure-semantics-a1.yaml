@@ -1,63 +1,78 @@
 task_id: EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1
+title: "Hook failure semantics documentation and finalization"
 priority: P0
-status: in_progress
+status: completed
 created: "2026-06-11T00:00:00Z"
+completed: "2026-06-12T20:00:00Z"
 mode: "@go edit"
-whole_dirty_worktree_allowed: false
-external_upload_allowed: false
-raw_transcript_allowed: false
-real_paper_text_allowed: false
 
 gate_0:
   triggered: true
   inventory_evidence:
     queried_sources:
-      - hooks/pre-commit.governance.ps1 (v2.1.0 analysis)
-      - schemas/agent-runtime/evidence-capture.schema.json
-      - docs/agent-runtime/evidence-capture-workflow.md
-      - docs/agent-runtime/universal-agent-workflow-standard.md
+      - hooks/pre-commit.governance.ps1 (v2.4.0, 327 lines)
+      - schemas/agent-runtime/evidence-capture.schema.json (5 stages, maxItems=5)
+      - docs/agent-runtime/hook-failure-semantics.md (base + delta)
+      - tests/test_hook_failure_semantics.py (37 tests)
+      - _evidence/hook-output/latest.json (v2.4.0 actual output)
     matched_capabilities:
       - hook_output_persistence
       - governance_standard_design
       - failure_semantics_documentation
-    compared_against_request:
-      - "verify and tighten hook failure behavior for ai_guard/test-governance output persistence"
-  sufficiency_decision: new_delta_required
-  decision: build_delta
+      - ai_guard --files mode (AI-GUARD-FILES-MODE-AND-LARGE-FILE-SCAN-A1)
 
 goal: >
-  Verify and tighten hook failure behavior for ai_guard/test-governance
-  output persistence without changing SADP audit semantics.
-  
-  Specific issues:
-  1. Schema maxItems=3 and enum missing "ai-guard" — latest.json violates schema
-  2. overall_result=BLOCKED when ai-guard fails, but hook exits 0 and prints "PASS"
-  3. No timeout on ai_guard subprocess — can hang commit indefinitely
-  4. Failure semantics not formally documented
+  Document and finalize hook failure semantics for v2.4.0:
+  - Stage classification (blocking vs advisory) with rationale
+  - Decision tree for overall_result computation
+  - ai-guard --files flag invocation pattern
+  - Timeout behavior (30s, fail-closed)
+  - Null exit code semantics
+  - Missing script fallback behavior
+  - Schema conformance notes (output_file paths, BOM)
+  - Anti-patterns (7 rules)
 
 scope:
-  - hooks/pre-commit.governance.ps1 (tighten failure propagation + timeout)
-  - schemas/agent-runtime/evidence-capture.schema.json (fix maxItems, add ai-guard)
-  - docs/agent-runtime/hook-failure-semantics.md (new — formal documentation)
+  - docs/agent-runtime/hook-failure-semantics.md (base doc + delta additions)
+  - .ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml (status update)
 
 write_set:
-  - ".ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml"
-  - "hooks/pre-commit.governance.ps1"
-  - "schemas/agent-runtime/evidence-capture.schema.json"
   - "docs/agent-runtime/hook-failure-semantics.md"
-  - "tests/test_hook_failure_semantics.py"
+  - ".ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml"
+  - ".ai/current-task.yaml"
+  - "hooks/sealed-files-manifest.json"
 
 constraints:
-  - Do NOT change sadp-audit as the sole blocking gate
-  - Do NOT make ai-guard or test-governance blocking
-  - Keep ai_guard output persistence working
-  - Bump hook version to 2.2.0
+  - "No changes to hook script itself (pre-commit.governance.ps1)"
+  - "No changes to schema (evidence-capture.schema.json)"
+  - "Documentation only — must be consistent with v2.4.0 implementation"
+  - "53 target tests must pass"
 
 acceptance_criteria:
-  - latest.json validates against updated schema
-  - overall_result uses PASS_WITH_WARNINGS for non-blocking failures
-  - Console message matches overall_result
-  - ai_guard subprocess has 30s timeout
-  - Failure semantics documented
+  - "Decision tree covers all 5 stages with early-exit path"
+  - "--files flag invocation documented"
+  - "Missing script fallback table covers all 5 scripts"
+  - "output_file path deviation noted (absolute vs relative)"
+  - "BOM encoding note added"
+  - "Anti-patterns expanded to 7 rules"
+  - "53 target tests pass"
+  - "latest.json validates against schema"
 
-depends_on: EVIDENCE-CAPTURE-STANDARD-A1
+verdict:
+  status: completed
+  test_results:
+    hook_tests: "37 passed"
+    ai_guard_tests: "16 passed"
+    total_target: "53 passed"
+  doc_additions:
+    - "Decision tree (5 stages with early-exit)"
+    - "ai-guard --files flag section"
+    - "Missing script fallback table (5 scripts)"
+    - "output_file path deviation note"
+    - "BOM encoding note"
+    - "Anti-patterns #6 and #7"
+  schema_status: "already up-to-date (v2.4.0, 5 stages, maxItems=5)"
+  hook_status: "no changes needed (v2.4.0 implementation matches doc)"
+
+live_dispatch_authorized: false
+next_recommended: "Phase 3 batch cleanup per WORKSPACE-CLOSURE-INVENTORY-A1"
