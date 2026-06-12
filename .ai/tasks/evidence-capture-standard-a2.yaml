@@ -1,7 +1,7 @@
 task_id: EVIDENCE-CAPTURE-STANDARD-A2
 title: Evidence Capture Standard — canonical evidence pack contract & builder enforcement
 priority: P0
-status: in_progress
+status: accepted_with_limitation
 mode: "@go edit"
 whole_dirty_worktree_allowed: false
 external_upload_allowed: false
@@ -151,3 +151,28 @@ acceptance_criteria:
   - "Runtime negative-path evidence included in pack"
   - "modified_tracked is 0 after commit"
   - "All 1204+ existing tests pass"
+
+verdict:
+  gpt_verdict: accepted_with_limitation
+  gpt_verdict_file: _evidence/EVIDENCE-CAPTURE-STANDARD-A2/gpt_verdict_a2_r5.txt
+  gpt_review_rounds: 5
+  gpt_r1_verdict: needs_revision
+  gpt_r2_verdict: needs_revision
+  gpt_r3_verdict: needs_revision
+  gpt_r4_verdict: needs_revision
+  gpt_r5_verdict: accepted_with_limitation
+  gpt_limitations:
+    - startup_read_suggest_handoff
+    - registered_closure_not_fully_clean
+    - zip_sha256_informational_not_self_referential
+    - missing_git_show_for_13a7f4b
+  gpt_next_task: none
+  commits:
+    - b474d4b  # R1: canonical evidence pack contract, manifest, verdict eligibility
+    - ceb9ed0  # R2: resolve 7 GPT review blockers
+    - 148c550  # R3: resolve 6 narrow consistency issues
+    - 442ad78  # R4: schema/manifest alignment + report display
+    - 13a7f4b  # R4-hotfix: zip_size_bytes integer type
+    - c96de98  # R5: ZIP metadata convergence + report actual values + schema alignment
+  evidence_pack: _evidence/EVIDENCE_PACK_ECS_A2_R5.zip
+  test_result: 1260 passed, 0 failed
