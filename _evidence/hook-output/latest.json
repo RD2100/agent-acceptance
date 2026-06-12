@@ -1,10 +1,10 @@
 ﻿{
     "git_context":  {
                         "branch":  "master",
-                        "commit_count":  289,
-                        "staged_file_count":  41
+                        "commit_count":  299,
+                        "staged_file_count":  3
                     },
-    "timestamp":  "2026-06-12T12:47:05Z",
+    "timestamp":  "2026-06-12T12:50:03Z",
     "overall_result":  "PASS",
     "hook_version":  "2.4.0",
     "stages":  [
@@ -16,26 +16,26 @@
                    },
                    {
                        "name":  "sadp-audit",
-                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\sadp-audit-20260612-204705.txt",
-                       "duration_ms":  3621,
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\sadp-audit-20260612-205003.txt",
+                       "duration_ms":  2357,
                        "exit_code":  0
                    },
                    {
                        "name":  "ai-guard",
-                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\ai-guard-20260612-204705.txt",
-                       "duration_ms":  2729,
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\ai-guard-20260612-205003.txt",
+                       "duration_ms":  2836,
                        "exit_code":  0
                    },
                    {
                        "name":  "test-governance",
-                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\test-governance-20260612-204705.txt",
-                       "duration_ms":  3149,
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\test-governance-20260612-205003.txt",
+                       "duration_ms":  3308,
                        "exit_code":  0
                    },
                    {
                        "name":  "conversation-health",
-                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\conversation-health-20260612-204705.txt",
-                       "duration_ms":  64,
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\conversation-health-20260612-205003.txt",
+                       "duration_ms":  84,
                        "exit_code":  0
                    }
                ]

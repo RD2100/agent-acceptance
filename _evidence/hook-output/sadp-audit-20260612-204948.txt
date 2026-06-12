@@ -1,0 +1,38 @@
+﻿# SADP Audit Output - 2026-06-12T12:49:48Z
+# Exit code: 0
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 23
+[SADP-AUDIT] TaskSpecs found: 62
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 23 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   _evidence/hook-output/test-governance-20260612-204739.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/test-governance-20260612-204757.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/test-governance-20260612-204814.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/test-governance-20260612-204831.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/test-governance-20260612-204848.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hrv_v3_verdict.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hrv_v4_verdict.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hrv_verdict.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hrv_verdict_full.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/next_direction_discussion.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/next_task_reply_a4.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/next_task_reply_after_a4.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/runtime-negative-path-evidence/ai_guard_failure_blocks.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/runtime-negative-path-evidence/ai_guard_failure_mismatch_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/runtime-negative-path-evidence/combined-runtime-evidence.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/runtime-negative-path-evidence/invalid_json_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/runtime-negative-path-evidence/missing_ai_guard_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/runtime-negative-path-evidence/missing_sadp_audit_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/runtime-negative-path-evidence/null_exit_code_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/runtime-negative-path-evidence/pass_with_warnings_forbidden.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/runtime-negative-path-evidence/sadp_audit_failure_blocks.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/runtime-negative-path-evidence/test_governance_failure_advisory.txt -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] STATUS: PASS
+
