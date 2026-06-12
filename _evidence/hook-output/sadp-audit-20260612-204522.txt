@@ -1,0 +1,51 @@
+﻿# SADP Audit Output - 2026-06-12T12:45:22Z
+# Exit code: 0
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 36
+[SADP-AUDIT] TaskSpecs found: 62
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 36 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/ai-guard-scope-check-output.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/chain-evidence.json -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/deferred-files-register.yaml -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/diff.patch -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/diff-stat-5755681d.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/diff-stat-6c47d327.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/diff-stat-7b8d9477.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/diff-stat-804ae3b.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/diff-stat-combined.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/diff-stat-d7b294d.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/diff-stat-f95b95c4.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/extra/ai_guard_failure_blocks.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/extra/ai_guard_failure_mismatch_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/extra/combined-runtime-evidence.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/extra/invalid_json_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/extra/missing_ai_guard_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/extra/missing_sadp_audit_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/extra/null_exit_code_rejected.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/extra/pass_with_warnings_forbidden.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/extra/sadp_audit_failure_blocks.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/extra/test_governance_failure_advisory.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/final-report.md -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/git-log.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/git-show-5755681d.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/git-show-6c47d327.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/git-show-7b8d9477.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/git-show-804ae3b.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/git-show-d7b294d.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/git-show-f95b95c4.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/git-status-after.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/review.md -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/review.yaml -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/sadp-audit-raw.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/safety-report.json -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/test-output.txt -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] STATUS: PASS
+

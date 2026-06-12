@@ -1,0 +1,46 @@
+﻿# SADP Audit Output - 2026-06-12T12:37:23Z
+# Exit code: 0
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 31
+[SADP-AUDIT] TaskSpecs found: 62
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 31 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/ai-guard-scope-check-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/chain-evidence.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/conversation-health/current-snapshot.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/conversation-health/latest.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/deferred-files-register.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/diff.patch -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/diff-stat-c5adb084.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/diff-stat-combined.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/final-report.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/git-log.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/git-show-c5adb084.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/git-status-after.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/gpt-review-prompt.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/pre-gpt-gate-evidence/access_denied_records_force.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/pre-gpt-gate-evidence/auth_required_records_human_required.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/pre-gpt-gate-evidence/combined_summary.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/pre-gpt-gate-evidence/force_handoff_blocks_submit.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/pre-gpt-gate-evidence/human_required_blocks_submit.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/pre-gpt-gate-evidence/latest_json_written_for_pre_gpt_gate.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/pre-gpt-gate-evidence/legacy_helper_import_failure_blocks.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/pre-gpt-gate-evidence/legacy_script_post_response_updates_current_json.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/pre-gpt-gate-evidence/missing_current_json_blocks_without_refresh.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/pre-gpt-gate-evidence/stale_metrics_warns_or_suggests.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/pre-gpt-gate-evidence/successful_metrics_refresh_updates_current_json.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/review.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/review.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/RUN_ID.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/sadp-audit-raw.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/safety-report.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/test-output.txt -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] STATUS: PASS
+

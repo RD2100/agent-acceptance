@@ -1,0 +1,46 @@
+﻿# SADP Audit Output - 2026-06-12T12:42:18Z
+# Exit code: 0
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 31
+[SADP-AUDIT] TaskSpecs found: 62
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 31 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/ai-guard-scope-check-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/chain-evidence.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/conversation-health/latest.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/deferred-files-register.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/diff.patch -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/diff-stat-2b52579.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/diff-stat-892d445.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/diff-stat-combined.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/diff-stat-dcc31a7.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/extra/combined-conversation-health-evidence.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/extra/composite_force.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/extra/invalid_json.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/extra/manual_estimate_no_force.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/extra/message_count_force_cdp.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/extra/missing_current_json.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/extra/nav_access_denied.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/extra/nav_auth_required.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/extra/review_rounds_force.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/extra/stale_metrics_suggest.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/final-report.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/git-log.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/git-show-2b52579.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/git-show-892d445.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/git-show-dcc31a7.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/git-status-after.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/review.md -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/review.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/sadp-audit-raw.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/safety-report.json -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/test-output.txt -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] STATUS: PASS
+
