@@ -1,0 +1,99 @@
+R18 Evidence Maintenance FINAL Reviewer Verdict
+YAML
+verdict: ACCEPTED_WITH_LIMITATION
+review_scope: EVIDENCE_PACK_R18_EVIDENCE_MAINTENANCE_FINAL.zip
+zip_sha256_verified: a8f7cd7458a28f8da1b463813f73e0273af97d798d9505ca261edc37cce3fdb6
+zip_file_count: 24
+commit_reviewed: efd5b96e
+committed_files_verified: 60
+post_commit_modified_tracked: 0
+post_commit_untracked: 23
+test_evidence: 1038 passed, 21 warnings
+live_dispatch: NOT_AUTHORIZED
+
+我已核查 EVIDENCE_PACK_R18_EVIDENCE_MAINTENANCE_FINAL.zip。SHA256 与提交说明一致，ZIP 内实际为 24 个文件。git-show-efd5b96e.txt 与 diff-stat-efd5b96e.txt 均显示：
+
+60 files changed, 1745227 insertions(+), 3 deletions(-)
+
+因此，efd5b96e 作为 evidence maintenance commit 的核心证据可以接受。
+
+已接受内容
+YAML
+accepted:
+  - efd5b96e commit evidence is present
+  - 60 committed files are represented in git-show and diff-stat
+  - prior R18 closure evidence directories and ZIP artifacts were committed
+  - R18 evidence maintenance TaskSpec was created
+  - modified tracked files are now 0
+  - post-commit status is internally consistent across git-status-after, safety-report, review.yaml, and final-report
+  - tests record 1038 passed, 0 failed, 21 warnings
+  - 17 NEG-009 fixtures remain deferred under deny_paths
+  - 5 secret-scan-output.txt files remain denied under deny_list
+
+这已经解决了上一轮 SLIM verdict 中最主要的后续项：原先 8 个 pending session artifacts 已不再作为未跟踪遗留项存在，而是被 efd5b96e 纳入版本控制。
+
+Post-commit 状态核查
+
+git-status-after.txt 显示：
+
+YAML
+modified_tracked: 0
+untracked_total: 23
+breakdown:
+  neg_009_deferred: 17
+  secret_scan_denied: 5
+  session_artifacts: 1
+
+未跟踪的 1 个 session artifact 是：
+
+_build_evidence_maintenance.py
+
+这个文件是本轮 evidence maintenance 生成过程中产生的当前 builder script。它已经在 git-status-after.txt 中明确暴露，safety-report.json、review.yaml、final-report.md 也都一致记录了 session_artifacts: 1，所以它不再构成隐性 evidence mismatch。
+
+但要注意：deferred-files-register.yaml 只详细列出了 17 个 NEG-009 和 5 个 secret-scan 文件；对 _build_evidence_maintenance.py 只在 summary 中以 session_artifacts_remaining: 1 概括，没有单独列出路径。这是一个小限制，不阻止本轮接受，但后续最好把该路径也显式列入 session_artifacts_pending.files。
+
+必须保留的 limitations
+YAML
+limitations:
+  - workspace is not fully clean: 23 untracked entries remain
+  - 1 current builder script remains untracked: _build_evidence_maintenance.py
+  - deferred-files-register.yaml summarizes this builder as session_artifacts_remaining: 1, but does not list it under a dedicated files array
+  - ai-guard-scope-check-output.txt says ai_guard returned empty, so it is not strong scope-check evidence
+  - sadp-audit-raw.txt is commit-message / replay-style evidence, not raw full pre-commit console output
+  - diff evidence is diff-stat, not full patch-level review
+
+这些限制不推翻 efd5b96e，但不能把当前状态描述为“完全 clean workspace”。更准确的说法是：tracked workspace clean；所有主要历史 session artifacts 已提交；剩余未跟踪项为 deny/deferred 项和一个当前 builder script。
+
+Final Decision
+YAML
+r18_evidence_maintenance_final_decision:
+  verdict: ACCEPTED_WITH_LIMITATION
+
+  accepted_commit:
+    - efd5b96e
+
+  accepted_scope:
+    - R18 evidence maintenance TaskSpec
+    - prior R18 closure evidence directories committed
+    - prior closure ZIPs committed
+    - GPT replies committed
+    - validation script committed
+    - session scripts from the SLIM follow-up committed
+
+  closed_from_previous_slim_followup:
+    - 8 pending session artifacts have been reduced to 1 current builder script
+    - modified tracked files remain at 0
+    - permanently deferred/denied files are identified
+
+  remaining_non_blocking_followup:
+    - either commit/remove/register _build_evidence_maintenance.py explicitly
+    - keep 17 NEG-009 fixtures denied/deferred unless a dedicated negative-fixture policy authorizes them
+    - keep 5 secret-scan-output.txt files denied unless sanitized or separately approved
+    - improve future register format by listing every non-NEG session artifact path explicitly
+
+  not_authorized:
+    - live dispatch
+    - claiming no untracked files remain
+    - treating empty ai_guard output as normal strong evidence
+
+一句话结论：efd5b96e 可以接受；R18 evidence maintenance 已把此前 8 个 pending session artifacts 纳入版本控制，并将 tracked workspace 清零。但当前仍有 23 个 untracked entries，其中 1 个是本轮新生成的 builder script，因此本轮是“可接受的登记闭环”，不是“完全无遗留文件”的 clean workspace。

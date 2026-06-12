@@ -1,0 +1,63 @@
+# git diff --stat efd5b96e^..efd5b96e
+
+.ai/current-task.yaml                              |      4 +-
+ .ai/tasks/r18-evidence-maintenance-a1.yaml         |     51 +
+ _build_r18_closure.py                              |    428 +
+ _build_r18_closure_slim.py                         |    365 +
+ _capture_reply.py                                  |     47 +
+ _evidence/EVIDENCE_PACK_R18_WORKSPACE_CLOSURE.zip  |    Bin 0 -> 13892223 bytes
+ .../EVIDENCE_PACK_R18_WORKSPACE_CLOSURE_SLIM.zip   |    Bin 0 -> 23993 bytes
+ .../gpt_reply_final4.txt                           |    167 +
+ .../ai-guard-scope-check-output.txt                |      1 +
+ .../R18-WORKSPACE-CLOSURE-SLIM/chain-evidence.json |     24 +
+ .../deferred-files-register.yaml                   |     60 +
+ .../diff-stat-104ac8b1.txt                         |     48 +
+ .../diff-stat-6022c187.txt                         |     12 +
+ .../diff-stat-caa85c28.txt                         |     22 +
+ .../diff-stat-combined.txt                         |     90 +
+ .../diff-stat-f06ce965.txt                         |     22 +
+ .../R18-WORKSPACE-CLOSURE-SLIM/final-report.md     |     24 +
+ _evidence/R18-WORKSPACE-CLOSURE-SLIM/git-log.txt   |     15 +
+ .../git-show-104ac8b1.txt                          |     60 +
+ .../git-show-6022c187.txt                          |     25 +
+ .../git-show-caa85c28.txt                          |     36 +
+ .../git-show-f06ce965.txt                          |     35 +
+ .../git-status-after.txt                           |     50 +
+ .../gpt_reply_final2.txt                           |    121 +
+ .../gpt_reply_final3.txt                           |    167 +
+ .../gpt_reply_final4.txt                           |    167 +
+ _evidence/R18-WORKSPACE-CLOSURE-SLIM/review.md     |     24 +
+ _evidence/R18-WORKSPACE-CLOSURE-SLIM/review.yaml   |     19 +
+ .../R18-WORKSPACE-CLOSURE-SLIM/sadp-audit-raw.txt  |     14 +
+ .../R18-WORKSPACE-CLOSURE-SLIM/safety-report.json  |     20 +
+ .../R18-WORKSPACE-CLOSURE-SLIM/test-output.txt     |    144 +
+ .../ai-guard-scope-check-output.txt                |      1 +
+ .../R18-WORKSPACE-CLOSURE/chain-evidence.json      |     25 +
+ .../deferred-files-register.yaml                   |     67 +
+ .../R18-WORKSPACE-CLOSURE/diff-104ac8b1.patch      |  78058 ++
+ .../R18-WORKSPACE-CLOSURE/diff-6022c187.patch      |    643 +
+ .../R18-WORKSPACE-CLOSURE/diff-caa85c28.patch      | 318081 +++++++
+ .../R18-WORKSPACE-CLOSURE/diff-combined.patch      | 789540 ++++++++++++++++++
+ .../R18-WORKSPACE-CLOSURE/diff-f06ce965.patch      |  79060 ++
+ .../R18-WORKSPACE-CLOSURE/diff-stat-combined.txt   |     87 +
+ _evidence/R18-WORKSPACE-CLOSURE/final-report.md    |     33 +
+ _evidence/R18-WORKSPACE-CLOSURE/git-log.txt        |     15 +
+ .../R18-WORKSPACE-CLOSURE/git-show-104ac8b1.txt    |  78073 ++
+ .../R18-WORKSPACE-CLOSURE/git-show-6022c187.txt    |    659 +
+ .../R18-WORKSPACE-CLOSURE/git-show-caa85c28.txt    | 318098 +++++++
+ .../R18-WORKSPACE-CLOSURE/git-show-f06ce965.txt    |  79076 ++
+ .../R18-WORKSPACE-CLOSURE/git-status-after.txt     |     39 +
+ .../R18-WORKSPACE-CLOSURE/gpt_reply_closure.txt    |    106 +
+ .../R18-WORKSPACE-CLOSURE/gpt_reply_final2.txt     |    121 +
+ .../R18-WORKSPACE-CLOSURE/gpt_reply_final3.txt     |    167 +
+ .../R18-WORKSPACE-CLOSURE/gpt_reply_final4.txt     |    167 +
+ _evidence/R18-WORKSPACE-CLOSURE/review.md          |     29 +
+ _evidence/R18-WORKSPACE-CLOSURE/review.yaml        |     44 +
+ _evidence/R18-WORKSPACE-CLOSURE/sadp-audit-raw.txt |     13 +
+ _evidence/R18-WORKSPACE-CLOSURE/safety-report.json |     48 +
+ _evidence/R18-WORKSPACE-CLOSURE/test-output.txt    |    144 +
+ _submit_closure.py                                 |    165 +
+ _submit_workspace_final3.py                        |    195 +
+ hooks/sealed-files-manifest.json                   |      2 +-
+ scripts/validate_project_registry_bindings.py      |    212 +
+ 60 files changed, 1745227 insertions(+), 3 deletions(-)

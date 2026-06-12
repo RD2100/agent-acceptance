@@ -1,0 +1,11 @@
+verdict: EVIDENCE_MAINTENANCE_COMPLETE
+task_id: R18-EVIDENCE-MAINTENANCE-A1
+commit: efd5b96e
+post_commit:
+  modified_tracked: 0
+  untracked: 23
+  neg_009: 17
+  secret_scan: 5
+  session_artifacts: 1
+  grand_total: 23
+  all_committable_committed: true

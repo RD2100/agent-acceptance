@@ -1,0 +1,14 @@
+# SADP Pre-commit Hook Output from efd5b96e
+
+feat: R18 evidence maintenance — commit session artifacts, closure evidence dirs
+
+Commit all pending session artifacts from R18 workspace closure process:
+- Builder scripts: _build_r18_closure.py, _build_r18_closure_slim.py
+- CDP scripts: _submit_closure.py, _submit_workspace_final3.py, _capture_reply.py
+- Evidence dirs: R18-WORKSPACE-CLOSURE/, R18-WORKSPACE-CLOSURE-SLIM/
+- Evidence ZIPs: CLOSURE (full) and CLOSURE_SLIM
+- GPT replies: gpt_reply_final4.txt, gpt_reply_closure.txt
+- Validation script: scripts/validate_project_registry_bindings.py
+- TaskSpec: r18-evidence-maintenance-a1.yaml
+
+Post-commit: 22 untracked (17 NEG-009 deny_paths + 5 secret-scan deny_list)

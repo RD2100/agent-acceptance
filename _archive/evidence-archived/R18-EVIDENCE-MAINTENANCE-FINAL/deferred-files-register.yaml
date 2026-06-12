@@ -1,0 +1,43 @@
+# Deferred Files Register — R18 Evidence Maintenance FINAL
+# Generated: 2026-06-11T11:30:24.025275
+
+neg_009_deferred:
+  count: 17
+  reason: deny_paths — mock secret patterns blocked by SADP hook
+  files:
+    - _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-alpha/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-delta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-delta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-eta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-eta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-iota/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-iota/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-theta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-theta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    - _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+
+secret_scan_denied:
+  count: 5
+  reason: deny_list — contain mock secret patterns (AIza*, AKIA*, BEGIN PRIVATE KEY)
+  files:
+    - _evidence/R18-FOLLOWUP-FINAL/secret-scan-output.txt
+    - _evidence/R18-WORKSPACE-CLEANUP-FINAL/secret-scan-output.txt
+    - _evidence/R18-WORKSPACE-CLOSURE-SLIM/secret-scan-output.txt
+    - _evidence/R18-WORKSPACE-CLOSURE/secret-scan-output.txt
+    - _evidence/R18-catchup-commits/secret-scan-output.txt
+
+summary:
+  modified_tracked: 0
+  untracked_total: 23
+  neg_009: 17
+  secret_scan: 5
+  session_artifacts_remaining: 1
+  grand_total: 23
+  all_entries_accounted_for: true

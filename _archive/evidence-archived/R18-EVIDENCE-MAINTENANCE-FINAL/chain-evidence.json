@@ -1,0 +1,20 @@
+{
+  "task_id": "R18-EVIDENCE-MAINTENANCE-A1",
+  "generated": "2026-06-11T11:30:24.025275",
+  "commits_in_scope": [
+    "3fc33dac",
+    "4efcbac9",
+    "bc974d2f",
+    "104ac8b1",
+    "f06ce965",
+    "e1bbd516",
+    "6022c187",
+    "04b3d562",
+    "c4017e89",
+    "caa85c28",
+    "efd5b96e"
+  ],
+  "evidence_maintenance_commit": "efd5b96e",
+  "base": "bc974d2f",
+  "head": "efd5b96e"
+}

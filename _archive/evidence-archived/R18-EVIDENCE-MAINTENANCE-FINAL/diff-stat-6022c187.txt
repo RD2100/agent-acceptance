@@ -1,0 +1,11 @@
+# git diff --stat 6022c187^..6022c187
+
+.../EVIDENCE_PACK_R18_WORKSPACE_CLEANUP_FINAL.zip  | Bin 2497583 -> 2503928 bytes
+ .../ai-guard-scope-check-output.txt                | 252 +++++++++++++++++++++
+ .../deferred-files-register.yaml                   |  16 +-
+ .../gpt_reply_final2.txt                           | 121 ++++++++++
+ .../R18-WORKSPACE-CLEANUP-FINAL/sadp-audit-raw.txt |  36 +++
+ .../staging-count-reconciliation.md                |  25 ++
+ _submit_workspace_final.py                         | 125 ++++++++++
+ hooks/sealed-files-manifest.json                   |   2 +-
+ 8 files changed, 567 insertions(+), 10 deletions(-)

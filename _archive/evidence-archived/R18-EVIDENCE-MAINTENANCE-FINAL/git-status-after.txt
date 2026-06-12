@@ -1,0 +1,35 @@
+# Git Status After Commit efd5b96e
+# Generated: 2026-06-11T11:30:24.025275
+
+modified_tracked: 0
+  (none)
+
+untracked: 23
+  neg_009_deferred: 17
+    ?? _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-alpha/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-delta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-delta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-eta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-eta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-iota/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-iota/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-theta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-theta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json
+    ?? _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json
+  secret_scan_denied: 5
+    ?? _evidence/R18-FOLLOWUP-FINAL/secret-scan-output.txt
+    ?? _evidence/R18-WORKSPACE-CLEANUP-FINAL/secret-scan-output.txt
+    ?? _evidence/R18-WORKSPACE-CLOSURE-SLIM/secret-scan-output.txt
+    ?? _evidence/R18-WORKSPACE-CLOSURE/secret-scan-output.txt
+    ?? _evidence/R18-catchup-commits/secret-scan-output.txt
+  session_artifacts: 1
+    ?? _build_evidence_maintenance.py
+
+grand_total: 23
