@@ -1,0 +1,277 @@
+目前项目已经从“补历史债、修证据链”的阶段，推进到了 “证据标准化基本完成，准备进入 live dispatch 前置审查” 的阶段。
+
+可以用一句话概括：
+
+项目主体工程和治理体系已经基本成型，历史遗留文件已经入库，证据包标准已经跑通，测试稳定通过；但真实 live dispatch 还没有授权，工作区仍是 registered closure，不是 fully clean。
+
+一、已经完成的核心进展
+1. R18 历史债基本清完
+
+之前项目最大的问题是：很多文件已经生成，但没有正式进入 git，证据也不完整。
+
+R18 做了大规模 catch-up：
+
+YAML
+R18 catch-up:
+  文件数量: 3634
+  状态: 已分批入库
+  verdict: ACCEPTED_WITH_LIMITATION
+
+后续又做了 follow-up、workspace cleanup、closure slim、evidence maintenance，把当时暴露出来的问题逐步收口。
+
+现在可以说：历史遗留文件已经基本被纳入版本控制和证据链。
+
+2. 全局 agent 工作规范已经完成
+
+我们已经完成并接受了：
+
+YAML
+task_id: UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1
+verdict: ACCEPTED_WITH_LIMITATION
+
+它建立了全局 agent 工作标准，包括：
+
+startup read gate
+pre-task gate
+pre-GPT-review gate
+evidence pack standard
+status state machine
+human_required decision record
+workspace closure standard
+evidence generation hygiene
+
+这意味着以后 agent 不再是“想怎么做就怎么做”，而是必须先读标准、确认任务、检查 write_set、生成证据、再提交审核。
+
+这一块是项目治理能力的基础。
+
+3. Evidence Capture Standard 已经基本跑通
+
+最新完成的是：
+
+YAML
+task_id: EVIDENCE-CAPTURE-STANDARD-A2
+latest_round: R5
+verdict: accepted_with_limitation
+tests: 1260 passed, 0 failed
+
+这说明证据包生成已经从“临时拼凑”变成了比较系统的标准流程。
+
+现在证据包已经能覆盖：
+
+Tier 0 / Tier 1 evidence completeness
+evidence-manifest.json
+runtime-evidence-index.json
+negative path evidence
+test summary
+safety report
+chain evidence
+review.yaml
+final-report.md
+content_sha256 自校验
+
+尤其是 R5 已经解决了前几轮反复出现的问题：
+
+manifest 和 schema 不一致
+runtime evidence 统计不准
+review / final-report 显示 N/A
+ZIP 内文件和外部声明不同步
+file_count 不一致
+
+所以，目前证据标准这条线已经可以认为 基本完成，只是还带一些 limitation。
+
+4. 测试规模已经提升并稳定
+
+之前是：
+
+1038 passed
+
+现在最新是：
+
+1260 passed, 0 failed
+
+这说明项目不仅补了历史文件，也增加了不少治理和证据相关测试。
+
+当前测试状态是比较好的。
+
+二、当前项目处于什么状态？
+
+现在项目可以这样判断：
+
+YAML
+核心工程: 基本完成
+治理规范: 基本完成
+证据包标准: 基本完成
+测试状态: 稳定通过
+历史遗留: 基本清理完成
+live dispatch: 尚未授权
+workspace: registered closure，不是 fully clean
+
+换成通俗说法就是：
+
+项目已经能证明自己做了什么、改了什么、测了什么，也能按标准生成证据包；但还没有进入真实运行阶段。
+
+三、目前还没有完成什么？
+1. live dispatch 还没有授权
+
+这是最重要的未完成项。
+
+目前所有 review 都明确保留：
+
+YAML
+live_dispatch: NOT_AUTHORIZED
+
+也就是说：
+
+可以 dry-run；
+
+可以做 readiness review；
+
+可以检查 registry / binding / router；
+
+但不能直接执行真实 live dispatch。
+
+下一步应该做的是：
+
+YAML
+task_id: LIVE-DISPATCH-READINESS-REVIEW-A1
+type: readiness_review_only
+live_dispatch: NOT_AUTHORIZED
+
+这个任务只审查“是否具备申请 human authorization 的条件”，不是直接 live。
+
+2. 工作区仍不是 fully clean
+
+现在比较好的地方是：
+
+YAML
+modified_tracked: 0
+
+说明已跟踪文件没有脏改动。
+
+但仍有 untracked entries。最新 R5 中仍是 registered closure，也就是说：
+
+YAML
+workspace_state: registered_closure
+含义:
+  modified_tracked: 0
+  untracked: 有，但全部登记
+
+这不是 blocker，但也不能说完全干净。
+
+简单理解：
+
+没有隐藏脏改动，但还有登记过的遗留文件。
+
+3. NEG-009 和 secret-scan 文件还需要制度化
+
+项目里一直反复出现：
+
+NEG-009 mock secret fixtures
+secret-scan-output.txt
+deny_paths
+deny_list
+
+这些文件不是普通垃圾，而是负向测试和 mock secret 相关材料。
+
+目前它们靠 deferred register 维持秩序，但还缺一个正式政策：
+
+YAML
+task_id: NEG-009-MOCK-SECRET-FIXTURE-POLICY-A1
+
+这个任务要明确：
+
+哪些 mock secret 文件可以存在
+是否允许提交
+应该放在哪个目录
+如何避免被误认为真实 secret
+secret-scan 输出如何保存或屏蔽
+4. hook failure semantics 仍需最终收口
+
+之前做过 hook 失败语义验证，但还没有形成最终 accepted 的稳定结论。
+
+关键问题是：
+
+sadp-audit 失败是否一定阻断
+ai_guard 失败是否一定阻断
+Test-Governance 是 blocking 还是 advisory
+validator 对缺失 stage 是否 fail-closed
+负向运行证据是否完整入包
+
+这个问题不阻塞当前 evidence standard R5 的接受，但如果要进入 live readiness，就必须认真对待。
+
+后续可做：
+
+YAML
+task_id: HOOK-FAILURE-SEMANTICS-FINALIZE-A1
+
+不过我建议它可以放在 live readiness review 之后，根据 readiness review 的结论决定是否作为 blocker 修。
+
+四、项目完整度判断
+
+我会这样估算：
+
+YAML
+核心代码与工具: 85% - 90%
+治理文档体系: 90%
+证据包标准: 85% - 90%
+测试稳定性: 90%
+工作区洁净度: 70%
+live dispatch readiness: 60% - 65%
+长期可维护性: 80%
+
+所以项目不是早期阶段了，而是进入了 上线前治理审查阶段。
+
+五、下一步最合适做什么？
+
+当前最合适的下一步不是继续清理小文件，也不是直接 live dispatch，而是：
+
+YAML
+next_task:
+  task_id: LIVE-DISPATCH-READINESS-REVIEW-A1
+  priority: P0
+  type: audit_and_documentation_only
+  live_dispatch: NOT_AUTHORIZED
+
+它要回答：
+
+项目 registry 是否稳定？
+binding 是否冲突？
+active conversation 是否唯一？
+CDP routing 假设是否还成立？
+dry-run evidence 是否可信？
+hook/evidence 标准是否足够支撑 live 操作？
+workspace limitation 是否可以接受？
+最小 live dispatch candidate 是哪个？
+需要什么 human_required 授权？
+还有哪些 blocker？
+
+这个任务做完以后，项目才有资格进入下一步：
+
+YAML
+LIVE-DISPATCH-HUMAN-AUTHORIZATION-A1
+
+但现在还没到那一步。
+
+最终总结
+
+项目目前已经完成了：
+
+历史文件入库
+R18 证据链修复
+全局 agent 工作规范
+证据包生成标准
+runtime evidence / negative path evidence
+manifest/schema 对齐
+1260 个测试通过
+
+还没完成的是：
+
+live dispatch readiness review
+live dispatch human authorization
+hook failure semantics 最终固化
+NEG-009 mock secret policy
+进一步减少 registered untracked 文件
+
+一句话总结：
+
+项目已经从“补历史债和修证据链”阶段，进入了“live dispatch 前置审查和上线前治理加固”阶段。

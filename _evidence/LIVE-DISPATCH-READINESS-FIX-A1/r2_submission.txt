@@ -1,0 +1,105 @@
+=== LIVE-DISPATCH-READINESS-FIX-A1 — GPT REVIEW SUBMISSION R2 ===
+=== Task: Fix blocking issues from readiness review ===
+=== Commit: 018886b (base: 323fcbc) ===
+=== Date: 2026-06-12 ===
+
+## CONTEXT
+
+LIVE-DISPATCH-READINESS-REVIEW-A1 R1 received verdict: accepted_with_limitation.
+GPT identified 2 blocking issues preventing READY_FOR_HUMAN_AUTHORIZATION_WITH_LIMITATIONS:
+1. Duplicate conversation_id between dev-frame-writing and dev-frame-opencode
+2. Registry capacity exceeded (11 > 10)
+
+This FIX-A1 task resolves both issues.
+
+## FIXES APPLIED
+
+### BLOCK-1: Duplicate conversation_id (RESOLVED)
+
+Approach: Suspended dev-frame-writing (bootstrap stub at D:\agent-acceptance\_projects\dev-frame-writing).
+Rationale: dev-frame-writing is a stub with no real code (.agent/ dir only). dev-frame-opencode (D:\dev-frame-opencode) is a real active project with .ai, .git, .codegraph, active development.
+
+Changes:
+- .agent/PROJECT_REGISTRY.json: dev-frame-writing.binding_status active→suspended, added suspended_at + suspension_reason
+- _projects/dev-frame-writing/.agent/CONVERSATION_BINDING.json: binding_status active→suspended
+- Result: 0 duplicate conversation_ids among active projects
+
+### BLOCK-2: Registry capacity exceeded (RESOLVED)
+
+- .agent/PROJECT_REGISTRY.json: total_projects 11→10 (= max_registered_projects in MULTI_PROJECT_RESOURCE_POLICY.json)
+- Suspended projects do not count against capacity
+
+## FRESH DRY-RUN VALIDATION
+
+Executed: 2026-06-12T05:58:45Z (within this commit session)
+
+| Project | Classification | Dispatchable |
+|---|---|---|
+| agent-acceptance | dispatchable | true |
+| dev-frame-opencode | dispatchable | true |
+| dev-frame-writing | human_required (suspended) | false |
+| project-gamma through project-iota (7) | non_dispatchable_pending | false |
+| tripmark | human_required_tab_unresolved | false |
+
+Summary: 2 dispatchable, 0 collisions, 0 ambiguous tabs. Fail-closed verified.
+Evidence: _evidence/LIVE-DISPATCH-READINESS-FIX-A1/DRY_RUN_DISPATCH_10_FRESH.json
+
+## READINESS VERDICT UPGRADE
+
+NOT_READY_NEEDS_FIXES → READY_FOR_HUMAN_AUTHORIZATION_WITH_LIMITATIONS
+
+Updated readiness review: docs/agent-runtime/live-dispatch-readiness-review.md
+- Q1: Pass (registry capacity compliant)
+- Q2: Pass (no binding conflicts)
+- Q3: Pass (fresh dry-run validated)
+- Q7: Updated candidates (dev-frame-opencode + tripmark when tab open)
+- Q9: Reduced from 7 to 6 limitations (binding fix and capacity fix no longer needed)
+- Q10: Added 4 fix evidence items
+
+## SAFETY REPORT
+
+- live_dispatch_executed: false
+- routing_files_modified: false
+- hook_files_modified: false
+- deny_paths_respected: true
+- Only data files modified (registry, binding, review document)
+
+## FILES MODIFIED (14 in commit)
+
+Core fixes (3):
+- .agent/PROJECT_REGISTRY.json (suspend + capacity)
+- _projects/dev-frame-writing/.agent/CONVERSATION_BINDING.json (suspend binding)
+- docs/agent-runtime/live-dispatch-readiness-review.md (verdict upgrade)
+
+Task infrastructure (2):
+- .ai/current-task.yaml (synced)
+- .ai/tasks/live-dispatch-readiness-fix-a1.yaml (task spec + verdict)
+
+Evidence (9):
+- _evidence/LIVE-DISPATCH-READINESS-FIX-A1/ (9 files: binding-fix-evidence.md, chain-evidence.json, DRY_RUN_DISPATCH_10_FRESH.json, final-report.md, git-status-before.txt, review.md, review.yaml, safety-report.json)
+
+## GOVERNANCE GATE RESULTS (commit 018886b)
+
+[1/4] Manifest auto-regeneration: OK
+[2/4] SADP audit: PASS (14 files, all covered by TaskSpec write_sets)
+[3/4] Test governance: PASS (ProtectedPaths, Secrets, BatchReferences all PASS)
+[4/4] Conversation health: OK (advisory)
+AI Guard: 0 errors, 1 warning (RESTRICTED: hooks/sealed-files-manifest.json)
+
+## LIMITATIONS
+
+1. dev-frame-writing is suspended, not deleted. Reactivation requires new conversation binding.
+2. tripmark not currently dispatchable (Chrome tab not open — expected operational behavior).
+3. Workspace still has ~193 untracked entries (not addressed in this fix — out of scope).
+
+## REVIEW INSTRUCTIONS
+
+Evaluate this FIX-A1 submission. Confirm whether:
+1. Both blocking issues are properly resolved
+2. Fresh dry-run validates the fix
+3. Verdict upgrade to READY_FOR_HUMAN_AUTHORIZATION_WITH_LIMITATIONS is justified
+
+Provide verdict in format:
+### Verdict: [accepted | accepted_with_limitation | needs_revision | blocked]
+
+=== END SUBMISSION ===
