@@ -1,0 +1,145 @@
+审核裁决：ACCEPTED_WITH_MINOR_LIMITATIONS
+
+我已按 V5 新包重新核验。结论是：V5 已经关闭 V4 裁决中的实质性 blockers，可以接受；但仍建议补一个后续 cleanup 小任务，清理任务描述和报告摘要层面的残留。
+
+一、基础完整性核对
+
+通过：
+
+ZIP: EVIDENCE_PACK_HOOK_FAILURE_RUNTIME_VALIDATION_V5.zip
+文件数: 36
+SHA-256: 1c55067d9ec863fcf2758449b857421aacbea161f917569dafd387e1de768651
+Base: 20a4aa27
+Head: 804ae3b
+Commit 链:
+20a4aa27 → 6c47d327 → 7b8d9477 → f95b95c4 → 5755681d → d7b294d → 804ae3b
+测试:
+1072 passed, 21 warnings in 43.81s
+modified_tracked:
+0
+
+工作区状态在 git-status-after.txt / safety-report.json / review.yaml / review.md / final-report.md 中一致，均显示：
+
+modified_tracked: 0
+untracked_total: 79
+neg_009: 17
+secret_scan: 5
+session_artifacts: 57
+二、V4 blockers 关闭情况
+V4 问题	V5 证据	裁决
+output_file:null 与 schema 不一致	schema 已改为 ["string", "null"]	Fixed
+validator 未检查 output_file 类型	validator 已增加 output_file must be string or null 校验	Fixed
+missing_ai_guard 缺少 runtime evidence	已新增 extra/missing_ai_guard_rejected.txt	Fixed
+重复 advisory bullet	evidence-capture-workflow.md 已删除重复项	Fixed
+三、负路径证据复核
+
+extra/ 目录现在是 9 个场景文件 + 1 个 combined 文件，没有 V3/V4 里的 stale 文件：
+
+ai_guard_failure_blocks.txt
+ai_guard_failure_mismatch_rejected.txt
+combined-runtime-evidence.txt
+invalid_json_rejected.txt
+missing_ai_guard_rejected.txt
+missing_sadp_audit_rejected.txt
+null_exit_code_rejected.txt
+pass_with_warnings_forbidden.txt
+sadp_audit_failure_blocks.txt
+test_governance_failure_advisory.txt
+
+关键场景成立：
+
+sadp-audit exit_code=1 + overall_result=BLOCKED → validator exit 0
+ai-guard exit_code=1 + overall_result=BLOCKED → validator exit 0
+test-governance exit_code=1 + overall_result=PASS → validator exit 0
+ai-guard exit_code=1 + overall_result=PASS → validator exit 1
+PASS_WITH_WARNINGS → validator exit 1
+missing sadp-audit → validator exit 1
+missing ai-guard → validator exit 1
+ai-guard exit_code=null + overall_result=PASS → validator exit 1
+invalid JSON → validator exit 1
+
+这说明 V5 已经把核心 fail-closed 语义跑通了。
+
+四、治理语义复核
+
+当前 v2.3.0 语义已经稳定为：
+
+BLOCKING: sadp-audit, ai-guard
+ADVISORY: manifest-regen, test-governance
+overall_result: PASS | BLOCKED
+PASS_WITH_WARNINGS: forbidden
+
+hook-failure-semantics.md 中已经明确记录：
+
+test-governance: advisory
+ai-guard: blocking
+null exit_code on blocking stage: expected BLOCKED
+
+evidence-capture-workflow.md 也已经同步为：
+
+Blocking stages: sadp-audit, ai-guard
+Advisory stages: manifest-regen, test-governance
+
+这个部分可以接受。
+
+五、仍需记录的 minor limitations
+1. 当前任务描述中仍有旧语义残留
+
+.ai/current-task.yaml 和 .ai/tasks/evidence-capture-hook-failure-runtime-validation-a1.yaml 中仍有旧目标描述：
+
+validate PASS_WITH_WARNINGS path
+
+但实际 v2.3.0 已经把 PASS_WITH_WARNINGS 设为 forbidden。由于代码、schema、文档、测试和 runtime evidence 已经统一为新语义，这个不影响本次核心验收，但建议后续清理。
+
+2. review.yaml / final-report.md 没有摘要列出 extra/ 负路径证据
+
+ZIP 中确实包含 9 个负路径场景，但主报告没有单独列出：
+
+Runtime Negative-Path Evidence Summary
+
+这不是 blocker，但会增加后续 reviewer 的人工展开成本。
+
+3. validator 仍是 manual schema validator，不是完整 JSON Schema engine
+
+这次针对本任务关键字段已经足够，包括：
+
+required fields
+stage enum
+exit_code type
+output_file type
+duration_ms type
+overall_result enum
+git_context required fields
+
+但如果未来要严格宣称“完整 JSON Schema validation”，建议引入 jsonschema 或补齐更多 schema keyword 校验。
+
+最终裁决
+VERDICT: ACCEPTED_WITH_MINOR_LIMITATIONS
+
+理由：
+
+V5 closes the substantive V4 blockers. Runtime negative-path evidence now covers 9/9 scenarios, schema and validator are aligned for output_file:null, missing ai-guard evidence is present, and stale/conflicting test-governance evidence has been removed.
+后续建议任务
+
+可以给下一个智能体一个很小的 cleanup task：
+
+TASK: EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-CLEANUP-A1
+
+Goal:
+Clean up non-blocking documentation/reporting residue after V5 acceptance.
+
+Required:
+1. Update .ai/current-task.yaml and .ai/tasks/evidence-capture-hook-failure-runtime-validation-a1.yaml:
+   - remove "validate PASS_WITH_WARNINGS path"
+   - replace with "validate PASS_WITH_WARNINGS is rejected in v2.3.0"
+
+2. Add Runtime Negative-Path Evidence Summary to final-report.md / review.md:
+   - list 9 scenarios
+   - expected validator exit
+   - actual validator exit
+   - PASS/FAIL
+
+3. Optional:
+   - Document that validate_hook_output.py is a bounded manual schema validator, not a full JSON Schema engine.
+
+这不需要阻塞 V5。当前 V5 可以作为本任务的 accepted baseline。

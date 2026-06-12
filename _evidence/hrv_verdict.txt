@@ -1,0 +1,214 @@
+HOOK-FAILURE-RUNTIME-VALIDATION V2 Reviewer Verdict
+YAML
+verdict: PARTIAL_ACCEPTANCE_WITH_REMAINING_BLOCKERS
+review_scope: EVIDENCE_PACK_HOOK_FAILURE_RUNTIME_VALIDATION_V2.zip
+zip_sha256_verified: 26b3b278afa2cff9be7c28d3320b241c7192ede67afcdc9cbbef65c37c028346
+zip_file_count: 16
+commit_reviewed: f95b95c
+test_evidence: 1072 passed, 21 warnings
+live_dispatch: NOT_AUTHORIZED
+
+我已核查 V2 证据包。相比上一版，它确实修复了一些关键问题：diff.patch 与 git-show-f95b95c.txt 已经对齐，modified_tracked 已降为 0，validate_hook_output.py 也不再保留旧的 PASS_WITH_WARNINGS 通过逻辑。
+但还不能接受为最终闭环，因为失败语义本身出现了新的偏移：Test-Governance 被改成 advisory，不再 blocking；validator 对缺失 required stage 仍不够 fail-closed；负向运行证据也没有真正随包提供。
+
+1. 上轮 blocker 关闭情况
+上轮 blocker	V2 状态	裁定
+HF-BLOCKING-01：validator 保留旧 PASS_WITH_WARNINGS 逻辑	已移除旧逻辑，semantic mismatch 会 exit 1	PARTIALLY_CLOSED
+HF-BLOCKING-02：diff/git-show 不一致	diff.patch 与 git-show-f95b95c.txt 均为 8 个路径，完全一致	CLOSED
+HF-BLOCKING-03：post-commit 有 modified tracked	modified_tracked: 0	CLOSED
+HF-BLOCKING-04：缺少负向失败路径证据	新增 run_negative_path_evidence.py，但实际负向输出目录没有打入 ZIP	OPEN
+HF-BLOCKING-05：ai_guard 退出码靠文本匹配	已改为读取 Job exit code，但 null fallback 为 0，仍非 fail-closed	PARTIALLY_CLOSED
+2. 已接受部分
+YAML
+accepted:
+  - commit f95b95c evidence exists
+  - diff.patch and git-show-f95b95c.txt match exactly
+  - tests record 1072 passed, 21 warnings
+  - modified tracked files are 0
+  - PASS_WITH_WARNINGS is now forbidden by validator
+  - ai_guard output regex heuristic was removed
+  - scripts/run_negative_path_evidence.py was added
+  - live dispatch remains not authorized
+
+diff.patch 涉及的 8 个文件为：
+
+.ai/current-task.yaml
+.ai/tasks/evidence-capture-hook-failure-runtime-validation-a1.yaml
+docs/agent-runtime/hook-failure-semantics.md
+hooks/pre-commit.governance.ps1
+hooks/sealed-files-manifest.json
+scripts/run_negative_path_evidence.py
+scripts/validate_hook_output.py
+tests/test_hook_failure_semantics.py
+
+这说明 V2 的 evidence scope 已经比上一版干净很多。
+
+3. 仍然存在的关键问题
+BLOCKER 1：Test-Governance 被降级为 advisory，偏离原任务验收标准
+
+你最初的任务要求是：
+
+YAML
+test_governance_blocking_failure: blocks_commit
+
+但 V2 实际改成了：
+
+YAML
+test_governance:
+  blocking: false
+  behavior: advisory_only
+
+文档、hook 逻辑和测试都同步改成：
+
+test-governance failure → PASS advisory
+
+如果项目最终决定 Test-Governance 只做 advisory，这可以作为一个新的治理设计选择；但它不能在本任务中悄悄替代原验收标准。需要明确的 decision record：
+
+YAML
+required_decision:
+  question: Should Test-Governance be blocking or advisory?
+  current_v2_behavior: advisory
+  previous_task_requirement: blocking
+  reviewer_status: requires explicit governance decision
+
+所以这一点仍是 blocker。
+
+BLOCKER 2：validator 仍不够 fail-closed
+
+validate_hook_output.py 虽然修掉了 PASS_WITH_WARNINGS，但仍有两个问题：
+
+第一，它用默认值 0 处理缺失 stage：
+
+Python
+运行
+exit_code = stages.get(stage_name, 0)
+
+如果 sadp-audit 或 ai-guard 缺失，validator 可能把它当作通过。这不符合“missing required stage blocks”的要求。
+
+第二，它允许所有 blocking stages 为 0 时 overall_result 是 BLOCKED：
+
+Python
+运行
+if blocking_zeros and result not in ("PASS", "BLOCKED"):
+
+这会让“无失败但 BLOCKED”的语义异常通过。更严格的语义应是：
+
+YAML
+if sadp_audit == 0 and ai_guard == 0:
+  expected_overall_result: PASS
+
+除非另有明确的 external block reason 字段。
+
+BLOCKER 3：负向失败路径证据没有真正进入 ZIP
+
+V2 新增了：
+
+scripts/run_negative_path_evidence.py
+
+但 ZIP 里没有它生成的实际证据文件，例如：
+
+runtime-negative-path-evidence/combined-runtime-evidence.txt
+sadp_audit_failure_blocks.txt
+ai_guard_failure_blocks.txt
+test_governance_failure_advisory.txt
+ai_guard_failure_mismatch_rejected.txt
+pass_with_warnings_forbidden.txt
+invalid_json_rejected.txt
+
+git-status-after.txt 反而显示：
+
+?? _evidence/runtime-negative-path-evidence/
+
+也就是说，负向证据目录还留在 untracked session artifacts 中，没有纳入本次 ZIP 的审查证据。
+因此，不能说 V2 已经证明了 runtime negative path。
+
+BLOCKER 4：ai_guard exit code 仍有 fail-open 风险
+
+V2 去掉了文本匹配，这是进步。但当前逻辑是：
+
+PowerShell
+$script:aiGuardJobExitCode = if ($null -ne $rawExit) { [int]$rawExit } else { 0 }
+
+如果 PowerShell Job 没有可靠提供 ExitCode，它会默认通过。这是 fail-open。
+
+更安全的策略应是：
+
+PowerShell
+if ($null -eq $rawExit) {
+  $script:aiGuardJobExitCode = 1
+  # record reason: AI_GUARD_EXIT_CODE_UNAVAILABLE
+}
+
+或者在 Job 内部显式运行 python 后捕获 $LASTEXITCODE 并返回结构化结果。
+
+BLOCKER 5：当前工作区虽然 registered，但 untracked 激增到 56
+
+这不是核心 blocker，但必须保留限制。V2 的 post-commit 状态是：
+
+YAML
+modified_tracked: 0
+untracked_total: 56
+neg_009: 17
+secret_scan: 5
+session_artifacts: 34
+all_registered: true
+
+这属于 registered closure，不是 clean workspace。尤其是 34 个 session artifacts 中包含多个 evidence 目录、提交脚本、浏览器检查脚本和 nul。这不会阻止本轮代码审查，但不能再继续滚雪球。
+
+Final Decision
+YAML
+hook_failure_runtime_validation_v2_decision:
+  verdict: PARTIAL_ACCEPTANCE_WITH_REMAINING_BLOCKERS
+
+  accepted:
+    - f95b95c commit evidence
+    - diff/git-show alignment
+    - tests: 1072 passed
+    - modified_tracked: 0
+    - PASS_WITH_WARNINGS removed from accepted validator semantics
+    - ai_guard output regex heuristic removed
+    - live_dispatch remains NOT_AUTHORIZED
+
+  not_accepted_yet:
+    - test-governance failure semantics
+    - validator as fully fail-closed
+    - runtime negative-path evidence
+    - ai_guard exit-code capture as fully reliable
+    - workspace as clean
+
+  remaining_blockers:
+    - id: HF-V2-BLOCKING-01
+      reason: Test-Governance was changed from required blocking stage to advisory without explicit governance decision record
+    - id: HF-V2-BLOCKING-02
+      reason: validator treats missing blocking stages as exit_code 0 and allows BLOCKED when all blocking stages pass
+    - id: HF-V2-BLOCKING-03
+      reason: runtime-negative-path evidence directory was generated but not included in ZIP as evidence
+    - id: HF-V2-BLOCKING-04
+      reason: ai_guard Job exit_code unavailable falls back to 0, which is fail-open
+    - id: HF-V2-BLOCKING-05
+      reason: registered closure has 56 untracked entries, including 34 session artifacts; acceptable only as limitation, not clean closure
+Required Fix for V3
+
+下一版不要再扩大范围，只做以下 4 件事：
+
+YAML
+required_v3:
+  - decide and document whether test-governance is blocking or advisory:
+      if blocking: hook + validator + tests must make it BLOCKED
+      if advisory: provide explicit governance decision record changing original requirement
+  - make validate_hook_output.py fail-closed:
+      missing sadp-audit: exit 1
+      missing ai-guard: exit 1
+      all blocking stages zero + BLOCKED without reason: exit 1
+      PASS_WITH_WARNINGS: exit 1
+  - make ai_guard exit capture fail-closed:
+      null/unavailable exit code: BLOCKED
+      or explicitly capture python process $LASTEXITCODE inside the job
+  - include runtime-negative-path evidence files in the ZIP:
+      combined-runtime-evidence.txt
+      ai_guard_failure_mismatch_rejected.txt
+      pass_with_warnings_forbidden.txt
+      invalid_json_rejected.txt
+      sadp_audit_failure_blocks.txt
+
+一句话结论：V2 比上一版明显前进，但还不能接受；它把 ai_guard 和 validator 往正确方向修了，但 Test-Governance 被改成 advisory、负向证据没有入包、validator 对缺失 stage 仍可能放行，ai_guard exit code 还有 fail-open 风险。

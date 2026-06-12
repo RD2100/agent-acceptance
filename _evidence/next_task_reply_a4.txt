@@ -1,0 +1,320 @@
+确认：下一个任务建议就是 CONVERSATION-HEALTH-GATE-A4。
+A3 已经把 pre-commit advisory 和 registry reconciliation 接上了，A4 正好补齐此前延期的 startup-read-gate item 7，使 Conversation Health Gate 的四层机制真正覆盖到“agent 启动时”。
+
+但 A4 不应只做文档修改。它的重点应是：
+
+把 conversation-health awareness 纳入 Startup Read Gate，并让这个动作在 evidence pack / review 中可审计。
+1. A4 任务定位
+
+A4 的核心目标是解决这个问题：
+
+agent 启动后是否真的读取了 conversation-health 状态？
+是否知道当前对话是否 stale / suggest_handoff / force_handoff / human_required？
+这个动作有没有留下证据？
+
+所以 A4 应该是：
+
+CONVERSATION-HEALTH-GATE-A4
+Startup Read Gate Item 7 + Startup Conversation Health Evidence
+
+不是新增新的强门禁，也不是重构 A1/A2/A3，而是把 conversation-health 纳入 agent 启动协议。
+
+2. 可直接给下一个 agent 的 TaskSpec 草案
+编辑
+
+Task: CONVERSATION-HEALTH-GATE-A4
+
+Goal:
+Integrate conversation-health awareness into the Startup Read Gate as item 7, and make the startup conversation-health check auditable through explicit evidence. This task closes the startup-read-gate item deferred from CONVERSATION-HEALTH-GATE-A3.
+
+Context:
+CONVERSATION-HEALTH-GATE-A1 has been ACCEPTED and established the data layer, policy, decision engine, Pre-Task Hard Gate, and Evidence Pack hard requirement.
+CONVERSATION-HEALTH-GATE-A2 has been ACCEPTED and established the Pre-GPT Gate, CDP metrics refresh, latest.json/current-snapshot.json writing, and legacy submit/capture script integration.
+CONVERSATION-HEALTH-GATE-A3 has been accepted_with_limitation and established Pre-Commit Advisory plus Registry Reconciliation. The startup-read-gate item 7 was explicitly deferred to A4.
+
+Required Work:
+
+Update Startup Read Gate documentation
+
+Update docs/agent-runtime/startup-read-gate.md.
+
+Add item 7: Conversation Health Check.
+
+The new item must require the agent to read:
+
+.ai/conversation/current.json
+
+_evidence/conversation-health/latest.json when present
+
+conversation-health policy summary
+
+The item must require the agent to report:
+
+current decision: OK / SUGGEST_HANDOFF / FORCE_HANDOFF / HUMAN_REQUIRED / UNKNOWN
+
+metrics freshness
+
+last_nav_result
+
+whether handoff or migration is required
+
+The item must clarify that Startup Read Gate is an awareness/read gate, not the primary enforcement point. Enforcement remains in A1 Pre-Task, A2 Pre-GPT, and Evidence Pack rules.
+
+Add startup-read evidence output
+
+Create a lightweight startup-read conversation health evidence format, for example:
+
+_evidence/conversation-health/startup-read-latest.json
+
+This file should record:
+
+checked_at
+
+current_json_present
+
+latest_json_present
+
+decision
+
+severity
+
+metrics_source
+
+metrics_freshness
+
+last_nav_result
+
+recommended_action
+
+source_files_read
+
+If current.json is missing, startup-read must record UNKNOWN / WARNING, not silently pass.
+
+Add or update a helper script
+
+Add a lightweight helper such as:
+
+scripts/startup_conversation_health_check.py
+
+The script should read current.json and latest.json without opening CDP.
+
+It should reuse existing A1 decision logic where appropriate.
+
+It should write startup-read-latest.json.
+
+It should be fail-graceful for startup awareness:
+
+missing current.json → exit 0 with UNKNOWN/WARNING evidence
+
+FORCE_HANDOFF / HUMAN_REQUIRED → exit 0 but clearly report required action
+
+It must not duplicate threshold logic from check_handoff_needed.py.
+
+Evidence Pack integration
+
+build_evidence_pack.py should include startup-read conversation health evidence when present.
+
+review.yaml should include a startup_read_gate or conversation_health_startup field.
+
+Missing startup-read evidence should be recorded as a limitation or needs_more_evidence depending on task type.
+
+A4 should not weaken the existing A1 hard requirement for _evidence/conversation-health/latest.json.
+
+Tests
+Add tests covering:
+
+startup read with OK decision
+
+startup read with SUGGEST_HANDOFF
+
+startup read with FORCE_HANDOFF
+
+startup read with HUMAN_REQUIRED
+
+missing current.json produces UNKNOWN/WARNING evidence
+
+stale metrics are reported
+
+startup helper does not open CDP
+
+startup helper writes startup-read-latest.json
+
+startup evidence is included in evidence pack / review.yaml
+
+Runtime evidence
+Provide runtime evidence for:
+
+startup_ok
+
+startup_missing_current_json
+
+startup_force_handoff_reported
+
+startup_human_required_reported
+
+startup_stale_metrics_reported
+
+evidence_pack_includes_startup_health
+
+Out of Scope:
+
+Do not modify A1 threshold semantics.
+
+Do not modify A2 Pre-GPT blocking semantics.
+
+Do not modify A3 pre-commit advisory semantics.
+
+Do not implement full registry lifecycle migration.
+
+Do not open CDP in startup-read checks.
+
+Do not make startup-read gate a hard blocking runtime gate.
+
+Do not migrate additional legacy submit scripts.
+
+Do not rewrite the existing evidence pack architecture.
+
+Acceptance Criteria:
+
+docs/agent-runtime/startup-read-gate.md includes item 7 for Conversation Health Check.
+
+A startup-read helper exists and writes auditable startup conversation-health evidence.
+
+Startup check reads current/latest conversation-health state without CDP.
+
+Missing/stale metrics are visible in evidence rather than silently ignored.
+
+Evidence pack includes startup-read conversation-health evidence or explicitly records its absence.
+
+Tests pass in full regression.
+
+Runtime evidence covers positive and negative startup-read scenarios.
+
+modified_tracked is 0 after commit.
+
+A1/A2/A3 accepted semantics do not regress.
+
+3. A4 范围边界
+A4 要做
+1. startup-read-gate.md 新增第 7 项
+2. 新增 startup conversation health helper
+3. 启动时读取 current.json / latest.json
+4. 生成 startup-read-latest.json
+5. evidence pack 收录 startup-read evidence
+6. review.yaml 能看到 startup-read health 状态
+7. 增加测试和 runtime evidence
+A4 不做
+1. 不改 A1 阈值策略
+2. 不改 A2 Pre-GPT 阻断逻辑
+3. 不改 A3 pre-commit advisory 语义
+4. 不打开 CDP
+5. 不迁移更多 legacy 脚本
+6. 不做完整 conversation registry lifecycle
+7. 不把 Startup Read Gate 做成硬阻断门
+
+A4 的定位应是：
+
+startup awareness + auditable evidence
+
+而不是：
+
+startup hard enforcement
+
+硬 enforcement 已经由 A1/A2/Evidence Pack 承担。
+
+4. 验收标准重点
+
+A4 验收时不要只看“文档加了第 7 项”，还要看三类证据。
+
+第一类：文档证据
+
+必须看到：
+
+docs/agent-runtime/startup-read-gate.md
+
+新增第 7 项，并且写清：
+
+agent 启动时必须读取 conversation-health 状态；
+必须报告 decision / severity / freshness / last_nav_result；
+不得把 UNKNOWN 当作 OK。
+第二类：运行证据
+
+至少要有这些 runtime evidence：
+
+startup_ok
+startup_missing_current_json
+startup_force_handoff_reported
+startup_human_required_reported
+startup_stale_metrics_reported
+evidence_pack_includes_startup_health
+第三类：证据包证据
+
+review.yaml 或 final-report.md 里应有类似字段：
+
+YAML
+startup_read_gate:
+  conversation_health_checked: true
+  decision: OK
+  severity: INFO
+  startup_evidence_file: _evidence/conversation-health/startup-read-latest.json
+
+缺少时不能静默通过，至少要写：
+
+YAML
+startup_read_gate:
+  conversation_health_checked: false
+  verdict_impact: limitation
+5. 关于 A3 limitations 是否需要先处理
+
+A3 的 limitations 是：
+
+1. evidence pack 缺少 review.yaml / final-report.md / full regression log
+2. 没有 conversation-health exit_code!=0 的真实 runtime hook artifact
+
+这些是 非 blocker，不必抢在 A4 前单独做一个 A3 cleanup。
+但建议 A4 的证据包吸收这个教训：
+
+A4 evidence pack 必须包含 review.yaml / final-report.md / test-output / git-status-after / safety-report。
+
+也就是说，不需要先做 A3-CLEANUP，但 A4 不应重复 A3 的 evidence pack 不完整问题。
+
+6. 是否有其他优先于 A4 的任务？
+
+当前没有比 A4 更优先的任务。
+
+优先级建议如下：
+
+P0 当前：CONVERSATION-HEALTH-GATE-A4
+P1 后续：CONVERSATION-HEALTH-GATE-A5 / Registry Lifecycle or Migration Record Enforcement
+P1 后续：Universal Agent Workflow Standard
+P2 后续：OPERATIONS-MANUAL-AUDIT-PATTERN-BIND-A1
+为什么 A4 优先？
+
+因为 A1/A2/A3 已经形成：
+
+Pre-Task → Pre-GPT → Evidence Pack → Pre-Commit
+
+现在唯一明显缺口是：
+
+Startup Read Gate
+
+这也是 A3 TaskSpec 中明确延期的内容。先把这块补齐，Conversation Health Gate 才算完整闭环。
+
+OPERATIONS-MANUAL-AUDIT-PATTERN-BIND-A1 的位置
+
+它有价值，但不是当前最高优先级。它更适合在 A4 后做，用来把 A1-A4 的模式写入 operations manual 和 Universal Agent Workflow Standard。
+
+7. 推荐下一步顺序
+1. CONVERSATION-HEALTH-GATE-A4
+   补齐 Startup Read Gate item 7 和 startup-read evidence。
+
+2. CONVERSATION-HEALTH-GATE-A5 或 CLEANUP
+   视 A4 结果决定是否需要 registry lifecycle / migration record enforcement。
+
+3. Universal Agent Workflow Standard
+   把 A1-A4 的四层机制抽象为通用 agent 工作规范。
+
+4. OPERATIONS-MANUAL-AUDIT-PATTERN-BIND-A1
+   将这些模式绑定进 operations manual，防止后续 agent 重复造轮子或绕过既有工具。
+
+一句话：A4 就是下一步，而且 A4 要做“可审计的启动读取集成”，不是只改 startup-read-gate.md。

@@ -1,0 +1,235 @@
+HOOK-FAILURE-RUNTIME-VALIDATION-A1 Reviewer Verdict
+YAML
+verdict: PARTIAL_ACCEPTANCE_WITH_BLOCKERS
+review_scope: EVIDENCE_PACK_HOOK_FAILURE_RUNTIME_VALIDATION_A1.zip
+zip_sha256_verified: 547e628d9c43b490a61e7d11c9c500d4dbb9808ab420d77b67b10f8ca027a674
+zip_file_count: 16
+commit_reviewed: 7b8d947
+test_evidence: 1072 passed, 21 warnings
+live_dispatch: NOT_AUTHORIZED
+
+我已核查上传的 EVIDENCE_PACK_HOOK_FAILURE_RUNTIME_VALIDATION_A1.zip。这个包证明了一件重要的事：hook 失败语义已经开始被认真处理，并且主测试套件从 1038 增加到 1072，全部通过。
+
+但是，当前还不能裁定为 accepted。原因是：证据链和实际实现都还有阻塞问题，尤其是 validator 仍保留旧的 PASS_WITH_WARNINGS 逻辑，且 post-commit 状态存在 modified tracked file。
+
+1. 已经可以接受的部分
+YAML
+accepted:
+  - hooks/pre-commit.governance.ps1 已升级到 v2.3.0
+  - hook 文档声称 sadp-audit / ai_guard / test-governance 均为 blocking stages
+  - schema 已加入 ai-guard stage
+  - schema overall_result enum 已收敛为 PASS / BLOCKED
+  - tests/test_hook_failure_semantics.py 已新增
+  - full test suite 记录为 1072 passed, 21 warnings
+  - latest.json 记录 hook_version 2.3.0，staged_file_count 9，overall_result PASS
+  - live dispatch 未执行
+
+hooks/pre-commit.governance.ps1 的主要方向是正确的：它现在在 $overallResult -eq "BLOCKED" 时 exit 1，这比上一版只记录不阻断要前进了一步。
+
+2. 关键 Blockers
+BLOCKING-01：validate_hook_output.py 仍是旧语义
+
+这是最大问题。
+
+diff.patch 中新增的 scripts/validate_hook_output.py 仍然写着 v2.2.0 规则：
+
+Rules (v2.2.0):
+  - sadp-audit exit_code != 0 → overall_result must be BLOCKED
+  - ai-guard exit_code != 0 (with sadp-audit pass) → overall_result must be PASS_WITH_WARNINGS
+  - all exit_code == 0 → overall_result must be PASS
+
+并且实际代码仍然检查：
+
+if sadp == 0 and ai_guard != 0 and result != "PASS_WITH_WARNINGS":
+    warnings.append(...)
+
+这直接违背本任务目标。现在 hook v2.3.0 的目标是：
+
+YAML
+ai_guard_exit_1: BLOCKED
+test_governance_exit_1: BLOCKED
+PASS_WITH_WARNINGS: removed
+
+更严重的是，validator 遇到 semantic warnings 后仍然：
+
+sys.exit(0)
+
+也就是说，它可能发现语义不一致，但仍返回成功。这不能作为 fail-closed validator 接受。
+
+裁定：OPEN BLOCKER。
+
+BLOCKING-02：diff.patch 与 git-show-7b8d947.txt 不一致
+
+我比对了路径：
+
+YAML
+diff.patch_paths: 10
+git_show_7b8d947_paths: 9
+matched: false
+
+diff.patch 多出：
+
+.ai/tasks/evidence-capture-hook-failure-semantics-a1.yaml
+
+chain-evidence.json 又列出：
+
+YAML
+commits_in_scope:
+  - 20a4aa27
+  - 6c47d327
+  - 7b8d9477
+task_commits:
+  - 7b8d947
+
+这说明 diff.patch 很可能是 range diff，包含了 6c47d327 的内容，但证据包只提供了 git-show-7b8d947.txt，没有提供 git-show-6c47d327.txt 或 diff-6c47d327.patch。
+
+如果 6c47d327 是 in scope，就必须提供它的 diff / git-show。
+如果不是 in scope，diff.patch 就不能包含它。
+
+裁定：OPEN BLOCKER。
+
+BLOCKING-03：post-commit 不是 registered closure
+
+final-report.md 和 safety-report.json 都显示：
+
+YAML
+modified_tracked: 1
+untracked_total: 46
+grand_total: 47
+
+其中 modified tracked file 是：
+
+cripts/gpt_new_chat_attachment_submit.py
+
+这至少有两个问题：
+
+modified_tracked != 0，不满足本任务 acceptance criteria。
+
+路径写成 cripts/...，疑似 scripts/... 缺了首字母，说明状态采集或格式化可能有 bug。
+
+即使 46 个 untracked 已登记，只要还有 modified tracked file，就不能称为 closed。
+
+裁定：OPEN BLOCKER。
+
+BLOCKING-04：没有真实失败运行证据
+
+当前测试主要是：
+
+静态检查 hook 文本；
+
+模拟 overall_result 逻辑；
+
+full pytest suite；
+
+latest.json 的成功场景。
+
+但是任务目标是验证失败语义，至少需要证明：
+
+YAML
+required_runtime_evidence:
+  - ai_guard failure -> hook exits nonzero
+  - test_governance failure -> hook exits nonzero
+  - sadp_audit failure -> hook exits nonzero
+  - invalid latest.json -> validator exits nonzero
+
+当前 evidence pack 中没有独立的：
+
+hook-failure-semantics-test-output.txt
+hook-output-validation.txt
+ai_guard_failure_fixture_output.txt
+test_governance_failure_fixture_output.txt
+sadp_audit_failure_fixture_output.txt
+
+latest.json 只证明了成功路径：
+
+YAML
+overall_result: PASS
+sadp-audit: 0
+ai-guard: 0
+test-governance: 0
+
+这不足以证明失败时真的阻断。
+
+裁定：OPEN BLOCKER。
+
+BLOCKING-05：ai_guard exit code 捕获方式不可靠
+
+pre-commit.governance.ps1 现在用 PowerShell Job 执行 ai_guard.py，但没有可靠捕获 Python 进程的真实 exit code，而是通过输出文本判断：
+
+if ($aiGuardOutput -match "(?i)\bFAIL\b") {
+    $aiGuardExit = 1
+} else {
+    $aiGuardExit = 0
+}
+
+这不是严格的 fail-closed 语义。如果 ai_guard.py 以非零退出但没有输出 “FAIL”，或者输出格式改变，hook 可能误判为 PASS。
+
+建议后续改为可靠捕获子进程 exit code，不能依赖字符串匹配。
+
+裁定：OPEN BLOCKER。
+
+3. 其他问题
+当前任务身份有点漂移
+
+你给我的上一任务建议是：
+
+EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1
+
+本包实际是：
+
+EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1
+
+这不一定是问题，但要保持证据链清楚。现在 chain-evidence.json 同时列了两个 hook-failure 相关 commit，证据包却只充分证明了其中一个。
+
+4. Final Decision
+YAML
+hook_failure_runtime_validation_decision:
+  verdict: PARTIAL_ACCEPTANCE_WITH_BLOCKERS
+
+  accepted:
+    - hook v2.3.0 directionally changes overall_result BLOCKED to exit 1
+    - schema includes ai-guard and removes PASS_WITH_WARNINGS
+    - tests/test_hook_failure_semantics.py exists
+    - full pytest suite records 1072 passed
+    - latest.json success path is captured
+    - live dispatch remains unauthorized
+
+  not_accepted_yet:
+    - claim that ai_guard failure semantics are fully validated
+    - claim that Test-Governance failure semantics are fully validated
+    - claim that validator is fail-closed
+    - claim that evidence pack is internally aligned
+    - claim that workspace closure is achieved
+
+  blockers:
+    - id: HF-BLOCKING-01
+      reason: validate_hook_output.py still expects PASS_WITH_WARNINGS for ai_guard failure and exits 0 on semantic warnings
+    - id: HF-BLOCKING-02
+      reason: diff.patch includes 10 paths but git-show-7b8d947 only covers 9; commit 6c47d327 appears in scope but lacks git-show/diff evidence
+    - id: HF-BLOCKING-03
+      reason: post-commit state has modified_tracked=1
+    - id: HF-BLOCKING-04
+      reason: no runtime negative-path evidence proving hook exits nonzero for ai_guard/test-governance/sadp-audit failures
+    - id: HF-BLOCKING-05
+      reason: ai_guard exit code is inferred from output text rather than reliably captured from process exit code
+Required Fix
+
+下一版不要扩大范围，只补这几件事：
+
+YAML
+required_next_pack:
+  - fix validate_hook_output.py to use v2.3.0 semantics:
+      ai_guard_exit_nonzero: BLOCKED
+      test_governance_exit_nonzero: BLOCKED
+      semantic mismatch: exit 1
+      PASS_WITH_WARNINGS: forbidden
+  - provide runtime negative-path evidence:
+      ai_guard failure fixture -> hook/validator exits nonzero
+      test_governance failure fixture -> hook/validator exits nonzero
+      sadp_audit failure fixture -> hook/validator exits nonzero
+  - make diff.patch and git-show scope match exactly
+  - either include evidence for 6c47d327 or remove it from this evidence scope
+  - reach modified_tracked: 0, or explicitly mark task as not closed
+  - replace ai_guard output-regex detection with reliable process exit-code capture
+
+一句话结论：方向是对的，但还不能接受；现在 hook 看起来开始 fail-closed 了，可 validator 仍保留旧语义，证据包也没有真实失败路径证明，所以这个任务还需要一轮针对性修复。

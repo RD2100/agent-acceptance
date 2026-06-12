@@ -1,0 +1,10 @@
+# Runtime Negative-Path Evidence: test_governance_failure_advisory
+# Validator exit code: 0
+# Expected: 0 (advisory semantics — failure logged but not blocking)
+
+PASS: C:\Users\RD\AppData\Local\Temp\tmp4n9_758l.json validates against evidence-capture.schema.json
+  hook_version: 2.3.0
+  overall_result: PASS
+  stages: manifest-regen=0, sadp-audit=0, ai-guard=0, test-governance=1
+  timestamp: 2026-06-11T12:00:00Z
+

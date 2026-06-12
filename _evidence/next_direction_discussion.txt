@@ -1,0 +1,320 @@
+下面这 5 个缺口里，最紧迫的不是继续修 live dispatch 功能，而是先把 REVIEW-A1 / FIX-A1 的证据链和独立审查链补完整。否则项目会出现一种很危险的状态：功能上看似接近可用，但治理上不能证明“谁执行、谁审查、证据包是否完整、最终裁决是否有效”。
+
+1. 缺口优先级判断
+P0：必须先处理
+
+第一优先级：Reviewer 独立性违规。
+这是最严重的。SADP 的底线是 executor 不能自己写 review.md/review.yaml 并宣布通过。QoderWork 可以准备材料、执行测试、生成 evidence，但不能作为 reviewer 给出正式裁决。这个问题不补，后面所有 “accepted” 都会被污染。
+
+第二优先级：GPT R2 对 FIX-A1 缺少正式裁决。
+因为 FIX-A1 是把 dev-frame-writing suspend、registry 从 11 降到 10、fresh dry-run 证明 2 dispatchable / 0 collisions 的关键修复。如果没有独立 reviewer 对它给出裁决，那么 live readiness 的阻断项虽然“看起来修了”，但没有被正式接受。
+
+第三优先级：Evidence Pack 未构建。
+ECS-A2 已经被项目接受为证据标准，REVIEW-A1 和 FIX-A1 只有 evidence 目录但没有 evidence-manifest.json + ZIP，说明交付没有闭合。它本身也是 P0/P1 级治理缺口，因为后续 reviewer 无法基于标准包复核。
+
+P1：紧随其后处理
+
+ExecutionReport 缺失。
+它不如 reviewer 独立性严重，但它是 SADP @go 任务闭环的核心产物。没有 ExecutionReport，就缺 executor / reviewer / finalizer 三段责任记录。
+
+workspace 193+ untracked 文件。
+它可以不在第一步清理，但必须在 live 前处理。至少要分类：哪些是 evidence、哪些是临时脚本、哪些应删除、哪些应登记为 deferred。
+
+P2：可以稍后处理
+
+HOOK-FAILURE-SEMANTICS-FINALIZE-A1、NEG-009-MOCK-SECRET-FIXTURE-POLICY-A1 可以排在证据链修复之后。如果最新 hook 已经 all-pass，它们不是立即阻止 evidence closeout 的问题。LIVE-DISPATCH-HUMAN-AUTHORIZATION-A1 更不能提前做，必须等 FIX-A1 被独立接受、evidence pack 建好、workspace 状态可解释之后再进入。
+
+2. 我认为下一步最应该做什么
+
+下一步不要直接 live，也不要继续扩功能。应该做一个专门的 closeout 任务：
+
+YAML
+next_task_id: LIVE-DISPATCH-READINESS-SADP-ECS-CLOSEOUT-A1
+priority: P0
+goal: >
+  Repair REVIEW-A1 and FIX-A1 evidence chain, rebuild ECS-A2 compliant evidence packs,
+  obtain independent reviewer verdict for FIX-A1, and produce ExecutionReports.
+live_dispatch: forbidden
+runtime_routing_changes: forbidden
+具体执行顺序
+Step 0：冻结当前状态
+
+Agent 先执行：
+
+python scripts/qoderwork_task_runner.py start --task-id LIVE-DISPATCH-READINESS-SADP-ECS-CLOSEOUT-A1
+
+然后写清楚任务边界：
+
+允许：
+- 构建 evidence pack
+- 补 ExecutionReport
+- 归档 GPT review raw response
+- 修正 review provenance
+- 更新 final-report / chain-evidence
+
+禁止：
+- live dispatch
+- 改 routing/hook runtime
+- 改 conversation binding
+- 改 registry active/pending 状态
+Step 1：为 REVIEW-A1 和 FIX-A1 分别构建 ECS-A2 evidence pack
+
+对两个任务分别补：
+
+_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/evidence-manifest.json
+_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/EVIDENCE_PACK.zip
+
+_evidence/LIVE-DISPATCH-READINESS-FIX-A1/evidence-manifest.json
+_evidence/LIVE-DISPATCH-READINESS-FIX-A1/EVIDENCE_PACK.zip
+
+要求：
+
+1. manifest 列出所有 evidence 文件；
+2. manifest 记录 file_count；
+3. manifest 记录 zip_size_bytes；
+4. manifest 记录 zip_sha256；
+5. ZIP 内包含 patched manifest；
+6. review.yaml / safety-report.json / final-report.md 都进入 pack；
+7. 如果有 deferred files register，也必须进入 pack。
+
+构建后运行 schema / pack validator。没有 validator 的话，至少要做：
+
+- manifest JSON parse pass
+- ZIP exists
+- ZIP sha256 matches manifest
+- ZIP 内 manifest 与磁盘 manifest 一致
+- required evidence files present
+Step 2：修复 reviewer 独立性
+
+这里要明确分工：
+
+QoderWork executor 可以：
+- 准备 GPT review submission
+- 上传 evidence pack
+- 保存 GPT 原始回复
+- 运行 deterministic verifier
+
+QoderWork executor 不可以：
+- 自己写 review.md 的裁决内容
+- 自己写 review.yaml 的 verdict
+- 把自己的判断伪装成 reviewer 判断
+
+建议产物结构：
+
+_evidence/LIVE-DISPATCH-READINESS-FIX-A1/gpt-review-submission.md
+_evidence/LIVE-DISPATCH-READINESS-FIX-A1/gpt-review-raw.md
+_evidence/LIVE-DISPATCH-READINESS-FIX-A1/review.yaml
+_evidence/LIVE-DISPATCH-READINESS-FIX-A1/reviewer-provenance.json
+
+其中 review.yaml 必须带 provenance：
+
+YAML
+review_author: independent_gpt_reviewer
+captured_by: qoderwork_executor
+executor_authored_verdict: false
+source_response: gpt-review-raw.md
+Step 3：补 ExecutionReport
+
+两个任务都要补：
+
+_evidence/LIVE-DISPATCH-READINESS-REVIEW-A1/EXECUTION_REPORT.md
+_evidence/LIVE-DISPATCH-READINESS-FIX-A1/EXECUTION_REPORT.md
+
+每份至少包含：
+
+1. task_id / priority / mode；
+2. executor；
+3. reviewer；
+4. finalizer；
+5. commands run；
+6. changed files；
+7. tests / validators；
+8. evidence pack path + sha256；
+9. reviewer verdict；
+10. remaining limitations；
+11. explicit statement: no live dispatch executed。
+Step 4：重新提交一个 closeout review
+
+QoderWork 再提交一个简短 reviewer request，内容只问：
+
+REVIEW-A1 / FIX-A1 是否完成 ECS-A2 evidence pack？
+FIX-A1 是否获得独立 reviewer verdict？
+ExecutionReport 是否补齐？
+是否可以把 live readiness 修复链路从 needs_revision 改为 accepted_with_limitation？
+3. evidence pack + 独立 reviewer review 工作量和值不值得
+
+值得，而且必须做。
+
+工作量不算大，因为大部分材料已经存在。真正要做的是“整理、封包、补 provenance、重新独立裁决”，不是重写功能。
+
+大致复杂度：
+
+YAML
+evidence_pack_build: medium_low
+independent_review_repair: medium
+execution_report_backfill: medium_low
+risk_if_not_done: high
+
+不补的后果很严重：
+
+1. FIX-A1 的 accepted 状态不成立；
+2. REVIEW-A1 的 evidence 不符合 ECS-A2；
+3. executor/reviewer 分离被破坏；
+4. live dispatch human authorization 没有可信前置；
+5. 后续任何事故都无法追溯责任链。
+
+所以我建议把它当作 live 前的强制 P0 closeout，而不是可选清理项。
+
+4. 现在对 FIX-A1 给出正式裁决
+
+可以。我基于你现在给出的摘要证据，对 FIX-A1 给一个分层裁决：
+
+YAML
+task_id: LIVE-DISPATCH-READINESS-FIX-A1
+review_role: independent_reviewer
+review_basis: user-submitted summary evidence
+functional_fix_verdict: accepted_with_limitation
+sadp_delivery_verdict: needs_revision
+live_dispatch_authorization: not_authorized
+功能修复层面：accepted_with_limitation
+
+如果事实确实是：
+
+1. dev-frame-writing 已 suspend；
+2. registry 从 11 个项目降到 10 个；
+3. duplicate conversation_id 已解除；
+4. fresh dry-run 显示 2 dispatchable；
+5. collisions = 0；
+6. pending projects fail-closed；
+
+那么 FIX-A1 对 REVIEW-A1 识别出的两个 readiness blockers 已经完成修复：
+
+duplicate conversation_id: resolved
+registry capacity exceeded: resolved
+fresh dry-run: pass
+
+所以功能层面我可以判：
+
+YAML
+functional_fix_verdict: accepted_with_limitation
+reason: >
+  The reported fixes resolve the specific readiness blockers: duplicate binding
+  and registry capacity. Fresh dry-run evidence reports 2 dispatchable projects
+  and 0 collisions.
+limitations:
+  - raw evidence pack not yet reviewed
+  - ExecutionReport missing
+  - independent review provenance not yet repaired
+  - live dispatch still human-gated
+SADP 交付层面：needs_revision
+
+但是，FIX-A1 作为一个 SADP 任务，还不能 accepted，因为：
+
+1. 没有 ECS-A2 evidence pack；
+2. 原 review.md/review.yaml 是 executor 自写；
+3. ExecutionReport 缺失；
+4. GPT R2 之前没有给出特定裁决。
+
+所以单一项目治理口径应写为：
+
+YAML
+overall_task_delivery_verdict: needs_revision
+reason: >
+  Functional fix appears correct, but SADP/ECS delivery is incomplete until
+  evidence pack, independent reviewer artifact, and ExecutionReport are repaired.
+
+如果必须给一个总 verdict，我会给：
+
+needs_revision
+
+如果允许分层记录，我建议记录为：
+
+functional_fix: accepted_with_limitation
+sadp_closeout: needs_revision
+
+这个最准确。
+
+5. 项目整体下一步路径
+
+我建议从现在开始分四阶段推进。
+
+Phase 1：证据链修复，不改功能
+LIVE-DISPATCH-READINESS-SADP-ECS-CLOSEOUT-A1
+
+目标：
+
+1. REVIEW-A1 evidence pack build；
+2. FIX-A1 evidence pack build；
+3. FIX-A1 independent GPT review；
+4. REVIEW-A1 / FIX-A1 ExecutionReport；
+5. final closeout verdict。
+
+完成标准：
+
+- 两个 ECS-A2 ZIP 存在；
+- manifest 有 zip_size_bytes 和 zip_sha256；
+- review.yaml provenance 显示 independent reviewer；
+- ExecutionReport 存在；
+- GPT 给出明确 verdict；
+- no live dispatch executed。
+Phase 2：workspace closure
+WORKSPACE-CLOSURE-UNTRACKED-TRIAGE-A1
+
+目标：
+
+1. 193+ untracked 分类；
+2. evidence 文件归档；
+3. 临时文件删除；
+4. workspace prototype 登记；
+5. deferred-files-register 更新；
+6. git status 达到可解释状态。
+
+不要求 0 untracked，但要求：
+
+所有 untracked 要么被提交，要么被忽略，要么被登记为 deferred，要么删除。
+Phase 3：live 前剩余治理项
+
+按这个顺序：
+
+HOOK-FAILURE-SEMANTICS-FINALIZE-A1
+NEG-009-MOCK-SECRET-FIXTURE-POLICY-A1
+
+这两个不应该插到 evidence closeout 前面。它们是 live 前治理增强，不是当前最大阻断。
+
+Phase 4：human authorization，不自动 live
+LIVE-DISPATCH-HUMAN-AUTHORIZATION-A1
+
+前置条件：
+
+1. REVIEW-A1 / FIX-A1 closeout accepted；
+2. fresh dry-run 2-active pass；
+3. registry no duplicate；
+4. registry capacity valid；
+5. workspace closure acceptable；
+6. hooks all-pass；
+7. rollback plan current；
+8. human authorization template filled。
+
+只有 human 明确授权后，才能做：
+
+SHARED-CDP-GPT-REVIEW-LIVE-2-A1
+最终推荐优先级
+YAML
+P0_now:
+  - LIVE-DISPATCH-READINESS-SADP-ECS-CLOSEOUT-A1
+
+P1_next:
+  - WORKSPACE-CLOSURE-UNTRACKED-TRIAGE-A1
+  - HOOK-FAILURE-SEMANTICS-FINALIZE-A1
+
+P1_before_live:
+  - NEG-009-MOCK-SECRET-FIXTURE-POLICY-A1
+  - LIVE-DISPATCH-HUMAN-AUTHORIZATION-A1
+
+not_now:
+  - live dispatch
+  - new feature work
+  - further registry expansion
+  - additional CDP automation beyond evidence closeout
+
+一句话结论：现在最合理的下一步不是继续推进 live，而是做一个 P0 closeout：补 ECS-A2 evidence pack、修 reviewer 独立性、补 ExecutionReport，并让我对 FIX-A1 给出独立正式裁决。功能修复可以视为 accepted_with_limitation，但 SADP 交付必须先 needs_revision，补齐后再进入 human authorization。

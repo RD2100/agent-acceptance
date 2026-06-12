@@ -1,0 +1,185 @@
+审核结论：V3(1) 仍不通过，裁决为 REJECTED / needs V4
+
+我重新核验了这次新上传的 EVIDENCE_PACK_HOOK_FAILURE_RUNTIME_VALIDATION_V3(1).zip。它与上一份 V3 字节级完全相同，SHA-256 也一致：
+
+c52288888cccf2c0c9a482a82ee3b061b0cb70044749a4eea8f75aed0b8fcdb9
+
+所以审核结论没有变化：实现方向基本正确，但证据包内部仍存在自相矛盾，不能 accepted。
+
+基础证据核对
+
+通过项：
+
+ZIP files: 32
+Tests: 1072 passed, 21 warnings
+Commit chain: 20a4aa27 → 6c47d327 → 7b8d9477 → f95b95c4 → 5755681d
+modified_tracked: 0
+
+这些基础状态没有问题。
+
+主要 Blocker 1：extra 目录不是 8 个场景，而是 9 个场景文件
+
+你声明：
+
+负路径证据: 8/8 ALL PASS
+
+但 ZIP 的 extra/ 实际包含：
+
+ai_guard_failure_blocks.txt
+ai_guard_failure_mismatch_rejected.txt
+combined-runtime-evidence.txt
+invalid_json_rejected.txt
+missing_sadp_audit_rejected.txt
+null_exit_code_rejected.txt
+pass_with_warnings_forbidden.txt
+sadp_audit_failure_blocks.txt
+test_governance_failure_advisory.txt
+test_governance_failure_blocks.txt
+
+也就是说，除了 combined-runtime-evidence.txt 外，实际有 9 个场景文件，不是 8 个。
+
+最严重的是这个文件：
+
+extra/test_governance_failure_blocks.txt
+
+它显示：
+
+overall_result: BLOCKED
+stages: manifest-regen=0, sadp-audit=0, ai-guard=0, test-governance=1
+Validator exit code: 0
+Expected: 0 (correct semantics)
+
+这与 V3 的核心治理决策冲突。按照当前声明，test-governance 是 advisory，失败后应当：
+
+overall_result: PASS
+Validator exit code: 0
+
+而不是 BLOCKED。
+
+因此，V3 ZIP 中混入了过期/残留的负路径证据。这会直接破坏 Evidence Pack 的可信度。
+
+主要 Blocker 2：advisory 场景的 Expected 文案仍然错误
+
+extra/test_governance_failure_advisory.txt 的实际行为是对的：
+
+overall_result: PASS
+test-governance=1
+Validator exit code: 0
+
+但是文件头写的是：
+
+Expected: nonzero (mismatch rejected)
+
+这说明 scripts/run_negative_path_evidence.py 生成 Expected 文案的逻辑仍然有 bug。
+
+当前脚本大概是按 label 中是否包含 blocks 来判断 expected：
+
+Python
+运行
+Expected: 0 if 'blocks' in label else nonzero
+
+这会把 test_governance_failure_advisory 错误标成 Expected: nonzero。
+
+所以负路径证据虽然有一部分实际输出正确，但证据说明本身不可信。
+
+主要 Blocker 3：治理文档之间仍有冲突
+
+docs/agent-runtime/hook-failure-semantics.md 中的治理决策是正确的：
+
+sadp-audit: blocking
+ai-guard: blocking
+test-governance: advisory
+
+但是 docs/agent-runtime/evidence-capture-workflow.md 中新增段落仍写着：
+
+Blocking stages: sadp-audit, ai-guard, test-governance.
+
+这与 hook-failure-semantics.md 冲突。
+
+另外，tests/test_hook_failure_semantics.py 顶部 docstring 和部分注释仍保留旧语义：
+
+All required stages (sadp-audit, ai-guard, test-governance) block on failure
+BLOCKING: sadp-audit, ai-guard, test-governance
+
+虽然测试中的实际模拟函数已经按 sadp-audit + ai-guard blocking / test-governance advisory 执行，但测试说明仍是旧语义。
+
+因此，Governance Decision Record 只能算 partial fixed，不能算 fully fixed。
+
+主要 Blocker 4：Validator 的 null exit_code 语义还没有完全闭合
+
+validate_hook_output.py 目前逻辑是：
+
+blocking stage 缺失 → rejected
+blocking stage exit_code=null 且 overall_result=PASS → rejected
+blocking stage exit_code=null 且 overall_result=BLOCKED → 可能通过
+
+这与 “null 默认 1 / fail-closed” 大体一致，但 schema 里 exit_code 仍是：
+
+JSON
+"type": "integer"
+
+而 validator 的手写校验允许：
+
+Python
+运行
+if ec is not None and not isinstance(ec, int):
+
+也就是实际允许 null。
+
+这里需要明确：
+
+要么 exit_code 永远必须是 integer，null 一律 rejected；
+要么 schema 改为允许 ["integer", "null"]，并明确 null 在 blocking stage 中等同 failure。
+
+现在是 schema 与 validator 实际语义不完全一致。
+
+逐项裁决
+V2 blocker	V3(1) 状态	裁决
+Governance Decision Record	有正确记录，但其他文档/测试注释仍冲突	Partial
+Validator Fail-Closed	核心逻辑基本成立，但 null/schema 语义未闭合	Partial
+Negative-Path Evidence in ZIP	extra 目录混入 9th stale 场景，且 Expected 文案错误	Not fixed
+Reliable Job Exit Code	return @(output, LASTEXITCODE) 与 null→1 方向正确	Fixed
+Cross-Process Variable Fix	hashtable 返回替代 $script:，方向正确	Fixed
+最终裁决
+VERDICT: REJECTED / needs V4
+Reason: Evidence pack contains contradictory negative-path evidence and stale governance semantics.
+
+这不是说实现完全失败。相反，核心实现已经接近可接受。但按照 Evidence-First 审核标准，V3(1) 的证据包内部同时证明了两套冲突语义，因此不能作为 accepted 依据。
+
+V4 最小修复清单
+
+重新生成负路径证据前，先清空：
+
+_evidence/runtime-negative-path-evidence/
+
+确保 ZIP 中只有这 8 个场景文件：
+
+sadp_audit_failure_blocks.txt
+ai_guard_failure_blocks.txt
+test_governance_failure_advisory.txt
+ai_guard_failure_mismatch_rejected.txt
+pass_with_warnings_forbidden.txt
+invalid_json_rejected.txt
+missing_sadp_audit_rejected.txt
+null_exit_code_rejected.txt
+
+删除或不再打包：
+
+test_governance_failure_blocks.txt
+
+修复 run_negative_path_evidence.py 的 Expected 生成逻辑。test_governance_failure_advisory 应显示：
+
+Expected: 0 (advisory semantics)
+
+修改 docs/agent-runtime/evidence-capture-workflow.md：
+
+Blocking stages: sadp-audit, ai-guard
+Advisory stages: manifest-regen, test-governance
+
+清理 tests/test_hook_failure_semantics.py 中所有旧注释：
+
+test-governance blocking
+
+明确 exit_code: null 策略，并同步 schema、validator、文档、负路径证据。
+
+V4 修完这些后，我预计可以进入 accepted_with_minor_limitations，如果 null 语义也完全闭合，可以直接 accepted。
