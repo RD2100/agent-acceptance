@@ -1,7 +1,7 @@
 task_id: CONVERSATION-HEALTH-GATE-A1
 type: feature
 priority: P1
-status: complete
+status: completed
 gpt_verdict: ACCEPTED
 gpt_verdict_file: _evidence/conversation_health_gate_a1_r4_verdict.txt
 evidence_zip: _evidence/EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A1_R4.zip
