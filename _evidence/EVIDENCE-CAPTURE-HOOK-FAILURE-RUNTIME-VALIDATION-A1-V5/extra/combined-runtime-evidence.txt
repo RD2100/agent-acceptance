@@ -1,0 +1,52 @@
+=== sadp_audit_failure_blocks (exit=0) ===
+PASS: C:\Users\RD\AppData\Local\Temp\tmpbztfy63h.json validates against evidence-capture.schema.json
+  hook_version: 2.3.0
+  overall_result: BLOCKED
+  stages: manifest-regen=0, sadp-audit=1, ai-guard=0, test-governance=0
+  timestamp: 2026-06-11T12:00:00Z
+
+
+=== ai_guard_failure_blocks (exit=0) ===
+PASS: C:\Users\RD\AppData\Local\Temp\tmp_e3oob87.json validates against evidence-capture.schema.json
+  hook_version: 2.3.0
+  overall_result: BLOCKED
+  stages: manifest-regen=0, sadp-audit=0, ai-guard=1, test-governance=0
+  timestamp: 2026-06-11T12:00:00Z
+
+
+=== test_governance_failure_advisory (exit=0) ===
+PASS: C:\Users\RD\AppData\Local\Temp\tmpyvyh5wsj.json validates against evidence-capture.schema.json
+  hook_version: 2.3.0
+  overall_result: PASS
+  stages: manifest-regen=0, sadp-audit=0, ai-guard=0, test-governance=1
+  timestamp: 2026-06-11T12:00:00Z
+
+
+=== ai_guard_failure_mismatch_rejected (exit=1) ===
+FAIL: Semantic checks found 1 errors
+  - ai-guard exit_code=1 but overall_result=PASS (expected BLOCKED)
+
+
+=== pass_with_warnings_forbidden (exit=1) ===
+FAIL: Schema validation failed (1 errors)
+  - overall_result 'PASS_WITH_WARNINGS' not in enum ['PASS', 'BLOCKED']
+
+
+=== invalid_json_rejected (exit=1) ===
+FAIL: Invalid JSON in C:\Users\RD\AppData\Local\Temp\tmp6wjcagu1.json: Expecting property name enclosed in double quotes: line 1 column 3 (char 2)
+
+
+=== missing_sadp_audit_rejected (exit=1) ===
+FAIL: Semantic checks found 1 errors
+  - Missing required blocking stage: sadp-audit (fail-closed: absence = BLOCKED)
+
+
+=== null_exit_code_rejected (exit=1) ===
+FAIL: Semantic checks found 1 errors
+  - ai-guard exit_code=null but overall_result=PASS (expected BLOCKED)
+
+
+=== missing_ai_guard_rejected (exit=1) ===
+FAIL: Semantic checks found 1 errors
+  - Missing required blocking stage: ai-guard (fail-closed: absence = BLOCKED)
+

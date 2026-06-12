@@ -1,0 +1,13 @@
+# Diff stat for commit 7b8d9477
+# Command: git diff --stat 7b8d9477^..7b8d9477
+
+.ai/current-task.yaml                              | 221 +++++--------------
+ ...capture-hook-failure-runtime-validation-a1.yaml |  69 ++++++
+ docs/agent-runtime/evidence-capture-workflow.md    |  20 ++
+ docs/agent-runtime/hook-failure-semantics.md       |  52 +++--
+ hooks/pre-commit.governance.ps1                    |  41 ++--
+ hooks/sealed-files-manifest.json                   |  10 +-
+ schemas/agent-runtime/evidence-capture.schema.json |   2 +-
+ scripts/validate_hook_output.py                    | 181 +++++++++++++++
+ tests/test_hook_failure_semantics.py               | 244 ++++++++++++++-------
+ 9 files changed, 544 insertions(+), 296 deletions(-)

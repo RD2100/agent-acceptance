@@ -1,0 +1,9 @@
+# Diff stat for commit 804ae3b
+# Command: git diff --stat 804ae3b^..804ae3b
+
+docs/agent-runtime/evidence-capture-workflow.md    |  1 -
+ hooks/sealed-files-manifest.json                   |  6 +++---
+ schemas/agent-runtime/evidence-capture.schema.json |  4 ++--
+ scripts/run_negative_path_evidence.py              | 10 +++++++++-
+ scripts/validate_hook_output.py                    |  5 ++++-
+ 5 files changed, 18 insertions(+), 8 deletions(-)

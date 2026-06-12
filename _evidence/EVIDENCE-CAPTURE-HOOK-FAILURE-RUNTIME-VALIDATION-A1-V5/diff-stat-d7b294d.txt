@@ -1,0 +1,10 @@
+# Diff stat for commit d7b294d
+# Command: git diff --stat d7b294d^..d7b294d
+
+docs/agent-runtime/evidence-capture-workflow.md    |  3 ++-
+ docs/agent-runtime/hook-failure-semantics.md       | 11 +++++++++++
+ hooks/sealed-files-manifest.json                   |  8 ++++----
+ schemas/agent-runtime/evidence-capture.schema.json |  4 ++--
+ scripts/run_negative_path_evidence.py              |  9 ++++++++-
+ tests/test_hook_failure_semantics.py               | 14 +++++++-------
+ 6 files changed, 34 insertions(+), 15 deletions(-)

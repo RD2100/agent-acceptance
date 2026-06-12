@@ -1,0 +1,15 @@
+804ae3b9 fix: V5 — validator/schema consistency, missing_ai_guard evidence, doc cleanup
+d7b294dc fix: V4 — resolve 4 GPT blockers for EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1
+5755681d fix: V3 blocker fixes — reliable Job exit code, fail-closed validator, negative-path evidence
+f95b95c4 fix: resolve 5 GPT blockers for EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1
+7b8d9477 feat: EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1 — all stages blocking, validator, 34 tests
+6c47d327 feat: EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1 — fix schema, add timeout, document failure semantics
+20a4aa27 feat: EVIDENCE-CAPTURE-STANDARD-A1 — reusable builder + hook output persistence
+9d699fb0 feat: Universal Agent Workflow Standard A1 — 9 governance docs + operations manual cross-reference
+efd5b96e feat: R18 evidence maintenance — commit session artifacts, closure evidence dirs
+caa85c28 feat: R18 workspace cleanup FINAL — complete evidence with deferred register
+c4017e89 chore: R18 workspace cleanup — additional session artifacts
+04b3d562 chore: update R18 workspace cleanup evidence pack with final commit refs
+6022c187 feat: R18 workspace cleanup — closure evidence with deferred register and raw audit
+e1bbd516 feat: R18 workspace cleanup — FINAL evidence pack, closure scripts
+f06ce965 feat: R18 workspace cleanup — commit session artifacts, register deferred files

@@ -1,0 +1,38 @@
+# SADP Pre-commit Hook Output (from --hook-log file)
+
+﻿{
+    "git_context":  {
+                        "branch":  "master",
+                        "commit_count":  225,
+                        "staged_file_count":  5
+                    },
+    "timestamp":  "2026-06-11T10:42:20Z",
+    "overall_result":  "PASS",
+    "hook_version":  "2.3.0",
+    "stages":  [
+                   {
+                       "name":  "manifest-regen",
+                       "output_file":  null,
+                       "duration_ms":  0,
+                       "exit_code":  0
+                   },
+                   {
+                       "name":  "sadp-audit",
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\sadp-audit-20260611-184220.txt",
+                       "duration_ms":  803,
+                       "exit_code":  0
+                   },
+                   {
+                       "name":  "ai-guard",
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\ai-guard-20260611-184220.txt",
+                       "duration_ms":  555,
+                       "exit_code":  0
+                   },
+                   {
+                       "name":  "test-governance",
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\test-governance-20260611-184220.txt",
+                       "duration_ms":  1705,
+                       "exit_code":  0
+                   }
+               ]
+}

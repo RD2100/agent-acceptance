@@ -1,0 +1,169 @@
+commit d7b294dc4451d4a17b26a729eddbd613c79a1d7f
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Thu Jun 11 18:35:10 2026 +0800
+
+    fix: V4 — resolve 4 GPT blockers for EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1
+    
+    1. Clear stale test_governance_failure_blocks.txt from negative-path evidence
+    2. Fix Expected text logic: advisory scenarios show '0 (advisory semantics)'
+    3. Sync docs/test comments: evidence-capture-workflow.md, test_hook_failure_semantics.py
+    4. Schema exit_code type: ['integer', 'null'] with fail-closed documentation
+    
+    V4 minimal fixes per GPT reviewer V3(1) verdict.
+    
+    🤖 Generated with [Qoder][https://qoder.com]
+
+diff --git a/docs/agent-runtime/evidence-capture-workflow.md b/docs/agent-runtime/evidence-capture-workflow.md
+index cb974475..9a8fac76 100644
+--- a/docs/agent-runtime/evidence-capture-workflow.md
++++ b/docs/agent-runtime/evidence-capture-workflow.md
+@@ -382,7 +382,8 @@ If an agent manually runs `git add .` or `git add _evidence/`, the hook output f
+ 
+ Output persistence is not merely logging — it is a structured enforcement mechanism. The pre-commit hook (v2.3.0) implements fail-closed semantics for all required governance stages:
+ 
+-- **Blocking stages**: sadp-audit, ai-guard, test-governance. Any non-zero exit code from these stages causes `overall_result: BLOCKED` and hook exit 1, which rejects the commit.
++- **Blocking stages**: sadp-audit, ai-guard. Any non-zero exit code from these stages causes `overall_result: BLOCKED` and hook exit 1, which rejects the commit.
++- **Advisory stages**: manifest-regen, test-governance. Exit codes are logged but do not block the commit.
+ - **Advisory stages**: manifest-regen. Exit code is logged but does not affect the commit decision.
+ 
+ Raw hook output should be captured when available. The files in `_evidence/hook-output/` are original captures produced at commit time, not replay output generated after the fact. Each file header includes `Source: pre-commit hook (original)` to distinguish original from replay.
+diff --git a/docs/agent-runtime/hook-failure-semantics.md b/docs/agent-runtime/hook-failure-semantics.md
+index bc097469..2824bff8 100644
+--- a/docs/agent-runtime/hook-failure-semantics.md
++++ b/docs/agent-runtime/hook-failure-semantics.md
+@@ -67,6 +67,17 @@ For `ai-guard` and `test-governance` failures, the hook completes all stages bef
+ 
+ This ensures a hung AI guard process does not silently pass commits.
+ 
++### Null Exit Code Semantics (Fail-Closed)
++
++The schema allows `exit_code` to be `integer` or `null`. A `null` exit code means the
++process exit code was unavailable (e.g., `Start-Job` did not complete normally).
++
++Fail-closed rules:
++- **Blocking stage** with `exit_code = null` → treated as failure (BLOCKED expected)
++- **Advisory stage** with `exit_code = null` → logged but not blocking
++- The hook defaults `null` to `1` internally, ensuring unavailable = blocked for blocking stages
++- The validator rejects `null` exit codes on blocking stages unless `overall_result = BLOCKED`
++
+ ### Schema Conformance
+ 
+ `latest.json` MUST validate against `schemas/agent-runtime/evidence-capture.schema.json`.
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index 0512d553..73721611 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-11T18:21:16.6106062+08:00",
++    "generated":  "2026-06-11T18:35:11.6541238+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+@@ -152,7 +152,7 @@
+                              "path":  "docs/agent-runtime/dispatch-model-profiles.md"
+                          },
+                          {
+-                             "sha256":  "426036FEDA9B79FD545CFCCD5FEA547928C57718F7907ABC46696A1831CDC485",
++                             "sha256":  "179026A884F88598E58EA4000C57AC009D4596FBE7ED769B78EC78439B7B928E",
+                              "path":  "docs/agent-runtime/evidence-capture-workflow.md"
+                          },
+                          {
+@@ -188,7 +188,7 @@
+                              "path":  "docs/agent-runtime/historical-evidence-policy.md"
+                          },
+                          {
+-                             "sha256":  "B8388CC90A2468F0EC8FEC0643B0C642C863D51B1C56B372328C4FC911F224CB",
++                             "sha256":  "C225389CB568DA85282E60CFC2E51DAA1AA6029BD706261EB91FEDDC9E7FBDFC",
+                              "path":  "docs/agent-runtime/hook-failure-semantics.md"
+                          },
+                          {
+@@ -544,7 +544,7 @@
+                              "path":  "schemas/agent-runtime/chain-evidence.schema.json"
+                          },
+                          {
+-                             "sha256":  "658EC621D2C6BF9CADBC6540A68394B16CB1A6DD39AD1A3D2864FB218F895130",
++                             "sha256":  "4CC3BAB82F1458F09303D36B88D348EDC1E430FA0993D2BA6BF5DEBA60CE85DC",
+                              "path":  "schemas/agent-runtime/evidence-capture.schema.json"
+                          },
+                          {
+diff --git a/schemas/agent-runtime/evidence-capture.schema.json b/schemas/agent-runtime/evidence-capture.schema.json
+index c3e04d5a..eff49044 100644
+--- a/schemas/agent-runtime/evidence-capture.schema.json
++++ b/schemas/agent-runtime/evidence-capture.schema.json
+@@ -28,8 +28,8 @@
+             "enum": ["manifest-regen", "sadp-audit", "ai-guard", "test-governance"]
+           },
+           "exit_code": {
+-            "type": "integer",
+-            "description": "Process exit code (0=pass, non-zero=block/error)"
++            "type": ["integer", "null"],
++            "description": "Process exit code (0=pass, non-zero=block/error, null=unavailable/fail-closed). Null on a blocking stage implies failure (fail-closed semantics)."
+           },
+           "output_file": {
+             "type": "string",
+diff --git a/scripts/run_negative_path_evidence.py b/scripts/run_negative_path_evidence.py
+index 50ed85b1..e6a0f467 100644
+--- a/scripts/run_negative_path_evidence.py
++++ b/scripts/run_negative_path_evidence.py
+@@ -129,7 +129,14 @@ def main():
+     for label, rc, output in results:
+         fname = f"{label}.txt"
+         fpath = OUT_DIR / fname
+-        content = f"# Runtime Negative-Path Evidence: {label}\n# Validator exit code: {rc}\n# Expected: {'0 (correct semantics)' if 'blocks' in label else 'nonzero (mismatch rejected)'}\n\n{output}\n"
++        # Determine expected label based on scenario type
++        if "blocks" in label:
++            expected_text = "0 (correct semantics — blocking stage failure → BLOCKED)"
++        elif "advisory" in label:
++            expected_text = "0 (advisory semantics — failure logged but not blocking)"
++        else:
++            expected_text = "nonzero (mismatch/invalid input rejected by validator)"
++        content = f"# Runtime Negative-Path Evidence: {label}\n# Validator exit code: {rc}\n# Expected: {expected_text}\n\n{output}\n"
+         fpath.write_text(content, encoding="utf-8")
+         all_output.append(f"=== {label} (exit={rc}) ===\n{output}\n")
+ 
+diff --git a/tests/test_hook_failure_semantics.py b/tests/test_hook_failure_semantics.py
+index f9c6bdb1..f8ab7bfa 100644
+--- a/tests/test_hook_failure_semantics.py
++++ b/tests/test_hook_failure_semantics.py
+@@ -3,13 +3,13 @@
+ Validates that:
+ 1. latest.json conforms to evidence-capture.schema.json
+ 2. The hook's overall_result mapping follows fail-closed rules
+-3. All required stages (sadp-audit, ai-guard, test-governance) block on failure
++3. Blocking stages (sadp-audit, ai-guard) block on failure; advisory stages do not
+ 4. The hook output validator works correctly
+ 5. Replay-style evidence is labeled
+ 
+ Failure semantics (v2.3.0):
+-  BLOCKING:   sadp-audit, ai-guard, test-governance
+-  ADVISORY:   manifest-regen
++  BLOCKING:   sadp-audit, ai-guard
++  ADVISORY:   manifest-regen, test-governance
+ """
+ import json
+ import subprocess
+@@ -86,8 +86,8 @@ class TestHookScript:
+     def test_ai_guard_marked_blocking(self, hook_text):
+         assert "blocking" in hook_text.lower()
+ 
+-    def test_all_stages_blocking_in_overall_result(self, hook_text):
+-        # v2.3.0: all stages except manifest-regen are blocking
++    def test_blocking_stages_in_overall_result(self, hook_text):
++        # v2.3.0: sadp-audit and ai-guard are blocking; test-governance is advisory
+         assert '"manifest-regen"' in hook_text
+         assert "$overallResult = \"BLOCKED\"" in hook_text
+ 
+@@ -131,8 +131,8 @@ class TestOverallResultLogic:
+     """Simulate the hook's overall_result calculation to verify correctness.
+ 
+     v2.3.0 rules:
+-      - BLOCKING: sadp-audit, ai-guard, test-governance
+-      - ADVISORY: manifest-regen
++      - BLOCKING: sadp-audit, ai-guard
++      - ADVISORY: manifest-regen, test-governance
+     """
+ 
+     @staticmethod

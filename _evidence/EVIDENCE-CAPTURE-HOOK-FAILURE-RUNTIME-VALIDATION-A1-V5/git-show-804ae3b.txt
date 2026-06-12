@@ -1,0 +1,123 @@
+commit 804ae3b9717a1c37a39abdf3eeeefd582d1ce042
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Thu Jun 11 18:42:19 2026 +0800
+
+    fix: V5 — validator/schema consistency, missing_ai_guard evidence, doc cleanup
+    
+    Addresses V4 verdict blockers for EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1:
+    1. Schema output_file type: ["string", "null"] (hook outputs null for manifest-regen)
+    2. Validator: added output_file type check (string or null)
+    3. Negative-path: added test 9 (missing_ai_guard_rejected) — 9 scenarios total
+    4. Cleaned duplicate advisory bullet in evidence-capture-workflow.md
+    
+    🤖 Generated with [Qoder][https://qoder.com]
+
+diff --git a/docs/agent-runtime/evidence-capture-workflow.md b/docs/agent-runtime/evidence-capture-workflow.md
+index 9a8fac76..52461ddc 100644
+--- a/docs/agent-runtime/evidence-capture-workflow.md
++++ b/docs/agent-runtime/evidence-capture-workflow.md
+@@ -384,7 +384,6 @@ Output persistence is not merely logging — it is a structured enforcement mech
+ 
+ - **Blocking stages**: sadp-audit, ai-guard. Any non-zero exit code from these stages causes `overall_result: BLOCKED` and hook exit 1, which rejects the commit.
+ - **Advisory stages**: manifest-regen, test-governance. Exit codes are logged but do not block the commit.
+-- **Advisory stages**: manifest-regen. Exit code is logged but does not affect the commit decision.
+ 
+ Raw hook output should be captured when available. The files in `_evidence/hook-output/` are original captures produced at commit time, not replay output generated after the fact. Each file header includes `Source: pre-commit hook (original)` to distinguish original from replay.
+ 
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index 73721611..2a7246a6 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-11T18:35:11.6541238+08:00",
++    "generated":  "2026-06-11T18:42:21.0704860+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+@@ -152,7 +152,7 @@
+                              "path":  "docs/agent-runtime/dispatch-model-profiles.md"
+                          },
+                          {
+-                             "sha256":  "179026A884F88598E58EA4000C57AC009D4596FBE7ED769B78EC78439B7B928E",
++                             "sha256":  "38F85D2696C95E6A79BAC588A5D5F5FD16C6F3E0ADF3A15CE32CA1BFCEE8CB11",
+                              "path":  "docs/agent-runtime/evidence-capture-workflow.md"
+                          },
+                          {
+@@ -544,7 +544,7 @@
+                              "path":  "schemas/agent-runtime/chain-evidence.schema.json"
+                          },
+                          {
+-                             "sha256":  "4CC3BAB82F1458F09303D36B88D348EDC1E430FA0993D2BA6BF5DEBA60CE85DC",
++                             "sha256":  "70C14CCD6BC70BD5AF0F6F32FC655405E20D2D99828437F193595E5C9B270533",
+                              "path":  "schemas/agent-runtime/evidence-capture.schema.json"
+                          },
+                          {
+diff --git a/schemas/agent-runtime/evidence-capture.schema.json b/schemas/agent-runtime/evidence-capture.schema.json
+index eff49044..22b87d5a 100644
+--- a/schemas/agent-runtime/evidence-capture.schema.json
++++ b/schemas/agent-runtime/evidence-capture.schema.json
+@@ -32,8 +32,8 @@
+             "description": "Process exit code (0=pass, non-zero=block/error, null=unavailable/fail-closed). Null on a blocking stage implies failure (fail-closed semantics)."
+           },
+           "output_file": {
+-            "type": "string",
+-            "description": "Relative path to captured output file"
++            "type": ["string", "null"],
++            "description": "Relative path to captured output file (null for stages with no output, e.g. manifest-regen)"
+           },
+           "duration_ms": {
+             "type": "integer",
+diff --git a/scripts/run_negative_path_evidence.py b/scripts/run_negative_path_evidence.py
+index e6a0f467..94491768 100644
+--- a/scripts/run_negative_path_evidence.py
++++ b/scripts/run_negative_path_evidence.py
+@@ -1,7 +1,7 @@
+ """Runtime negative-path evidence for hook failure semantics (v2.3.0).
+ 
+ Generates synthetic latest.json files with failure scenarios and validates
+-them against the validator. Proves (8 scenarios):
++them against the validator. Proves (9 scenarios):
+ 1. sadp_audit failure → BLOCKED → validator PASS (correct semantics)
+ 2. ai_guard failure → BLOCKED → validator PASS (correct semantics)
+ 3. test_governance failure → PASS advisory → validator PASS (advisory, not blocking)
+@@ -10,6 +10,7 @@ them against the validator. Proves (8 scenarios):
+ 6. Invalid JSON → REJECTED (validator exit nonzero)
+ 7. Missing sadp-audit stage → REJECTED (fail-closed: absence = BLOCKED)
+ 8. Null exit_code + PASS → REJECTED (fail-closed: null = expected BLOCKED)
++9. Missing ai-guard stage → REJECTED (fail-closed: absence = BLOCKED)
+ 
+ This script generates evidence files for the evidence pack.
+ """
+@@ -124,6 +125,13 @@ def main():
+     results.append(("null_exit_code_rejected", rc, out))
+     print(f"[8] Null exit_code + PASS → REJECTED: exit={rc} {'PASS' if rc != 0 else 'FAIL'}")
+ 
++    # Test 9: missing blocking stage (ai-guard) → validator should FAIL (fail-closed)
++    data = json.loads(json.dumps(BASELINE))
++    data["stages"] = [s for s in data["stages"] if s["name"] != "ai-guard"]
++    rc, out = run_validator(data, "missing_ai_guard_rejected")
++    results.append(("missing_ai_guard_rejected", rc, out))
++    print(f"[9] Missing ai-guard → REJECTED: exit={rc} {'PASS' if rc != 0 else 'FAIL'}")
++
+     # Write all evidence to files
+     all_output = []
+     for label, rc, output in results:
+diff --git a/scripts/validate_hook_output.py b/scripts/validate_hook_output.py
+index f2a96cbe..03f9fb66 100644
+--- a/scripts/validate_hook_output.py
++++ b/scripts/validate_hook_output.py
+@@ -74,7 +74,10 @@ def validate_against_schema(data: dict, schema: dict) -> list[str]:
+             errors.append(f"stages[{i}].name '{name}' not in enum {valid_names}")
+         ec = stage.get("exit_code")
+         if ec is not None and not isinstance(ec, int):
+-            errors.append(f"stages[{i}].exit_code must be integer, got {type(ec).__name__}")
++            errors.append(f"stages[{i}].exit_code must be integer or null, got {type(ec).__name__}")
++        of = stage.get("output_file")
++        if of is not None and not isinstance(of, str):
++            errors.append(f"stages[{i}].output_file must be string or null, got {type(of).__name__}")
+         dm = stage.get("duration_ms")
+         if dm is not None and not isinstance(dm, int):
+             errors.append(f"stages[{i}].duration_ms must be integer, got {type(dm).__name__}")

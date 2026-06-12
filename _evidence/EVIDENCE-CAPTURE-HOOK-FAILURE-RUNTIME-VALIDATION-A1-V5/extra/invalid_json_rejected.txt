@@ -1,0 +1,6 @@
+# Runtime Negative-Path Evidence: invalid_json_rejected
+# Validator exit code: 1
+# Expected: nonzero (mismatch/invalid input rejected by validator)
+
+FAIL: Invalid JSON in C:\Users\RD\AppData\Local\Temp\tmp6wjcagu1.json: Expecting property name enclosed in double quotes: line 1 column 3 (char 2)
+

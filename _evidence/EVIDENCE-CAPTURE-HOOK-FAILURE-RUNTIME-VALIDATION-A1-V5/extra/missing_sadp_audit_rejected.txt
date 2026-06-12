@@ -1,0 +1,7 @@
+# Runtime Negative-Path Evidence: missing_sadp_audit_rejected
+# Validator exit code: 1
+# Expected: nonzero (mismatch/invalid input rejected by validator)
+
+FAIL: Semantic checks found 1 errors
+  - Missing required blocking stage: sadp-audit (fail-closed: absence = BLOCKED)
+
