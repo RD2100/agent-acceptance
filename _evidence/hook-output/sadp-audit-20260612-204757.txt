@@ -1,0 +1,56 @@
+﻿# SADP Audit Output - 2026-06-12T12:47:57Z
+# Exit code: 0
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 41
+[SADP-AUDIT] TaskSpecs found: 62
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 41 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-200944.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-201140.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-201348.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-201558.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-201808.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202133.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202228.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202352.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202405.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202415.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202427.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202439.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202454.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202506.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202517.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202529.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202543.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202556.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202609.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202625.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202642.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202654.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202705.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202718.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202735.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202746.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202758.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202816.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-202938.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-203005.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-203100.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-203110.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-203120.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-203131.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-203522.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-203554.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-203609.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-203623.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-203638.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-203653.txt -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] STATUS: PASS
+

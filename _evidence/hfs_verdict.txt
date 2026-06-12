@@ -1,0 +1,1 @@
+我会按刚才给出的 hook failure 任务标准审核这个包：先校验 ZIP、文件清单和哈希，再重点看失败语义测试、真实/模拟 hook 输出、latest.json schema 校验、git status 与 deferred register 是否一致。
