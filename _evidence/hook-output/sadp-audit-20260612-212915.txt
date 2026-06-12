@@ -1,0 +1,71 @@
+﻿# SADP Audit Output - 2026-06-12T13:29:15Z
+# Exit code: 0
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 56
+[SADP-AUDIT] TaskSpecs found: 62
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 56 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   .ai/current-task.yaml -> current-task.yaml
+[SADP-AUDIT]   .ai/policy.yaml -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R2/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R3/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A1-R4/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A2/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A2-R2/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A2-R3/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A3/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/CONVERSATION-HEALTH-GATE-A4/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A1/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/EVIDENCE-CAPTURE-STANDARD-A2/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/R18-EVIDENCE-MAINTENANCE-FINAL/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/R18-FOLLOWUP-FINAL/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/R18-WORKSPACE-CLEANUP-FINAL/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/R18-WORKSPACE-CLOSURE/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/R18-WORKSPACE-CLOSURE-SLIM/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _archive/evidence-archived/UNIVERSAL-AGENT-WORKFLOW-STANDARD-A1/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V2/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V3/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V4/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1-V5/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-CLEANUP-A1/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/EVIDENCE-CAPTURE-HOOK-FAILURE-SEMANTICS-A1/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/ai-guard-20260612-205035.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/ai-guard-20260612-205126.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/conversation-health-20260612-205035.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/conversation-health-20260612-205126.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/latest.json -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-205035.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-205126.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/test-governance-20260612-205035.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/test-governance-20260612-205126.txt -> current-task.yaml
+[SADP-AUDIT]   _evidence/R18-catchup-commits/secret-scan-output.txt -> current-task.yaml
+[SADP-AUDIT]   _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/dev-frame-writing/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-alpha/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-delta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-delta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-epsilon/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-eta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-eta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-iota/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-iota/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-theta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-theta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   _projects/project-zeta/docs/agent-runtime/negative-test-fixtures/negative-test-fixtures/NEG-009-secrets-read.json -> current-task.yaml
+[SADP-AUDIT]   hooks/pre-commit.governance.ps1 -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT]   tools/ai_guard.py -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/pre-commit.governance.ps1 requires human review WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 2 warning(s) - PASS with warnings
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/pre-commit.governance.ps1 requires human review WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 2 warning(s) - PASS with warnings
+[SADP-AUDIT] STATUS: PASS
+

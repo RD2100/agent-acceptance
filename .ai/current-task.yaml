@@ -1,49 +1,39 @@
-task_id: PHASE3-BATCH-CLEANUP-A1
-title: "Phase 3 batch cleanup per WORKSPACE-CLOSURE-INVENTORY-A1"
-priority: P2
+task_id: PHASE3D-GOVERNANCE-POLICY-REREVIEW-A1
+title: "Review allow_paths policy change from Phase 3d"
+priority: P1
 status: in_progress
-type: maintenance
-mode: "@go edit"
+type: governance-review
+mode: "@go review"
+
 description: >
-  Execute batch cleanup of untracked workspace files per approved v2 outline.
-  Batches: 3e (nul + scripts/_evidence), 3a (CDP scripts), 3b (evidence dirs with ZIPs).
+  Commit 3ad49d30 mixed evidence cleanup with governance policy changes.
+  The allow_paths addition to policy.yaml conflicts with three governance documents.
+  This task reviews whether to keep, narrow, or revert the change, and syncs docs.
 
 goal:
   user_visible_success: >
-    Untracked file count reduced from 200 to ~29 top-level entries.
-    CDP scripts, evidence directories with ZIP coverage, and nul file cleaned up.
+    Policy/code drift resolved. allow_paths either reverted or narrowed with
+    full documentation sync and decision record entry.
   in_scope:
-    - Delete nul file (Windows reserved name)
-    - Move scripts/_evidence/ to _archive/scripts-evidence/
-    - Move 85 CDP temp scripts to _archive/cdp-scripts/
-    - Move 19 evidence directories with ZIP coverage to _archive/evidence-archived/
-    - Commit all remaining untracked evidence files, reports, fixtures
+    - Review allow_paths in .ai/policy.yaml against 3 conflicting docs
+    - Decide: keep, narrow, or revert allow_paths
+    - Sync documentation if allow_paths is kept
+    - Add decision record entry per human-required-decision-record.md Trigger 8
+    - Check AI_GUARD_FILE_LIST env var has real hook-level test coverage
   out_of_scope:
-    - Batch 3c (ZIP iteration cleanup) - deferred
-    - Batch 3d (NEG-009 fixture dedup) - deferred
-    - No changes to governance hooks or schemas
+    - Phase 4 quality hardening
+    - Any code changes beyond policy/docs
 
 write_set:
-  - "_archive/**"
-  - "_evidence/**"
-  - "_projects/**"
-  - "_reports/**"
   - ".ai/**"
-  - "nul"
-  - "READY_FOR_HUMAN_AUTHORIZATION_WITH_LIMITATIONS"
-  - "_ask_*.py"
-  - "_capture_*.py"
-  - "_submit_*.py"
-  - "_build_*.py"
-  - "_check_*.py"
-  - "_debug_*.py"
-  - "_codex_review_prompt.md"
-  - "scripts/_evidence/**"
-  - "hooks/sealed-files-manifest.json"
-  - "hooks/pre-commit.governance.ps1"
+  - ".ai/decisions/**"
+  - "docs/agent-runtime/evidence-capture-standard.md"
+  - "docs/agent-runtime/evidence-generation-hygiene.md"
+  - "docs/agent-runtime/human-required-decision-record.md"
   - "tools/ai_guard.py"
-  - "evidence_packs/**"
-  - "quarantine/**"
+  - "tests/**"
+  - "hooks/sealed-files-manifest.json"
+  - "_evidence/hook-output/**"
 
 deny_paths:
   - "scripts/multi_project_router.py"
@@ -51,43 +41,39 @@ deny_paths:
   - "scripts/tab_target_resolver.py"
   - ".agent/PROJECT_REGISTRY.json"
 
-constraints:
-  - "Archive only (no permanent deletion)"
-  - "All moves reversible via _archive/ directory"
-  - "Hook modifications: env-var file passing + allow_paths override (v2.4.1)"
+conflicts:
+  - doc: "docs/agent-runtime/evidence-capture-standard.md"
+    line: 43
+    rule: "secret-scan-output.txt MUST NOT be staged in git"
+    violation: "allow_paths permits **/secret-scan-output.txt"
+  - doc: "docs/agent-runtime/evidence-generation-hygiene.md"
+    line: 102
+    rule: "NEVER include deny-listed files in git staging; ZIP only"
+    violation: "allow_paths bypasses deny for secret-named files"
+  - doc: "docs/agent-runtime/human-required-decision-record.md"
+    line: 103
+    rule: "Committing mock secret fixtures requires human authorization"
+    violation: "NEG-009 fixtures committed without explicit human decision record"
 
 gate_0:
-  inventory_evidence:
-    queried_sources:
-      - "_reports/workspace-closure-inventory-a1/INVENTORY.md (407 lines)"
-      - "_reports/POST-AI-GUARD-TASK-OUTLINE.md (v2, 179 lines)"
-    matched_capabilities:
-      - "workspace inventory classification"
-      - "batch cleanup strategy"
   startup_read: completed
   pre_task_gate: passed
+  inventory_evidence:
+    queried_sources:
+      - "docs/agent-runtime/evidence-capture-standard.md (line 43: MUST NOT stage)"
+      - "docs/agent-runtime/evidence-generation-hygiene.md (line 102: ZIP only)"
+      - "docs/agent-runtime/human-required-decision-record.md (line 103: Trigger 8)"
+    matched_capabilities:
+      - "governance policy drift detection"
+      - "allow_paths scope narrowing"
+      - "decision record creation"
 
 acceptance_criteria:
-  - "nul file deleted"
-  - "scripts/_evidence/ archived"
-  - "85 CDP scripts archived"
-  - "19 evidence directories with ZIPs archived"
-  - "Untracked count reduced by >100 entries"
-
-verdict:
-  status: completed
-  evidence:
-    initial_untracked: ~200
-    final_untracked: 46
-    committed_files: ~650
-    commits_created: 30
-    deferred_secret_named: 42
-    deferred_reason: "blocked by deny_paths **/*secret* — batch 3c/3d scope"
-  batches_completed:
-    - "3e: nul deletion + scripts/_evidence archive"
-    - "3a: 85 CDP scripts archived"
-    - "3b: 19+17 evidence dirs archived (ZIP-covered + remaining)"
-    - "3c: 7 evidence dirs + 377 hook-output + loose evidence + reports"
+  - "Each of 3 doc conflicts has explicit KEEP/NARROW/REVERT decision"
+  - "Documentation synced with final policy decision"
+  - "Decision record entry created for mock secret fixture commits"
+  - "AI_GUARD_FILE_LIST tested at hook level or test added"
+  - "Single clean commit, no mixing with unrelated changes"
 
 live_dispatch_authorized: false
-next_recommended: "Phase 4 quality hardening (Codex P2/P3 items)"
+next_recommended: "Phase 4 quality hardening (after this review closes)"

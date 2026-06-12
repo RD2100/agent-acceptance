@@ -1,0 +1,37 @@
+﻿# SADP Audit Output - 2026-06-12T13:57:47Z
+# Exit code: 1
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 17
+[SADP-AUDIT] TaskSpecs found: 62
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] V2: All 17 files covered by TaskSpec write_sets.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   .ai/current-task.yaml -> ai-guard-files-mode-and-large-file-scan-a1.yaml
+[SADP-AUDIT]   .ai/decisions/DR-20260612-ALLOW-PATHS.md -> current-task.yaml
+[SADP-AUDIT]   .ai/policy.yaml -> current-task.yaml
+[SADP-AUDIT]   _evidence/hook-output/ai-guard-20260612-212915.txt -> conversation-health-gate-a3.yaml
+[SADP-AUDIT]   _evidence/hook-output/ai-guard-20260612-213431.txt -> conversation-health-gate-a3.yaml
+[SADP-AUDIT]   _evidence/hook-output/conversation-health-20260612-212915.txt -> conversation-health-gate-a3.yaml
+[SADP-AUDIT]   _evidence/hook-output/conversation-health-20260612-213431.txt -> conversation-health-gate-a3.yaml
+[SADP-AUDIT]   _evidence/hook-output/latest.json -> conversation-health-gate-a1.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-212915.txt -> conversation-health-gate-a3.yaml
+[SADP-AUDIT]   _evidence/hook-output/sadp-audit-20260612-213431.txt -> conversation-health-gate-a3.yaml
+[SADP-AUDIT]   _evidence/hook-output/test-governance-20260612-212915.txt -> conversation-health-gate-a3.yaml
+[SADP-AUDIT]   _evidence/hook-output/test-governance-20260612-213431.txt -> conversation-health-gate-a3.yaml
+[SADP-AUDIT]   docs/agent-runtime/evidence-capture-standard.md -> current-task.yaml
+[SADP-AUDIT]   docs/agent-runtime/evidence-generation-hygiene.md -> current-task.yaml
+[SADP-AUDIT]   docs/agent-runtime/human-required-decision-record.md -> current-task.yaml
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT]   tests/test_ai_guard_staged_scope.py -> current-task.yaml
+[SADP-AUDIT] FAIL: TaskSpec missing valid gate_0.inventory_evidence: .ai/current-task.yaml
+[SADP-AUDIT]   Required: gate_0.inventory_evidence.queried_sources + matched_capabilities.
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review ERROR: SCOPE: .ai/current-task.yaml outside TaskSpec allow_write ERROR: SCOPE: _evidence/hook-output/ai-guard-20260612-212915.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/hook-output/ai-guard-20260612-213431.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/hook-output/conversation-health-20260612-212915.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/hook-output/conversation-health-20260612-213431.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/hook-output/latest.json outside TaskSpec allow_write ERROR: SCOPE: _evidence/hook-output/sadp-audit-20260612-212915.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/hook-output/sadp-audit-20260612-213431.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/hook-output/test-governance-20260612-212915.txt outside TaskSpec allow_write ERROR: SCOPE: _evidence/hook-output/test-governance-20260612-213431.txt outside TaskSpec allow_write  AI Guard: 10 error(s), 1 warning(s) - BLOCKED
+[SADP-AUDIT] ai_guard.py found TaskSpec scope issues.
+[SADP-AUDIT] STATUS: BLOCKED
+[SADP-AUDIT] Commit rejected. Fix the issues above and retry.
+[SADP-AUDIT] (Use --no-verify only with explicit human approval per core-001)
+

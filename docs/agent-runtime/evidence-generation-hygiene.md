@@ -100,7 +100,8 @@ All evidence files MUST be generated in a single script pass.
 Files on the git deny_list require special handling during evidence generation.
 
 - NEVER include `secret-scan-output.txt` or other deny-listed files in git staging. The deny_list will block the commit.
-- Use `git reset HEAD -- <path>` to unstage deny-listed files before committing.
+- **Exception:** Files explicitly covered by `allow_paths` in `.ai/policy.yaml` may be staged (see DR-20260612-ALLOW-PATHS for authorized scope).
+- Use `git reset HEAD -- <path>` to unstage deny-listed files before committing (unless covered by allow_paths).
 - Include deny-listed files only in the ZIP evidence pack, not in git.
 - The deferred-files register MUST categorize deny-listed files as `permanently_deferred_deny_path`.
 

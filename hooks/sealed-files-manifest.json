@@ -9,10 +9,10 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-12T21:34:34.1738729+08:00",
+    "generated":  "2026-06-12T21:58:44.1906008+08:00",
     "sealed_files":  [
                          {
-                             "sha256":  "F449E1FC72895C008D28841F5149045D7E3191C683EBADE67D37731C686A151B",
+                             "sha256":  "5F355E8D4FC1DF34627264AB41E20499C39CA3FDF3F1FEFCEDB364EA6ADB40BD",
                              "path":  ".ai/policy.yaml"
                          },
                          {
@@ -156,7 +156,7 @@
                              "path":  "docs/agent-runtime/dispatch-model-profiles.md"
                          },
                          {
-                             "sha256":  "16C37E01153FE23E96A6542685CFAE1EA741AB9D40024CEFD8350451D183204D",
+                             "sha256":  "ED42185C58C670C2FD0ED06DC9E2A0D1E76D9D06B2A0014F03AB739A03A8CFDF",
                              "path":  "docs/agent-runtime/evidence-capture-standard.md"
                          },
                          {
@@ -164,7 +164,7 @@
                              "path":  "docs/agent-runtime/evidence-capture-workflow.md"
                          },
                          {
-                             "sha256":  "530FE66AF633E4C99BAFA9E97B70CE20AA938B3E0A3AD3293B074116F165BD4C",
+                             "sha256":  "1F3BB36790137E845E2E188EFC05619204F25E97227CC150082BEC2FC0A74E42",
                              "path":  "docs/agent-runtime/evidence-generation-hygiene.md"
                          },
                          {
@@ -208,7 +208,7 @@
                              "path":  "docs/agent-runtime/hook-governance-upgrade-decision.md"
                          },
                          {
-                             "sha256":  "89A4215048C8CABB851771AB3C3294E56167AEDB92EBD13910CEB5790E31EB97",
+                             "sha256":  "80EE7CC6D0B8A0E597921F823ABFAF091E83B2BB4ABD61E261ECE252A609DC4C",
                              "path":  "docs/agent-runtime/human-required-decision-record.md"
                          },
                          {

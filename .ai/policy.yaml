@@ -13,10 +13,11 @@ deny_paths:
   - "**/service-account*.json"
   - "**/credentials*.json"
 
-# v2.4.1: Override deny_paths for known false positives
+# v2.4.1: Override deny_paths for known false positives (narrowed per DR-20260612)
 allow_paths:
-  - "**/secret-scan-output.txt"
-  - "**/NEG-*-secrets-*.json"
+  - "_evidence/**/secret-scan-output.txt"
+  - "_archive/**/secret-scan-output.txt"
+  - "_projects/**/negative-test-fixtures/NEG-*-secrets-*.json"
 
 restricted_paths:
   - ".github/**"

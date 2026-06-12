@@ -40,7 +40,7 @@ Every evidence pack MUST contain all of the following files. Omission of any Tie
 | 5 | `diff.patch` or `git-show.txt` | What changed in scope commits. Combined diff across all commits claimed in scope, OR full `git show` output for single-commit tasks. |
 | 6 | `test-output.txt` or `no-test-rationale.md` | Raw pytest (or equivalent test runner) output captured from terminal. MUST be raw output, not a summary. If no tests were run, `no-test-rationale.md` MUST explicitly justify why. |
 | 7 | `safety-report.json` | Valid JSON security assessment. MUST include fields for deny-list path checks (`deny_paths`), secret-scan results (`secret_scan`), and hook-integrity status (`hook_integrity`). |
-| 8 | `secret-scan-output.txt` | Raw scanner output. REQUIRED when `deny_paths` or mock secret fixtures are involved in the task. MUST NOT be staged in git. |
+| 8 | `secret-scan-output.txt` | Raw scanner output. REQUIRED when `deny_paths` or mock secret fixtures are involved in the task. MUST NOT be staged in git **unless explicitly covered by `allow_paths` in policy.yaml** (see DR-20260612-ALLOW-PATHS). |
 | 9 | `task-spec.yaml` or `current-task.yaml` | TaskSpec snapshot at execution time. Contains task ID, goal, constraints, and acceptance criteria as they existed when work began. |
 | 10 | `evidence-manifest.json` | Machine-readable manifest conforming to `evidence-manifest.schema.json`. Lists all files in the pack with classification, condition, and hash. |
 

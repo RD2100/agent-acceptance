@@ -110,6 +110,8 @@ The following scenarios REQUIRE human authorization. When any of these triggers 
 2. The mock pattern does not accidentally match a real secret format.
 3. The fixture is appropriately documented and discoverable.
 
+**Satisfaction via allow_paths:** If mock secret fixtures are covered by `allow_paths` in `.ai/policy.yaml` with a corresponding Decision Record (e.g., DR-20260612-ALLOW-PATHS), the human authorization requirement is satisfied by the decision record approval. The allow_paths scope MUST be narrowed to specific directory patterns (not `**` wildcards).
+
 ---
 
 ### Trigger 9: Changing Finalizer Blocking Rules

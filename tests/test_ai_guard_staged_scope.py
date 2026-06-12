@@ -295,3 +295,105 @@ class TestLargeFileSecretScan:
             assert code == 0, f"Large clean file must pass. Got exit={code}: {out[:500]}"
         finally:
             shutil.rmtree(d, ignore_errors=True)
+
+
+class TestAllowPathsOverride:
+    """allow_paths in policy.yaml must override deny_paths for known false positives."""
+
+    def test_deny_paths_blocks_secret_named_file(self):
+        """File matching deny_paths without allow_paths override must be BLOCKED."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths:\n  - '*secret*'\n  - '**/*secret*'\n"
+                "restricted_paths: []\nsecret_patterns: []\n",
+                encoding="utf-8")
+            (repo / "secret-scan-output.txt").write_text("scan results")
+            code, out = run_guard_in(repo, "--files", "secret-scan-output.txt")
+            assert code == 1, f"Deny-listed file must block. Got exit={code}: {out[:500]}"
+            assert "DENIED" in out
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+    def test_allow_paths_overrides_deny_for_specific_path(self):
+        """File matching deny_paths BUT covered by allow_paths must PASS."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths:\n  - '**/*secret*'\n"
+                "allow_paths:\n  - '_evidence/**/secret-scan-output.txt'\n"
+                "restricted_paths: []\nsecret_patterns: []\n",
+                encoding="utf-8")
+            # Create file in allowed path
+            ev_dir = repo / "_evidence" / "test-pack"
+            ev_dir.mkdir(parents=True)
+            (ev_dir / "secret-scan-output.txt").write_text("scan results")
+            code, out = run_guard_in(
+                repo, "--files", "_evidence/test-pack/secret-scan-output.txt")
+            assert code == 0, f"allow_paths must override deny. Got exit={code}: {out[:500]}"
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+    def test_allow_paths_does_not_override_for_unmatched_path(self):
+        """File matching deny_paths but NOT in allow_paths scope must still BLOCK."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths:\n  - '*secret*'\n  - '**/*secret*'\n"
+                "allow_paths:\n  - '_evidence/**/secret-scan-output.txt'\n"
+                "restricted_paths: []\nsecret_patterns: []\n",
+                encoding="utf-8")
+            # File outside allow_paths scope
+            (repo / "random-secret-scan.txt").write_text("scan")
+            code, out = run_guard_in(repo, "--files", "random-secret-scan.txt")
+            assert code == 1, f"Out-of-scope file must still block. Got exit={code}: {out[:500]}"
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+
+class TestFilesFromEnvVar:
+    """--files with no args must read file list from AI_GUARD_FILE_LIST env var."""
+
+    def test_files_mode_reads_from_env_var(self):
+        """When --files has no positional args, AI_GUARD_FILE_LIST env var is used."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / "clean.txt").write_text("no secrets")
+            env = os.environ.copy()
+            env["AI_GUARD_FILE_LIST"] = "clean.txt\n"
+            result = subprocess.run(
+                [sys.executable, str(AI_GUARD), "--root", str(repo), "--files"],
+                capture_output=True, text=True, cwd=str(repo), env=env,
+            )
+            assert result.returncode == 0, (
+                f"Env var file list must work. Got exit={result.returncode}: "
+                f"{result.stdout[:500]}")
+            assert "PASS" in result.stdout
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+    def test_files_mode_env_var_blocks_denied_file(self):
+        """Env var file list must still enforce deny_paths."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths:\n  - '*secret*'\n  - '**/*secret*'\n"
+                "restricted_paths: []\nsecret_patterns: []\n",
+                encoding="utf-8")
+            (repo / "secret-data.txt").write_text("sensitive")
+            env = os.environ.copy()
+            env["AI_GUARD_FILE_LIST"] = "secret-data.txt\n"
+            result = subprocess.run(
+                [sys.executable, str(AI_GUARD), "--root", str(repo), "--files"],
+                capture_output=True, text=True, cwd=str(repo), env=env,
+            )
+            assert result.returncode == 1, (
+                f"Env var must still enforce deny. Got exit={result.returncode}: "
+                f"{result.stdout[:500]}")
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
