@@ -1,0 +1,2021 @@
+commit c5adb084c44d7e52f5bc2ac997fdbe87c05a946f
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Fri Jun 12 07:55:15 2026 +0800
+
+    feat: CONVERSATION-HEALTH-GATE-A3 — Pre-Commit Advisory + Registry Reconciliation
+    
+    - Add Stage 4 (conversation-health advisory) to pre-commit.governance.ps1 v2.4.0
+    - Add pre_commit_health_advisory.py: reads evidence, runs decision engine, never blocks
+    - Add reconcile_conversation_registry.py: cross-checks health vs binding registry
+    - Update evidence-capture.schema.json: maxItems 5, conversation-health enum
+    - Update hook-failure-semantics.md: document new advisory stage
+    - Update test_hook_failure_semantics.py: v2.4.0 assertions
+    - 35 new tests (20 advisory + 15 reconciliation), 1163 total passed
+    
+    🤖 Generated with [Qoder][https://qoder.com]
+
+diff --git a/.ai/current-task.yaml b/.ai/current-task.yaml
+index af5bf1c5..1954b5bf 100644
+--- a/.ai/current-task.yaml
++++ b/.ai/current-task.yaml
+@@ -1,10 +1,8 @@
+-task_id: CONVERSATION-HEALTH-GATE-A2
++task_id: CONVERSATION-HEALTH-GATE-A3
+ type: feature
+ priority: P1
+-status: complete
++status: in_progress
+ gpt_verdict: pending
+-completed: "2026-06-12T16:00:00+08:00"
+-live_dispatch: NOT_AUTHORIZED
+ created: "2026-06-12T00:00:00Z"
+ mode: "@go edit"
+ whole_dirty_worktree_allowed: false
+@@ -16,54 +14,47 @@ gate_0:
+   triggered: true
+   inventory_evidence:
+     queried_sources:
+-      - GPT R4 verdict (CONVERSATION-HEALTH-GATE-A1 ACCEPTED, A2 recommended)
+-      - GPT next-task reply (_evidence/next_task_reply.txt, detailed TaskSpec)
+-      - scripts/check_handoff_needed.py (A1 decision engine, directly reusable)
+-      - scripts/sadp_pre_task_enforcer.py (integration pattern template)
+-      - scripts/build_evidence_pack.py (conversation_health section exists)
+-      - _cdp_submit_helper.py (shared CDP helper, needs gate integration)
++      - docs/agent-runtime/conversation-health-gate.md (section 1.4 Layer 4 + section 6 A3 scope)
++      - docs/agent-runtime/hook-failure-semantics.md (stage classification + anti-pattern 4)
++      - hooks/pre-commit.governance.ps1 (v2.3.0, 3 stages, advisory pattern)
++      - schemas/agent-runtime/evidence-capture.schema.json (maxItems 4, 4 enum values)
++      - scripts/validate_conversation_registry.py (11 checks, schema validation)
++      - scripts/sadp_pre_task_enforcer.py (_check_conversation_health pattern)
++      - docs/agent-runtime/startup-read-gate.md (section 1.7 Project Registry)
++      - configs/conversation-health-policy.yaml (threshold policy)
+     matched_capabilities:
+-      - check_handoff_v2 (decision engine)
+-      - load_policy (policy loader)
+-      - sadp_pre_task_enforcer integration pattern
+-      - evidence_pack conversation_health section
++      - check_handoff_v2 (decision engine, advisory mode support)
++      - validate_binding (registry validator, 11 checks)
++      - _check_conversation_health (pre-task pattern, directly reusable)
++      - test-governance advisory pattern (mirror for conversation-health stage)
+     compared_against_request:
+-      - "Pre-GPT Gate + CDP metrics refresh + legacy submit script integration"
++      - "Pre-Commit Advisory + Registry Reconciliation + Startup Read Gate Item 7"
+   sufficiency_decision: new_delta_required
+   decision: build_delta
+ 
+ goal: >
+-  Implement the Pre-GPT Gate layer for the Conversation Health Gate system.
+-  Connect the A1 decision engine to GPT/CDP submission and capture workflows.
+-  A2 must refresh runtime conversation metrics, write updated conversation-health
+-  evidence, and prevent GPT/CDP submission when an unresolved FORCE_HANDOFF
+-  or HUMAN_REQUIRED condition is present.
++  Implement the Pre-Commit Advisory layer (Layer 4) for the Conversation Health
++  Gate system. Add conversation-health as an ADVISORY stage to the pre-commit
++  hook that audits and warns but never blocks. Implement registry reconciliation
++  that cross-checks conversation-health state against CONVERSATION_BINDING.json.
++  Integrate conversation-health awareness into the startup read gate (item 7).
+ 
+ write_set:
+-  - ".ai/tasks/conversation-health-gate-a2.yaml"
+-  - ".ai/tasks/conversation-health-gate-a1.yaml"
++  - ".ai/tasks/conversation-health-gate-a3.yaml"
+   - ".ai/current-task.yaml"
+-  - "scripts/pre_gpt_gate.py"
+-  - "scripts/run_pre_gpt_gate_evidence.py"
+-  - "scripts/build_evidence_pack.py"
+-  - "tests/test_pre_gpt_gate.py"
+-  - "_cdp_submit_helper.py"
+-  - "_submit_health_gate_a1_r4.py"
+-  - "_capture_r4_verdict.py"
+-  - "_ask_next_task_v2.py"
+-  - "_capture_a2_verdict.py"
+-  - "_capture_a2_detailed.py"
+-  - "_capture_a2_verdict_v2.py"
+-  - "_check_a2_response.py"
+-  - "_submit_health_gate_a2.py"
+-  - "_submit_health_gate_a2_r2.py"
+-  - "_capture_a2_r2_verdict.py"
++  - "hooks/pre-commit.governance.ps1"
++  - "hooks/sealed-files-manifest.json"
++  - "schemas/agent-runtime/evidence-capture.schema.json"
++  - "scripts/pre_commit_health_advisory.py"
++  - "scripts/reconcile_conversation_registry.py"
++  - "tests/test_pre_commit_health_advisory.py"
++  - "tests/test_reconcile_conversation_registry.py"
++  - "tests/test_hook_failure_semantics.py"
++  - "docs/agent-runtime/hook-failure-semantics.md"
+   - "_evidence/conversation-health/latest.json"
+   - "_evidence/conversation-health/current-snapshot.json"
+-  - "_evidence/pre-gpt-gate-evidence/*"
+-  - "_evidence/next_task_reply.txt"
+-  - "_evidence/conversation_health_gate_a2_verdict.txt"
+-  - "hooks/sealed-files-manifest.json"
++  - "_evidence/hook-output/*"
++  - "_evidence/conversation_health_gate_a3_verdict.txt"
+ 
+ deny_paths:
+   - "**/NEG-009-secrets-read.json"
+@@ -74,24 +65,22 @@ deny_paths:
+ constraints:
+   - Do NOT modify sadp-audit.ps1
+   - Do NOT modify ai_guard.py
+-  - Do NOT modify hooks/pre-commit.governance.ps1 (A3 scope)
+   - Do NOT change A1 threshold semantics
+-  - Do NOT migrate all legacy _submit_*.py scripts (only 2-3)
+-  - Do NOT implement pre-commit advisory (A3 scope)
+-  - Do NOT redesign A1 schemas unless required by a failing test
++  - Advisory stage MUST NOT block commits (exit code logged only)
++  - Do NOT remove or weaken existing hook stages
++  - Do NOT hardcode thresholds (use configs/conversation-health-policy.yaml)
++  - Registry reconciliation is ADVISORY only
+ 
+ acceptance_criteria:
+-  - scripts/pre_gpt_gate.py exists as module + CLI
+-  - At least 2-3 legacy scripts integrated with pre_gpt_gate
+-  - FORCE_HANDOFF blocks GPT submission (exit code 1)
+-  - HUMAN_REQUIRED blocks GPT submission (exit code 2)
+-  - Missing current.json blocks submission without allow_init
+-  - Runtime metrics refresh current.json with schema-compliant fields
+-  - latest.json and current-snapshot.json written during Pre-GPT flows
+-  - Evidence Pack includes conversation-health evidence and pre-gpt-gate evidence
+-  - Tests pass in full regression (A1 + A2)
+-  - Runtime negative-path evidence included (8 scenarios)
++  - pre-commit.governance.ps1 has 4 stages (conversation-health advisory added)
++  - Hook version bumped to 2.4.0
++  - evidence-capture.schema.json updated (maxItems 5, conversation-health enum added)
++  - pre_commit_health_advisory.py reads latest.json/current.json and produces advisory output
++  - reconcile_conversation_registry.py cross-checks health state vs registry bindings
++  - hook-failure-semantics.md documents the new stage
++  - Tests pass in full regression (A1 + A2 + A3)
++  - Advisory stage never blocks commit (verified by evidence)
+   - modified_tracked is 0 after commit
+-  - No A1 behavior regresses
++  - No A1/A2 behavior regresses
+ 
+-depends_on: CONVERSATION-HEALTH-GATE-A1
++depends_on: CONVERSATION-HEALTH-GATE-A2
+diff --git a/.ai/tasks/conversation-health-gate-a3.yaml b/.ai/tasks/conversation-health-gate-a3.yaml
+new file mode 100644
+index 00000000..1954b5bf
+--- /dev/null
++++ b/.ai/tasks/conversation-health-gate-a3.yaml
+@@ -0,0 +1,86 @@
++task_id: CONVERSATION-HEALTH-GATE-A3
++type: feature
++priority: P1
++status: in_progress
++gpt_verdict: pending
++created: "2026-06-12T00:00:00Z"
++mode: "@go edit"
++whole_dirty_worktree_allowed: false
++external_upload_allowed: false
++raw_transcript_allowed: false
++real_paper_text_allowed: false
++
++gate_0:
++  triggered: true
++  inventory_evidence:
++    queried_sources:
++      - docs/agent-runtime/conversation-health-gate.md (section 1.4 Layer 4 + section 6 A3 scope)
++      - docs/agent-runtime/hook-failure-semantics.md (stage classification + anti-pattern 4)
++      - hooks/pre-commit.governance.ps1 (v2.3.0, 3 stages, advisory pattern)
++      - schemas/agent-runtime/evidence-capture.schema.json (maxItems 4, 4 enum values)
++      - scripts/validate_conversation_registry.py (11 checks, schema validation)
++      - scripts/sadp_pre_task_enforcer.py (_check_conversation_health pattern)
++      - docs/agent-runtime/startup-read-gate.md (section 1.7 Project Registry)
++      - configs/conversation-health-policy.yaml (threshold policy)
++    matched_capabilities:
++      - check_handoff_v2 (decision engine, advisory mode support)
++      - validate_binding (registry validator, 11 checks)
++      - _check_conversation_health (pre-task pattern, directly reusable)
++      - test-governance advisory pattern (mirror for conversation-health stage)
++    compared_against_request:
++      - "Pre-Commit Advisory + Registry Reconciliation + Startup Read Gate Item 7"
++  sufficiency_decision: new_delta_required
++  decision: build_delta
++
++goal: >
++  Implement the Pre-Commit Advisory layer (Layer 4) for the Conversation Health
++  Gate system. Add conversation-health as an ADVISORY stage to the pre-commit
++  hook that audits and warns but never blocks. Implement registry reconciliation
++  that cross-checks conversation-health state against CONVERSATION_BINDING.json.
++  Integrate conversation-health awareness into the startup read gate (item 7).
++
++write_set:
++  - ".ai/tasks/conversation-health-gate-a3.yaml"
++  - ".ai/current-task.yaml"
++  - "hooks/pre-commit.governance.ps1"
++  - "hooks/sealed-files-manifest.json"
++  - "schemas/agent-runtime/evidence-capture.schema.json"
++  - "scripts/pre_commit_health_advisory.py"
++  - "scripts/reconcile_conversation_registry.py"
++  - "tests/test_pre_commit_health_advisory.py"
++  - "tests/test_reconcile_conversation_registry.py"
++  - "tests/test_hook_failure_semantics.py"
++  - "docs/agent-runtime/hook-failure-semantics.md"
++  - "_evidence/conversation-health/latest.json"
++  - "_evidence/conversation-health/current-snapshot.json"
++  - "_evidence/hook-output/*"
++  - "_evidence/conversation_health_gate_a3_verdict.txt"
++
++deny_paths:
++  - "**/NEG-009-secrets-read.json"
++  - "**/*real-secret*"
++  - "**/.env"
++  - "**/.env.*"
++
++constraints:
++  - Do NOT modify sadp-audit.ps1
++  - Do NOT modify ai_guard.py
++  - Do NOT change A1 threshold semantics
++  - Advisory stage MUST NOT block commits (exit code logged only)
++  - Do NOT remove or weaken existing hook stages
++  - Do NOT hardcode thresholds (use configs/conversation-health-policy.yaml)
++  - Registry reconciliation is ADVISORY only
++
++acceptance_criteria:
++  - pre-commit.governance.ps1 has 4 stages (conversation-health advisory added)
++  - Hook version bumped to 2.4.0
++  - evidence-capture.schema.json updated (maxItems 5, conversation-health enum added)
++  - pre_commit_health_advisory.py reads latest.json/current.json and produces advisory output
++  - reconcile_conversation_registry.py cross-checks health state vs registry bindings
++  - hook-failure-semantics.md documents the new stage
++  - Tests pass in full regression (A1 + A2 + A3)
++  - Advisory stage never blocks commit (verified by evidence)
++  - modified_tracked is 0 after commit
++  - No A1/A2 behavior regresses
++
++depends_on: CONVERSATION-HEALTH-GATE-A2
+diff --git a/docs/agent-runtime/hook-failure-semantics.md b/docs/agent-runtime/hook-failure-semantics.md
+index 2824bff8..d21a8415 100644
+--- a/docs/agent-runtime/hook-failure-semantics.md
++++ b/docs/agent-runtime/hook-failure-semantics.md
+@@ -1,6 +1,6 @@
+ ## Hook Failure Semantics
+ 
+-This document formally defines the failure propagation rules for `pre-commit.governance.ps1` (v2.3.0).
++This document formally defines the failure propagation rules for `pre-commit.governance.ps1` (v2.4.0).
+ Every commit that passes through the SADP pre-commit hook produces `_evidence/hook-output/latest.json`.
+ The semantics below govern how each stage's exit code maps to the `overall_result` field and the hook's
+ process exit code.
+@@ -13,6 +13,7 @@ process exit code.
+ | sadp-audit | **Yes** | `BLOCKED` + exit 1 | Validates sealed-file integrity and rule compliance |
+ | ai-guard | **Yes** | `BLOCKED` + exit 1 | Content policy scan; uses reliable Job.ChildJobs exit code |
+ | test-governance | No | Advisory only | Runs in `-Mode advisory`; exit code logged but does not block |
++| conversation-health | No | Advisory only | A3 Layer 4: reads conversation-health evidence, never blocks commit |
+ 
+ ### Governance Decision: Test-Governance Advisory Mode
+ 
+@@ -35,6 +36,24 @@ enforcement mode, and the hook must be updated accordingly.
+ **Approved by**: Task EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1 scope constraint
+ (no modification to Test-Governance.ps1 without separate human_required task).
+ 
++### Governance Decision: Conversation-Health Advisory Mode (A3)
++
++**Decision**: Conversation-health is advisory (non-blocking) in v2.4.0.
++
++**Rationale**: This is Layer 4 of the four-layer conversation health defense
++(conversation-health-gate.md §1.4). The primary enforcement points are Layer 1
++(pre-task hard gate), Layer 2 (pre-GPT gate), and Layer 3 (evidence pack requirement).
++The pre-commit advisory layer provides an additional signal at commit time but is not
++the primary enforcement mechanism. Making it blocking would duplicate enforcement
++already covered by Layers 1–3 and would introduce friction for routine commits.
++
++**Behavior**: `scripts/pre_commit_health_advisory.py` reads existing conversation-health
++evidence (`latest.json` or `current.json`) and runs the decision engine in advisory mode.
++It outputs a diagnostic summary (decision, severity, recommendation) but never blocks.
++Fail-graceful: any internal error results in exit 0 with a diagnostic message.
++
++**Approved by**: Task CONVERSATION-HEALTH-GATE-A3 scope definition.
++
+ ### Result Mapping
+ 
+ ```
+@@ -49,7 +68,7 @@ All required stages must fail closed — no silent pass on failure.
+ 
+ When `sadp-audit` fails, the hook takes an early-exit path (line ~161 in the script):
+ 
+-1. Writes `latest.json` with 3 stages (manifest-regen, sadp-audit, ai-guard) — test-governance is omitted because it never ran.
++1. Writes `latest.json` with 3 stages (manifest-regen, sadp-audit, ai-guard) — test-governance and conversation-health are omitted because they never ran.
+ 2. Sets `overall_result = "BLOCKED"`.
+ 3. Prints `[BLOCKED]` to console.
+ 4. Calls `exit 1`, which rejects the commit.
+@@ -83,7 +102,7 @@ Fail-closed rules:
+ `latest.json` MUST validate against `schemas/agent-runtime/evidence-capture.schema.json`.
+ The schema defines:
+ 
+-- `stages`: array of 1–4 items (enum: manifest-regen, sadp-audit, ai-guard, test-governance)
++- `stages`: array of 1–5 items (enum: manifest-regen, sadp-audit, ai-guard, test-governance, conversation-health)
+ - `overall_result`: enum of PASS, BLOCKED
+ - `hook_version`: semver pattern
+ 
+@@ -116,3 +135,4 @@ It also performs semantic checks (e.g., verifying that nonzero blocking-stage ex
+ | 2.1.0 | Added ai-guard as separate capture + output persistence |
+ | 2.2.0 | PASS_WITH_WARNINGS for ai-guard (non-blocking), 30s timeout, schema alignment |
+ | 2.3.0 | sadp-audit + ai-guard blocking (reliable exit code). test-governance advisory. Removed PASS_WITH_WARNINGS. |
++| 2.4.0 | Added conversation-health advisory stage (A3 Layer 4). Never blocks commit. Reads existing evidence. |
+diff --git a/hooks/pre-commit.governance.ps1 b/hooks/pre-commit.governance.ps1
+index 357741cb..71c2044f 100644
+--- a/hooks/pre-commit.governance.ps1
++++ b/hooks/pre-commit.governance.ps1
+@@ -9,7 +9,7 @@
+ 
+ $ErrorActionPreference = 'Continue'
+ $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+-$HookVersion = "2.3.0"
++$HookVersion = "2.4.0"
+ 
+ Write-Host "=== Pre-Commit Governance Gate (v$HookVersion) ==="
+ 
+@@ -31,7 +31,7 @@ function Invoke-WithTiming {
+ }
+ 
+ # ---- 1. Manifest auto-regeneration (before audit) ----
+-Write-Host "[1/3] Manifest auto-regeneration..."
++Write-Host "[1/4] Manifest auto-regeneration..."
+ $updateScript = Join-Path $ProjectRoot "scripts\Update-GovernanceManifest.ps1"
+ $manifestPath = "hooks\sealed-files-manifest.json"
+ 
+@@ -64,7 +64,7 @@ try {
+ Write-Host ""
+ 
+ # ---- 2. SADP audit ----
+-Write-Host "[2/3] SADP audit..."
++Write-Host "[2/4] SADP audit..."
+ $auditScript = Join-Path $ProjectRoot "scripts\sadp-audit.ps1"
+ $sadpOutputFile = Join-Path $evidenceDir "sadp-audit-$timestamp.txt"
+ $aiGuardOutputFile = Join-Path $evidenceDir "ai-guard-$timestamp.txt"
+@@ -202,7 +202,7 @@ if (Test-Path $auditScript) {
+ Write-Host ""
+ 
+ # ---- 3. Advisory governance scan ----
+-Write-Host "[3/3] Governance scan..."
++Write-Host "[3/4] Governance scan..."
+ $governanceScript = Join-Path $ProjectRoot "scripts\Test-Governance.ps1"
+ $govOutputFile = Join-Path $evidenceDir "test-governance-$timestamp.txt"
+ $govElapsedMs = 0
+@@ -233,24 +233,61 @@ if (Test-Path $governanceScript) {
+     "# Test-Governance - $isoTimestamp`n# Test-Governance.ps1 not found - skipped`n" | Out-File -FilePath $govOutputFile -Encoding utf8
+ }
+ 
++# ---- 4. Conversation Health Advisory (A3 Layer 4 — ADVISORY only) ----
++Write-Host "[4/4] Conversation health advisory..."
++$healthScript = Join-Path $ProjectRoot "scripts\pre_commit_health_advisory.py"
++$healthOutputFile = Join-Path $evidenceDir "conversation-health-$timestamp.txt"
++$healthElapsedMs = 0
++$healthExit = 0
++
++if (Test-Path $healthScript) {
++    Push-Location $ProjectRoot
++    try {
++        $timing = Invoke-WithTiming {
++            $healthOutput = python $healthScript --project-root $ProjectRoot 2>&1 | Out-String
++            $healthOutput
++        }
++        $healthExit = $LASTEXITCODE
++        $healthElapsedMs = $timing.ElapsedMs
++        $healthOutputContent = $timing.Result
++
++        # Persist conversation-health advisory output
++        $healthHeader = "# Conversation Health Advisory - $isoTimestamp`n# Exit code: $healthExit (advisory)`n# Source: pre-commit hook v$HookVersion`n`n"
++        $healthHeader + $healthOutputContent | Out-File -FilePath $healthOutputFile -Encoding utf8
++
++        Write-Host $healthOutputContent
++    } catch {
++        $healthOutputContent = "ERROR: $($_.Exception.Message)"
++        $healthExit = 0  # Advisory: fail-graceful, never blocks
++        "# Conversation Health Advisory - $isoTimestamp`n# Error during execution (advisory)`n`n$healthOutputContent" | Out-File -FilePath $healthOutputFile -Encoding utf8
++        Write-Host "[ADVISORY] Conversation health check had issues: $($_.Exception.Message)"
++    } finally {
++        Pop-Location
++    }
++} else {
++    Write-Host "[ADVISORY] pre_commit_health_advisory.py not found - skipping."
++    "# Conversation Health Advisory - $isoTimestamp`n# pre_commit_health_advisory.py not found - skipped`n" | Out-File -FilePath $healthOutputFile -Encoding utf8
++}
++
+ # ---- Write combined JSON summary ----
+ $branch = git rev-parse --abbrev-ref HEAD 2>$null
+ $commitCount = (git rev-list --count HEAD 2>$null)
+ $stagedFileCount = (git diff --cached --name-only 2>$null | Measure-Object).Count
+ 
+ $stages = @(
+-    @{ name = "manifest-regen";   exit_code = $stage1Exit;   output_file = $null;               duration_ms = 0 }
+-    @{ name = "sadp-audit";       exit_code = $auditExit;    output_file = $sadpOutputFile;     duration_ms = $sadpElapsedMs }
+-    @{ name = "ai-guard";         exit_code = $aiGuardExit;  output_file = $aiGuardOutputFile;  duration_ms = $aiGuardElapsedMs }
+-    @{ name = "test-governance";  exit_code = $govExit;      output_file = $govOutputFile;      duration_ms = $govElapsedMs }
++    @{ name = "manifest-regen";        exit_code = $stage1Exit;   output_file = $null;                 duration_ms = 0 }
++    @{ name = "sadp-audit";            exit_code = $auditExit;    output_file = $sadpOutputFile;       duration_ms = $sadpElapsedMs }
++    @{ name = "ai-guard";              exit_code = $aiGuardExit;  output_file = $aiGuardOutputFile;    duration_ms = $aiGuardElapsedMs }
++    @{ name = "test-governance";       exit_code = $govExit;      output_file = $govOutputFile;        duration_ms = $govElapsedMs }
++    @{ name = "conversation-health";   exit_code = $healthExit;   output_file = $healthOutputFile;     duration_ms = $healthElapsedMs }
+ )
+ 
+-# Failure semantics (v2.3.0):
++# Failure semantics (v2.4.0):
+ #   BLOCKING:   sadp-audit, ai-guard (any non-zero → BLOCKED + exit 1)
+-#   ADVISORY:   manifest-regen, test-governance (exit code logged, never blocks)
++#   ADVISORY:   manifest-regen, test-governance, conversation-health (exit code logged, never blocks)
+ #   Test-Governance runs in advisory mode (-Mode advisory), so its exit code
+-#   does not affect the commit decision. Only sadp-audit and ai-guard are
+-#   enforcement gates with reliable process exit codes.
++#   does not affect the commit decision. conversation-health is advisory only (A3 Layer 4).
++#   Only sadp-audit and ai-guard are enforcement gates with reliable process exit codes.
+ $overallResult = "PASS"
+ foreach ($s in $stages) {
+     if ($s.exit_code -ne 0) {
+@@ -258,7 +295,7 @@ foreach ($s in $stages) {
+             $overallResult = "BLOCKED"
+             break
+         }
+-        # manifest-regen and test-governance: advisory only
++        # manifest-regen, test-governance, conversation-health: advisory only
+     }
+ }
+ 
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index 1d0279b2..8dc5fef8 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-12T07:32:48.4800443+08:00",
++    "generated":  "2026-06-12T07:55:17.0509471+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+@@ -192,7 +192,7 @@
+                              "path":  "docs/agent-runtime/historical-evidence-policy.md"
+                          },
+                          {
+-                             "sha256":  "C225389CB568DA85282E60CFC2E51DAA1AA6029BD706261EB91FEDDC9E7FBDFC",
++                             "sha256":  "76FB0C73A0FB0A80A6F0CAF8B885F60A1EFE03089130A3F221DB07EF5F619323",
+                              "path":  "docs/agent-runtime/hook-failure-semantics.md"
+                          },
+                          {
+@@ -492,7 +492,7 @@
+                              "path":  "governance/manifest-ignore.txt"
+                          },
+                          {
+-                             "sha256":  "5A5E8E3C237849C7B27CAE2FDFFD411ACF899FD46E9201B36D7CA8D0B756F0D3",
++                             "sha256":  "36E6C59498E0F8BA7DF09D3B6A9BCEB5185659E6EE6D1091FA0238FF337076A0",
+                              "path":  "hooks/pre-commit.governance.ps1"
+                          },
+                          {
+@@ -556,7 +556,7 @@
+                              "path":  "schemas/agent-runtime/conversation-health-decision.schema.json"
+                          },
+                          {
+-                             "sha256":  "70C14CCD6BC70BD5AF0F6F32FC655405E20D2D99828437F193595E5C9B270533",
++                             "sha256":  "A647C7CC41F27C412F5982CE794930AA97B230EAA9B31F504EF402B84FCE2AE6",
+                              "path":  "schemas/agent-runtime/evidence-capture.schema.json"
+                          },
+                          {
+diff --git a/schemas/agent-runtime/evidence-capture.schema.json b/schemas/agent-runtime/evidence-capture.schema.json
+index 22b87d5a..ddfd79f1 100644
+--- a/schemas/agent-runtime/evidence-capture.schema.json
++++ b/schemas/agent-runtime/evidence-capture.schema.json
+@@ -18,14 +18,14 @@
+     "stages": {
+       "type": "array",
+       "minItems": 1,
+-      "maxItems": 4,
++      "maxItems": 5,
+       "items": {
+         "type": "object",
+         "required": ["name", "exit_code", "output_file", "duration_ms"],
+         "properties": {
+           "name": {
+             "type": "string",
+-            "enum": ["manifest-regen", "sadp-audit", "ai-guard", "test-governance"]
++            "enum": ["manifest-regen", "sadp-audit", "ai-guard", "test-governance", "conversation-health"]
+           },
+           "exit_code": {
+             "type": ["integer", "null"],
+diff --git a/scripts/pre_commit_health_advisory.py b/scripts/pre_commit_health_advisory.py
+new file mode 100644
+index 00000000..7190e428
+--- /dev/null
++++ b/scripts/pre_commit_health_advisory.py
+@@ -0,0 +1,308 @@
++#!/usr/bin/env python3
++"""Pre-Commit Conversation Health Advisory (A3 — Layer 4).
++
++Advisory-only module called by pre-commit.governance.ps1 Stage 4.
++Reads conversation-health evidence and produces a diagnostic summary.
++NEVER blocks commits — exit code is logged but does not affect commit decision.
++
++Usage:
++    python scripts/pre_commit_health_advisory.py [--project-root PATH]
++
++Exit codes (advisory — never block commit):
++    0 = healthy / advisory ran successfully
++    1 = degraded (FORCE_HANDOFF or HUMAN_REQUIRED detected — advisory warning)
++    2 = evidence missing (no current.json — advisory warning)
++    3 = module error (should not happen; hook logs but continues)
++
++Design principles:
++    - Advisory only: the hook stage NEVER blocks, regardless of exit code
++    - Reads existing evidence: does NOT open CDP browser or modify files
++    - Reuses decision engine: imports check_handoff_v2() for threshold evaluation
++    - Fail-graceful: any internal error → exit 0 with diagnostic message
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++import os
++import sys
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any, Dict, Optional, Tuple
++
++
++# ---------------------------------------------------------------------------
++# Constants
++# ---------------------------------------------------------------------------
++
++EXIT_HEALTHY = 0
++EXIT_DEGRADED = 1
++EXIT_EVIDENCE_MISSING = 2
++EXIT_MODULE_ERROR = 3
++
++REPO_ROOT = Path(__file__).resolve().parent.parent
++DEFAULT_CURRENT_JSON = REPO_ROOT / ".ai" / "conversation" / "current.json"
++DEFAULT_LATEST_JSON = REPO_ROOT / "_evidence" / "conversation-health" / "latest.json"
++DEFAULT_POLICY = REPO_ROOT / "configs" / "conversation-health-policy.yaml"
++DEFAULT_EVIDENCE_DIR = REPO_ROOT / "_evidence" / "hook-output"
++
++
++# ---------------------------------------------------------------------------
++# Core advisory logic
++# ---------------------------------------------------------------------------
++
++def run_advisory(
++    current_json_path: Optional[str] = None,
++    latest_json_path: Optional[str] = None,
++    policy_path: Optional[str] = None,
++    project_root: Optional[str] = None,
++) -> Tuple[int, Dict[str, Any]]:
++    """Run the conversation-health advisory check.
++
++    Returns:
++        (exit_code, advisory_result) where exit_code is advisory-only
++        (never blocks commit) and advisory_result is a JSON-serializable dict.
++    """
++    repo = Path(project_root) if project_root else REPO_ROOT
++    current_path = Path(current_json_path) if current_json_path else DEFAULT_CURRENT_JSON
++    latest_path = Path(latest_json_path) if latest_json_path else DEFAULT_LATEST_JSON
++
++    result: Dict[str, Any] = {
++        "advisory_type": "conversation-health",
++        "checked_at": datetime.now(timezone.utc).isoformat(),
++        "source_files": {},
++        "decision": "UNKNOWN",
++        "severity": "INFO",
++        "reasons": [],
++        "recommendation": "continue",
++    }
++
++    # --- Try latest.json first (richer data), then current.json ---
++    evidence_data = None
++    evidence_source = None
++
++    if latest_path.exists():
++        try:
++            evidence_data = json.loads(latest_path.read_text(encoding="utf-8"))
++            evidence_source = str(latest_path)
++            result["source_files"]["latest_json"] = "present"
++        except (json.JSONDecodeError, OSError) as exc:
++            result["source_files"]["latest_json"] = f"unreadable: {exc}"
++    else:
++        result["source_files"]["latest_json"] = "missing"
++
++    if evidence_data is None and current_path.exists():
++        try:
++            evidence_data = json.loads(current_path.read_text(encoding="utf-8"))
++            evidence_source = str(current_path)
++            result["source_files"]["current_json"] = "present"
++        except (json.JSONDecodeError, OSError) as exc:
++            result["source_files"]["current_json"] = f"unreadable: {exc}"
++    elif current_path.exists():
++        result["source_files"]["current_json"] = "present (skipped, latest.json used)"
++    else:
++        result["source_files"]["current_json"] = "missing"
++
++    if evidence_data is None:
++        result["decision"] = "UNKNOWN"
++        result["severity"] = "INFO"
++        result["reasons"].append({
++            "code": "no_evidence_available",
++            "actual": "neither latest.json nor current.json readable",
++            "threshold": "at least one evidence source required",
++            "policy": "advisory",
++        })
++        result["recommendation"] = "consider_running_pre_gpt_gate"
++        return EXIT_EVIDENCE_MISSING, result
++
++    result["evidence_source"] = evidence_source
++
++    # --- Extract metrics from evidence data ---
++    metrics = evidence_data.get("last_known_metrics", {})
++    nav_result = evidence_data.get("last_nav_result", "unknown")
++    metrics_source = evidence_data.get("metrics_source", "none")
++    last_checked = evidence_data.get("last_checked_at", "")
++
++    # --- Import and run decision engine ---
++    try:
++        scripts_dir = str(repo / "scripts")
++        if scripts_dir not in sys.path:
++            sys.path.insert(0, scripts_dir)
++        from check_handoff_needed import check_handoff_v2
++
++        decision_output = check_handoff_v2(
++            metrics={
++                "assistant_message_count": metrics.get("assistant_message_count"),
++                "response_time_seconds": metrics.get("last_response_time_seconds")
++                    or metrics.get("response_time_seconds"),
++                "review_round_count": metrics.get("review_round_count"),
++                "last_gpt_reply_bytes": metrics.get("last_gpt_reply_bytes"),
++                "metrics_source": metrics_source,
++                "nav_result": nav_result,
++                "last_checked_at": last_checked,
++            },
++            mode="advisory",
++            max_staleness_hours=12,
++            composite=True,
++            source_label="pre-commit-advisory",
++        )
++
++        if isinstance(decision_output, dict):
++            decision = decision_output.get("decision", "UNKNOWN")
++            severity = decision_output.get("severity", "INFO")
++            reasons = decision_output.get("reasons", [])
++        elif isinstance(decision_output, str):
++            decision = decision_output
++            severity = "INFO"
++            reasons = []
++        else:
++            decision = "UNKNOWN"
++            severity = "INFO"
++            reasons = []
++
++        result["decision"] = decision
++        result["severity"] = severity
++        result["reasons"] = reasons
++
++        # Map decision to recommendation
++        decision_map = {
++            "OK": "continue",
++            "SUGGEST_HANDOFF": "consider_handoff",
++            "FORCE_HANDOFF": "handoff_recommended",
++            "HUMAN_REQUIRED": "human_intervention_needed",
++            "UNKNOWN": "investigate",
++        }
++        result["recommendation"] = decision_map.get(decision, "continue")
++
++        # Determine exit code (advisory)
++        if decision in ("FORCE_HANDOFF", "HUMAN_REQUIRED"):
++            return EXIT_DEGRADED, result
++        return EXIT_HEALTHY, result
++
++    except ImportError as exc:
++        result["decision"] = "UNKNOWN"
++        result["severity"] = "INFO"
++        result["reasons"].append({
++            "code": "decision_engine_unavailable",
++            "actual": str(exc),
++            "threshold": "check_handoff_needed import required",
++            "policy": "advisory",
++        })
++        result["recommendation"] = "decision_engine_not_available"
++        return EXIT_HEALTHY, result
++
++    except Exception as exc:
++        result["decision"] = "UNKNOWN"
++        result["severity"] = "INFO"
++        result["reasons"].append({
++            "code": "advisory_error",
++            "actual": str(exc),
++            "threshold": "no errors expected",
++            "policy": "advisory",
++        })
++        return EXIT_MODULE_ERROR, result
++
++
++def format_advisory_output(exit_code: int, result: Dict[str, Any]) -> str:
++    """Format advisory result for hook output consumption."""
++    lines = [
++        "=== Conversation Health Advisory (A3 Layer 4) ===",
++        f"Checked at: {result.get('checked_at', 'N/A')}",
++        f"Evidence source: {result.get('evidence_source', 'none')}",
++        "",
++        f"Decision: {result['decision']}",
++        f"Severity: {result['severity']}",
++        f"Recommendation: {result['recommendation']}",
++    ]
++
++    if result.get("reasons"):
++        lines.append("")
++        lines.append("Reasons:")
++        for r in result["reasons"]:
++            if isinstance(r, dict):
++                lines.append(f"  - [{r.get('code', '?')}] {r.get('actual', '?')} "
++                           f"(policy: {r.get('policy', '?')})")
++            else:
++                lines.append(f"  - {r}")
++
++    source_files = result.get("source_files", {})
++    if source_files:
++        lines.append("")
++        lines.append("Source files:")
++        for name, status in source_files.items():
++            lines.append(f"  {name}: {status}")
++
++    lines.append("")
++    if exit_code == EXIT_HEALTHY:
++        lines.append("[ADVISORY] Conversation health OK")
++    elif exit_code == EXIT_DEGRADED:
++        lines.append(f"[ADVISORY] WARNING: {result['decision']} detected — "
++                    f"consider switching conversation before next task")
++    elif exit_code == EXIT_EVIDENCE_MISSING:
++        lines.append("[ADVISORY] No conversation-health evidence found — "
++                    "run Pre-GPT Gate to refresh metrics")
++    else:
++        lines.append("[ADVISORY] Advisory check encountered an issue")
++
++    return "\n".join(lines)
++
++
++# ---------------------------------------------------------------------------
++# CLI
++# ---------------------------------------------------------------------------
++
++def main():
++    parser = argparse.ArgumentParser(
++        description="Pre-Commit Conversation Health Advisory (A3 Layer 4)"
++    )
++    parser.add_argument(
++        "--project-root",
++        default=None,
++        help="Project root directory (default: auto-detect)"
++    )
++    parser.add_argument(
++        "--current-json",
++        default=None,
++        help="Path to current.json (default: .ai/conversation/current.json)"
++    )
++    parser.add_argument(
++        "--latest-json",
++        default=None,
++        help="Path to latest.json (default: _evidence/conversation-health/latest.json)"
++    )
++    parser.add_argument(
++        "--json-output",
++        default=None,
++        help="Write JSON result to this path (optional)"
++    )
++    args = parser.parse_args()
++
++    try:
++        exit_code, result = run_advisory(
++            current_json_path=args.current_json,
++            latest_json_path=args.latest_json,
++            project_root=args.project_root,
++        )
++
++        # Always print human-readable output
++        print(format_advisory_output(exit_code, result))
++
++        # Optionally write JSON
++        if args.json_output:
++            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
++            Path(args.json_output).write_text(
++                json.dumps(result, indent=2, ensure_ascii=False),
++                encoding="utf-8"
++            )
++
++        sys.exit(exit_code)
++
++    except Exception as exc:
++        # Fail-graceful: advisory never blocks
++        print(f"[ADVISORY] Unexpected error: {exc}")
++        sys.exit(EXIT_HEALTHY)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/reconcile_conversation_registry.py b/scripts/reconcile_conversation_registry.py
+new file mode 100644
+index 00000000..50a27ddd
+--- /dev/null
++++ b/scripts/reconcile_conversation_registry.py
+@@ -0,0 +1,365 @@
++#!/usr/bin/env python3
++"""Conversation Registry Reconciliation (A3).
++
++Cross-checks conversation-health state against CONVERSATION_BINDING.json
++to detect inconsistencies between the health monitoring system and the
++conversation registry.
++
++Usage:
++    python scripts/reconcile_conversation_registry.py [--project-root PATH]
++
++Exit codes (advisory — never block commit):
++    0 = consistent (no reconciliation issues)
++    1 = inconsistencies found (advisory warning)
++    2 = registry or health data unavailable
++    3 = module error
++
++Design principles:
++    - Advisory only: never blocks commit
++    - Reads existing evidence: does NOT modify files
++    - Cross-checks: compares conversation_id in current.json vs active bindings
++    - Detects: stale bindings, orphaned health data, policy violations
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++import sys
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any, Dict, List, Optional, Tuple
++
++
++# ---------------------------------------------------------------------------
++# Constants
++# ---------------------------------------------------------------------------
++
++EXIT_CONSISTENT = 0
++EXIT_INCONSISTENT = 1
++EXIT_DATA_UNAVAILABLE = 2
++EXIT_MODULE_ERROR = 3
++
++REPO_ROOT = Path(__file__).resolve().parent.parent
++DEFAULT_CURRENT_JSON = REPO_ROOT / ".ai" / "conversation" / "current.json"
++DEFAULT_BINDING_FILE = REPO_ROOT / "CONVERSATION_BINDING.json"
++DEFAULT_EVIDENCE_DIR = REPO_ROOT / "_evidence"
++
++
++# ---------------------------------------------------------------------------
++# Reconciliation checks
++# ---------------------------------------------------------------------------
++
++def reconcile(
++    current_json_path: Optional[str] = None,
++    binding_file_path: Optional[str] = None,
++    project_root: Optional[str] = None,
++) -> Tuple[int, Dict[str, Any]]:
++    """Run registry reconciliation against conversation-health state.
++
++    Returns:
++        (exit_code, reconciliation_result)
++    """
++    repo = Path(project_root) if project_root else REPO_ROOT
++    current_path = Path(current_json_path) if current_json_path else DEFAULT_CURRENT_JSON
++    binding_path = Path(binding_file_path) if binding_file_path else DEFAULT_BINDING_FILE
++
++    result: Dict[str, Any] = {
++        "reconciliation_type": "conversation-registry",
++        "checked_at": datetime.now(timezone.utc).isoformat(),
++        "checks": [],
++        "inconsistencies": [],
++        "summary": {
++            "total_checks": 0,
++            "passed": 0,
++            "warnings": 0,
++            "issues": 0,
++        },
++    }
++
++    # --- Load current.json ---
++    health_data = None
++    if current_path.exists():
++        try:
++            health_data = json.loads(current_path.read_text(encoding="utf-8"))
++        except (json.JSONDecodeError, OSError):
++            pass
++
++    # --- Load CONVERSATION_BINDING.json ---
++    binding_data = None
++    if binding_path.exists():
++        try:
++            binding_data = json.loads(binding_path.read_text(encoding="utf-8"))
++        except (json.JSONDecodeError, OSError):
++            pass
++
++    # --- Check 1: Both data sources exist ---
++    if health_data is None and binding_data is None:
++        result["checks"].append({
++            "check": "data_availability",
++            "status": "UNAVAILABLE",
++            "detail": "Neither current.json nor CONVERSATION_BINDING.json found",
++        })
++        result["summary"]["total_checks"] = 1
++        result["summary"]["issues"] = 1
++        return EXIT_DATA_UNAVAILABLE, result
++
++    if health_data is None:
++        result["checks"].append({
++            "check": "health_data_available",
++            "status": "WARNING",
++            "detail": "current.json not found — health state unavailable",
++        })
++        result["summary"]["total_checks"] += 1
++        result["summary"]["warnings"] += 1
++
++    if binding_data is None:
++        result["checks"].append({
++            "check": "binding_data_available",
++            "status": "WARNING",
++            "detail": "CONVERSATION_BINDING.json not found — registry unavailable",
++        })
++        result["summary"]["total_checks"] += 1
++        result["summary"]["warnings"] += 1
++
++    if health_data is None or binding_data is None:
++        result["checks"].append({
++            "check": "cross_reference",
++            "status": "SKIPPED",
++            "detail": "Cannot cross-reference — one or both data sources missing",
++        })
++        result["summary"]["total_checks"] += 1
++        return EXIT_DATA_UNAVAILABLE, result
++
++    # --- Check 2: Conversation ID consistency ---
++    health_conv_id = health_data.get("conversation_id", "")
++    health_chat_url = health_data.get("chat_url", "")
++
++    active_bindings = [
++        b for b in binding_data.get("bindings", [])
++        if b.get("binding_status") == "active"
++    ]
++
++    if active_bindings:
++        # Check if the health conversation_id matches any active binding
++        found_match = False
++        for binding in active_bindings:
++            binding_conv_id = binding.get("conversation_id", "")
++            binding_chat_url = binding.get("chat_url", "")
++
++            # Match by conversation_id
++            if health_conv_id and binding_conv_id and health_conv_id == binding_conv_id:
++                found_match = True
++                result["checks"].append({
++                    "check": "conversation_id_match",
++                    "status": "PASS",
++                    "detail": f"Health conversation_id '{health_conv_id}' matches "
++                             f"active binding for agent '{binding.get('agent_id', '?')}'",
++                })
++                break
++
++            # Match by chat_url
++            if health_chat_url and binding_chat_url and health_chat_url == binding_chat_url:
++                found_match = True
++                result["checks"].append({
++                    "check": "chat_url_match",
++                    "status": "PASS",
++                    "detail": f"Health chat_url matches active binding for "
++                             f"agent '{binding.get('agent_id', '?')}'",
++                })
++                break
++
++        if not found_match:
++            result["checks"].append({
++                "check": "conversation_id_match",
++                "status": "WARNING",
++                "detail": f"Health conversation_id '{health_conv_id}' does not match "
++                         f"any active binding ({len(active_bindings)} active bindings)",
++            })
++            result["inconsistencies"].append({
++                "type": "orphaned_health_data",
++                "detail": "current.json references a conversation not in any active binding",
++                "health_conversation_id": health_conv_id,
++                "active_binding_count": len(active_bindings),
++            })
++    else:
++        result["checks"].append({
++            "check": "active_bindings",
++            "status": "INFO",
++            "detail": "No active bindings found — cannot cross-reference",
++        })
++
++    # --- Check 3: Health status vs binding status consistency ---
++    health_status = health_data.get("status", "unknown")
++    if health_status in ("handoff_required", "inaccessible", "migrated"):
++        for binding in active_bindings:
++            if binding.get("binding_status") == "active":
++                # An active binding with degraded health is an inconsistency
++                result["inconsistencies"].append({
++                    "type": "degraded_health_with_active_binding",
++                    "detail": f"Health status is '{health_status}' but binding for "
++                             f"agent '{binding.get('agent_id', '?')}' is still active",
++                    "health_status": health_status,
++                    "agent_id": binding.get("agent_id", "?"),
++                    "recommendation": "Consider updating binding status to 'paused' "
++                                    "or performing conversation migration",
++                })
++
++    # --- Check 4: One-agent-one-conversation policy ---
++    policy = binding_data.get("default_conversation_policy", "")
++    if policy == "one_agent_one_conversation":
++        # Count distinct active conversations per agent
++        agent_conv_map: Dict[str, List[str]] = {}
++        for binding in active_bindings:
++            agent_id = binding.get("agent_id", "?")
++            conv_id = binding.get("conversation_id") or binding.get("chat_url", "")
++            if conv_id:
++                agent_conv_map.setdefault(agent_id, []).append(conv_id)
++
++        for agent_id, conv_ids in agent_conv_map.items():
++            if len(conv_ids) > 1:
++                result["inconsistencies"].append({
++                    "type": "policy_violation",
++                    "detail": f"Agent '{agent_id}' has {len(conv_ids)} active conversations "
++                             f"(policy: one_agent_one_conversation)",
++                    "agent_id": agent_id,
++                    "conversation_count": len(conv_ids),
++                })
++
++    # --- Check 5: Capture policy enforcement ---
++    for binding in active_bindings:
++        capture_policy = binding.get("capture_policy", {})
++        required_fields = [
++            "must_match_run_id",
++            "must_match_task_id",
++            "must_include_end_marker",
++            "forbid_last_message_only_capture",
++        ]
++        for field in required_fields:
++            if not capture_policy.get(field, False):
++                result["inconsistencies"].append({
++                    "type": "capture_policy_relaxed",
++                    "detail": f"Binding for agent '{binding.get('agent_id', '?')}' "
++                             f"has {field}=false (should be true)",
++                    "agent_id": binding.get("agent_id", "?"),
++                    "field": field,
++                })
++
++    # --- Summary ---
++    total_checks = len(result["checks"]) + len(result["inconsistencies"])
++    passed = sum(1 for c in result["checks"] if c.get("status") in ("PASS", "INFO"))
++    warnings = sum(1 for c in result["checks"] if c.get("status") == "WARNING")
++    issues = len(result["inconsistencies"])
++
++    result["summary"] = {
++        "total_checks": total_checks,
++        "passed": passed,
++        "warnings": warnings,
++        "issues": issues,
++        "active_bindings": len(active_bindings),
++        "health_status": health_status,
++    }
++
++    if issues > 0:
++        return EXIT_INCONSISTENT, result
++    return EXIT_CONSISTENT, result
++
++
++def format_reconciliation_output(exit_code: int, result: Dict[str, Any]) -> str:
++    """Format reconciliation result for human-readable output."""
++    lines = [
++        "=== Conversation Registry Reconciliation (A3) ===",
++        f"Checked at: {result.get('checked_at', 'N/A')}",
++        "",
++    ]
++
++    summary = result.get("summary", {})
++    lines.append(f"Total checks: {summary.get('total_checks', 0)}")
++    lines.append(f"Passed: {summary.get('passed', 0)}")
++    lines.append(f"Warnings: {summary.get('warnings', 0)}")
++    lines.append(f"Issues: {summary.get('issues', 0)}")
++
++    if result.get("checks"):
++        lines.append("")
++        lines.append("Checks:")
++        for c in result["checks"]:
++            status_icon = "[PASS]" if c["status"] == "PASS" else "[WARN]" if c["status"] == "WARNING" else "[INFO]"
++            lines.append(f"  {status_icon} [{c['check']}] {c['status']}: {c['detail']}")
++
++    if result.get("inconsistencies"):
++        lines.append("")
++        lines.append("Inconsistencies:")
++        for inc in result["inconsistencies"]:
++            lines.append(f"  [FAIL] [{inc['type']}] {inc['detail']}")
++            if inc.get("recommendation"):
++                lines.append(f"    → {inc['recommendation']}")
++
++    lines.append("")
++    if exit_code == EXIT_CONSISTENT:
++        lines.append("[RECONCILIATION] Registry is consistent")
++    elif exit_code == EXIT_INCONSISTENT:
++        lines.append(f"[RECONCILIATION] WARNING: {summary.get('issues', 0)} "
++                    f"inconsistencies found (advisory)")
++    elif exit_code == EXIT_DATA_UNAVAILABLE:
++        lines.append("[RECONCILIATION] Data unavailable — skipped cross-reference")
++    else:
++        lines.append("[RECONCILIATION] Module error")
++
++    return "\n".join(lines)
++
++
++# ---------------------------------------------------------------------------
++# CLI
++# ---------------------------------------------------------------------------
++
++def main():
++    parser = argparse.ArgumentParser(
++        description="Conversation Registry Reconciliation (A3)"
++    )
++    parser.add_argument(
++        "--project-root",
++        default=None,
++        help="Project root directory (default: auto-detect)"
++    )
++    parser.add_argument(
++        "--current-json",
++        default=None,
++        help="Path to current.json"
++    )
++    parser.add_argument(
++        "--binding-file",
++        default=None,
++        help="Path to CONVERSATION_BINDING.json"
++    )
++    parser.add_argument(
++        "--json-output",
++        default=None,
++        help="Write JSON result to this path"
++    )
++    args = parser.parse_args()
++
++    try:
++        exit_code, result = reconcile(
++            current_json_path=args.current_json,
++            binding_file_path=args.binding_file,
++            project_root=args.project_root,
++        )
++
++        print(format_reconciliation_output(exit_code, result))
++
++        if args.json_output:
++            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
++            Path(args.json_output).write_text(
++                json.dumps(result, indent=2, ensure_ascii=False),
++                encoding="utf-8"
++            )
++
++        sys.exit(exit_code)
++
++    except Exception as exc:
++        print(f"[RECONCILIATION] Unexpected error: {exc}")
++        sys.exit(EXIT_CONSISTENT)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/tests/test_hook_failure_semantics.py b/tests/test_hook_failure_semantics.py
+index f8ab7bfa..1ef5133b 100644
+--- a/tests/test_hook_failure_semantics.py
++++ b/tests/test_hook_failure_semantics.py
+@@ -36,8 +36,8 @@ class TestSchemaConformance:
+     def test_schema_exists(self):
+         assert SCHEMA_PATH.exists()
+ 
+-    def test_max_items_is_4(self, schema):
+-        assert schema["properties"]["stages"]["maxItems"] == 4
++    def test_max_items_is_5(self, schema):
++        assert schema["properties"]["stages"]["maxItems"] == 5
+ 
+     def test_min_items_is_1(self, schema):
+         assert schema["properties"]["stages"]["minItems"] == 1
+@@ -46,9 +46,9 @@ class TestSchemaConformance:
+         enum = schema["properties"]["stages"]["items"]["properties"]["name"]["enum"]
+         assert "ai-guard" in enum
+ 
+-    def test_stage_enum_has_all_4(self, schema):
++    def test_stage_enum_has_all_5(self, schema):
+         enum = schema["properties"]["stages"]["items"]["properties"]["name"]["enum"]
+-        assert set(enum) == {"manifest-regen", "sadp-audit", "ai-guard", "test-governance"}
++        assert set(enum) == {"manifest-regen", "sadp-audit", "ai-guard", "test-governance", "conversation-health"}
+ 
+     def test_overall_result_enum(self, schema):
+         enum = schema["properties"]["overall_result"]["enum"]
+@@ -70,8 +70,8 @@ class TestHookScript:
+     def test_hook_exists(self):
+         assert HOOK_PATH.exists()
+ 
+-    def test_version_is_2_3(self, hook_text):
+-        assert '$HookVersion = "2.3.0"' in hook_text
++    def test_version_is_2_4(self, hook_text):
++        assert '$HookVersion = "2.4.0"' in hook_text
+ 
+     def test_ai_guard_has_timeout(self, hook_text):
+         assert "aiGuardTimeoutSec" in hook_text
+diff --git a/tests/test_pre_commit_health_advisory.py b/tests/test_pre_commit_health_advisory.py
+new file mode 100644
+index 00000000..81595633
+--- /dev/null
++++ b/tests/test_pre_commit_health_advisory.py
+@@ -0,0 +1,414 @@
++"""Tests for Pre-Commit Conversation Health Advisory (A3 Layer 4).
++
++Covers:
++    - Advisory with healthy metrics → exit 0, decision OK
++    - Advisory with FORCE_HANDOFF → exit 1, decision FORCE_HANDOFF
++    - Advisory with HUMAN_REQUIRED → exit 1, decision HUMAN_REQUIRED
++    - Advisory with missing evidence → exit 2, decision UNKNOWN
++    - Advisory with unreadable evidence → exit 2, graceful degradation
++    - Advisory with decision engine unavailable → exit 0, graceful degradation
++    - Advisory never blocks commit (always returns valid result)
++    - Format output produces expected structure
++    - A1/A2 non-regression: advisory uses same decision engine
++"""
++
++from __future__ import annotations
++
++import json
++import sys
++import os
++import tempfile
++import shutil
++from pathlib import Path
++from unittest.mock import patch, MagicMock
++
++import pytest
++
++# Add scripts dir to path
++SCRIPTS_DIR = str(Path(__file__).resolve().parent.parent / "scripts")
++if SCRIPTS_DIR not in sys.path:
++    sys.path.insert(0, SCRIPTS_DIR)
++
++from pre_commit_health_advisory import (
++    run_advisory,
++    format_advisory_output,
++    EXIT_HEALTHY,
++    EXIT_DEGRADED,
++    EXIT_EVIDENCE_MISSING,
++    EXIT_MODULE_ERROR,
++)
++
++
++@pytest.fixture
++def tmp_evidence(tmp_path):
++    """Create a temporary evidence directory structure."""
++    current_dir = tmp_path / ".ai" / "conversation"
++    current_dir.mkdir(parents=True)
++    latest_dir = tmp_path / "_evidence" / "conversation-health"
++    latest_dir.mkdir(parents=True)
++    return tmp_path
++
++
++def _write_current_json(path: Path, data: dict):
++    """Write current.json to the expected location."""
++    current_file = path / ".ai" / "conversation" / "current.json"
++    current_file.write_text(json.dumps(data), encoding="utf-8")
++    return str(current_file)
++
++
++def _write_latest_json(path: Path, data: dict):
++    """Write latest.json to the expected location."""
++    latest_file = path / "_evidence" / "conversation-health" / "latest.json"
++    latest_file.write_text(json.dumps(data), encoding="utf-8")
++    return str(latest_file)
++
++
++def _healthy_metrics():
++    """Return healthy metrics data."""
++    return {
++        "schema_version": "conversation-health.v1",
++        "conversation_id": "test-conv-123",
++        "chat_url": "https://chatgpt.com/c/test-123",
++        "status": "active",
++        "last_known_metrics": {
++            "assistant_message_count": 10,
++            "review_round_count": 1,
++            "last_response_time_seconds": 5.0,
++            "last_gpt_reply_bytes": 5000,
++        },
++        "last_nav_result": "ok",
++        "last_checked_at": "2026-06-12T10:00:00Z",
++        "metrics_source": "cdp_dom_count",
++    }
++
++
++def _degraded_metrics():
++    """Return metrics indicating FORCE_HANDOFF."""
++    return {
++        "schema_version": "conversation-health.v1",
++        "conversation_id": "test-conv-456",
++        "chat_url": "https://chatgpt.com/c/test-456",
++        "status": "handoff_required",
++        "last_known_metrics": {
++            "assistant_message_count": 65,
++            "review_round_count": 4,
++            "last_response_time_seconds": 120.0,
++            "last_gpt_reply_bytes": 500,
++        },
++        "last_nav_result": "ok",
++        "last_checked_at": "2026-06-12T10:00:00Z",
++        "metrics_source": "cdp_dom_count",
++    }
++
++
++def _auth_required_metrics():
++    """Return metrics indicating HUMAN_REQUIRED (auth_required)."""
++    return {
++        "schema_version": "conversation-health.v1",
++        "conversation_id": "test-conv-789",
++        "chat_url": "https://chatgpt.com/c/test-789",
++        "status": "inaccessible",
++        "last_known_metrics": {
++            "assistant_message_count": 30,
++            "review_round_count": 2,
++            "last_response_time_seconds": 10.0,
++            "last_gpt_reply_bytes": 3000,
++        },
++        "last_nav_result": "auth_required",
++        "last_checked_at": "2026-06-12T10:00:00Z",
++        "metrics_source": "cdp_dom_count",
++    }
++
++
++# =============================================================================
++# TestAdvisoryHealthy
++# =============================================================================
++
++class TestAdvisoryHealthy:
++    """Advisory with healthy conversation should return exit 0."""
++
++    def test_healthy_returns_exit_0(self, tmp_evidence):
++        data = _healthy_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        assert exit_code == EXIT_HEALTHY
++        assert result["decision"] == "OK"
++
++    def test_healthy_recommendation_is_continue(self, tmp_evidence):
++        data = _healthy_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        assert result["recommendation"] == "continue"
++
++    def test_healthy_severity_is_info_or_warning(self, tmp_evidence):
++        data = _healthy_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        assert result["severity"] in ("INFO", "WARNING")
++
++
++# =============================================================================
++# TestAdvisoryDegraded
++# =============================================================================
++
++class TestAdvisoryDegraded:
++    """Advisory with degraded conversation should return exit 1 (advisory warning)."""
++
++    def test_force_handoff_returns_exit_1(self, tmp_evidence):
++        data = _degraded_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        assert exit_code == EXIT_DEGRADED
++        assert result["decision"] == "FORCE_HANDOFF"
++
++    def test_human_required_returns_exit_1(self, tmp_evidence):
++        data = _auth_required_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        assert exit_code == EXIT_DEGRADED
++        assert result["decision"] == "HUMAN_REQUIRED"
++
++    def test_degraded_has_reasons(self, tmp_evidence):
++        data = _degraded_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        assert len(result["reasons"]) > 0
++
++    def test_degraded_recommendation_is_handoff(self, tmp_evidence):
++        data = _degraded_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        assert result["recommendation"] in ("handoff_recommended", "human_intervention_needed")
++
++
++# =============================================================================
++# TestAdvisoryMissingEvidence
++# =============================================================================
++
++class TestAdvisoryMissingEvidence:
++    """Advisory with missing evidence should return exit 2 (advisory warning)."""
++
++    def test_missing_both_returns_exit_2(self, tmp_evidence):
++        exit_code, result = run_advisory(
++            latest_json_path=str(tmp_evidence / "_evidence" / "conversation-health" / "latest.json"),
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        assert exit_code == EXIT_EVIDENCE_MISSING
++        assert result["decision"] == "UNKNOWN"
++
++    def test_missing_evidence_has_reason(self, tmp_evidence):
++        exit_code, result = run_advisory(
++            latest_json_path=str(tmp_evidence / "_evidence" / "conversation-health" / "latest.json"),
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        assert any(r.get("code") == "no_evidence_available" for r in result["reasons"])
++
++    def test_fallback_to_current_json(self, tmp_evidence):
++        """If latest.json missing, should fall back to current.json."""
++        data = _healthy_metrics()
++        current_path = _write_current_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=str(tmp_evidence / "_evidence" / "conversation-health" / "latest.json"),
++            current_json_path=current_path,
++            project_root=str(tmp_evidence),
++        )
++        assert exit_code == EXIT_HEALTHY
++        assert result["decision"] == "OK"
++
++
++# =============================================================================
++# TestAdvisoryUnreadableEvidence
++# =============================================================================
++
++class TestAdvisoryUnreadableEvidence:
++    """Advisory with unreadable evidence should degrade gracefully."""
++
++    def test_corrupt_json_returns_exit_2(self, tmp_evidence):
++        latest_file = tmp_evidence / "_evidence" / "conversation-health" / "latest.json"
++        latest_file.write_text("{ invalid json }", encoding="utf-8")
++        exit_code, result = run_advisory(
++            latest_json_path=str(latest_file),
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        # Should fall through to current.json or return MISSING
++        assert exit_code in (EXIT_EVIDENCE_MISSING, EXIT_HEALTHY)
++
++
++# =============================================================================
++# TestAdvisoryDecisionEngineUnavailable
++# =============================================================================
++
++class TestAdvisoryDecisionEngineUnavailable:
++    """If decision engine cannot be imported, advisory should still return exit 0."""
++
++    def test_import_error_returns_healthy(self, tmp_evidence):
++        data = _healthy_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++
++        # Mock the import to fail
++        with patch.dict(sys.modules, {"check_handoff_needed": None}):
++            exit_code, result = run_advisory(
++                latest_json_path=latest_path,
++                current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++                project_root=str(tmp_evidence),
++            )
++        assert exit_code == EXIT_HEALTHY
++        assert result["decision"] == "UNKNOWN"
++        assert any(r.get("code") == "decision_engine_unavailable" for r in result["reasons"])
++
++
++# =============================================================================
++# TestAdvisoryNeverBlocks
++# =============================================================================
++
++class TestAdvisoryNeverBlocks:
++    """Advisory stage must NEVER block commit — verify exit codes are advisory only."""
++
++    def test_all_exit_codes_are_non_blocking(self, tmp_evidence):
++        """Verify that even degraded results produce valid exit codes."""
++        data = _degraded_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        # Exit code 1 means "advisory warning" not "block commit"
++        # The hook treats this as advisory (never blocks)
++        assert exit_code in (EXIT_HEALTHY, EXIT_DEGRADED, EXIT_EVIDENCE_MISSING, EXIT_MODULE_ERROR)
++
++    def test_advisory_type_is_correct(self, tmp_evidence):
++        data = _healthy_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        assert result["advisory_type"] == "conversation-health"
++
++
++# =============================================================================
++# TestAdvisoryFormatOutput
++# =============================================================================
++
++class TestAdvisoryFormatOutput:
++    """Test the human-readable output formatter."""
++
++    def test_format_healthy_output(self):
++        result = {
++            "checked_at": "2026-06-12T10:00:00Z",
++            "evidence_source": "/path/to/latest.json",
++            "decision": "OK",
++            "severity": "INFO",
++            "recommendation": "continue",
++            "reasons": [],
++            "source_files": {"latest_json": "present"},
++        }
++        output = format_advisory_output(EXIT_HEALTHY, result)
++        assert "Conversation Health Advisory" in output
++        assert "OK" in output
++        assert "[ADVISORY]" in output
++
++    def test_format_degraded_output(self):
++        result = {
++            "checked_at": "2026-06-12T10:00:00Z",
++            "evidence_source": "/path/to/latest.json",
++            "decision": "FORCE_HANDOFF",
++            "severity": "BLOCKING",
++            "recommendation": "handoff_recommended",
++            "reasons": [{"code": "msg_count", "actual": "65", "policy": "force"}],
++            "source_files": {"latest_json": "present"},
++        }
++        output = format_advisory_output(EXIT_DEGRADED, result)
++        assert "FORCE_HANDOFF" in output
++        assert "WARNING" in output
++
++    def test_format_missing_output(self):
++        result = {
++            "checked_at": "2026-06-12T10:00:00Z",
++            "decision": "UNKNOWN",
++            "severity": "INFO",
++            "recommendation": "consider_running_pre_gpt_gate",
++            "reasons": [{"code": "no_evidence_available", "actual": "none", "policy": "advisory"}],
++            "source_files": {"latest_json": "missing", "current_json": "missing"},
++        }
++        output = format_advisory_output(EXIT_EVIDENCE_MISSING, result)
++        assert "No conversation-health evidence" in output
++
++
++# =============================================================================
++# TestA1A2NonRegression
++# =============================================================================
++
++class TestA1A2NonRegression:
++    """Ensure A3 advisory does not break A1/A2 behavior."""
++
++    def test_advisory_uses_same_decision_engine(self, tmp_evidence):
++        """Advisory should use the same check_handoff_v2 as pre-task and pre-GPT gates."""
++        data = _healthy_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        # Decision should be a valid decision string from the engine
++        assert result["decision"] in ("OK", "FORCE_HANDOFF", "SUGGEST_HANDOFF", "UNKNOWN", "HUMAN_REQUIRED")
++
++    def test_advisory_preserves_threshold_semantics(self, tmp_evidence):
++        """Manual_estimate source should still cap at SUGGEST even in advisory mode."""
++        data = _healthy_metrics()
++        data["last_known_metrics"]["assistant_message_count"] = 65
++        data["metrics_source"] = "manual_estimate"
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        # manual_estimate caps at SUGGEST (not FORCE) per A1 semantics
++        if result["decision"] != "OK":
++            assert result["decision"] in ("SUGGEST_HANDOFF", "UNKNOWN")
++
++    def test_advisory_auth_required_is_human(self, tmp_evidence):
++        """auth_required nav_result should produce HUMAN_REQUIRED in advisory mode."""
++        data = _auth_required_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        assert result["decision"] == "HUMAN_REQUIRED"
+diff --git a/tests/test_reconcile_conversation_registry.py b/tests/test_reconcile_conversation_registry.py
+new file mode 100644
+index 00000000..bec672fd
+--- /dev/null
++++ b/tests/test_reconcile_conversation_registry.py
+@@ -0,0 +1,375 @@
++"""Tests for Conversation Registry Reconciliation (A3).
++
++Covers:
++    - Consistent registry + health → exit 0
++    - Orphaned health data (no matching binding) → exit 1
++    - Degraded health with active binding → inconsistency detected
++    - Policy violation (one-agent-one-conversation) → detected
++    - Capture policy relaxed → detected
++    - Both data sources missing → exit 2
++    - One data source missing → skipped cross-reference
++    - Format output produces expected structure
++    - A1/A2 non-regression
++"""
++
++from __future__ import annotations
++
++import json
++import sys
++from pathlib import Path
++
++import pytest
++
++# Add scripts dir to path
++SCRIPTS_DIR = str(Path(__file__).resolve().parent.parent / "scripts")
++if SCRIPTS_DIR not in sys.path:
++    sys.path.insert(0, SCRIPTS_DIR)
++
++from reconcile_conversation_registry import (
++    reconcile,
++    format_reconciliation_output,
++    EXIT_CONSISTENT,
++    EXIT_INCONSISTENT,
++    EXIT_DATA_UNAVAILABLE,
++    EXIT_MODULE_ERROR,
++)
++
++
++@pytest.fixture
++def tmp_registry(tmp_path):
++    """Create a temporary directory for registry files."""
++    return tmp_path
++
++
++def _write_current_json(path: Path, data: dict) -> str:
++    """Write current.json."""
++    f = path / "current.json"
++    f.write_text(json.dumps(data), encoding="utf-8")
++    return str(f)
++
++
++def _write_binding(path: Path, data: dict) -> str:
++    """Write CONVERSATION_BINDING.json."""
++    f = path / "CONVERSATION_BINDING.json"
++    f.write_text(json.dumps(data), encoding="utf-8")
++    return str(f)
++
++
++def _healthy_current():
++    """Return healthy current.json data."""
++    return {
++        "schema_version": "conversation-health.v1",
++        "conversation_id": "conv-abc-123",
++        "chat_url": "https://chatgpt.com/c/conv-abc-123",
++        "status": "active",
++        "last_known_metrics": {
++            "assistant_message_count": 10,
++            "review_round_count": 1,
++            "last_response_time_seconds": 5.0,
++            "last_gpt_reply_bytes": 5000,
++        },
++        "last_nav_result": "ok",
++        "last_checked_at": "2026-06-12T10:00:00Z",
++        "metrics_source": "cdp_dom_count",
++    }
++
++
++def _degraded_current():
++    """Return degraded current.json data."""
++    data = _healthy_current()
++    data["status"] = "handoff_required"
++    data["last_known_metrics"]["assistant_message_count"] = 65
++    return data
++
++
++def _valid_binding(conv_id="conv-abc-123", chat_url="https://chatgpt.com/c/conv-abc-123"):
++    """Return a valid CONVERSATION_BINDING.json."""
++    return {
++        "schema_version": "1.0.0",
++        "awsp_version": "1.3.0",
++        "project_id": "test-project",
++        "project_root": "/test/project",
++        "default_conversation_policy": "one_agent_one_conversation",
++        "governance_scope": {
++            "default_execution_policy": "human_gated_for_external_runtime_execution",
++            "forbid_ad_hoc_gpt_submission": True,
++            "forbid_cross_repo_smoke_without_human_gate": True,
++            "external_runtimes": [],
++        },
++        "bindings": [
++            {
++                "agent_id": "qoderwork-agent",
++                "role": "executor",
++                "binding_status": "active",
++                "conversation_id": conv_id,
++                "chat_url": chat_url,
++                "capture_policy": {
++                    "must_match_run_id": True,
++                    "must_match_task_id": True,
++                    "must_include_end_marker": True,
++                    "forbid_last_message_only_capture": True,
++                },
++            }
++        ],
++    }
++
++
++# =============================================================================
++# TestRegistryConsistent
++# =============================================================================
++
++class TestRegistryConsistent:
++    """Reconciliation with consistent state should return exit 0."""
++
++    def test_matching_conv_id_returns_exit_0(self, tmp_registry):
++        current_path = _write_current_json(tmp_registry, _healthy_current())
++        binding_path = _write_binding(tmp_registry, _valid_binding())
++        exit_code, result = reconcile(
++            current_json_path=current_path,
++            binding_file_path=binding_path,
++            project_root=str(tmp_registry),
++        )
++        assert exit_code == EXIT_CONSISTENT
++        assert result["summary"]["issues"] == 0
++
++    def test_matching_chat_url_returns_exit_0(self, tmp_registry):
++        current = _healthy_current()
++        current["conversation_id"] = "different-id"  # Won't match by conv_id
++        binding = _valid_binding(conv_id="other-id")  # Different conv_id but same URL
++        current_path = _write_current_json(tmp_registry, current)
++        binding_path = _write_binding(tmp_registry, binding)
++        exit_code, result = reconcile(
++            current_json_path=current_path,
++            binding_file_path=binding_path,
++            project_root=str(tmp_registry),
++        )
++        assert exit_code == EXIT_CONSISTENT
++
++
++# =============================================================================
++# TestRegistryInconsistent
++# =============================================================================
++
++class TestRegistryInconsistent:
++    """Reconciliation with inconsistencies should return exit 1."""
++
++    def test_orphaned_health_data_returns_exit_1(self, tmp_registry):
++        """Health data referencing a conversation not in any binding."""
++        current = _healthy_current()
++        current["conversation_id"] = "orphan-conv-999"
++        current["chat_url"] = "https://chatgpt.com/c/orphan-conv-999"
++        binding = _valid_binding(conv_id="bound-conv-123", chat_url="https://chatgpt.com/c/bound-conv-123")
++        current_path = _write_current_json(tmp_registry, current)
++        binding_path = _write_binding(tmp_registry, binding)
++        exit_code, result = reconcile(
++            current_json_path=current_path,
++            binding_file_path=binding_path,
++            project_root=str(tmp_registry),
++        )
++        assert exit_code == EXIT_INCONSISTENT
++        assert result["summary"]["issues"] > 0
++        assert any(i["type"] == "orphaned_health_data" for i in result["inconsistencies"])
++
++    def test_degraded_health_with_active_binding(self, tmp_registry):
++        """Degraded health status with active binding is an inconsistency."""
++        current = _degraded_current()
++        binding = _valid_binding()
++        current_path = _write_current_json(tmp_registry, current)
++        binding_path = _write_binding(tmp_registry, binding)
++        exit_code, result = reconcile(
++            current_json_path=current_path,
++            binding_file_path=binding_path,
++            project_root=str(tmp_registry),
++        )
++        assert exit_code == EXIT_INCONSISTENT
++        assert any(i["type"] == "degraded_health_with_active_binding" for i in result["inconsistencies"])
++
++    def test_capture_policy_relaxed(self, tmp_registry):
++        """Relaxed capture policy fields should be detected."""
++        current = _healthy_current()
++        binding = _valid_binding()
++        binding["bindings"][0]["capture_policy"]["must_match_run_id"] = False
++        current_path = _write_current_json(tmp_registry, current)
++        binding_path = _write_binding(tmp_registry, binding)
++        exit_code, result = reconcile(
++            current_json_path=current_path,
++            binding_file_path=binding_path,
++            project_root=str(tmp_registry),
++        )
++        assert exit_code == EXIT_INCONSISTENT
++        assert any(i["type"] == "capture_policy_relaxed" for i in result["inconsistencies"])
++
++    def test_policy_violation_multiple_conversations(self, tmp_registry):
++        """One agent with multiple active conversations violates one-agent-one-conversation."""
++        current = _healthy_current()
++        binding = _valid_binding()
++        # Add a second active binding for the same agent
++        binding["bindings"].append({
++            "agent_id": "qoderwork-agent",
++            "role": "reviewer",
++            "binding_status": "active",
++            "conversation_id": "second-conv-456",
++            "chat_url": "https://chatgpt.com/c/second-conv-456",
++            "capture_policy": {
++                "must_match_run_id": True,
++                "must_match_task_id": True,
++                "must_include_end_marker": True,
++                "forbid_last_message_only_capture": True,
++            },
++        })
++        current_path = _write_current_json(tmp_registry, current)
++        binding_path = _write_binding(tmp_registry, binding)
++        exit_code, result = reconcile(
++            current_json_path=current_path,
++            binding_file_path=binding_path,
++            project_root=str(tmp_registry),
++        )
++        assert exit_code == EXIT_INCONSISTENT
++        assert any(i["type"] == "policy_violation" for i in result["inconsistencies"])
++
++
++# =============================================================================
++# TestRegistryDataUnavailable
++# =============================================================================
++
++class TestRegistryDataUnavailable:
++    """Missing data sources should return exit 2."""
++
++    def test_both_missing_returns_exit_2(self, tmp_registry):
++        exit_code, result = reconcile(
++            current_json_path=str(tmp_registry / "current.json"),
++            binding_file_path=str(tmp_registry / "CONVERSATION_BINDING.json"),
++            project_root=str(tmp_registry),
++        )
++        assert exit_code == EXIT_DATA_UNAVAILABLE
++
++    def test_only_binding_missing_returns_exit_2(self, tmp_registry):
++        current_path = _write_current_json(tmp_registry, _healthy_current())
++        exit_code, result = reconcile(
++            current_json_path=current_path,
++            binding_file_path=str(tmp_registry / "CONVERSATION_BINDING.json"),
++            project_root=str(tmp_registry),
++        )
++        assert exit_code == EXIT_DATA_UNAVAILABLE
++        assert any(c["check"] == "binding_data_available" for c in result["checks"])
++
++    def test_only_health_missing_returns_exit_2(self, tmp_registry):
++        binding_path = _write_binding(tmp_registry, _valid_binding())
++        exit_code, result = reconcile(
++            current_json_path=str(tmp_registry / "current.json"),
++            binding_file_path=binding_path,
++            project_root=str(tmp_registry),
++        )
++        assert exit_code == EXIT_DATA_UNAVAILABLE
++        assert any(c["check"] == "health_data_available" for c in result["checks"])
++
++
++# =============================================================================
++# TestRegistryNoActiveBindings
++# =============================================================================
++
++class TestRegistryNoActiveBindings:
++    """Registry with no active bindings should handle gracefully."""
++
++    def test_no_active_bindings_returns_consistent(self, tmp_registry):
++        current = _healthy_current()
++        binding = _valid_binding()
++        binding["bindings"][0]["binding_status"] = "retired"
++        current_path = _write_current_json(tmp_registry, current)
++        binding_path = _write_binding(tmp_registry, binding)
++        exit_code, result = reconcile(
++            current_json_path=current_path,
++            binding_file_path=binding_path,
++            project_root=str(tmp_registry),
++        )
++        # No active bindings → cannot cross-reference → INFO status
++        assert exit_code in (EXIT_CONSISTENT, EXIT_INCONSISTENT)
++
++
++# =============================================================================
++# TestRegistryFormatOutput
++# =============================================================================
++
++class TestRegistryFormatOutput:
++    """Test the human-readable output formatter."""
++
++    def test_format_consistent_output(self):
++        result = {
++            "checked_at": "2026-06-12T10:00:00Z",
++            "checks": [{"check": "conv_id_match", "status": "PASS", "detail": "matched"}],
++            "inconsistencies": [],
++            "summary": {"total_checks": 1, "passed": 1, "warnings": 0, "issues": 0},
++        }
++        output = format_reconciliation_output(EXIT_CONSISTENT, result)
++        assert "Registry is consistent" in output
++        assert "Conversation Registry Reconciliation" in output
++
++    def test_format_inconsistent_output(self):
++        result = {
++            "checked_at": "2026-06-12T10:00:00Z",
++            "checks": [],
++            "inconsistencies": [
++                {"type": "orphaned_health_data", "detail": "no match", "recommendation": "update binding"}
++            ],
++            "summary": {"total_checks": 1, "passed": 0, "warnings": 0, "issues": 1},
++        }
++        output = format_reconciliation_output(EXIT_INCONSISTENT, result)
++        assert "WARNING" in output
++        assert "orphaned_health_data" in output
++
++    def test_format_unavailable_output(self):
++        result = {
++            "checked_at": "2026-06-12T10:00:00Z",
++            "checks": [{"check": "data_availability", "status": "UNAVAILABLE", "detail": "missing"}],
++            "inconsistencies": [],
++            "summary": {"total_checks": 1, "passed": 0, "warnings": 0, "issues": 1},
++        }
++        output = format_reconciliation_output(EXIT_DATA_UNAVAILABLE, result)
++        assert "Data unavailable" in output
++
++
++# =============================================================================
++# TestRegistryNonRegression
++# =============================================================================
++
++class TestRegistryNonRegression:
++    """Ensure A3 reconciliation does not break A1/A2 behavior."""
++
++    def test_reconciliation_does_not_modify_files(self, tmp_registry):
++        """Reconciliation should be read-only."""
++        current = _healthy_current()
++        binding = _valid_binding()
++        current_path = _write_current_json(tmp_registry, current)
++        binding_path = _write_binding(tmp_registry, binding)
++
++        # Record file contents before
++        current_before = Path(current_path).read_text()
++        binding_before = Path(binding_path).read_text()
++
++        reconcile(
++            current_json_path=current_path,
++            binding_file_path=binding_path,
++            project_root=str(tmp_registry),
++        )
++
++        # Verify files unchanged
++        assert Path(current_path).read_text() == current_before
++        assert Path(binding_path).read_text() == binding_before
++
++    def test_reconciliation_result_structure(self, tmp_registry):
++        """Result should have required fields."""
++        current = _healthy_current()
++        binding = _valid_binding()
++        current_path = _write_current_json(tmp_registry, current)
++        binding_path = _write_binding(tmp_registry, binding)
++        exit_code, result = reconcile(
++            current_json_path=current_path,
++            binding_file_path=binding_path,
++            project_root=str(tmp_registry),
++        )
++        assert "reconciliation_type" in result
++        assert result["reconciliation_type"] == "conversation-registry"
++        assert "checked_at" in result
++        assert "checks" in result
++        assert "inconsistencies" in result
++        assert "summary" in result

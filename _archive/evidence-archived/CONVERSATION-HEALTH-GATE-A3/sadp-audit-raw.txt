@@ -1,0 +1,13 @@
+# SADP Pre-commit Hook Output (from commit c5adb084 message)
+
+feat: CONVERSATION-HEALTH-GATE-A3 — Pre-Commit Advisory + Registry Reconciliation
+
+- Add Stage 4 (conversation-health advisory) to pre-commit.governance.ps1 v2.4.0
+- Add pre_commit_health_advisory.py: reads evidence, runs decision engine, never blocks
+- Add reconcile_conversation_registry.py: cross-checks health vs binding registry
+- Update evidence-capture.schema.json: maxItems 5, conversation-health enum
+- Update hook-failure-semantics.md: document new advisory stage
+- Update test_hook_failure_semantics.py: v2.4.0 assertions
+- 35 new tests (20 advisory + 15 reconciliation), 1163 total passed
+
+🤖 Generated with [Qoder][https://qoder.com]

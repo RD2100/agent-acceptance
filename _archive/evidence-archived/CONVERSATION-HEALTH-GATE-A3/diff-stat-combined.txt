@@ -1,0 +1,17 @@
+# Combined diff stat: be0491f8..HEAD
+# Command: git diff be0491f8..HEAD --stat
+
+.ai/current-task.yaml                              | 103 +++--
+ .ai/tasks/conversation-health-gate-a2.yaml         |   6 +-
+ .ai/tasks/conversation-health-gate-a3.yaml         |  86 +++++
+ _evidence/conversation_health_gate_a2_verdict.txt  | 366 +++++++-----------
+ docs/agent-runtime/hook-failure-semantics.md       |  26 +-
+ hooks/pre-commit.governance.ps1                    |  63 +++-
+ hooks/sealed-files-manifest.json                   |   8 +-
+ schemas/agent-runtime/evidence-capture.schema.json |   4 +-
+ scripts/pre_commit_health_advisory.py              | 308 +++++++++++++++
+ scripts/reconcile_conversation_registry.py         | 365 ++++++++++++++++++
+ tests/test_hook_failure_semantics.py               |  12 +-
+ tests/test_pre_commit_health_advisory.py           | 414 +++++++++++++++++++++
+ tests/test_reconcile_conversation_registry.py      | 375 +++++++++++++++++++
+ 13 files changed, 1824 insertions(+), 312 deletions(-)

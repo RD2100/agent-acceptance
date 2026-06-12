@@ -1,0 +1,15 @@
+# Diff stat for commit c5adb084
+# Command: git diff --stat c5adb084^..c5adb084
+
+.ai/current-task.yaml                              | 103 +++--
+ .ai/tasks/conversation-health-gate-a3.yaml         |  86 +++++
+ docs/agent-runtime/hook-failure-semantics.md       |  26 +-
+ hooks/pre-commit.governance.ps1                    |  63 +++-
+ hooks/sealed-files-manifest.json                   |   8 +-
+ schemas/agent-runtime/evidence-capture.schema.json |   4 +-
+ scripts/pre_commit_health_advisory.py              | 308 +++++++++++++++
+ scripts/reconcile_conversation_registry.py         | 365 ++++++++++++++++++
+ tests/test_hook_failure_semantics.py               |  12 +-
+ tests/test_pre_commit_health_advisory.py           | 414 +++++++++++++++++++++
+ tests/test_reconcile_conversation_registry.py      | 375 +++++++++++++++++++
+ 11 files changed, 1679 insertions(+), 85 deletions(-)

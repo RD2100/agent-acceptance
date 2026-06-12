@@ -1,0 +1,15 @@
+c5adb084 feat: CONVERSATION-HEALTH-GATE-A3 — Pre-Commit Advisory + Registry Reconciliation
+d9faf057 chore: CONVERSATION-HEALTH-GATE-A2 — record GPT verdict ACCEPTED (R3)
+be0491f8 fix: CONVERSATION-HEALTH-GATE-A2 R3 — clean workspace + summary parser + import path
+9336d56c fix: CONVERSATION-HEALTH-GATE-A2 R2 — resolve 4 GPT blockers
+593d78fb feat: CONVERSATION-HEALTH-GATE-A2 — Pre-GPT Gate + CDP metrics refresh + legacy integration
+fbb08f08 fix: CONVERSATION-HEALTH-GATE-A1 R4 — close schema/CLI/evidence gaps
+40e4aba4 fix: CONVERSATION-HEALTH-GATE-A1 R3 — regenerate negative-path evidence
+dcc31a76 fix: evidence pack negative-path parser — handle '# Actual exit:' format
+2b52579f fix: CONVERSATION-HEALTH-GATE-A1 R2 — resolve 5 GPT blockers
+892d4456 feat: CONVERSATION-HEALTH-GATE-A1 — four-layer conversation health enforcement
+8ccb4460 chore: CLEANUP-A1 — fix 3 minor limitations from V5 GPT verdict
+804ae3b9 fix: V5 — validator/schema consistency, missing_ai_guard evidence, doc cleanup
+d7b294dc fix: V4 — resolve 4 GPT blockers for EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1
+5755681d fix: V3 blocker fixes — reliable Job exit code, fail-closed validator, negative-path evidence
+f95b95c4 fix: resolve 5 GPT blockers for EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1
