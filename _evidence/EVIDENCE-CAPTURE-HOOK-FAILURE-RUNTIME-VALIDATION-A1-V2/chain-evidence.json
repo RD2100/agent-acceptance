@@ -1,0 +1,13 @@
+{
+  "task_id": "EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1",
+  "generated": "2026-06-11T17:29:23.544721+08:00",
+  "commits_in_scope": [
+    "7b8d9477",
+    "f95b95c4"
+  ],
+  "task_commits": [
+    "f95b95c"
+  ],
+  "base_commit": "7b8d947",
+  "head_commit": "f95b95c"
+}

@@ -1,0 +1,12 @@
+# Combined diff stat: 7b8d947..HEAD
+# Command: git diff 7b8d947..HEAD --stat
+
+.ai/current-task.yaml                              |   1 +
+ ...capture-hook-failure-runtime-validation-a1.yaml |   1 +
+ docs/agent-runtime/hook-failure-semantics.md       |   8 +-
+ hooks/pre-commit.governance.ps1                    |  30 +++--
+ hooks/sealed-files-manifest.json                   |   6 +-
+ scripts/run_negative_path_evidence.py              | 142 +++++++++++++++++++++
+ scripts/validate_hook_output.py                    |  74 ++++++-----
+ tests/test_hook_failure_semantics.py               |  21 ++-
+ 8 files changed, 223 insertions(+), 60 deletions(-)
