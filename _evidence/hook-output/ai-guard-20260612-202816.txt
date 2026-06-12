@@ -1,0 +1,12 @@
+﻿# AI Guard Output - 2026-06-12T12:28:16Z
+# Exit code: 1 (blocking)
+# Timeout: 30s
+# Source: pre-commit hook (original)
+
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review
+ERROR: DENIED: _archive/evidence-archived/R18-WORKSPACE-CLEANUP-FINAL/secret-scan-output.txt is on deny list
+ERROR: DENIED: _archive/evidence-archived/R18-WORKSPACE-CLOSURE-SLIM/secret-scan-output.txt is on deny list
+ERROR: DENIED: _archive/evidence-archived/R18-WORKSPACE-CLOSURE/secret-scan-output.txt is on deny list
+
+AI Guard: 3 error(s), 1 warning(s) - BLOCKED
+

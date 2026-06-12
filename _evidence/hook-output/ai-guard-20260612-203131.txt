@@ -1,0 +1,6 @@
+﻿# AI Guard Output - 2026-06-12T12:31:31Z
+# Exit code: 1 (blocking)
+# Timeout: 30s
+# Source: pre-commit hook (original)
+
+
