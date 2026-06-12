@@ -1,5 +1,5 @@
 task_id: AI-GUARD-FILES-MODE-AND-LARGE-FILE-SCAN-A1
-title: "Fix P1: --files mode ignored, large file scan skipped"
+title: "Fix P1: --files mode ignored, large file secret scan skipped"
 priority: P1
 status: completed
 type: fix
@@ -11,7 +11,7 @@ description: >
 
 goal:
   user_visible_success: >
-    Pre-commit hook --files invocation correctly scans only listed files.
+    Pre-commit hook's --files invocation now correctly scans only listed files.
     Large files (>1MB) are scanned via streaming line-by-line reads.
   in_scope:
     - Add run_files_mode() to tools/ai_guard.py

@@ -131,6 +131,105 @@ class TestAuditModeFull:
             subprocess.run(["rm", "-rf", d])
 
 
+class TestFilesMode:
+    """--files mode must scan only explicitly listed files."""
+
+    def test_files_no_args_passes_zero_checked(self):
+        """--files with no file arguments → PASS, 0 file(s) checked."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            code, out = run_guard_in(repo, "--files")
+            assert code == 0, f"Expected pass, got exit={code}: {out}"
+            assert "0 file(s) checked" in out
+        finally:
+            subprocess.run(["rm", "-rf", d])
+
+    def test_files_detects_secret_in_specified_file(self):
+        """--files must detect secret pattern in the specified file."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths: []\nrestricted_paths: []\n"
+                "secret_patterns:\n  - 'sk-[a-zA-Z0-9]{10,}'\n",
+                encoding="utf-8")
+            (repo / "leak.txt").write_text("api_key=sk-deadbeef1234567890")
+            code, out = run_guard_in(repo, "--files", "leak.txt")
+            assert code != 0, f"Must block on secret. Got exit={code}: {out}"
+            assert "SECRET" in out
+        finally:
+            subprocess.run(["rm", "-rf", d])
+
+    def test_files_does_not_scan_unlisted_file(self):
+        """--files must NOT scan files that are not in the argument list."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths: []\nrestricted_paths: []\n"
+                "secret_patterns:\n  - 'sk-[a-zA-Z0-9]{10,}'\n",
+                encoding="utf-8")
+            (repo / "clean.txt").write_text("nothing here")
+            (repo / "leak.txt").write_text("sk-deadbeef1234567890")
+            code, out = run_guard_in(repo, "--files", "clean.txt")
+            assert code == 0, f"Must pass when only listing clean file. Got: {out}"
+            assert "leak.txt" not in out
+        finally:
+            subprocess.run(["rm", "-rf", d])
+
+    def test_files_deny_path_blocks(self):
+        """--files must enforce deny_paths."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths:\n  - '*.secret'\n"
+                "restricted_paths: []\nsecret_patterns: []\n",
+                encoding="utf-8")
+            (repo / "evil.secret").write_text("data")
+            code, out = run_guard_in(repo, "--files", "evil.secret")
+            assert code != 0, f"deny_paths must block. Got exit={code}: {out}"
+            assert "DENIED" in out
+        finally:
+            subprocess.run(["rm", "-rf", d])
+
+    def test_files_restricted_path_warns(self):
+        """--files must warn on restricted_paths but still pass."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths: []\n"
+                "restricted_paths:\n  - 'hooks/*'\n"
+                "secret_patterns: []\n",
+                encoding="utf-8")
+            (repo / "hooks").mkdir()
+            (repo / "hooks" / "my-hook.ps1").write_text("# hook")
+            code, out = run_guard_in(repo, "--files", "hooks/my-hook.ps1")
+            assert code == 0, f"Restricted should warn, not block. Got: {out}"
+            assert "RESTRICTED" in out
+        finally:
+            subprocess.run(["rm", "-rf", d])
+
+    def test_files_normalizes_backslash(self):
+        """--files must normalize backslash paths to forward slash."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths:\n  - 'secrets/*'\n"
+                "restricted_paths: []\nsecret_patterns: []\n",
+                encoding="utf-8")
+            (repo / "secrets").mkdir()
+            (repo / "secrets" / "key.txt").write_text("data")
+            code, out = run_guard_in(repo, "--files", "secrets\\key.txt")
+            assert code != 0, f"Backslash path must be normalized and caught. Got: {out}"
+            assert "DENIED" in out
+        finally:
+            subprocess.run(["rm", "-rf", d])
+
+
 class TestFailClosed:
     """Guard must stay fail-closed."""
 
@@ -145,3 +244,53 @@ class TestFailClosed:
     def test_guard_has_audit_mode(self):
         code = AI_GUARD.read_text(encoding="utf-8")
         assert '"audit"' in code or "'audit'" in code
+
+    def test_no_silent_size_limit_in_scan_secrets(self):
+        """scan_secrets must NOT silently skip files above a size threshold."""
+        code = AI_GUARD.read_text(encoding="utf-8")
+        assert "1_000_000" not in code, (
+            "scan_secrets must not have a hardcoded file size limit; use streaming reads instead"
+        )
+
+
+class TestLargeFileSecretScan:
+    """Large files (>1MB) must be scanned via streaming, not silently skipped."""
+
+    def test_large_file_secret_at_end_detected(self):
+        """Secret hidden at the end of a >1MB file must be detected."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths: []\nrestricted_paths: []\n"
+                "secret_patterns:\n  - 'sk-[a-zA-Z0-9]{10,}'\n",
+                encoding="utf-8")
+            # Build >1MB file with secret at the very end
+            with open(str(repo / "big.log"), "w", encoding="utf-8") as fh:
+                for i in range(25000):
+                    fh.write(f"line_{i:05d}_padding_filler_nothing_here_xyz\n")
+                fh.write("api_key=sk-deadbeef1234567890\n")
+            assert (repo / "big.log").stat().st_size > 1_000_000
+            code, out = run_guard_in(repo, "--files", "big.log")
+            assert code != 0, f"Must detect secret in large file. Got exit={code}: {out[:500]}"
+            assert "SECRET" in out
+        finally:
+            subprocess.run(["rm", "-rf", d])
+
+    def test_large_file_without_secret_passes(self):
+        """Large file without secrets must pass cleanly."""
+        d = tempfile.mkdtemp()
+        try:
+            repo = make_git_repo(d)
+            (repo / ".ai" / "policy.yaml").write_text(
+                "deny_paths: []\nrestricted_paths: []\n"
+                "secret_patterns:\n  - 'sk-[a-zA-Z0-9]{10,}'\n",
+                encoding="utf-8")
+            with open(str(repo / "big.log"), "w", encoding="utf-8") as fh:
+                for i in range(25000):
+                    fh.write(f"line_{i:05d}_safe_content_no_secrets_here_abc\n")
+            assert (repo / "big.log").stat().st_size > 1_000_000
+            code, out = run_guard_in(repo, "--files", "big.log")
+            assert code == 0, f"Large clean file must pass. Got exit={code}: {out[:500]}"
+        finally:
+            subprocess.run(["rm", "-rf", d])

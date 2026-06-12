@@ -86,6 +86,12 @@ class TestHookScript:
     def test_ai_guard_marked_blocking(self, hook_text):
         assert "blocking" in hook_text.lower()
 
+    def test_hook_calls_ai_guard_with_files_flag(self, hook_text):
+        """Hook must invoke ai_guard.py with --files flag (not bare mode)."""
+        assert "--files" in hook_text, (
+            "Hook must call ai_guard.py with --files flag for explicit file scoping"
+        )
+
     def test_blocking_stages_in_overall_result(self, hook_text):
         # v2.3.0: sadp-audit and ai-guard are blocking; test-governance is advisory
         assert '"manifest-regen"' in hook_text

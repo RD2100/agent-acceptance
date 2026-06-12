@@ -77,25 +77,26 @@ def matches(path, patterns):
 
 
 def scan_secrets(files, patterns, repo_root=None):
-    """Scan changed files for secret patterns. Paths resolve relative to repo_root."""
+    """Scan changed files for secret patterns. Paths resolve relative to repo_root.
+
+    Uses streaming line-by-line reads to handle large files without
+    loading entire content into memory.
+    """
     findings = []
     base = repo_root if repo_root else Path.cwd()
     for file_path in files:
         full_path = base / file_path
         if not full_path.is_file():
             continue
-        if full_path.stat().st_size > 1_000_000:
-            continue
         try:
             with open(str(full_path), "r", encoding="utf-8", errors="ignore") as f:
-                content = f.read()
+                for line_number, line in enumerate(f, 1):
+                    for pattern in patterns:
+                        if re.search(pattern, line):
+                            findings.append(f"{file_path}:{line_number}: secret pattern match")
+                            break
         except OSError:
             continue
-        for line_number, line in enumerate(content.splitlines(), 1):
-            for pattern in patterns:
-                if re.search(pattern, line):
-                    findings.append(f"{file_path}:{line_number}: secret pattern match")
-                    break
     return findings
 
 
@@ -358,6 +359,53 @@ def run_evidence_mode(args, policy):
     sys.exit(0)
 
 
+def run_files_mode(args, policy, repo_root):
+    """Scan explicitly listed files only (used by pre-commit hook).
+
+    Runs deny_paths, restricted_paths, and secret_patterns checks
+    on the provided file list. Does NOT check TaskSpec allow_write.
+    """
+    deny_paths = policy.get("deny_paths", [])
+    restricted_paths = policy.get("restricted_paths", [])
+    secret_patterns = policy.get("secret_patterns", [])
+
+    # Normalize: backslash → forward slash, drop empty entries
+    files = []
+    for f in args:
+        normalized = f.replace("\\", "/").strip()
+        if normalized:
+            files.append(normalized)
+
+    errors = []
+    warnings = []
+
+    for path in files:
+        if matches(path, deny_paths):
+            errors.append(f"DENIED: {path} is on deny list")
+
+    for path in files:
+        if matches(path, restricted_paths):
+            warnings.append(f"RESTRICTED: {path} requires human review")
+
+    for finding in scan_secrets(files, secret_patterns, repo_root=repo_root):
+        errors.append(f"SECRET: {finding}")
+
+    for warning in warnings:
+        print(f"WARNING: {warning}")
+    for error in errors:
+        print(f"ERROR: {error}")
+
+    if errors:
+        print(f"\nAI Guard: {len(errors)} error(s), {len(warnings)} warning(s) - BLOCKED")
+        sys.exit(1)
+    if warnings:
+        print(f"\nAI Guard: 0 errors, {len(warnings)} warning(s) - PASS with warnings")
+        sys.exit(0)
+
+    print(f"\nAI Guard: PASS - {len(files)} file(s) checked, 0 issues")
+    sys.exit(0)
+
+
 def run_diff_mode(mode, args, policy, repo_root):
     deny_paths = policy.get("deny_paths", [])
     restricted_paths = policy.get("restricted_paths", [])
@@ -446,6 +494,9 @@ def main():
     policy = load_yaml(str(policy_path))
     mode = sys.argv[1] if len(sys.argv) > 1 else "full"
     args = sys.argv[2:]
+
+    if mode == "--files":
+        run_files_mode(args, policy, repo_root)
 
     if mode == "evidence":
         run_evidence_mode(args, policy)
