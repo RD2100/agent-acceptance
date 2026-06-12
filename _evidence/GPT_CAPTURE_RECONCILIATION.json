@@ -1,0 +1,16 @@
+{
+  "target_run_id": "CONVERSATION_HEALTH_GATE_A3_20260612T000551Z",
+  "target_task_id": "CONVERSATION-HEALTH-GATE-A3",
+  "before_user_count": 14,
+  "before_assistant_count": 5,
+  "after_user_count": 15,
+  "after_assistant_count": 8,
+  "candidate_indices": [],
+  "selected_index": null,
+  "last_index": 7,
+  "last_text_contains_run_id": false,
+  "selected_text_contains_run_id": false,
+  "selected_text_contains_end_marker": false,
+  "capture_mismatch": false,
+  "decision": "capture_failed_no_run_id_match"
+}

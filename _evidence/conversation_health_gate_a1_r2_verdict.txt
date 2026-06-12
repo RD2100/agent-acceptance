@@ -1,0 +1,48 @@
+裁决：NEEDS_REVISION
+R2 相比 A1 初版已经明显前进：5 个原始 blocker 中有 3 个基本关闭，latest.json 已入包，modified_tracked: 0 也已经恢复。但我不能给 ACCEPTED，因为 R2 仍存在两个实质性一致性问题：负路径证据没有在最终代码语义下重新生成，以及 schema / CLI / current.json 字段语义仍不完全闭合。
+
+一、基础核对通过
+这些与提交说明一致：
+SHA-256:e5d6714b98e236b0dbaf0cceda1854e8596b6274f1fc4619ef5c0ae7a1353ca9ZIP files:31Base:8ccb446Head:dcc31a7Commit chain:8ccb446 → 892d445 → 2b52579 → dcc31a7Tests:1096 passed, 21 warnings in 46.53smodified_tracked:0
+conversation-health/latest.json 也确实已经进入 ZIP：
+conversation-health/latest.json
+review.yaml 中也显示：
+YAMLconversation_health:  checked: true  decision: OK  verdict_eligibility: eligible
+这说明 Blocker 1 的主方向已经修复。
+
+二、R2 已关闭的部分
+1. Evidence Pack hard requirement：基本修复
+build_evidence_pack.py 现在会检查：
+_evidence/conversation-health/latest.json
+如果缺失，会写入：
+YAMLverdict_eligibility: needs_more_evidencehard_requirement: true
+这已经从原来的 “advisory missing” 改成了 “hard requirement missing”。当前 ZIP 也确实包含 conversation-health/latest.json。这一项可以算 fixed。
+
+2. modified tracked：已修复
+R2 中：
+modified_tracked: 0
+此前遗留的外部 tracked 修改已经处理。这一项 fixed。
+
+3. 负路径汇总表格式：表层修复
+review.md / final-report.md 已从：
+10 scenario files
+修正为：
+9 scenario files + 1 combined file
+并增加了 Actual 列。这一项的报告格式本身已经修复。
+
+三、仍然存在的 Blocker
+Blocker 1：负路径证据是旧语义，不是最终代码语义
+这是 R2 目前最大的问题。
+你们在 2b52579 中修复了阈值语义：
+response_time_seconds >= 60 单独触发 SUGGESTlast_gpt_reply_bytes < 2000 单独触发 SUGGEST只有 composite 才 FORCE
+diff.patch 中的最终代码也显示已经改成：
+response_time_elevated → policy: suggestlast_gpt_reply_bytes_low → policy: suggestcomposite_degradation → policy: force_composite
+但是 ZIP 里的 runtime evidence 仍然显示旧语义。例如：
+extra/composite_force.txt
+里面写的是：
+JSON{  "code": "response_time_exceeded",  "actual": 75,  "threshold": 60,  "policy": "force"}
+以及：
+JSON{  "code": "last_gpt_reply_bytes_low",  "actual": 1500,  "threshold": 2000,  "policy": "force"}
+这说明 extra/ 里的负路径证据很可能是 892d445 初版生成的旧文件，没有在 2b52579 / dcc31a7 最终代码之后重新生成。
+也就是说，现在证据包内部同时存在：
+代码：response_time / reply_bytes 单独是 SUG

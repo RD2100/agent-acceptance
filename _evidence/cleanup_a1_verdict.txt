@@ -1,0 +1,292 @@
+可以确认：这份共识已经比较完整，可以作为 CONVERSATION-HEALTH-GATE-A1 的正式 TaskSpec 基础。
+
+我建议只做几处小调整和补充，不改变你的总体架构。
+
+总体裁定
+
+当前方案可以定为：
+
+CONVERSATION-HEALTH-GATE
+= 四层防御 + 统一数据源 + policy 化阈值 + migration record + evidence-first 审核约束
+
+四层结构是合理的：
+
+Layer 1: Pre-Task Hard Gate
+Layer 2: Pre-GPT Gate
+Layer 3: Evidence Pack Hard Requirement
+Layer 4: Pre-Commit Advisory
+
+任务拆分也合理：
+
+A1: Data + Decision + Pre-Task + Evidence Pack
+A2: Pre-GPT + CDP metrics refresh + legacy script integration
+A3: Pre-Commit advisory + registry reconciliation
+
+这个拆法比一次性实现全部功能更稳。
+
+需要补充的 6 个细节
+1. A1 中不要真正实现完整 Pre-GPT
+
+你现在写的 Layer 2 是最终架构的一部分，但 A1 的范围最好仍然控制住。
+
+建议在 A1 TaskSpec 中明确：
+
+A1 may define pre_gpt_gate.py interface, but does not need to migrate all CDP submit scripts.
+
+也就是说，A1 可以创建 scripts/pre_gpt_gate.py 的最小雏形，但不要求完成：
+
+submit_gpt_review.py
+所有 _submit_*.py 迁移
+实时 CDP DOM 计数
+
+这些放到 A2 更合适。
+
+2. current.json missing 的语义要区分场景
+
+你写的是：
+
+Pre-Task: current.json missing/stale → WARNING
+Pre-GPT: current.json missing → BLOCKED
+
+这个是对的，但建议更精确：
+
+Pre-Task:
+  current.json missing → WARNING / INIT_REQUIRED
+  current.json stale → SUGGEST_HANDOFF
+
+Pre-GPT:
+  current.json missing and cannot refresh → BLOCKED
+  current.json missing but wrapper can initialize/refresh → allowed after writing evidence
+
+否则第一次使用新项目时，Pre-GPT 可能被永久卡住。
+
+3. metrics_source 要影响 force_handoff 的可信度
+
+你已经写了：
+
+metrics_source: cdp_dom_count > wrapper_counter > manual_estimate
+
+建议再补一条规则：
+
+manual_estimate should not trigger FORCE_HANDOFF by itself unless corroborated by another force condition.
+
+也就是说：
+
+assistant_message_count >= 60 + metrics_source=cdp_dom_count → FORCE
+assistant_message_count >= 60 + metrics_source=wrapper_counter → FORCE
+assistant_message_count >= 60 + metrics_source=manual_estimate → SUGGEST 或 NEEDS_REFRESH
+
+否则 agent 手工估算一个数字，就可能触发强制 handoff，这个证据可信度不足。
+
+4. auth_required 不应归入普通 handoff
+
+你的 last_nav_result 枚举值合理：
+
+ok
+access_denied
+not_found
+timeout
+auth_required
+cdp_unavailable
+unknown
+
+建议增加处理规则：
+
+access_denied / not_found → FORCE_HANDOFF
+auth_required → HUMAN_REQUIRED
+timeout / cdp_unavailable → SUGGEST_HANDOFF or RETRY_REQUIRED
+unknown → WARNING
+
+其中 auth_required 很重要。它不是“对话太长需要切换”，而是认证状态异常，应该进入 human_required，避免 agent 误判为换新对话即可解决。
+
+5. Evidence Pack 要记录“FORCE 后是否继续执行”
+
+Layer 3 里建议加一条硬规则：
+
+decision == FORCE_HANDOFF and task continued without handoff or migration record → rejected
+
+也就是说 evidence pack 不只是包含：
+
+conversation-health/latest.json
+
+还要在 review.yaml 中体现：
+
+YAML
+conversation_health:
+  checked: true
+  decision: FORCE_HANDOFF | SUGGEST_HANDOFF | OK | UNKNOWN | HUMAN_REQUIRED
+  action_taken: continued | handoff_generated | migration_record_created | blocked
+  justification: ...
+
+这样 reviewer 可以判断：
+即便触发了 FORCE，agent 有没有正确停止、handoff 或 migration。
+
+6. A1 必须要求 negative-path evidence
+
+既然这是一个 gate 任务，验收时不能只看单元测试。
+
+A1 的 acceptance criteria 里建议明确要求 runtime negative-path evidence：
+
+1. current.json missing → WARNING / INIT_REQUIRED
+2. current.json stale → SUGGEST_HANDOFF
+3. assistant_message_count >= 60 → FORCE_HANDOFF
+4. review_round_count >= 3 → FORCE_HANDOFF
+5. access_denied → FORCE_HANDOFF
+6. auth_required → HUMAN_REQUIRED
+7. invalid current.json → validator error
+8. evidence pack missing conversation-health/latest.json → evidence incomplete
+9. FORCE_HANDOFF but no handoff/migration record → rejected or blocked
+
+这能延续前一个任务里已经形成的 evidence-first 标准。
+
+对你的最终共识逐项确认
+架构：四层防御
+
+确认合理。
+
+推荐表述：
+
+Layer 1: Pre-Task Hard Gate
+- Reads only .ai/conversation/current.json.
+- Does not open CDP.
+- FORCE_HANDOFF → BLOCKED.
+- missing/stale metrics → WARNING or SUGGEST, not hard BLOCKED.
+
+Layer 2: Pre-GPT Gate
+- Refreshes runtime metrics.
+- Writes current.json and latest.json.
+- Blocks submission if FORCE_HANDOFF cannot be resolved.
+- Legacy scripts call check_pre_gpt_gate() during transition.
+- Unified submit_gpt_review.py is the target architecture.
+
+Layer 3: Evidence Pack Hard Requirement
+- build_evidence_pack.py must include conversation-health evidence.
+- Missing evidence prevents ACCEPTED verdict.
+- FORCE without handoff/migration record prevents ACCEPTED verdict.
+
+Layer 4: Pre-Commit Advisory
+- Adds conversation-health as advisory stage.
+- Does not become the primary enforcement point.
+阈值分级
+
+确认合理，但建议微调为：
+
+Force:
+- assistant_message_count >= 60, if metrics_source is cdp_dom_count or wrapper_counter
+- review_round_count >= 3
+- last_nav_result in [access_denied, not_found]
+
+Suggest:
+- assistant_message_count >= 45
+- response_time >= 60s
+- last_gpt_reply_bytes < 2000
+- metrics_stale >= 12h
+- assistant_message_count >= 60 with metrics_source=manual_estimate
+
+Human Required:
+- last_nav_result == auth_required
+
+Composite Force:
+- response_time >= 60
+- last_gpt_reply_bytes < 2000
+- review_round_count >= 2
+- metrics_source is not manual_estimate
+
+阈值放在：
+
+configs/conversation-health-policy.yaml
+
+这一点非常正确。
+
+数据源
+
+确认合理。
+
+建议 A1 至少定义三个 schema 或示例：
+
+schemas/agent-runtime/conversation-health.schema.json
+schemas/agent-runtime/conversation-health-decision.schema.json
+schemas/agent-runtime/conversation-migration-record.schema.json
+
+或者 A1 先做前两个，migration schema 放到 A2/A3。但如果 migration record 已经要进入 evidence pack，最好 A1 就给出最小格式。
+
+chat_url 检测
+
+确认采用 passive recording。
+
+建议写死规则：
+
+Pre-Task must not navigate to chat_url.
+Only submit/capture/pre-gpt wrapper may update last_nav_result based on actual CDP behavior.
+
+这样可以避免 pre-task gate 变重、变脆弱。
+
+Migration Record
+
+你的要求是对的：
+
+old/new conversation
+failure_reason
+registry update
+context_transferred
+handoff_generated=false requires explanation
+force_handoff due to length/round should generate handoff
+
+建议补充存放位置：
+
+_evidence/conversation-health/migration-records/{timestamp}.yaml
+
+同时在 latest.json 或 review.yaml 中引用：
+
+YAML
+migration_record: _evidence/conversation-health/migration-records/20260611Txxxxxx.yaml
+最终确认版
+
+可以将最终共识定稿为：
+
+CONVERSATION-HEALTH-GATE adopts a four-layer defense model:
+
+1. Pre-Task Hard Gate:
+   sadp_pre_task_enforcer.py reads .ai/conversation/current.json only.
+   FORCE_HANDOFF blocks task start.
+   Missing or stale metrics produce WARNING/SUGGEST, not immediate BLOCKED.
+
+2. Pre-GPT Gate:
+   scripts/pre_gpt_gate.py refreshes runtime metrics during GPT/CDP submission.
+   Legacy scripts temporarily import check_pre_gpt_gate().
+   submit_gpt_review.py is the target unified wrapper.
+   Missing current.json must be initialized or refreshed before submission; failure to refresh blocks submission.
+
+3. Evidence Pack Hard Requirement:
+   build_evidence_pack.py includes conversation-health/latest.json and current snapshot.
+   review.yaml records conversation_health.
+   Missing evidence or unresolved FORCE_HANDOFF prevents ACCEPTED verdict.
+
+4. Pre-Commit Advisory:
+   pre-commit.governance.ps1 adds conversation-health as ADVISORY only.
+   It audits and warns but does not become the primary enforcement gate.
+
+Thresholds are policy-driven via configs/conversation-health-policy.yaml.
+Pre-Task uses last known state.
+Pre-GPT/CDP wrapper performs real-time metrics capture.
+chat_url accessibility is passively recorded through submit/capture failures.
+Migration records are required when conversation switches occur.
+结论
+
+这份共识完整准确，可以作为 CONVERSATION-HEALTH-GATE-A1 的正式 TaskSpec 基础。
+
+唯一需要在 TaskSpec 中明确的是：A1 只做最小可接受闭环，不要把 A2 的 CDP wrapper 迁移和 A3 的 pre-commit/registry reconciliation 全部塞进来。
+
+A1 建议固定为：
+
+A1 = schema + policy + check_handoff_needed.py + sadp_pre_task_enforcer.py + build_evidence_pack.py + tests + negative-path evidence
+
+A2 再做：
+
+pre_gpt_gate.py + current.json runtime refresh + legacy submit scripts integration
+
+A3 再做：
+
+pre-commit advisory + registry reconciliation + startup-read-gate 第 7 项
+
+这样推进最稳。

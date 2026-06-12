@@ -1,0 +1,54 @@
+最终判定：ACCEPTED
+我已核验 CONVERSATION-HEALTH-GATE-A1 R4 证据包。R3 中剩余的两个 blocker 在 R4 中已经闭合，A1 可以作为当前阶段的 accepted baseline。
+
+一、基础核对
+通过：
+ZIP files: 35Computed SHA-256:112ccc50b4127c47123f1c69a6cb35f657562cd57a3da32a97db261483ee8065Commit chain:8ccb446 → 892d445 → 2b52579 → dcc31a7 → 40e4aba → fbb08f0Tests:1098 passed, 21 warningsmodified_tracked:0conversation-health/latest.json:included
+说明：你这次消息里没有写 SHA-256，我按 ZIP 实际内容重新计算，结果如上。
+
+二、R3 两个 blocker 复核
+Blocker 1：policy="info" 与 schema enum 不一致
+已修复。
+check_handoff_v2() 中 metrics_source == "none" 分支已从：
+policy: info
+改为：
+policy: warning
+conversation-health-decision.schema.json 当前 enum 为：
+force, suggest, force_composite, human, suggest_capped, warning
+我检查了 extra/ 中所有 runtime decision 输出，实际出现的 policy 值为：
+forcesuggestforce_compositehumansuggest_cappedwarning
+全部被 schema enum 覆盖。
+
+Blocker 2：last_response_time_seconds 字段映射不闭合
+已修复。
+R4 同时在两处做了归一化：
+check_handoff_v2():last_response_time_seconds → response_time_secondsCLI flatten:last_known_metrics.last_response_time_seconds → response_time_seconds
+新增测试也覆盖了 schema 标准字段触发 composite force：
+test_schema_compliant_last_response_time_triggers_composite
+extra/composite_force.txt 现在也显示最终语义正确：
+response_time_elevated → suggestlast_gpt_reply_bytes_low → suggestcomposite_degradation → force_compositedecision → FORCE_HANDOFFactual exit → 1
+这说明 R2/R3 中“代码语义、schema 字段、runtime evidence 不一致”的问题已经闭合。
+
+三、负路径证据复核
+extra/ 当前为：
+9 scenario files + 1 combined file
+9 个场景均符合预期：
+场景实际结果判定missing current jsonexit=0PASSstale metrics suggestexit=0PASSmessage count force cdpexit=1PASSreview rounds forceexit=1PASSnav access deniedexit=1PASSnav auth requiredexit=1PASSinvalid jsonexit=2PASSmanual estimate no forceexit=0PASScomposite forceexit=1PASS
+关键语义已经成立：
+manual_estimate 不单独触发 FORCEauth_required → HUMAN_REQUIREDresponse_time / reply_bytes 单独只是 SUGGESTslow + short + rounds → FORCE
+
+四、A1 范围复核
+A1 范围控制正确，没有把 A2/A3 的内容过度塞进来。
+已完成 A1 应交付的最小闭环：
+1. conversation-health schema2. conversation-health decision schema3. conversation-health policy YAML4. current.json.example5. check_handoff_needed.py v2 CLI6. sadp_pre_task_enforcer.py Step 77. build_evidence_pack.py conversation_health section8. conversation-health/latest.json 入 evidence pack9. 9 个 runtime negative-path evidence10. conversation-health-gate.md 文档
+未实现的部分仍正确留在后续阶段：
+A2: Pre-GPT wrapper / CDP metrics refresh / legacy script integrationA3: pre-commit advisory / registry reconciliation / startup-read-gate 第 7 项
+
+五、非阻塞记录
+ai-guard-scope-check-output.txt 仍有：
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human reviewAI Guard: 0 errors, 1 warning(s) - PASS with warnings
+但 hooks/sealed-files-manifest.json 在本任务 write_set 中，且本次只是 generated timestamp 更新。结合测试通过、modified_tracked: 0、secret scan 无真实泄露，这不构成 blocker。
+
+最终裁决
+VERDICT: ACCEPTED
+CONVERSATION-HEALTH-GATE-A1 已经完成 A1 阶段的最小可接受闭环：数据层、决策引擎、Pre-Task 集成、Evidence Pack hard requirement、负路径证据均已闭合。下一步可以进入 A2：Pre-GPT Gate + CDP metrics refresh + legacy submit script integration。

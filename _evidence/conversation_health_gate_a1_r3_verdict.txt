@@ -1,0 +1,81 @@
+裁决：NEEDS_REVISION
+R3 确实修复了 R2 中最明显的 stale negative-path evidence 问题：composite_force.txt 已经显示新语义，即 response_time_elevated → suggest、last_gpt_reply_bytes_low → suggest、composite_degradation → force_composite。但 R2 中我指出的另外两个技术一致性问题仍然没有完全闭合，所以还不能 ACCEPTED。
+
+一、基础核对结果
+通过：
+ZIP SHA-256:051601543992755a62b590a7c9a6f4d3a3e42cd722939014feb8c6f162ea8488文件数:33Commit chain:8ccb446 → 892d445 → 2b52579 → dcc31a7 → 40e4abaTests:1096 passed, 21 warningsmodified_tracked:0conversation-health/latest.json:included
+review.yaml 中也已经显示：
+YAMLconversation_health:  checked: true  decision: OK  verdict_eligibility: eligible
+这些都没问题。
+
+二、R3 已修复的部分
+1. 负路径证据旧语义问题：已修复
+R2 中 extra/composite_force.txt 仍然把单独的 response_time 和 reply_bytes 标成 force，这是旧语义。
+R3 中已经变成：
+JSON{  "code": "response_time_elevated",  "actual": 75,  "threshold": 60,  "policy": "suggest"}
+以及：
+JSON{  "code": "last_gpt_reply_bytes_low",  "actual": 1500,  "threshold": 2000,  "policy": "suggest"}
+同时组合项为：
+JSON{  "code": "composite_degradation",  "policy": "force_composite"}
+这与最终共识一致：
+单独 response_time >= 60 → SUGGEST单独 reply_bytes < 2000 → SUGGESTslow + short + rounds → FORCE
+这一项可以判定为 Fixed。
+
+2. Evidence Pack hard requirement：保持修复状态
+conversation-health/latest.json 已入包，review.yaml 中也记录为 checked: true、verdict_eligibility: eligible。
+这一项继续保持 Fixed。
+
+3. post-commit tracked state：保持修复状态
+git-status-after.txt 显示：
+modified_tracked_files: 0
+这一项继续保持 Fixed。
+
+三、仍未闭合的问题
+Blocker 1：policy: info 仍然会由代码输出，但 schema 没有允许
+diff.patch 中 check_handoff_v2() 仍然存在这个分支：
+Python运行_reason("no_metrics_source", "none", "cdp_dom_count|wrapper_counter", "info")
+也就是说，当 metrics_source == "none" 且没有 nav force/human 时，decision 会输出：
+JSON"policy": "info"
+但 conversation-health-decision.schema.json 的 enum 是：
+JSON["force", "suggest", "force_composite", "human", "suggest_capped", "warning"]
+里面没有 "info"。
+所以当前仍然存在：
+代码可能输出 policy=infoschema 不接受 policy=info测试没有覆盖这个输出路径
+这会破坏 “decision output validates against schema” 的可信度。
+建议修法二选一：
+优先推荐：把代码中的 "info" 改成 "warning"备选：把 "info" 加入 schema enum，并补测试
+我更建议改成 warning，因为该分支返回的是：
+JSON"decision": "UNKNOWN","severity": "WARNING"
+所以 policy: warning 更一致。
+
+Blocker 2：CLI --input current.json 的字段映射仍不完整
+conversation-health.schema.json 和 conversation-health/latest.json 使用的是：
+JSON"last_response_time_seconds": 8.5
+但 check_handoff_v2() 内部读取的是：
+Python运行resp_time = metrics.get("response_time_seconds", 0)
+CLI flatten 逻辑目前只是：
+Python运行metrics = dict(lkm)
+没有把：
+last_response_time_seconds → response_time_seconds
+做归一化映射。
+这意味着一个完全符合 schema 的 current.json：
+JSON"last_known_metrics": {  "last_response_time_seconds": 75,  "last_gpt_reply_bytes": 1500,  "review_round_count": 2}
+在 CLI --input 路径下，可能不会正确触发 response-time suggest 或 composite force。
+更关键的是，R3 的 runtime evidence 里 composite 场景仍然写的是：
+Python运行data["last_known_metrics"]["response_time_seconds"] = 75
+而不是 schema 标准字段：
+Python运行data["last_known_metrics"]["last_response_time_seconds"] = 75
+所以 R3 证明了“非标准字段 response_time_seconds 可以触发 composite”，但还没有证明“schema-compliant 的 last_response_time_seconds 可以触发 composite”。
+这仍然是 A1 数据层与 CLI 决策层之间的实质不一致。
+
+四、逐项裁决表
+项目R3 状态裁决ZIP 哈希、文件数、commit 链一致Pass测试结果1096 passedPassconversation-health/latest.json 入包已入包FixedEvidence Pack hard requirement已记录 eligibleFixedmodified_tracked: 0已恢复Fixed负路径证据旧语义已重跑并修正 compositeFixedpolicy: info schema 不一致仍存在Needs revisionlast_response_time_seconds CLI 映射仍未闭合Needs revisionschema-compliant composite runtime evidence仍缺失Needs revision
+
+五、最终判定
+VERDICT: NEEDS_REVISION
+R3 已经非常接近可接受，但还不能最终通过。原因不是证据包基础质量问题，而是 schema、CLI 输入字段、decision 输出三者还没有完全闭合。
+
+六、R4 最小修复清单
+建议 R4 只修 4 件事：
+1. 修复 policy=info：   - 将 no_metrics_source 分支的 policy 从 "info" 改为 "warning"；   - 或把 "info" 加入 schema enum。   推荐改为 "warning"。2. 修复 CLI flatten：   - 将 last_known_metrics.last_response_time_seconds 映射为 response_time_seconds；   - 或统一 check_handoff_v2 内部字段名，直接读取 last_response_time_seconds。3. 更新 runtime evidence：   - composite_force 场景必须使用 schema 标准字段 last_response_time_seconds；   - 重新生成 9/9 negative-path evidence。4. 增加两个测试：   - metrics_source_none_decision_validates_schema；   - schema_compliant_current_json_last_response_time_seconds_triggers_composite_force。
+R4 做完这些后，我预计可以直接 ACCEPTED。

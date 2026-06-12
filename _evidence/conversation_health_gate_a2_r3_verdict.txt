@@ -1,0 +1,1 @@
+我会以 R3 新包为准重新核验，不沿用 R2 结论；重点只看三项：clean workspace、报告表是否真正修正、post-response refresh 是否不再静默降级。

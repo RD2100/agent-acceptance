@@ -1,0 +1,1 @@
+我会以 R2 新包为准重新核验，不沿用 A1 初版结论；重点看 latest.json 是否真实入包、hard requirement 是否可执行、阈值语义和 schema 输出是否完全一致。

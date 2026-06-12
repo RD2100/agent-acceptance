@@ -1,0 +1,1 @@
+我会按 R1 的 4 个 blocker 逐项复核 R2：先核对 ZIP 哈希、commit/test/status，再检查 helper 是否 fail-closed、legacy 后置 metrics refresh 是否真实落地、runtime evidence 和报告表是否一致。
