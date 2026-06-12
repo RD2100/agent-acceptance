@@ -1,11 +1,11 @@
 ﻿{
     "git_context":  {
                         "branch":  "master",
-                        "commit_count":  304,
-                        "staged_file_count":  19
+                        "commit_count":  306,
+                        "staged_file_count":  6
                     },
-    "timestamp":  "2026-06-12T13:58:41Z",
-    "overall_result":  "PASS",
+    "timestamp":  "2026-06-12T14:23:16Z",
+    "overall_result":  "BLOCKED",
     "hook_version":  "2.4.0",
     "stages":  [
                    {
@@ -16,26 +16,14 @@
                    },
                    {
                        "name":  "sadp-audit",
-                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\sadp-audit-20260612-215841.txt",
-                       "duration_ms":  3413,
-                       "exit_code":  0
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\sadp-audit-20260612-222316.txt",
+                       "duration_ms":  4368,
+                       "exit_code":  1
                    },
                    {
                        "name":  "ai-guard",
-                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\ai-guard-20260612-215841.txt",
-                       "duration_ms":  3116,
-                       "exit_code":  0
-                   },
-                   {
-                       "name":  "test-governance",
-                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\test-governance-20260612-215841.txt",
-                       "duration_ms":  3685,
-                       "exit_code":  0
-                   },
-                   {
-                       "name":  "conversation-health",
-                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\conversation-health-20260612-215841.txt",
-                       "duration_ms":  81,
+                       "output_file":  "D:\\agent-acceptance\\_evidence\\hook-output\\ai-guard-20260612-222316.txt",
+                       "duration_ms":  4225,
                        "exit_code":  0
                    }
                ]

@@ -1,0 +1,25 @@
+﻿# SADP Audit Output - 2026-06-12T14:23:16Z
+# Exit code: 1
+# Source: pre-commit hook (original)
+
+[SADP-AUDIT] Staged files: 6
+[SADP-AUDIT] TaskSpecs found: 62
+[SADP-AUDIT] ExecutionReports found: 5
+[SADP-AUDIT] WARN: 5 file(s) not covered by any TaskSpec write_set:
+[SADP-AUDIT]   UNCOVERED: _reports/SESSION-EXECUTION-REPORT.md
+[SADP-AUDIT]   UNCOVERED: _reports/pre-execution-readiness-snapshot-a1/EXECUTION_REPORT.md
+[SADP-AUDIT]   UNCOVERED: _reports/pre-execution-readiness-snapshot-a1/HUMAN_GATE_CHECKLIST.md
+[SADP-AUDIT]   UNCOVERED: _reports/pre-execution-readiness-snapshot-a1/PRE_EXECUTION_READINESS_SNAPSHOT.md
+[SADP-AUDIT]   UNCOVERED: _reports/pre-execution-readiness-snapshot-a1/TASKSPEC_STATUS_TRIAGE.md
+[SADP-AUDIT]   Ensure each changed file is listed in a TaskSpec write_set or Allowed Files.
+[SADP-AUDIT] Coverage map:
+[SADP-AUDIT]   hooks/sealed-files-manifest.json -> current-task.yaml
+[SADP-AUDIT] Running ai_guard.py security scan...
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review  AI Guard: 0 errors, 1 warning(s) - PASS with warnings
+[SADP-AUDIT] Running ai_guard.py TaskSpec scope scan: .ai\current-task.yaml
+WARNING: RESTRICTED: hooks/sealed-files-manifest.json requires human review ERROR: SCOPE: _reports/SESSION-EXECUTION-REPORT.md outside TaskSpec allow_write ERROR: SCOPE: _reports/pre-execution-readiness-snapshot-a1/EXECUTION_REPORT.md outside TaskSpec allow_write ERROR: SCOPE: _reports/pre-execution-readiness-snapshot-a1/HUMAN_GATE_CHECKLIST.md outside TaskSpec allow_write ERROR: SCOPE: _reports/pre-execution-readiness-snapshot-a1/PRE_EXECUTION_READINESS_SNAPSHOT.md outside TaskSpec allow_write ERROR: SCOPE: _reports/pre-execution-readiness-snapshot-a1/TASKSPEC_STATUS_TRIAGE.md outside TaskSpec allow_write  AI Guard: 5 error(s), 1 warning(s) - BLOCKED
+[SADP-AUDIT] ai_guard.py found TaskSpec scope issues.
+[SADP-AUDIT] STATUS: BLOCKED
+[SADP-AUDIT] Commit rejected. Fix the issues above and retry.
+[SADP-AUDIT] (Use --no-verify only with explicit human approval per core-001)
+

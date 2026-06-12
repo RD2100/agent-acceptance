@@ -34,6 +34,8 @@ write_set:
   - "tests/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
+  - "_reports/SESSION-EXECUTION-REPORT.md"
+  - "_reports/pre-execution-readiness-snapshot-a1/**"
 
 deny_paths:
   - "scripts/multi_project_router.py"
