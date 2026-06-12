@@ -1,0 +1,13 @@
+# SADP Pre-commit Hook Output (from commit 892d445 message)
+
+feat: CONVERSATION-HEALTH-GATE-A1 — four-layer conversation health enforcement
+
+Implements proactive conversation health checking before agent tasks:
+- Data layer: JSON schema, policy YAML, current.json.example
+- Decision engine: check_handoff_needed.py v2 with full CLI
+- Pre-task integration: sadp_pre_task_enforcer.py step 7
+- Evidence pack integration: build_evidence_pack.py health section
+- 21 unit tests + 9 negative-path evidence scenarios (ALL PASS)
+- CDP clipboard paste helper to avoid keyboard.type() fragmentation
+
+🤖 Generated with [Qoder][https://qoder.com]

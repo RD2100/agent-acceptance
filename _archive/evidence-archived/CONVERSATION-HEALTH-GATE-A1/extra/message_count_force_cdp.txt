@@ -1,0 +1,21 @@
+# Conversation Health Evidence: message_count_force_cdp
+# Actual exit: 1
+# Expected: exit=1 (FORCE_HANDOFF or HUMAN_REQUIRED blocks task)
+
+{
+  "schema_version": "conversation-health-decision.v1",
+  "decision": "FORCE_HANDOFF",
+  "severity": "BLOCKING",
+  "reasons": [
+    {
+      "code": "assistant_message_count_exceeded",
+      "actual": 65,
+      "threshold": 60,
+      "policy": "force"
+    }
+  ],
+  "recommended_action": "generate_handoff",
+  "checked_at": "2026-06-11T14:09:44Z",
+  "source": "C:\\Users\\RD\\AppData\\Local\\Temp\\tmpkp8_cmq3.json"
+}
+
