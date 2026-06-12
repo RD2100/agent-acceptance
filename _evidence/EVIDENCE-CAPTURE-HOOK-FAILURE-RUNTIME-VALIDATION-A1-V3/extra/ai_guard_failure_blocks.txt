@@ -1,0 +1,10 @@
+# Runtime Negative-Path Evidence: ai_guard_failure_blocks
+# Validator exit code: 0
+# Expected: 0 (correct semantics)
+
+PASS: C:\Users\RD\AppData\Local\Temp\tmpimn51016.json validates against evidence-capture.schema.json
+  hook_version: 2.3.0
+  overall_result: BLOCKED
+  stages: manifest-regen=0, sadp-audit=0, ai-guard=1, test-governance=0
+  timestamp: 2026-06-11T12:00:00Z
+

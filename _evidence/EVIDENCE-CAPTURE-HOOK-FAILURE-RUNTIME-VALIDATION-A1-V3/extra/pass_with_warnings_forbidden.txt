@@ -1,0 +1,7 @@
+# Runtime Negative-Path Evidence: pass_with_warnings_forbidden
+# Validator exit code: 1
+# Expected: nonzero (mismatch rejected)
+
+FAIL: Schema validation failed (1 errors)
+  - overall_result 'PASS_WITH_WARNINGS' not in enum ['PASS', 'BLOCKED']
+

@@ -1,0 +1,21 @@
+{
+  "task_id": "EVIDENCE-CAPTURE-HOOK-FAILURE-RUNTIME-VALIDATION-A1",
+  "generated": "2026-06-11T18:21:43.399406+08:00",
+  "version": "1.0.0",
+  "test_result": "1072 passed, 21 warnings in 46.38s",
+  "tests_passed": true,
+  "post_commit_state": {
+    "modified_tracked": 0,
+    "untracked_total": 60,
+    "neg_009": 17,
+    "secret_scan": 5,
+    "session_artifacts": 38,
+    "grand_total": 60
+  },
+  "consistency_check": {
+    "git_status_matches_register": true,
+    "register_matches_safety_report": true,
+    "register_matches_review": true,
+    "register_matches_final_report": true
+  }
+}

@@ -1,0 +1,7 @@
+# Runtime Negative-Path Evidence: null_exit_code_rejected
+# Validator exit code: 1
+# Expected: nonzero (mismatch rejected)
+
+FAIL: Semantic checks found 1 errors
+  - ai-guard exit_code=null but overall_result=PASS (expected BLOCKED)
+
