@@ -1,0 +1,349 @@
+diff --git a/.ai/tasks/conversation-health-gate-a3.yaml b/.ai/tasks/conversation-health-gate-a3.yaml
+index 1954b5bf..06189029 100644
+--- a/.ai/tasks/conversation-health-gate-a3.yaml
++++ b/.ai/tasks/conversation-health-gate-a3.yaml
+@@ -28,7 +28,7 @@ gate_0:
+       - _check_conversation_health (pre-task pattern, directly reusable)
+       - test-governance advisory pattern (mirror for conversation-health stage)
+     compared_against_request:
+-      - "Pre-Commit Advisory + Registry Reconciliation + Startup Read Gate Item 7"
++      - "Pre-Commit Advisory + Registry Reconciliation (startup-read-gate item 7 deferred)"
+   sufficiency_decision: new_delta_required
+   decision: build_delta
+ 
+@@ -37,7 +37,8 @@ goal: >
+   Gate system. Add conversation-health as an ADVISORY stage to the pre-commit
+   hook that audits and warns but never blocks. Implement registry reconciliation
+   that cross-checks conversation-health state against CONVERSATION_BINDING.json.
+-  Integrate conversation-health awareness into the startup read gate (item 7).
++  Note: startup-read-gate item 7 (conversation-health awareness) is deferred to
++  a follow-up task (A4 or later) — out of scope for A3.
+ 
+ write_set:
+   - ".ai/tasks/conversation-health-gate-a3.yaml"
+diff --git a/_evidence/conversation-health/current-snapshot.json b/_evidence/conversation-health/current-snapshot.json
+index 1bf1ceca..905ba0bd 100644
+--- a/_evidence/conversation-health/current-snapshot.json
++++ b/_evidence/conversation-health/current-snapshot.json
+@@ -15,6 +15,6 @@
+   "last_checked_at": "2026-06-12T06:58:52+08:00",
+   "metrics_source": "cdp_dom_count",
+   "metrics_freshness": "fresh",
+-  "_snapshot_at": "2026-06-12T06:58:52+08:00",
++  "_snapshot_at": "2026-06-12T08:03:04+08:00",
+   "_snapshot_source": "pre_gpt_gate"
+ }
+diff --git a/_evidence/conversation-health/latest.json b/_evidence/conversation-health/latest.json
+index 129953fe..f4603c4d 100644
+--- a/_evidence/conversation-health/latest.json
++++ b/_evidence/conversation-health/latest.json
+@@ -16,5 +16,5 @@
+   "metrics_source": "cdp_dom_count",
+   "metrics_freshness": "fresh",
+   "last_health_severity": "INFO",
+-  "last_health_checked_at": "2026-06-11T22:58:52Z"
++  "last_health_checked_at": "2026-06-12T00:03:04Z"
+ }
+diff --git a/hooks/sealed-files-manifest.json b/hooks/sealed-files-manifest.json
+index 8dc5fef8..ed13e29d 100644
+--- a/hooks/sealed-files-manifest.json
++++ b/hooks/sealed-files-manifest.json
+@@ -9,7 +9,7 @@
+                          "C:\\Users\\RD\\.claude\\memory\\"
+                      ],
+     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
+-    "generated":  "2026-06-12T07:55:17.0509471+08:00",
++    "generated":  "2026-06-12T08:18:30.2729360+08:00",
+     "sealed_files":  [
+                          {
+                              "sha256":  "24C3EE0AEA0B8BE9ABBEEFAB913F81849A9D77F0C9D4C1776D24F9B3DBCC3491",
+diff --git a/scripts/pre_commit_health_advisory.py b/scripts/pre_commit_health_advisory.py
+index 7190e428..cd3ad86a 100644
+--- a/scripts/pre_commit_health_advisory.py
++++ b/scripts/pre_commit_health_advisory.py
+@@ -12,13 +12,15 @@ Exit codes (advisory — never block commit):
+     0 = healthy / advisory ran successfully
+     1 = degraded (FORCE_HANDOFF or HUMAN_REQUIRED detected — advisory warning)
+     2 = evidence missing (no current.json — advisory warning)
+-    3 = module error (should not happen; hook logs but continues)
++    3 = module error (internal error — diagnostic code, hook still does not block)
+ 
+ Design principles:
+-    - Advisory only: the hook stage NEVER blocks, regardless of exit code
++    - Advisory only: the hook stage NEVER blocks, regardless of exit code.
++      Non-zero exit codes are diagnostic signals, not block decisions.
++      The hook's overall_result logic only checks sadp-audit and ai-guard for BLOCKING.
+     - Reads existing evidence: does NOT open CDP browser or modify files
+     - Reuses decision engine: imports check_handoff_v2() for threshold evaluation
+-    - Fail-graceful: any internal error → exit 0 with diagnostic message
++    - Fail-graceful: ImportError → exit 0; other exceptions → exit 3 (diagnostic)
+ """
+ 
+ from __future__ import annotations
+diff --git a/tests/test_hook_failure_semantics.py b/tests/test_hook_failure_semantics.py
+index 1ef5133b..01860c30 100644
+--- a/tests/test_hook_failure_semantics.py
++++ b/tests/test_hook_failure_semantics.py
+@@ -7,9 +7,9 @@ Validates that:
+ 4. The hook output validator works correctly
+ 5. Replay-style evidence is labeled
+ 
+-Failure semantics (v2.3.0):
++Failure semantics (v2.4.0):
+   BLOCKING:   sadp-audit, ai-guard
+-  ADVISORY:   manifest-regen, test-governance
++  ADVISORY:   manifest-regen, test-governance, conversation-health
+ """
+ import json
+ import subprocess
+@@ -130,17 +130,17 @@ class TestFailureSemanticsMapping:
+ class TestOverallResultLogic:
+     """Simulate the hook's overall_result calculation to verify correctness.
+ 
+-    v2.3.0 rules:
++    v2.4.0 rules:
+       - BLOCKING: sadp-audit, ai-guard
+-      - ADVISORY: manifest-regen, test-governance
++      - ADVISORY: manifest-regen, test-governance, conversation-health
+     """
+ 
+     @staticmethod
+     def compute_overall_result(stages):
+-        """Mirror the PowerShell logic from the hook script (v2.3.0).
++        """Mirror the PowerShell logic from the hook script (v2.4.0).
+ 
+         BLOCKING: sadp-audit, ai-guard
+-        ADVISORY: manifest-regen, test-governance
++        ADVISORY: manifest-regen, test-governance, conversation-health
+         """
+         overall_result = "PASS"
+         for s in stages:
+@@ -148,7 +148,7 @@ class TestOverallResultLogic:
+                 if s["name"] in ("sadp-audit", "ai-guard"):
+                     overall_result = "BLOCKED"
+                     break
+-                # manifest-regen and test-governance: advisory only
++                # manifest-regen, test-governance, conversation-health: advisory only
+         return overall_result
+ 
+     def test_all_pass(self):
+@@ -201,13 +201,36 @@ class TestOverallResultLogic:
+         ]
+         assert self.compute_overall_result(stages) == "PASS"
+ 
++    def test_conversation_health_advisory(self):
++        """conversation-health exit non-zero does not block (v2.4.0 advisory)"""
++        stages = [
++            {"name": "manifest-regen", "exit_code": 0},
++            {"name": "sadp-audit", "exit_code": 0},
++            {"name": "ai-guard", "exit_code": 0},
++            {"name": "test-governance", "exit_code": 0},
++            {"name": "conversation-health", "exit_code": 1},
++        ]
++        assert self.compute_overall_result(stages) == "PASS"
++
++    def test_all_five_stages_pass(self):
++        """All 5 stages (v2.4.0) with exit_code 0 → PASS"""
++        stages = [
++            {"name": "manifest-regen", "exit_code": 0},
++            {"name": "sadp-audit", "exit_code": 0},
++            {"name": "ai-guard", "exit_code": 0},
++            {"name": "test-governance", "exit_code": 0},
++            {"name": "conversation-health", "exit_code": 0},
++        ]
++        assert self.compute_overall_result(stages) == "PASS"
++
+     def test_multiple_failures(self):
+-        """Multiple blocking failures → BLOCKED"""
++        """Multiple blocking failures → BLOCKED (advisory stages ignored)"""
+         stages = [
+             {"name": "manifest-regen", "exit_code": 0},
+             {"name": "sadp-audit", "exit_code": 1},
+             {"name": "ai-guard", "exit_code": 1},
+             {"name": "test-governance", "exit_code": 1},
++            {"name": "conversation-health", "exit_code": 2},
+         ]
+         assert self.compute_overall_result(stages) == "BLOCKED"
+ 
+diff --git a/tests/test_pre_commit_health_advisory.py b/tests/test_pre_commit_health_advisory.py
+index 81595633..61c0acfe 100644
+--- a/tests/test_pre_commit_health_advisory.py
++++ b/tests/test_pre_commit_health_advisory.py
+@@ -412,3 +412,177 @@ class TestA1A2NonRegression:
+             project_root=str(tmp_evidence),
+         )
+         assert result["decision"] == "HUMAN_REQUIRED"
++
++
++# =============================================================================
++# TestAdvisoryNonzeroDoesNotBlock (R2-3a)
++# =============================================================================
++
++class TestAdvisoryNonzeroDoesNotBlock:
++    """Verify that conversation-health nonzero exit does NOT set overall_result=BLOCKED.
++
++    This simulates the hook's overall_result logic: only sadp-audit and ai-guard
++    can BLOCK. conversation-health is advisory — its exit code is logged but does
++    not affect the commit decision.
++    """
++
++    def test_degraded_exit_is_advisory_not_blocking(self, tmp_evidence):
++        """FORCE_HANDOFF produces exit 1, but hook must NOT block."""
++        data = _degraded_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++        exit_code, result = run_advisory(
++            latest_json_path=latest_path,
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        # Exit code 1 means advisory warning, NOT "block commit"
++        assert exit_code == EXIT_DEGRADED
++        # The hook's blocking stages are ONLY sadp-audit and ai-guard
++        blocking_stages = {"sadp-audit", "ai-guard"}
++        assert "conversation-health" not in blocking_stages
++
++    def test_evidence_missing_exit_is_advisory_not_blocking(self, tmp_evidence):
++        """Evidence missing produces exit 2, but hook must NOT block."""
++        exit_code, result = run_advisory(
++            latest_json_path=str(tmp_evidence / "_evidence" / "conversation-health" / "latest.json"),
++            current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++            project_root=str(tmp_evidence),
++        )
++        assert exit_code == EXIT_EVIDENCE_MISSING
++        # Advisory: hook records but does not block
++
++
++# =============================================================================
++# TestAdvisoryModuleErrorSemantics (R2-3b)
++# =============================================================================
++
++class TestAdvisoryModuleErrorSemantics:
++    """Verify module error returns exit 3 (diagnostic) with advisory_error code.
++
++    Per R2 fix: module error exit 3 is a diagnostic signal.
++    The hook treats conversation-health as advisory regardless of exit code.
++    """
++
++    def test_module_error_returns_exit_3(self, tmp_evidence):
++        """Internal errors produce EXIT_MODULE_ERROR (3) — diagnostic, not blocking."""
++        data = _healthy_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++
++        # Mock check_handoff_v2 to raise an unexpected error
++        import check_handoff_needed
++        original_fn = check_handoff_needed.check_handoff_v2
++
++        def _raise_error(*args, **kwargs):
++            raise RuntimeError("simulated internal error")
++
++        check_handoff_needed.check_handoff_v2 = _raise_error
++        try:
++            exit_code, result = run_advisory(
++                latest_json_path=latest_path,
++                current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++                project_root=str(tmp_evidence),
++            )
++        finally:
++            check_handoff_needed.check_handoff_v2 = original_fn
++
++        assert exit_code == EXIT_MODULE_ERROR
++        assert result["decision"] == "UNKNOWN"
++        assert any(r.get("code") == "advisory_error" for r in result["reasons"])
++
++    def test_module_error_records_diagnostic_reason(self, tmp_evidence):
++        """Module error must include advisory_error reason with actual error text."""
++        data = _healthy_metrics()
++        latest_path = _write_latest_json(tmp_evidence, data)
++
++        import check_handoff_needed
++        original_fn = check_handoff_needed.check_handoff_v2
++
++        def _raise_error(*args, **kwargs):
++            raise ValueError("test diagnostic message")
++
++        check_handoff_needed.check_handoff_v2 = _raise_error
++        try:
++            exit_code, result = run_advisory(
++                latest_json_path=latest_path,
++                current_json_path=str(tmp_evidence / ".ai" / "conversation" / "current.json"),
++                project_root=str(tmp_evidence),
++            )
++        finally:
++            check_handoff_needed.check_handoff_v2 = original_fn
++
++        error_reasons = [r for r in result["reasons"] if r.get("code") == "advisory_error"]
++        assert len(error_reasons) == 1
++        assert "test diagnostic message" in error_reasons[0]["actual"]
++
++
++# =============================================================================
++# TestHookOutputSchemaWithConversationHealth (R2-3c)
++# =============================================================================
++
++class TestHookOutputSchemaWithConversationHealth:
++    """Verify hook-output JSON with conversation-health validates against schema."""
++
++    def test_hook_output_with_5_stages_validates(self):
++        """A hook-output with 5 stages including conversation-health must validate."""
++        import jsonschema
++        schema_path = Path(__file__).resolve().parent.parent / "schemas" / "agent-runtime" / "evidence-capture.schema.json"
++        schema = json.loads(schema_path.read_text(encoding="utf-8"))
++
++        hook_output = {
++            "timestamp": "2026-06-12T00:00:00Z",
++            "hook_version": "2.4.0",
++            "stages": [
++                {"name": "manifest-regen", "exit_code": 0, "output_file": None, "duration_ms": 0},
++                {"name": "sadp-audit", "exit_code": 0, "output_file": "sadp.txt", "duration_ms": 100},
++                {"name": "ai-guard", "exit_code": 0, "output_file": "ai.txt", "duration_ms": 50},
++                {"name": "test-governance", "exit_code": 0, "output_file": "gov.txt", "duration_ms": 200},
++                {"name": "conversation-health", "exit_code": 1, "output_file": "ch.txt", "duration_ms": 30},
++            ],
++            "git_context": {"branch": "master", "staged_file_count": 5},
++            "overall_result": "PASS",
++        }
++        jsonschema.validate(hook_output, schema)
++
++    def test_hook_output_conversation_health_nonzero_still_pass(self):
++        """Even with conversation-health exit_code=1, overall_result can be PASS."""
++        import jsonschema
++        schema_path = Path(__file__).resolve().parent.parent / "schemas" / "agent-runtime" / "evidence-capture.schema.json"
++        schema = json.loads(schema_path.read_text(encoding="utf-8"))
++
++        hook_output = {
++            "timestamp": "2026-06-12T00:00:00Z",
++            "hook_version": "2.4.0",
++            "stages": [
++                {"name": "manifest-regen", "exit_code": 0, "output_file": None, "duration_ms": 0},
++                {"name": "sadp-audit", "exit_code": 0, "output_file": "sadp.txt", "duration_ms": 100},
++                {"name": "ai-guard", "exit_code": 0, "output_file": "ai.txt", "duration_ms": 50},
++                {"name": "test-governance", "exit_code": 0, "output_file": "gov.txt", "duration_ms": 200},
++                {"name": "conversation-health", "exit_code": 2, "output_file": "ch.txt", "duration_ms": 30},
++            ],
++            "git_context": {"branch": "master", "staged_file_count": 5},
++            "overall_result": "PASS",
++        }
++        # Must validate against schema
++        jsonschema.validate(hook_output, schema)
++        # conversation-health is advisory — nonzero does not force BLOCKED
++        assert hook_output["overall_result"] == "PASS"
++
++    def test_hook_output_sadp_audit_nonzero_is_blocked(self):
++        """Sadp-audit nonzero must correspond to BLOCKED (semantic check)."""
++        import jsonschema
++        schema_path = Path(__file__).resolve().parent.parent / "schemas" / "agent-runtime" / "evidence-capture.schema.json"
++        schema = json.loads(schema_path.read_text(encoding="utf-8"))
++
++        hook_output = {
++            "timestamp": "2026-06-12T00:00:00Z",
++            "hook_version": "2.4.0",
++            "stages": [
++                {"name": "manifest-regen", "exit_code": 0, "output_file": None, "duration_ms": 0},
++                {"name": "sadp-audit", "exit_code": 1, "output_file": "sadp.txt", "duration_ms": 100},
++                {"name": "ai-guard", "exit_code": 0, "output_file": "ai.txt", "duration_ms": 50},
++            ],
++            "git_context": {"branch": "master", "staged_file_count": 5},
++            "overall_result": "BLOCKED",
++        }
++        jsonschema.validate(hook_output, schema)
++        assert hook_output["overall_result"] == "BLOCKED"

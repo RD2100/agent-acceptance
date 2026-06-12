@@ -1,0 +1,87 @@
+task_id: CONVERSATION-HEALTH-GATE-A3
+type: feature
+priority: P1
+status: in_progress
+gpt_verdict: pending
+created: "2026-06-12T00:00:00Z"
+mode: "@go edit"
+whole_dirty_worktree_allowed: false
+external_upload_allowed: false
+raw_transcript_allowed: false
+real_paper_text_allowed: false
+
+gate_0:
+  triggered: true
+  inventory_evidence:
+    queried_sources:
+      - docs/agent-runtime/conversation-health-gate.md (section 1.4 Layer 4 + section 6 A3 scope)
+      - docs/agent-runtime/hook-failure-semantics.md (stage classification + anti-pattern 4)
+      - hooks/pre-commit.governance.ps1 (v2.3.0, 3 stages, advisory pattern)
+      - schemas/agent-runtime/evidence-capture.schema.json (maxItems 4, 4 enum values)
+      - scripts/validate_conversation_registry.py (11 checks, schema validation)
+      - scripts/sadp_pre_task_enforcer.py (_check_conversation_health pattern)
+      - docs/agent-runtime/startup-read-gate.md (section 1.7 Project Registry)
+      - configs/conversation-health-policy.yaml (threshold policy)
+    matched_capabilities:
+      - check_handoff_v2 (decision engine, advisory mode support)
+      - validate_binding (registry validator, 11 checks)
+      - _check_conversation_health (pre-task pattern, directly reusable)
+      - test-governance advisory pattern (mirror for conversation-health stage)
+    compared_against_request:
+      - "Pre-Commit Advisory + Registry Reconciliation (startup-read-gate item 7 deferred)"
+  sufficiency_decision: new_delta_required
+  decision: build_delta
+
+goal: >
+  Implement the Pre-Commit Advisory layer (Layer 4) for the Conversation Health
+  Gate system. Add conversation-health as an ADVISORY stage to the pre-commit
+  hook that audits and warns but never blocks. Implement registry reconciliation
+  that cross-checks conversation-health state against CONVERSATION_BINDING.json.
+  Note: startup-read-gate item 7 (conversation-health awareness) is deferred to
+  a follow-up task (A4 or later) — out of scope for A3.
+
+write_set:
+  - ".ai/tasks/conversation-health-gate-a3.yaml"
+  - ".ai/current-task.yaml"
+  - "hooks/pre-commit.governance.ps1"
+  - "hooks/sealed-files-manifest.json"
+  - "schemas/agent-runtime/evidence-capture.schema.json"
+  - "scripts/pre_commit_health_advisory.py"
+  - "scripts/reconcile_conversation_registry.py"
+  - "tests/test_pre_commit_health_advisory.py"
+  - "tests/test_reconcile_conversation_registry.py"
+  - "tests/test_hook_failure_semantics.py"
+  - "docs/agent-runtime/hook-failure-semantics.md"
+  - "_evidence/conversation-health/latest.json"
+  - "_evidence/conversation-health/current-snapshot.json"
+  - "_evidence/hook-output/*"
+  - "_evidence/conversation_health_gate_a3_verdict.txt"
+
+deny_paths:
+  - "**/NEG-009-secrets-read.json"
+  - "**/*real-secret*"
+  - "**/.env"
+  - "**/.env.*"
+
+constraints:
+  - Do NOT modify sadp-audit.ps1
+  - Do NOT modify ai_guard.py
+  - Do NOT change A1 threshold semantics
+  - Advisory stage MUST NOT block commits (exit code logged only)
+  - Do NOT remove or weaken existing hook stages
+  - Do NOT hardcode thresholds (use configs/conversation-health-policy.yaml)
+  - Registry reconciliation is ADVISORY only
+
+acceptance_criteria:
+  - pre-commit.governance.ps1 has 4 stages (conversation-health advisory added)
+  - Hook version bumped to 2.4.0
+  - evidence-capture.schema.json updated (maxItems 5, conversation-health enum added)
+  - pre_commit_health_advisory.py reads latest.json/current.json and produces advisory output
+  - reconcile_conversation_registry.py cross-checks health state vs registry bindings
+  - hook-failure-semantics.md documents the new stage
+  - Tests pass in full regression (A1 + A2 + A3)
+  - Advisory stage never blocks commit (verified by evidence)
+  - modified_tracked is 0 after commit
+  - No A1/A2 behavior regresses
+
+depends_on: CONVERSATION-HEALTH-GATE-A2

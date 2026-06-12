@@ -1,0 +1,56 @@
+{
+  "run_id": "a3-r2-bbaa72eafb79",
+  "task_id": "CONVERSATION-HEALTH-GATE-A3",
+  "scenario": "A",
+  "pack": "_evidence\\EVIDENCE_PACK_CONVERSATION_HEALTH_GATE_A3_R2.zip",
+  "pack_exists": true,
+  "pack_size": 22676,
+  "pack_sha256": "8d0ed23c9ae4835ac0ea7d02713964158cf33a9cb746dfc1317b46ede4bc9164",
+  "prompt_chars": 2494,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a2a8cb1-b228-83aa-addb-79bda9aba043",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-12T08:21:03",
+  "reply_chars": 1043,
+  "reply_sha256": "7e112888f485cf3345ec26417beed1dcfbd24725a72f0ea1032724dcc6e36072",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "capture_reconciliation": {
+    "target_run_id": "a3-r2-bbaa72eafb79",
+    "target_task_id": "CONVERSATION-HEALTH-GATE-A3",
+    "before_user_count": 15,
+    "before_assistant_count": 8,
+    "after_user_count": 16,
+    "after_assistant_count": 10,
+    "candidate_indices": [
+      9
+    ],
+    "selected_index": 9,
+    "last_index": 9,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a2a8cb1-b228-83aa-addb-79bda9aba043",
+  "result_path": "_evidence\\conversation_health_gate_a3_r2_verdict.txt",
+  "report_result_path": "_evidence\\CONVERSATION-HEALTH-GATE-A3-R2\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "_evidence\\CONVERSATION-HEALTH-GATE-A3-R2\\GPT_CAPTURE_RECONCILIATION.json"
+}

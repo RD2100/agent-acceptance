@@ -1,0 +1,20 @@
+commit 77e6320cd423a5472a412f7b94d424f7ca4d2c05
+Author: RD2100 <tongjiajierd@163.com>
+Date:   Fri Jun 12 08:18:28 2026 +0800
+
+    fix: CONVERSATION-HEALTH-GATE-A3 R2 — resolve 4 GPT review blockers
+    
+    R2-1: Runtime hook-output/latest.json included as evidence (5 stages, advisory-only)
+    R2-2: Docstring updated — non-zero exit codes are diagnostic signals, not blocks
+    R2-3: 7 new tests (advisory-nonzero, module-error, schema-with-conversation-health)
+    R2-4: startup-read-gate item 7 deferred to A4 (removed from A3 goal)
+    Regression: 1172 tests passed
+
+ .ai/tasks/conversation-health-gate-a3.yaml         |   5 +-
+ .../conversation-health/current-snapshot.json      |   2 +-
+ _evidence/conversation-health/latest.json          |   2 +-
+ hooks/sealed-files-manifest.json                   |   2 +-
+ scripts/pre_commit_health_advisory.py              |   8 +-
+ tests/test_hook_failure_semantics.py               |  39 ++++-
+ tests/test_pre_commit_health_advisory.py           | 174 +++++++++++++++++++++
+ 7 files changed, 216 insertions(+), 16 deletions(-)
