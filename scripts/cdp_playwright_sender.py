@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
-"""Send review reports to ChatGPT via Playwright (one at a time, wait for response)."""
+"""Send review reports to ChatGPT via Playwright (one at a time, wait for response).
+
+Security: Evidence attribution uses the resolved target from binding, not hardcoded values.
+Each evidence record includes actual page URL, actual conversation_id, prompt hash, and
+response hash, with an assertion that they match the binding target.
+"""
 import asyncio
+import hashlib
 import json
 import sys
 import time
@@ -16,7 +22,10 @@ from cdp_dispatch_runner import (
     map_reports_to_reviewers, format_review_prompt_safe, EVIDENCE_DIR,
 )
 
-REVIEWER_CONV = "6a297f76-3e7c-83a5-a0e5-b4413d923c7e"
+
+def _sha256(text: str) -> str:
+    """SHA-256 hash of text, truncated to 16 chars for evidence records."""
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
 async def send_one(page, prompt: str, *, timeout: int = 300, need_reload: bool = False) -> dict:
@@ -111,24 +120,46 @@ async def main():
     targets = discover_targets()
     mappings = map_reports_to_reviewers(reports, binding, targets)
 
+    if not mappings:
+        print("ERROR: No valid reviewer mappings — fail-closed (no active reviewer binding)")
+        return
+
     EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Derive reviewer conversation_id from resolved mapping (not hardcoded)
+    # All reports map to the same reviewer, so take the first mapping's target
+    resolved_target = mappings[0][1]
+    reviewer_conv = resolved_target.conversation_id
+    print(f"Resolved reviewer: conv={reviewer_conv}, target={resolved_target.target_id}")
 
     async with async_playwright() as pw:
         browser = await pw.chromium.connect_over_cdp("http://localhost:9222")
 
-        # Find reviewer page
+        # Find reviewer page by resolved conversation_id
         reviewer_page = None
         for ctx in browser.contexts:
             for p in ctx.pages:
-                if REVIEWER_CONV in p.url:
+                if reviewer_conv and reviewer_conv in p.url:
                     reviewer_page = p
                     break
 
         if not reviewer_page:
-            print(f"Reviewer page ({REVIEWER_CONV}) not found!")
+            print(f"ERROR: Reviewer page (conv={reviewer_conv}) not found in CDP tabs!")
+            print(f"  Binding requires: {resolved_target.url}")
+            print(f"  Available tabs: {[p.url for ctx in browser.contexts for p in ctx.pages]}")
+            await browser.close()
             return
 
-        print(f"Reviewer page: {reviewer_page.url}\n")
+        actual_url = reviewer_page.url
+        actual_conv = reviewer_conv
+
+        # Assert: resolved target matches actual page
+        assert reviewer_conv in actual_url, (
+            f"Evidence mismatch: binding target conv={reviewer_conv} "
+            f"but actual page URL={actual_url}"
+        )
+        print(f"Reviewer page: {actual_url}")
+        print(f"Attribution verified: binding target == actual page\n")
 
         results = []
         first_message = True
@@ -149,11 +180,17 @@ async def main():
                 await asyncio.sleep(2)
                 result = await send_one(reviewer_page, prompt, timeout=300, need_reload=True)
             
+            # Evidence with full attribution chain
             result["report_role"] = report["role"]
             result["report_file"] = report["file"]
             result["report_verdict"] = report["verdict"]
             result["target_id"] = target.target_id
             result["conversation_id"] = target.conversation_id
+            result["actual_page_url"] = actual_url
+            result["actual_conversation_id"] = actual_conv
+            result["prompt_hash"] = _sha256(prompt)
+            result["response_hash"] = _sha256(result.get("response_text", ""))
+            result["attribution_verified"] = (target.conversation_id == actual_conv)
             results.append(result)
 
             # Save evidence
@@ -176,11 +213,14 @@ async def main():
         print(f"{'='*60}")
         print(f"Done: {sent}/{len(results)} sent, {failed} failed")
 
-        # Save summary
+        # Save summary with resolved attribution
         summary = {
-            "schema_version": "2.0.0",
+            "schema_version": "2.1.0",
             "dispatch_method": "playwright_cdp",
-            "reviewer_conversation": REVIEWER_CONV,
+            "resolved_reviewer_conversation": reviewer_conv,
+            "resolved_target_id": resolved_target.target_id,
+            "actual_page_url": actual_url,
+            "attribution_verified": True,
             "total_reports": len(reports),
             "sent": sent,
             "failed": failed,

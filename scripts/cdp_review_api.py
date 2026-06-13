@@ -82,12 +82,19 @@ def check_review_readiness(port: int = DEFAULT_CDP_PORT) -> dict:
         for r in reports
     ]
 
-    # Binding
+    # Binding — require active reviewer binding (fail-closed)
     try:
         binding = load_binding()
         active = sum(1 for b in binding.get("bindings", []) if b.get("binding_status") == "active")
+        reviewer_binding = any(
+            b.get("role") == "reviewer"
+            and b.get("binding_status") == "active"
+            and b.get("conversation_id")
+            for b in binding.get("bindings", [])
+        )
     except FileNotFoundError:
         active = 0
+        reviewer_binding = False
         issues.append("binding file not found")
 
     # CDP targets
@@ -95,11 +102,26 @@ def check_review_readiness(port: int = DEFAULT_CDP_PORT) -> dict:
     if not targets:
         issues.append("no live ChatGPT pages on CDP port")
 
+    # Verify reviewer binding matches a live target
+    if reviewer_binding and targets:
+        reviewer_conv = next(
+            (b["conversation_id"] for b in binding.get("bindings", [])
+             if b.get("role") == "reviewer" and b.get("binding_status") == "active"),
+            None,
+        )
+        target_match = any(t.conversation_id == reviewer_conv for t in targets)
+        if not target_match:
+            reviewer_binding = False
+            issues.append(f"reviewer binding conversation_id {reviewer_conv!r} not found in live CDP targets")
+    elif not reviewer_binding:
+        issues.append("no active reviewer binding — dispatch will fail-closed")
+
     return {
-        "ready": bool(reports) and bool(targets),
+        "ready": bool(reports) and bool(targets) and bool(reviewer_binding),
         "reports": report_info,
         "targets": len(targets),
         "binding_active": active,
+        "reviewer_binding": bool(reviewer_binding),
         "issues": issues,
     }
 
