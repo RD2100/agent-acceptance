@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "task_id": "CONTROLLED-MULTI-GPT-LIVE-SESSION-EVIDENCE-A1",
+  "task_id": "CONTROLLED-MULTI-GPT-EXECUTOR-BINDING-REPAIR-A1",
   "run_id": "controlled-multi-gpt-pilot-a1-20260613T061555Z",
   "agent_id": "agent-local-001",
   "role": "reviewer",
@@ -13,7 +13,7 @@
   "has_webSocketDebuggerUrl": true,
   "webSocketDebuggerUrl": "[REDACTED]",
   "cdp_endpoint": "http://localhost:9222",
-  "verified_at": "2026-06-13T06:28:28.129917Z",
+  "verified_at": "2026-06-13T06:36:04.258039Z",
   "live": true,
   "capture_policy": {
     "must_match_run_id": true,

@@ -1,73 +1,79 @@
-task_id: CONTROLLED-MULTI-GPT-LIVE-SESSION-EVIDENCE-A1
-title: "Controlled multi-GPT live session evidence"
+task_id: CONTROLLED-MULTI-GPT-EXECUTOR-BINDING-REPAIR-A1
+title: "Controlled multi-GPT executor binding repair"
 priority: P1
 status: completed
 type: governance_preflight
 mode: "@go"
 
 description: >
-  Record current live CDP evidence for the two bound pilot conversations while
-  keeping run-bound authorization pending and external runtime execution off.
+  Replace the unstable agent-pilot-beta ChatGPT conversation binding with a
+  real, current, independently captured executor conversation URL.
 
 write_set:
-  - "tasks/controlled-multi-gpt-live-session-evidence-a1.md"
+  - "tasks/controlled-multi-gpt-executor-binding-repair-a1.md"
   - ".ai/current-task.yaml"
-  - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+  - ".agent/CONVERSATION_BINDING.json"
+  - "_reports/controlled-multi-gpt-pilot-a1/executor-binding-repair/**"
   - "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/**"
   - "_reports/controlled-multi-gpt-pilot-a1/CDP_DISCOVERY_RECHECK.json"
+  - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
   - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_LATEST_CHECK.json"
-  - "_evidence/CONTROLLED-MULTI-GPT-LIVE-SESSION-EVIDENCE-A1/**"
+  - "_evidence/CONTROLLED-MULTI-GPT-EXECUTOR-BINDING-REPAIR-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Live session evidence changes the activation record used by multi-agent Gate 0."
+  trigger_reason: "Executor conversation binding repair changes multi-agent identity evidence."
   inventory_evidence:
     queried_sources:
-      - "docs/agent-runtime/production-readiness.md"
-      - "scripts/multi_agent_gate0_preflight.py"
+      - "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md"
+      - "docs/AGENT_WORKFLOW_STANDARD.md"
+      - "scripts/validate_conversation_registry.py"
       - "scripts/tab_target_resolver.py"
       - ".agent/CONVERSATION_BINDING.json"
-      - "_reports/controlled-multi-gpt-pilot-a1/AUTHORIZATION_REQUEST.json"
-      - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+      - "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-pilot-beta.json"
     matched_capabilities:
-      - run_bound_activation_record
-      - independent_session_evidence
+      - conversation_registry_binding
       - shared_cdp_tab_target_resolution
+      - independent_session_evidence
     compared_against_request:
-      - "advance toward controlled multi-GPT pilot"
-      - "record real live session evidence"
-      - "do not bypass human authorization"
+      - "make controlled pilot executable"
+      - "repair missing executor live session"
+      - "avoid fabricated binding metadata"
   rules_checked: [core-001, core-007, core-008, review-001]
   lessons_checked: [LL-independent-review-evidence, LL-structured-task-spec]
   sufficiency_decision: existing_partial
   decision: build_delta
   delta_justification: >
-    Existing Gate 0 can validate session evidence, but the current activation
-    record still contains stale false session fields.
+    Existing binding validates structurally but points to a conversation that is
+    not live; a real replacement URL must be captured from the browser session.
 
 conflict_registry:
   read_set:
-    - "docs/agent-runtime/production-readiness.md"
-    - "scripts/multi_agent_gate0_preflight.py"
+    - "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md"
+    - "docs/AGENT_WORKFLOW_STANDARD.md"
+    - "scripts/validate_conversation_registry.py"
     - "scripts/tab_target_resolver.py"
     - ".agent/CONVERSATION_BINDING.json"
-    - "_reports/controlled-multi-gpt-pilot-a1/AUTHORIZATION_REQUEST.json"
-    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+    - "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-pilot-beta.json"
   write_set:
-    - "tasks/controlled-multi-gpt-live-session-evidence-a1.md"
+    - "tasks/controlled-multi-gpt-executor-binding-repair-a1.md"
     - ".ai/current-task.yaml"
-    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+    - ".agent/CONVERSATION_BINDING.json"
+    - "_reports/controlled-multi-gpt-pilot-a1/executor-binding-repair/**"
     - "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/**"
     - "_reports/controlled-multi-gpt-pilot-a1/CDP_DISCOVERY_RECHECK.json"
+    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
     - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_LATEST_CHECK.json"
-    - "_evidence/CONTROLLED-MULTI-GPT-LIVE-SESSION-EVIDENCE-A1/**"
+    - "_evidence/CONTROLLED-MULTI-GPT-EXECUTOR-BINDING-REPAIR-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   protected_files_touched: false
   conflict_level: medium
+  governance_adjacent_files_modified:
+    - ".agent/CONVERSATION_BINDING.json"
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
-next_recommended: "Record run-bound human authorization before attempting controlled dispatch."
+next_recommended: "After executor binding is stable, record run-bound human authorization before controlled dispatch."

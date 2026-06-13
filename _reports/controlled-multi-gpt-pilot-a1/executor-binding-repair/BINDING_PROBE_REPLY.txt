@@ -1,0 +1,4 @@
+run_id: controlled-multi-gpt-pilot-a1-20260613T061555Z
+task_id: CONTROLLED-MULTI-GPT-EXECUTOR-BINDING-REPAIR-A1
+binding_probe: ok
+END_OF_GPT_RESPONSE_

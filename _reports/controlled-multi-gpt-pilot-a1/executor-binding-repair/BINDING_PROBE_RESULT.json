@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "CONTROLLED-MULTI-GPT-EXECUTOR-BINDING-REPAIR-A1",
+  "run_id": "controlled-multi-gpt-pilot-a1-20260613T061555Z",
+  "started_at": "2026-06-13T06:34:46.206378Z",
+  "cdp_url": "ws://127.0.0.1:9222/devtools/browser/[REDACTED]",
+  "external_runtime_executed": false,
+  "controlled_dispatch_executed": false,
+  "sent": true,
+  "captured": true,
+  "conversation_id": "6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
+  "chat_url": "https://chatgpt.com/c/6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
+  "errors": [],
+  "initial_url": "https://chatgpt.com/",
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "final_url": "https://chatgpt.com/c/6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
+  "completed_at": "2026-06-13T06:35:06.289841Z",
+  "reply_sha256": "90ecca2176ccae3f45343980c194fb0f7266ad7990568fb8c1d604df7b10d6f9"
+}

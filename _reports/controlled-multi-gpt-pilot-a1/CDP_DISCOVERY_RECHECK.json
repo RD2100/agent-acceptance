@@ -1,16 +1,13 @@
 {
-  "schema_version": "1.1.0",
-  "task_id": "CONTROLLED-MULTI-GPT-LIVE-SESSION-EVIDENCE-A1",
-  "generated_at": "2026-06-13T06:28:28.129917Z",
+  "schema_version": "1.2.0",
+  "task_id": "CONTROLLED-MULTI-GPT-EXECUTOR-BINDING-REPAIR-A1",
+  "generated_at": "2026-06-13T06:36:04.258039Z",
   "cdp_endpoint": "http://localhost:9222",
   "cdp_active": true,
+  "executor_binding_repaired": true,
+  "old_executor_conversation_id": "6a28d545-f918-83a5-b122-dc1503386374",
+  "new_executor_conversation_id": "6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
   "observed_chatgpt_pages": [
-    {
-      "title": "ChatGPT",
-      "url": "https://chatgpt.com/",
-      "target_id": "BAFCCB085052B6D9BEEB0D2A18C04486",
-      "has_webSocketDebuggerUrl": true
-    },
     {
       "title": "ChatGPT",
       "url": "https://chatgpt.com/",
@@ -21,6 +18,18 @@
       "title": "GPT编码计划与执行8",
       "url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
       "target_id": "9D535B770813D04425D7199D2B307E3B",
+      "has_webSocketDebuggerUrl": true
+    },
+    {
+      "title": "ChatGPT",
+      "url": "https://chatgpt.com/",
+      "target_id": "BAFCCB085052B6D9BEEB0D2A18C04486",
+      "has_webSocketDebuggerUrl": true
+    },
+    {
+      "title": "Executor binding repair",
+      "url": "https://chatgpt.com/c/6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
+      "target_id": "28308C06715671F5F6C2C610DEDC6628",
       "has_webSocketDebuggerUrl": true
     },
     {
@@ -49,13 +58,13 @@
     {
       "agent_id": "agent-pilot-beta",
       "role": "executor",
-      "conversation_id": "6a28d545-f918-83a5-b122-dc1503386374",
-      "url": "https://chatgpt.com/c/6a28d545-f918-83a5-b122-dc1503386374",
-      "observed_in_cdp": false,
-      "target_id": null,
-      "observed_url": null
+      "conversation_id": "6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
+      "url": "https://chatgpt.com/c/6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
+      "observed_in_cdp": true,
+      "target_id": "28308C06715671F5F6C2C610DEDC6628",
+      "observed_url": "https://chatgpt.com/c/6a2cfa0c-6d34-83ee-87b2-e06dede1f685"
     }
   ],
-  "verdict": "partial",
-  "next_action": "Create or open a stable executor conversation for agent-pilot-beta, then record run-bound human authorization."
+  "verdict": "live_sessions_ready_authorization_pending",
+  "next_action": "Record run-bound human authorization, then rerun Gate 0 and dispatch plan."
 }

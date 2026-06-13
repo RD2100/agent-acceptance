@@ -75,7 +75,9 @@
       "conversation_id": "6a26cc03-235c-83a2-a0fc-cd29be615959",
       "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
       "cdp_endpoint": "http://localhost:9222",
-      "allowed_task_scope": ["*"],
+      "allowed_task_scope": [
+        "*"
+      ],
       "capture_policy": {
         "must_match_run_id": true,
         "must_match_task_id": true,
@@ -87,15 +89,26 @@
       "agent_id": "agent-pilot-beta",
       "role": "executor",
       "binding_status": "active",
-      "conversation_id": "6a28d545-f918-83a5-b122-dc1503386374",
-      "chat_url": "https://chatgpt.com/c/6a28d545-f918-83a5-b122-dc1503386374",
+      "conversation_id": "6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
+      "chat_url": "https://chatgpt.com/c/6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
       "cdp_endpoint": "http://localhost:9222",
-      "allowed_task_scope": ["*"],
+      "allowed_task_scope": [
+        "*"
+      ],
       "capture_policy": {
         "must_match_run_id": true,
         "must_match_task_id": true,
         "must_include_end_marker": true,
         "forbid_last_message_only_capture": true
+      },
+      "binding_repair": {
+        "task_id": "CONTROLLED-MULTI-GPT-EXECUTOR-BINDING-REPAIR-A1",
+        "run_id": "controlled-multi-gpt-pilot-a1-20260613T061555Z",
+        "repaired_at": "2026-06-13T06:36:04.258039Z",
+        "old_conversation_id": "6a28d545-f918-83a5-b122-dc1503386374",
+        "old_chat_url": "https://chatgpt.com/c/6a28d545-f918-83a5-b122-dc1503386374",
+        "evidence_file": "_reports/controlled-multi-gpt-pilot-a1/executor-binding-repair/BINDING_PROBE_RESULT.json",
+        "reason": "previous bound conversation redirected to ChatGPT home and could not provide live CDP evidence"
       }
     }
   ]

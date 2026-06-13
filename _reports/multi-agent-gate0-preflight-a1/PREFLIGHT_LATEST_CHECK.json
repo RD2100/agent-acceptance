@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-13T06:28:38.999156Z",
+  "generated_at": "2026-06-13T06:36:14.934239Z",
   "overall": "HUMAN_REQUIRED",
   "executed_external_runtime": false,
   "human_gate_required": true,
@@ -61,14 +61,14 @@
     },
     {
       "name": "live_agent_sessions",
-      "status": "human_required",
-      "detail": "agent agent-pilot-beta lacks live CDP verification; agent agent-pilot-beta lacks session_id; agent agent-pilot-beta evidence does not prove live=true",
+      "status": "passed",
+      "detail": "all declared agents have current live session evidence",
       "evidence": "D:\\agent-acceptance\\_reports\\multi-agent-multi-gpt-pilot-a1\\ACTIVATION_RECORD.json"
     },
     {
       "name": "independent_session_ids",
-      "status": "human_required",
-      "detail": "at least two distinct verified session_id values are required",
+      "status": "passed",
+      "detail": "2 unique live session id(s)",
       "evidence": "D:\\agent-acceptance\\_reports\\multi-agent-multi-gpt-pilot-a1\\ACTIVATION_RECORD.json"
     }
   ]
