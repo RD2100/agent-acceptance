@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "status": "template_only",
+  "authorized": false,
+  "run_id": "controlled-multi-gpt-pilot-a1-20260613T061555Z",
+  "scope": "controlled_pilot",
+  "authorizing_task": "CONTROLLED-MULTI-GPT-PILOT-A1",
+  "exact_command": "CONTROLLED-MULTI-GPT-PILOT-A1 run_id=controlled-multi-gpt-pilot-a1-20260613T061555Z",
+  "expected_write_set": [
+    "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json",
+    "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json",
+    "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json",
+    "_reports/real-multi-gpt-pilot-a1/**",
+    "_evidence/CONTROLLED-MULTI-GPT-PILOT-A1/**"
+  ],
+  "decision_maker": "",
+  "decision_reason": "",
+  "approved_at": "",
+  "expires_at": "",
+  "risk_acknowledged": false,
+  "operator_authorization_sentence": "I authorize CONTROLLED-MULTI-GPT-PILOT-A1 for run_id controlled-multi-gpt-pilot-a1-20260613T061555Z, limited to updating the activation authorization record, regenerating Gate0/dispatch evidence, and running the controlled pilot within the listed write_set. I acknowledge the external-runtime and evidence-chain risks.",
+  "template_warning": "Do not use this file as authorization. Create HUMAN_AUTHORIZATION.json with authorized=true only after explicit human approval."
+}
