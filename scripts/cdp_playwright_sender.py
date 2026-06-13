@@ -11,6 +11,7 @@ import json
 import sys
 import time
 from pathlib import Path
+from urllib.parse import urlparse
 
 from playwright.async_api import async_playwright
 
@@ -19,13 +20,44 @@ sys.path.insert(0, str(REPO / "scripts"))
 
 from cdp_dispatch_runner import (
     discover_reports, load_binding, discover_targets,
-    map_reports_to_reviewers, format_review_prompt_safe, EVIDENCE_DIR,
+    map_reports_to_reviewers, format_review_prompt_safe, _detect_prompt_injection,
+    EVIDENCE_DIR,
 )
 
 
 def _sha256(text: str) -> str:
-    """SHA-256 hash of text, truncated to 16 chars for evidence records."""
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
+    """Return the full SHA-256 digest used by evidence records."""
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _conversation_id_from_url(url: str) -> str | None:
+    """Extract a conversation ID only from an exact ChatGPT conversation URL."""
+    parsed = urlparse(url)
+    if parsed.scheme != "https" or parsed.hostname not in {"chatgpt.com", "www.chatgpt.com"}:
+        return None
+    parts = [part for part in parsed.path.split("/") if part]
+    if len(parts) != 2 or parts[0] != "c":
+        return None
+    return parts[1] or None
+
+
+async def _actual_target_info(page) -> dict:
+    """Read actual target identity from the browser CDP session."""
+    session = await page.context.new_cdp_session(page)
+    try:
+        payload = await session.send("Target.getTargetInfo")
+    finally:
+        await session.detach()
+    return payload["targetInfo"]
+
+
+def _attribution_matches(expected_target, actual_target: dict) -> bool:
+    """Compare expected binding identity with browser-derived target identity."""
+    actual_conversation_id = _conversation_id_from_url(actual_target.get("url", ""))
+    return (
+        actual_target.get("targetId") == expected_target.target_id
+        and actual_conversation_id == expected_target.conversation_id
+    )
 
 
 async def send_one(page, prompt: str, *, timeout: int = 300, need_reload: bool = False) -> dict:
@@ -108,7 +140,7 @@ async def send_one(page, prompt: str, *, timeout: int = 300, need_reload: bool =
     }
 
 
-async def main():
+async def main() -> int:
     print("=== CDP Review Dispatch via Playwright ===\n")
 
     reports = discover_reports()
@@ -122,7 +154,7 @@ async def main():
 
     if not mappings:
         print("ERROR: No valid reviewer mappings — fail-closed (no active reviewer binding)")
-        return
+        return 1
 
     EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -136,34 +168,44 @@ async def main():
         browser = await pw.chromium.connect_over_cdp("http://localhost:9222")
 
         # Find reviewer page by resolved conversation_id
-        reviewer_page = None
-        for ctx in browser.contexts:
-            for p in ctx.pages:
-                if reviewer_conv and reviewer_conv in p.url:
-                    reviewer_page = p
-                    break
-
-        if not reviewer_page:
-            print(f"ERROR: Reviewer page (conv={reviewer_conv}) not found in CDP tabs!")
+        reviewer_pages = [
+            page
+            for context in browser.contexts
+            for page in context.pages
+            if _conversation_id_from_url(page.url) == reviewer_conv
+        ]
+        if len(reviewer_pages) != 1:
+            print(
+                f"ERROR: Expected exactly one reviewer page (conv={reviewer_conv}), "
+                f"found {len(reviewer_pages)}"
+            )
             print(f"  Binding requires: {resolved_target.url}")
             print(f"  Available tabs: {[p.url for ctx in browser.contexts for p in ctx.pages]}")
             await browser.close()
-            return
+            return 1
 
+        reviewer_page = reviewer_pages[0]
         actual_url = reviewer_page.url
-        actual_conv = reviewer_conv
-
-        # Assert: resolved target matches actual page
-        assert reviewer_conv in actual_url, (
-            f"Evidence mismatch: binding target conv={reviewer_conv} "
-            f"but actual page URL={actual_url}"
-        )
+        actual_target = await _actual_target_info(reviewer_page)
+        actual_url = actual_target.get("url", actual_url)
+        actual_conv = _conversation_id_from_url(actual_url)
+        actual_target_id = actual_target.get("targetId")
+        attribution_verified = _attribution_matches(resolved_target, actual_target)
+        if not attribution_verified:
+            print(
+                "ERROR: Evidence attribution mismatch: "
+                f"expected target={resolved_target.target_id}, conv={reviewer_conv}; "
+                f"actual target={actual_target_id}, conv={actual_conv}, url={actual_url}"
+            )
+            await browser.close()
+            return 1
         print(f"Reviewer page: {actual_url}")
         print(f"Attribution verified: binding target == actual page\n")
 
         results = []
         first_message = True
         for i, (report, target) in enumerate(mappings):
+            injection_flags = _detect_prompt_injection(report.get("content", ""))
             print(f"[{i+1}/{len(mappings)}] {report['role']} — {report['file']}")
             prompt = format_review_prompt_safe(report)
             print(f"  Prompt: {len(prompt)} chars")
@@ -172,10 +214,22 @@ async def main():
             need_reload = first_message
             first_message = False
             
-            result = await send_one(reviewer_page, prompt, timeout=300, need_reload=need_reload)
+            if injection_flags:
+                result = {
+                    "success": False,
+                    "sent": False,
+                    "error": "prompt injection indicators: " + ", ".join(injection_flags),
+                    "status": "BLOCKED_PROMPT_INJECTION",
+                    "injection_flags": injection_flags,
+                }
+                print(f"  BLOCKED: {result['error']}")
+            else:
+                result = await send_one(
+                    reviewer_page, prompt, timeout=300, need_reload=need_reload
+                )
             
             # Retry once with reload if failed
-            if not result.get("success"):
+            if not result.get("success") and result.get("status") != "BLOCKED_PROMPT_INJECTION":
                 print(f"  First attempt failed: {result.get('error')}. Retrying with reload...")
                 await asyncio.sleep(2)
                 result = await send_one(reviewer_page, prompt, timeout=300, need_reload=True)
@@ -186,11 +240,14 @@ async def main():
             result["report_verdict"] = report["verdict"]
             result["target_id"] = target.target_id
             result["conversation_id"] = target.conversation_id
+            result["expected_target_id"] = target.target_id
+            result["expected_conversation_id"] = target.conversation_id
+            result["actual_target_id"] = actual_target_id
             result["actual_page_url"] = actual_url
             result["actual_conversation_id"] = actual_conv
             result["prompt_hash"] = _sha256(prompt)
             result["response_hash"] = _sha256(result.get("response_text", ""))
-            result["attribution_verified"] = (target.conversation_id == actual_conv)
+            result["attribution_verified"] = attribution_verified
             results.append(result)
 
             # Save evidence
@@ -219,8 +276,10 @@ async def main():
             "dispatch_method": "playwright_cdp",
             "resolved_reviewer_conversation": reviewer_conv,
             "resolved_target_id": resolved_target.target_id,
+            "actual_target_id": actual_target_id,
+            "actual_conversation_id": actual_conv,
             "actual_page_url": actual_url,
-            "attribution_verified": True,
+            "attribution_verified": attribution_verified,
             "total_reports": len(reports),
             "sent": sent,
             "failed": failed,
@@ -232,7 +291,8 @@ async def main():
         print(f"Summary: {summary_file}")
 
         await browser.close()
+        return 0 if sent == len(results) and failed == 0 else 1
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    sys.exit(asyncio.run(main()))

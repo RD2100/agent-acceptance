@@ -48,6 +48,7 @@ from cdp_dispatch_runner import (
     discover_targets,
     load_binding,
     map_reports_to_reviewers,
+    resolve_reviewer_target,
     format_review_prompt_safe,
     EVIDENCE_DIR,
 )
@@ -83,6 +84,7 @@ def check_review_readiness(port: int = DEFAULT_CDP_PORT) -> dict:
     ]
 
     # Binding — require active reviewer binding (fail-closed)
+    binding = {"bindings": []}
     try:
         binding = load_binding()
         active = sum(1 for b in binding.get("bindings", []) if b.get("binding_status") == "active")
@@ -115,6 +117,11 @@ def check_review_readiness(port: int = DEFAULT_CDP_PORT) -> dict:
             issues.append(f"reviewer binding conversation_id {reviewer_conv!r} not found in live CDP targets")
     elif not reviewer_binding:
         issues.append("no active reviewer binding — dispatch will fail-closed")
+
+    reviewer_target, reviewer_error = resolve_reviewer_target(binding, targets)
+    reviewer_binding = reviewer_target is not None
+    if reviewer_error and not any(reviewer_error in issue for issue in issues):
+        issues.append(f"reviewer binding unavailable: {reviewer_error}")
 
     return {
         "ready": bool(reports) and bool(targets) and bool(reviewer_binding),
@@ -188,6 +195,16 @@ def send_for_review(
         }
 
     mappings = map_reports_to_reviewers(reports, binding, targets)
+    if not mappings:
+        _, reason = resolve_reviewer_target(binding, targets)
+        return {
+            "success": False,
+            "dispatched": 0,
+            "failed": len(reports),
+            "total": 0,
+            "results": [],
+            "error": f"Reviewer mapping unavailable: {reason}",
+        }
     evidence_path = Path(output_dir) if output_dir else EVIDENCE_DIR
 
     # Dispatch via async runner

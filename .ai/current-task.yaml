@@ -43,6 +43,7 @@ write_set:
   - "_evidence/hook-output/**"
   - "_evidence/CDP-DISPATCH/**"
   - "_evidence/CDP-REVIEW/**"
+  - "_evidence/CDP-REVIEW-SECURITY-REREVIEW-R1/**"
 
 gate_0:
   triggered: true
