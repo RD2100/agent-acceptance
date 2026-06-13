@@ -60,7 +60,7 @@ This replaces manual CLI invocation with programmatic calls, improving stability
 ## 2. Capability Registration
 
 **CAP-030: CDP Write Adapter** registered in `docs/agent-runtime/capability-inventory.md`:
-- Status: proposed
+- Status: verified (promoted from proposed on 2026-06-13 after live review cycle)
 - Passport: verified
 - Type: external_dependency (requires Chrome with CDP enabled)
 - Risk: high (browser automation, external protocol)
