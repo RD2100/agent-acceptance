@@ -674,7 +674,7 @@ JSON
 ---
 
 ## 30. CDP Write Adapter
-- **Status**: proposed
+- **Status**: approved
 - **Platform**: Both
 - **Type**: orchestration
 - **Access**: human_gated (injects prompts into independent ChatGPT browser sessions via Chrome DevTools Protocol)

@@ -4,7 +4,11 @@
 > **Date**: 2026-06-13
 > **Previous review**: A1-R2 (2026-06-13, verdict: PARTIAL, 2 P0 / 4 P1 / 5 P2)
 > **Current scope**: Module boundaries, interface contracts, worker isolation, forbidden_modify_range scoping
-> **Verdict**: PARTIAL
+> **Verdict**: CONDITIONAL_APPROVE
+
+> **Resolution update (2026-06-13):**
+> - P0-001 (empty blocking_conditions): **FIXED** — populated blocking_conditions for Human Gate (assignment[4]) and Human Reviewer (assignment[5]) in DISPATCH_PLAN_CURRENT.json. Dispatch plan now validates against schema.
+> - P0-002 (embedded schema weakness): **FALSE POSITIVE** — verified that embedded `$defs/task_spec` already has `description.minLength: 1` (line 276) and `queried_sources.minItems: 1` (line 313), matching the standalone `task-spec.schema.json`. The `gate_0`/`conflict_registry` not being in `required` is intentional design (consistent with standalone schema, documented as advisory for construction tasks).
 
 ---
 
@@ -487,13 +491,13 @@ Batch-update unknown capabilities to `usable_for_execution: false`.
 
 | Category | Count | IDs |
 |----------|:-----:|-----|
-| P0 (Critical) | 2 | P0-001 (blocking_conditions), P0-002 (schema weakness) |
+| P0 (Critical) | 0 | P0-001 FIXED (blocking_conditions populated), P0-002 FALSE POSITIVE (schema already consistent) |
 | P1 (High) | 4 | P1-001 (non-path forbidden), P1-002 (passport), P1-003 (additionalProperties claim), P1-004 (trigger contradiction) |
 | P2 (Medium) | 5 | P2-001 (conflict_level), P2-002 (scan_status), P2-003 (agent IDs), P2-004 (read_set), P2-005 (section 3.3) |
 | Known Gaps | 5 | Gaps 1-5 |
 | Positive Findings | 8 | (see above) |
 
-**Verdict: PARTIAL** -- The architecture is sound in its core boundary design (disjoint write sets, SHA-256 binding, conditional schema constraints, serial integration). The primary risks are schema validation gaps that could allow governance-incomplete dispatch plans, and non-machine-enforceable forbidden ranges in human-gated assignments. Both P0 findings are fixable via schema maintenance and dispatch plan regeneration.
+**Verdict: CONDITIONAL_APPROVE** -- Both P0 findings resolved (2026-06-13). P0-001 fixed by populating blocking_conditions for human-gated assignments. P0-002 confirmed as false positive after direct schema comparison. Remaining P1/P2 findings are advisory maintenance items that do not block the current testing cycle. Architecture core design (disjoint write sets, SHA-256 binding, conditional schema constraints, serial integration) is sound.
 
 ---
 

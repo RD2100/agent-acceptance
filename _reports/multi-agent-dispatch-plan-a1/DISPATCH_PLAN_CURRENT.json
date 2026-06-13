@@ -543,7 +543,11 @@
       ],
       "quality_standard": "P0/P1 zero; P2 documented with evidence; no external runtime execution.",
       "completion_standard": "Report includes verdict, changed files, tests run, artifacts, known gaps, and suggested review focus.",
-      "blocking_conditions": [],
+      "blocking_conditions": [
+        "CONVERSATION_BINDING.json validation fails or evidence insufficient",
+        "Binding evidence cannot be independently verified via CDP",
+        "Human gate not explicitly approved by operator"
+      ],
       "governance_record_requirements": [
         "Decision log must record source of binding evidence without secrets."
       ],
@@ -652,7 +656,11 @@
       ],
       "quality_standard": "P0/P1 zero; P2 documented with evidence; no external runtime execution.",
       "completion_standard": "Report includes verdict, changed files, tests run, artifacts, known gaps, and suggested review focus.",
-      "blocking_conditions": [],
+      "blocking_conditions": [
+        "CAP-029 approval not granted by human reviewer",
+        "Tool policy change required but not authorized",
+        "Reviewer identifies unacceptable risk in execution plan"
+      ],
       "governance_record_requirements": [
         "Decision log and risk register must record approval basis and limits."
       ],
