@@ -2,7 +2,7 @@
 
 ## Current Slice
 
-Task: extend Conversation Registry and pilot governance so `devframe-control-plane`, `dev-frame-opencode`, and `paper-workflow` are explicitly in scope while remaining human-gated.
+Task: controlled multi-agent pilot (second-wave) -- 3 parallel workers (Architecture-Reviewer, Verifier, Quality-Reviewer) have been dispatched under human-gated authorization and have reported results. Integration of findings into governance documentation is complete. Architecture review found 2 P0 findings requiring remediation before next formal dispatch; verifier passed 110/110; quality review found 0 P0 with 2 P1. Pilot overall status is PARTIAL pending architecture P0 remediation.
 
 ## Changed Areas
 
@@ -32,6 +32,11 @@ Task: extend Conversation Registry and pilot governance so `devframe-control-pla
 - `D:\writelab` diagnosis history now exposes a user-visible metadata-only handoff ZIP download action; latest evidence is `_reports/writelab-ui-handoff-download-a1/`.
 - `D:\writelab` diagnosis-history report cards now prevent Space-key default scrolling while preserving Enter/Space keyboard selection; latest evidence is `_reports/writelab-ui-keyboard-handoff-a1/`.
 - `agent-acceptance` now has a repeatable synthetic WriteLab handoff E2E probe at `scripts/probe_writelab_handoff_e2e.py`; latest evidence is `_reports/writelab-synthetic-e2e-a1/`.
+- Controlled multi-agent pilot (second-wave) dispatched 3 parallel workers under human-gated authorization on 2026-06-13.
+- Architecture review (second-wave) found 2 P0: TaskSpec markdown format vs JSON schema have diverged (13 field mismatches, `additionalProperties: false` causes protocol-documented fields to fail validation), and protected file path inconsistency (SADP section 0.2 references `docs/agent-runtime/rules/core.md` but actual file is `rules/core.md`). 4 P1 and 5 P2 also identified. 8 architecture strengths confirmed. Previous A1 review (2026-06-09) PASS findings remain valid.
+- Verifier (second-wave) passed: 110/110 tests (74 primary + 36 bonus probes), Gate0 CLI exit 0 overall=PASS 8/8 checks, `executed_external_runtime=false`, all execution guards confirmed (default HUMAN_REQUIRED, legacy/expired/unknown auth rejected, KNOWN_ISSUES correctly fails). No P0 or P1 findings.
+- Quality review (second-wave) found 0 P0, 2 P1 (hardcoded security_report static defaults in dispatch plan `_task_spec()`, unhandled FileNotFoundError in dispatch plan `_load_json`), 5 P2. Core fake-green resistance solid. Explicitly states "safe for human-gated operation."
+- Pilot integration status: 2 PARTIAL + 1 PASS. Architecture P0 findings require remediation before next formal dispatch.
 
 ## Do Not Claim Yet
 
@@ -53,6 +58,9 @@ Task: extend Conversation Registry and pilot governance so `devframe-control-pla
 - Do not treat the WriteLab UI download action as real-paper workflow approval. It only downloads the same metadata-only ZIP.
 - Do not treat the WriteLab synthetic E2E probe as real-paper pilot pass. It creates synthetic saved diagnosis metadata and validates the exported ZIP only.
 - Do not treat runtime governance rereview PASS as execution authorization. It only verifies that current gates block execution correctly.
+- Do not claim the controlled pilot passed overall. Architecture review found 2 P0 findings (TaskSpec format drift and protected file path inconsistency) requiring remediation before next formal dispatch.
+- Do not treat the verifier PASS (110/110) as evidence that all architecture concerns are resolved. Verifier confirms tests and execution guards; it does not override the architecture review's contract-drift and path-inconsistency P0 findings.
+- Do not treat quality review PARTIAL as a safety failure. It explicitly states "no P0 blocking findings" and "the system is safe for human-gated operation." The 2 P1 findings are code-quality issues in dispatch plan helpers, not governance bypasses.
 
 ## Verification Completed
 
@@ -476,3 +484,39 @@ git diff --check -- scripts\multi_agent_gate0_preflight.py tests\test_multi_agen
 ```
 
 Result: exit 0.
+
+Controlled multi-agent pilot (second-wave) verification:
+
+Artifacts:
+
+- `_reports/multi-agent-architecture-review-a1/ARCHITECTURE_REVIEW.md` -> PARTIAL, 2 P0, 4 P1, 5 P2, 8 architecture strengths.
+- `_reports/multi-agent-verifier-a1/VERIFY_REPORT.md` -> PASS, 110/110 (74 primary + 36 bonus), 0 failures.
+- `_reports/multi-agent-quality-review-a1/QUALITY_REVIEW.md` -> PARTIAL, 0 P0, 2 P1, 5 P2.
+
+Gate0 preflight (current state):
+
+```powershell
+python scripts\multi_agent_gate0_preflight.py
+```
+
+Result: exit 0, overall=PASS, 8/8 checks cleared, `executed_external_runtime=false`.
+
+Verifier execution guards:
+
+- Default mode: HUMAN_REQUIRED confirmed.
+- Legacy authorization: rejected.
+- Expired authorization: rejected.
+- Unknown authorization: rejected.
+- KNOWN_ISSUES with authorized execution: correctly fails overall.
+
+Architecture P0 findings requiring remediation:
+
+- P0-001: Dual-Format Interface Contract Drift -- TaskSpec markdown format vs JSON schema have diverged (13 field mismatches). `additionalProperties: false` in JSON schema means protocol-documented fields would fail validation.
+- P0-002: Protected File Path Inconsistency -- SADP section 0.2 references `docs/agent-runtime/rules/core.md` but actual file is at `rules/core.md`. An agent enforcing protected files would monitor the wrong path.
+
+Quality P1 findings (non-blocking):
+
+- P1-001: Hardcoded security_report values in dispatch plan `_task_spec()` look like scan evidence but are static defaults.
+- P1-002: Unhandled FileNotFoundError in dispatch plan `_load_json` (crashes on missing file instead of structured error).
+
+Pilot overall: 2 PARTIAL + 1 PASS. Architecture P0s pending remediation. System is safe for human-gated operation per quality review.
