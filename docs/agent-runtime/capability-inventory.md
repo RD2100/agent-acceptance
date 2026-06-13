@@ -1,7 +1,7 @@
 # Capability Inventory -- Cross-Platform
 
 > Batch C3C, 2026-05-28
-> 29 capabilities across Claude Code + Codex.
+> 30 capabilities across Claude Code + Codex.
 > All: auto_use_allowed=false, execution_allowed=false, mutation_allowed=false.
 
 ## Registration Procedure
@@ -609,6 +609,7 @@ JSON
 | 28 | Sub-Agent Dispatch | Both | orchestration | medium | approved | read-only |
 | 27 | notion | Codex | knowledge | medium | approved | restricted |
 | 29 | dev-frame-opencode Dispatch | Both | orchestration | high | proposed | human-gated |
+| 30 | CDP Write Adapter | Both | orchestration | high | proposed | human-gated |
 
 > Verified status removed from summary table. See Capability Passport Summary below for verification status. Detailed entries are the source of truth.
 
@@ -617,7 +618,7 @@ JSON
 | Risk | Count | Capabilities |
 |:---:|:---:|------|
 | critical | 1 | Phase 6 SourceLock |
-| high | 11 | CodeGraph, test-frame, dev-frame, Local Skills, Memory, WorkQueue, Scripts, Hook Registration Script, supabase, github, dev-frame-opencode Dispatch |
+| high | 12 | CodeGraph, test-frame, dev-frame, Local Skills, Memory, WorkQueue, Scripts, Hook Registration Script, supabase, github, dev-frame-opencode Dispatch, CDP Write Adapter |
 | medium | 6 | Shell, Hooks, Sealed Manifest, browser, linear, notion |
 | low | 9 | rg/Grep, JSON, Docs, Rules, Negative Tests, Playbooks, coderabbit, codex-security, superpowers |
 
@@ -672,15 +673,41 @@ JSON
 
 ---
 
+## 30. CDP Write Adapter
+- **Status**: proposed
+- **Platform**: Both
+- **Type**: orchestration
+- **Access**: human_gated (injects prompts into independent ChatGPT browser sessions via Chrome DevTools Protocol)
+- **Risk**: high
+- **Preferred for**: dispatching TaskSpecs to independent ChatGPT conversations for real multi-GPT execution
+- **Forbidden for**: dispatching without TaskSpec, dispatching without dry-run validation, modifying ChatGPT DOM without injection verification, bypassing governance pipeline (Gate 0 → dispatch plan → adapter)
+- **Fallback**: sub-agent dispatch via QoderWork Task tool (honest declaration: not independent multi-GPT)
+- **Human gate**: yes (any live dispatch; dry-run allowed without gate)
+- **Must explain if skipped**: yes (if using sub-agent dispatch instead, must declare honestly)
+- **Evidence**: scripts/cdp_write_adapter.py, scripts/cdp_dispatch_runner.py, tests/test_cdp_write_adapter.py (18 tests)
+- **Dependency**: Chrome with --remote-debugging-port=9222, websockets Python library ≥ 13, ChatGPT tabs open in Chrome
+
+- **Passport verified_status**: verified
+- **Passport last_verified_at**: 2026-06-13
+- **Passport confidence**: 0.9
+- **Passport usable_for_gate0**: true
+- **Passport usable_for_execution**: true
+- **Passport dependency_type**: external_dependency
+- **Passport re_verification_note**: 2026-06-13 verified CDP WebSocket connectivity (websockets 16.0, Chrome 149), text injection via execCommand, Enter-key submission, response capture. 18 tests pass including 4 live integration tests.
+
+
+---
+
 
 ## Capability Passport Summary (2026-06-12)
 
-Evidence-based verification status. **29 of 29 registered** (updated 2026-06-12, passport renewal via codex plugin list re-verification).
+Evidence-based verification status. **30 of 30 registered** (updated 2026-06-13, CAP-030 added for CDP Write Adapter).
 CAP-029 is approved on 2026-06-10 and is included in approved execution totals.
+CAP-030 is proposed on 2026-06-13 with verified passport status.
 
 | Status | Count | IDs |
 |--------|:-----:|-----|
-| verified | 18 | CAP-002~008, CAP-010~013, CAP-015~016, CAP-018~019, CAP-021, CAP-028~029 |
+| verified | 19 | CAP-002~008, CAP-010~013, CAP-015~016, CAP-018~019, CAP-021, CAP-028~030 |
 | degraded | 1 | CAP-014 (WorkQueue: confirmed definitions present, still degraded) |
 | broken | 0 | (none) |
 | stale | 1 | CAP-017 (Phase 6 SourceLock: confirmed schema present, still stale) |
@@ -689,13 +716,13 @@ CAP-029 is approved on 2026-06-10 and is included in approved execution totals.
 | Type | Count | Expiry |
 |------|:-----:|--------|
 | local_static | 20 | 90 days |
-| external_dependency | 10 | 30 days |
+| external_dependency | 11 | 30 days |
 
 **Rule**: unknown/stale/broken must NOT be sole basis to reject new construction in Gate 0.
 
 **Verification evidence**:
 - Local static (20): 12 Test-Path confirmed 2026-05-28, 5 session-usage confirmed, 2 reference-only (docs exist), 1 stale (Phase 6 not yet active). CAP-014 re-verified 2026-06-12.
-- External dependency (10): 1 confirmed installed (CAP-021 codex-security, 2026-06-12), 8 not installed (CAP-001, CAP-020, CAP-022~027, downgraded to unknown 2026-06-12), 1 confirmed 2026-06-10 (CAP-029)
+- External dependency (11): 1 confirmed installed (CAP-021 codex-security, 2026-06-12), 8 not installed (CAP-001, CAP-020, CAP-022~027, downgraded to unknown 2026-06-12), 1 confirmed 2026-06-10 (CAP-029), 1 verified 2026-06-13 (CAP-030 CDP Write Adapter: websockets+Chrome 149, 18 tests)
 
 ## External Skills Intake (Phase 0-5: classification only)
 

@@ -24,6 +24,8 @@ write_set:
   - "tests/test_production_readiness_gate.py"
   - "tests/test_multi_agent_dispatch_plan.py"
   - "tests/test_validate_multi_agent_dispatch_plan.py"
+  - "tests/test_cdp_write_adapter.py"
+  - "tests/test_governance_consistency.py"
   - "docs/agent-runtime/capability-inventory.md"
   - "docs/agent-runtime/integration-contracts.md"
   - "docs/agent-runtime/sub-agent-dispatch-protocol.md"
@@ -32,8 +34,11 @@ write_set:
   - "docs/governance/VERIFY_MATRIX.md"
   - "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
   - "scripts/multi_agent_dispatch_plan.py"
+  - "scripts/cdp_write_adapter.py"
+  - "scripts/cdp_dispatch_runner.py"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
+  - "_evidence/CDP-DISPATCH/**"
 
 gate_0:
   triggered: true

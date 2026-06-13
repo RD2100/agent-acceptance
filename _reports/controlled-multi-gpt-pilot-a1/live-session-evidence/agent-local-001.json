@@ -9,11 +9,11 @@
   "session_id": "cdp:9D535B770813D04425D7199D2B307E3B",
   "target_id": "9D535B770813D04425D7199D2B307E3B",
   "target_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
-  "target_title": "GPT\u7f16\u7801\u8ba1\u5212\u4e0e\u6267\u884c8",
+  "target_title": "GPT编码计划与执行8",
   "has_webSocketDebuggerUrl": true,
   "webSocketDebuggerUrl": "[REDACTED]",
   "cdp_endpoint": "http://localhost:9222",
-  "verified_at": "2026-06-13T10:35:29.662672Z",
+  "verified_at": "2026-06-13T11:52:44.181Z",
   "live": true,
   "capture_policy": {
     "must_match_run_id": true,

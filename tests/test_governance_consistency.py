@@ -113,9 +113,10 @@ class TestCapabilityPassportConsistency:
         for e in entries:
             if e.get("dependency_type") == "external_dependency":
                 if e.get("status") == "verified":
-                    # Only CAP-021 (codex-security, confirmed installed) and
-                    # CAP-029 (verified 2026-06-10) should be verified
-                    assert e["id"] in ("CAP-021", "CAP-029"), (
+                    # Only CAP-021 (codex-security, confirmed installed),
+                    # CAP-029 (verified 2026-06-10), and CAP-030 (CDP Write Adapter,
+                    # verified 2026-06-13) should be verified
+                    assert e["id"] in ("CAP-021", "CAP-029", "CAP-030"), (
                         f"{e['id']} ({e['name']}) is external_dependency with verified "
                         f"status but not confirmed installed (RR-001)"
                     )

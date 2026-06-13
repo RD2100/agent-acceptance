@@ -610,6 +610,28 @@ Task involves code files (.ps1/.py)?
 
 **Failure fallback:** If dispatch times out twice, execute task directly as Codex goal agent and note in ExecutionReport.
 
+### 4.4b CDP Write Adapter (Multi-GPT Dispatch)
+
+For real multi-GPT execution where workers must run in **independent ChatGPT sessions**, use the CDP Write Adapter:
+
+```
+scripts/cdp_write_adapter.py   — low-level CDP WebSocket client
+scripts/cdp_dispatch_runner.py — orchestration: plan → adapter → evidence
+```
+
+**Dispatch flow:**
+1. `cdp_dispatch_runner.py status` — verify plan READY, binding active, CDP live
+2. `cdp_dispatch_runner.py dry-run` — validate all connections without sending
+3. `cdp_dispatch_runner.py run --wave parallel` — inject TaskSpecs into ChatGPT tabs
+
+**Requirements:**
+- Chrome with `--remote-debugging-port=9222` (see `multi_cdp_launcher.py`)
+- Python `websockets` library ≥ 13 (Chrome 149+ rejects synchronous `websocket-client`)
+- At least one open `chatgpt.com/c/<conversation-id>` tab per worker
+- CAP-030 registered in capability-inventory.md
+
+**Honesty rule:** When using sub-agent dispatch (QoderWork Task tool) instead of CDP Write, the dispatch report must honestly declare that workers share a single session. The CDP adapter provides real independent multi-GPT execution.
+
 ### 4.5 WorkQueue (Task Dispatch Queue)
 
 Agent WorkQueue (`D:\agent-acceptance\agent-workqueue`) provides tier-graded task management:

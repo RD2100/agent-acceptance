@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-13T18:41:46.0144358+08:00",
+    "generated":  "2026-06-13T19:54:59.3069938+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "5F355E8D4FC1DF34627264AB41E20499C39CA3FDF3F1FEFCEDB364EA6ADB40BD",
@@ -84,7 +84,7 @@
                              "path":  "docs/agent-runtime/capability-fallback-policy.md"
                          },
                          {
-                             "sha256":  "254052ABCA15B42CB8727CFA85E8DFD0D008D33B00B89D569E2CB7E68444DBB0",
+                             "sha256":  "55E59EC43B35C62D25077C335815E446091D9463213B9B81893434F14B034297",
                              "path":  "docs/agent-runtime/capability-inventory.md"
                          },
                          {
@@ -464,7 +464,7 @@
                              "path":  "docs/agent-runtime/stride-threat-model.md"
                          },
                          {
-                             "sha256":  "8300653B5444066E5C2CC8D4E46D5D6CD2CCA7253F6094882BE43D2FFFCFE32F",
+                             "sha256":  "DF030AA6B53E015A5E407E99B0A19FE87FE04C3C2F3F22BC303822F3E66BC110",
                              "path":  "docs/agent-runtime/sub-agent-dispatch-protocol.md"
                          },
                          {
