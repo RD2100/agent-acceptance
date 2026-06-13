@@ -49,7 +49,7 @@ This review audits the following scripts, schemas, and test files for safety, er
 | `D:\agent-acceptance\tests\test_validate_multi_agent_dispatch_plan.py` | 9 | Current plan validation, schema drift, write conflict replay, external runtime claim, malformed JSON |
 | `D:\agent-acceptance\tests\test_cross_repo_execution_guards.py` | 14 | Default human-required, auth required, legacy auth rejection, expired auth, known-issue fake-green, timeouts, missing cwd |
 
-**Total: 68 tests reviewed across 5 test files.**
+**Total: 68 tests executed via pytest across 5 test files.**
 
 ---
 

@@ -7,7 +7,9 @@
 | **Dispatch Plan** | multi-agent-dispatch-plan-a1 |
 | **Generated At** | 2026-06-13T10:03:37Z |
 | **Environment** | Windows, Python 3.10.11, pytest 9.0.3 |
-| **Verdict** | **PASS** |
+| **Verdict** | **CONDITIONAL** |
+
+> **Note:** `test_smoke_suite.py` listed in dispatch plan `required_verification_commands` was not executed in this cycle. PASS applies only to the executed subset (79 tests across 3 modules). Full verification requires executing the smoke suite.
 
 ---
 

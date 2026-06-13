@@ -609,7 +609,7 @@ JSON
 | 28 | Sub-Agent Dispatch | Both | orchestration | medium | approved | read-only |
 | 27 | notion | Codex | knowledge | medium | approved | restricted |
 | 29 | dev-frame-opencode Dispatch | Both | orchestration | high | proposed | human-gated |
-| 30 | CDP Write Adapter | Both | orchestration | high | proposed | human-gated |
+| 30 | CDP Write Adapter | Both | orchestration | high | verified | human-gated |
 
 > Verified status removed from summary table. See Capability Passport Summary below for verification status. Detailed entries are the source of truth.
 
@@ -703,7 +703,7 @@ JSON
 
 Evidence-based verification status. **30 of 30 registered** (updated 2026-06-13, CAP-030 added for CDP Write Adapter).
 CAP-029 is approved on 2026-06-10 and is included in approved execution totals.
-CAP-030 is proposed on 2026-06-13 with verified passport status.
+CAP-030 is verified on 2026-06-13 after successful live multi-GPT review cycle (4 reports dispatched via Playwright CDP, 4 CONDITIONAL_APPROVE responses received).
 
 | Status | Count | IDs |
 |--------|:-----:|-----|

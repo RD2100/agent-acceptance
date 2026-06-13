@@ -1,0 +1,40 @@
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_synthetic_example_no_real_paper returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_docs_paper_workflow_acceptance_exists
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_docs_paper_workflow_acceptance_exists returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_schema_exists_and_valid
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_schema_exists_and_valid returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_no_real_paper_in_deliverables
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_no_real_paper_in_deliverables returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_schema_task_type_conditional_requirements
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_schema_task_type_conditional_requirements returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/test_paper_acceptance_contracts.py::test_synthetic_evidence_pack_validates_against_schema
+  C:\Users\RD\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/test_paper_acceptance_contracts.py::test_synthetic_evidence_pack_validates_against_schema returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_multi_agent_gate0_preflight.py::test_current_repo_preflight_requires_fresh_authorization_and_live_sessions
+FAILED tests/test_multi_agent_gate0_preflight.py::test_cli_output_writes_same_schema_valid_report
+=========== 2 failed, 1372 passed, 23 warnings in 78.48s (0:01:18) ============

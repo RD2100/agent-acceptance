@@ -80,6 +80,12 @@ REPORT_SOURCES = [
         "file": "QUALITY_REVIEW.md",
         "review_type": "quality",
     },
+    {
+        "role": "CDP-Execution",
+        "dir": REPO / "_reports" / "multi-agent-cdp-execution-layer-a1",
+        "file": "CDP_EXECUTION_REPORT.md",
+        "review_type": "execution_layer",
+    },
 ]
 
 

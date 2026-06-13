@@ -1,0 +1,44 @@
+{
+  "schema_validation": [
+    {
+      "schema": "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json",
+      "document": "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json",
+      "result": "FAIL",
+      "error": "[] should be non-empty\n\nFailed validating 'minItems' in schema['properties']['assignments']['items']['properties']['blocking_conditions']:\n    {'type': 'array', 'minItems': 1, 'items': {'type': 'strin"
+    }
+  ],
+  "file_hashes": {
+    "scripts/cdp_write_adapter.py": {
+      "sha256": "281d8c389f3c54633bd091151dcb50d99feb35300182d5590fd7dae278e6455a",
+      "size": 23147
+    },
+    "scripts/cdp_dispatch_runner.py": {
+      "sha256": "cf5d840747a80c1e69c333971b792a30a18754a564b6f9191c803ff72943bb4f",
+      "size": 19267
+    },
+    "scripts/cdp_review_api.py": {
+      "sha256": "9462f2c52fe7f07ce8c85af0d59bd888199219e435bc412a9570b0dd8ed880b2",
+      "size": 8649
+    },
+    "tests/test_cdp_write_adapter.py": {
+      "sha256": "a07f313b7b37ebb0ac21e658fdaca731d92c3d9d657c0622e51a902984062e8f",
+      "size": 19796
+    },
+    "tests/test_governance_consistency.py": {
+      "sha256": "9605995fb969904e56bde6518627bb299403800672183eea14b5f949a079e9d7",
+      "size": 13424
+    },
+    "docs/agent-runtime/capability-inventory.md": {
+      "sha256": "55e59ec43b35c62d25077c335815e446091d9463213b9b81893434f14b034297",
+      "size": 37312
+    },
+    "docs/agent-runtime/sub-agent-dispatch-protocol.md": {
+      "sha256": "df030aa6b53e015a5e407e99b0a19fe87fe04c3c2f3f22bc303822f3e66bc110",
+      "size": 29802
+    },
+    ".ai/current-task.yaml": {
+      "sha256": "420b68e655627936b370cda709e10a03fcfe109ecca085dbaeff7dc207f875e0",
+      "size": 3760
+    }
+  }
+}

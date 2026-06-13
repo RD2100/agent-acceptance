@@ -1,0 +1,199 @@
+=== git status --short ===
+ M .ai/current-task.yaml
+ M _evidence/hook-output/latest.json
+ M scripts/cdp_dispatch_runner.py
+?? "Created\357\200\272"
+?? _evidence/CDP-REVIEW/
+?? _evidence/EVIDENCE-CHAIN-ARCHIVE/
+?? _evidence/GOVERNANCE-CLOSURE-ARTIFACTS-R1/
+?? _evidence/GOVERNANCE-CLOSURE-R2/
+?? _evidence/GOVERNANCE-CLOSURE-R3/
+?? _evidence/GOVERNANCE-CLOSURE-R4/
+?? _evidence/GOVERNANCE-CONSOLIDATION-CORRECTION-R1/
+?? _evidence/GOVERNANCE-FINAL-CLOSURE-R1/
+?? _evidence/hook-output/ai-guard-20260612-222342.txt
+?? _evidence/hook-output/ai-guard-20260612-222743.txt
+?? _evidence/hook-output/ai-guard-20260612-222819.txt
+?? _evidence/hook-output/ai-guard-20260612-222849.txt
+?? _evidence/hook-output/ai-guard-20260612-222916.txt
+?? _evidence/hook-output/ai-guard-20260612-224309.txt
+?? _evidence/hook-output/ai-guard-20260612-225508.txt
+?? _evidence/hook-output/ai-guard-20260612-230153.txt
+?? _evidence/hook-output/ai-guard-20260612-230815.txt
+?? _evidence/hook-output/ai-guard-20260612-230913.txt
+?? _evidence/hook-output/ai-guard-20260612-230957.txt
+?? _evidence/hook-output/ai-guard-20260612-231041.txt
+?? _evidence/hook-output/ai-guard-20260612-231116.txt
+?? _evidence/hook-output/ai-guard-20260612-231844.txt
+?? _evidence/hook-output/ai-guard-20260612-233053.txt
+?? _evidence/hook-output/ai-guard-20260612-233644.txt
+?? _evidence/hook-output/ai-guard-20260612-235106.txt
+?? _evidence/hook-output/ai-guard-20260613-093024.txt
+?? _evidence/hook-output/ai-guard-20260613-093109.txt
+?? _evidence/hook-output/ai-guard-20260613-093145.txt
+?? _evidence/hook-output/ai-guard-20260613-093220.txt
+?? _evidence/hook-output/ai-guard-20260613-100420.txt
+?? _evidence/hook-output/ai-guard-20260613-101306.txt
+?? _evidence/hook-output/ai-guard-20260613-102102.txt
+?? _evidence/hook-output/ai-guard-20260613-104323.txt
+?? _evidence/hook-output/ai-guard-20260613-104352.txt
+?? _evidence/hook-output/ai-guard-20260613-130646.txt
+?? _evidence/hook-output/ai-guard-20260613-141038.txt
+?? _evidence/hook-output/ai-guard-20260613-142008.txt
+?? _evidence/hook-output/ai-guard-20260613-142944.txt
+?? _evidence/hook-output/ai-guard-20260613-143738.txt
+?? _evidence/hook-output/ai-guard-20260613-144210.txt
+?? _evidence/hook-output/ai-guard-20260613-175429.txt
+?? _evidence/hook-output/ai-guard-20260613-181435.txt
+?? _evidence/hook-output/ai-guard-20260613-181502.txt
+?? _evidence/hook-output/ai-guard-20260613-183646.txt
+?? _evidence/hook-output/ai-guard-20260613-184144.txt
+?? _evidence/hook-output/ai-guard-20260613-195425.txt
+?? _evidence/hook-output/ai-guard-20260613-195456.txt
+?? _evidence/hook-output/ai-guard-20260613-200945.txt
+?? _evidence/hook-output/ai-guard-20260613-202100.txt
+?? _evidence/hook-output/conversation-health-20260612-222342.txt
+?? _evidence/hook-output/conversation-health-20260612-222743.txt
+?? _evidence/hook-output/conversation-health-20260612-224309.txt
+?? _evidence/hook-output/conversation-health-20260612-225508.txt
+?? _evidence/hook-output/conversation-health-20260612-230153.txt
+?? _evidence/hook-output/conversation-health-20260612-230815.txt
+?? _evidence/hook-output/conversation-health-20260612-230913.txt
+?? _evidence/hook-output/conversation-health-20260612-230957.txt
+?? _evidence/hook-output/conversation-health-20260612-231041.txt
+?? _evidence/hook-output/conversation-health-20260612-231116.txt
+?? _evidence/hook-output/conversation-health-20260612-231844.txt
+?? _evidence/hook-output/conversation-health-20260612-233053.txt
+?? _evidence/hook-output/conversation-health-20260612-233644.txt
+?? _evidence/hook-output/conversation-health-20260612-235106.txt
+?? _evidence/hook-output/conversation-health-20260613-093220.txt
+?? _evidence/hook-output/conversation-health-20260613-100420.txt
+?? _evidence/hook-output/conversation-health-20260613-101306.txt
+?? _evidence/hook-output/conversation-health-20260613-102102.txt
+?? _evidence/hook-output/conversation-health-20260613-104352.txt
+?? _evidence/hook-output/conversation-health-20260613-130646.txt
+?? _evidence/hook-output/conversation-health-20260613-141038.txt
+?? _evidence/hook-output/conversation-health-20260613-142008.txt
+?? _evidence/hook-output/conversation-health-20260613-142944.txt
+?? _evidence/hook-output/conversation-health-20260613-143738.txt
+?? _evidence/hook-output/conversation-health-20260613-144210.txt
+?? _evidence/hook-output/conversation-health-20260613-175429.txt
+?? _evidence/hook-output/conversation-health-20260613-181502.txt
+?? _evidence/hook-output/conversation-health-20260613-184144.txt
+?? _evidence/hook-output/conversation-health-20260613-195456.txt
+?? _evidence/hook-output/conversation-health-20260613-200945.txt
+?? _evidence/hook-output/conversation-health-20260613-202100.txt
+?? _evidence/hook-output/sadp-audit-20260612-222342.txt
+?? _evidence/hook-output/sadp-audit-20260612-222743.txt
+?? _evidence/hook-output/sadp-audit-20260612-222819.txt
+?? _evidence/hook-output/sadp-audit-20260612-222849.txt
+?? _evidence/hook-output/sadp-audit-20260612-222916.txt
+?? _evidence/hook-output/sadp-audit-20260612-224309.txt
+?? _evidence/hook-output/sadp-audit-20260612-225508.txt
+?? _evidence/hook-output/sadp-audit-20260612-230153.txt
+?? _evidence/hook-output/sadp-audit-20260612-230815.txt
+?? _evidence/hook-output/sadp-audit-20260612-230913.txt
+?? _evidence/hook-output/sadp-audit-20260612-230957.txt
+?? _evidence/hook-output/sadp-audit-20260612-231041.txt
+?? _evidence/hook-output/sadp-audit-20260612-231116.txt
+?? _evidence/hook-output/sadp-audit-20260612-231844.txt
+?? _evidence/hook-output/sadp-audit-20260612-233053.txt
+?? _evidence/hook-output/sadp-audit-20260612-233644.txt
+?? _evidence/hook-output/sadp-audit-20260612-235106.txt
+?? _evidence/hook-output/sadp-audit-20260613-093024.txt
+?? _evidence/hook-output/sadp-audit-20260613-093109.txt
+?? _evidence/hook-output/sadp-audit-20260613-093145.txt
+?? _evidence/hook-output/sadp-audit-20260613-093220.txt
+?? _evidence/hook-output/sadp-audit-20260613-100420.txt
+?? _evidence/hook-output/sadp-audit-20260613-101306.txt
+?? _evidence/hook-output/sadp-audit-20260613-102102.txt
+?? _evidence/hook-output/sadp-audit-20260613-104323.txt
+?? _evidence/hook-output/sadp-audit-20260613-104352.txt
+?? _evidence/hook-output/sadp-audit-20260613-130646.txt
+?? _evidence/hook-output/sadp-audit-20260613-141038.txt
+?? _evidence/hook-output/sadp-audit-20260613-142008.txt
+?? _evidence/hook-output/sadp-audit-20260613-142944.txt
+?? _evidence/hook-output/sadp-audit-20260613-143738.txt
+?? _evidence/hook-output/sadp-audit-20260613-144210.txt
+?? _evidence/hook-output/sadp-audit-20260613-175429.txt
+?? _evidence/hook-output/sadp-audit-20260613-181435.txt
+?? _evidence/hook-output/sadp-audit-20260613-181502.txt
+?? _evidence/hook-output/sadp-audit-20260613-183646.txt
+?? _evidence/hook-output/sadp-audit-20260613-184144.txt
+?? _evidence/hook-output/sadp-audit-20260613-195425.txt
+?? _evidence/hook-output/sadp-audit-20260613-195456.txt
+?? _evidence/hook-output/sadp-audit-20260613-200945.txt
+?? _evidence/hook-output/sadp-audit-20260613-202100.txt
+?? _evidence/hook-output/test-governance-20260612-222342.txt
+?? _evidence/hook-output/test-governance-20260612-222743.txt
+?? _evidence/hook-output/test-governance-20260612-224309.txt
+?? _evidence/hook-output/test-governance-20260612-225508.txt
+?? _evidence/hook-output/test-governance-20260612-230153.txt
+?? _evidence/hook-output/test-governance-20260612-230815.txt
+?? _evidence/hook-output/test-governance-20260612-230913.txt
+?? _evidence/hook-output/test-governance-20260612-230957.txt
+?? _evidence/hook-output/test-governance-20260612-231041.txt
+?? _evidence/hook-output/test-governance-20260612-231116.txt
+?? _evidence/hook-output/test-governance-20260612-231844.txt
+?? _evidence/hook-output/test-governance-20260612-233053.txt
+?? _evidence/hook-output/test-governance-20260612-233644.txt
+?? _evidence/hook-output/test-governance-20260612-235106.txt
+?? _evidence/hook-output/test-governance-20260613-093220.txt
+?? _evidence/hook-output/test-governance-20260613-100420.txt
+?? _evidence/hook-output/test-governance-20260613-101306.txt
+?? _evidence/hook-output/test-governance-20260613-102102.txt
+?? _evidence/hook-output/test-governance-20260613-104352.txt
+?? _evidence/hook-output/test-governance-20260613-130646.txt
+?? _evidence/hook-output/test-governance-20260613-141038.txt
+?? _evidence/hook-output/test-governance-20260613-142008.txt
+?? _evidence/hook-output/test-governance-20260613-142944.txt
+?? _evidence/hook-output/test-governance-20260613-143738.txt
+?? _evidence/hook-output/test-governance-20260613-144210.txt
+?? _evidence/hook-output/test-governance-20260613-175429.txt
+?? _evidence/hook-output/test-governance-20260613-181502.txt
+?? _evidence/hook-output/test-governance-20260613-184144.txt
+?? _evidence/hook-output/test-governance-20260613-195456.txt
+?? _evidence/hook-output/test-governance-20260613-200945.txt
+?? _evidence/hook-output/test-governance-20260613-202100.txt
+?? _reports/multi-agent-cdp-execution-layer-a1/
+?? _reports/multi-agent-gate0-preflight-a1/VERIFY_GATE0-SNAPSHOT.json
+?? scripts/_debug_send.py
+?? scripts/_debug_send2.py
+?? scripts/_debug_send3.py
+?? scripts/_debug_send4.py
+?? scripts/_debug_send5.py
+?? scripts/cdp_playwright_sender.py
+?? tasks/evidence-chain-archive.md
+?? tasks/governance-closure-artifacts-r1.md
+?? tasks/governance-closure-r2.md
+?? tasks/governance-closure-r3.md
+?? tasks/governance-closure-r4.md
+?? tasks/governance-consolidation-correction-r1.md
+?? tasks/governance-final-closure-r1.md
+
+=== git log --oneline -10 ===
+4a4d03b4 add agent-facing CDP review API: programmatic report dispatch for agents
+50025ad6 reframe CDP runner: from task dispatch to report review delivery
+3a460771 add CDP Write Adapter: real multi-GPT dispatch via Chrome DevTools Protocol
+e96ad03e remediation + governance integration: all P0/P1 resolved, docs synchronized
+b33f4218 controlled pilot dispatch: 3 workers executed, independent review CONDITIONAL_PASS
+519a4446 authorize controlled multi-GPT pilot: Gate0 PASS, dispatch READY
+6b6ff35f chore: refresh controlled pilot authorization packet
+cda82e75 chore: repair controlled pilot executor binding
+0b8b149c chore: record controlled pilot session evidence
+0ab2b90e chore: add controlled pilot launch packet
+
+=== git diff --stat HEAD~3..HEAD ===
+ .ai/current-task.yaml                              |   7 +
+ .../live-session-evidence/agent-local-001.json     |   4 +-
+ .../live-session-evidence/agent-pilot-beta.json    |   2 +-
+ .../ACTIVATION_RECORD.json                         |   4 +-
+ docs/agent-runtime/capability-inventory.md         |  39 +-
+ docs/agent-runtime/sub-agent-dispatch-protocol.md  |  22 +
+ hooks/sealed-files-manifest.json                   |   6 +-
+ scripts/cdp_dispatch_runner.py                     | 545 +++++++++++++++++
+ scripts/cdp_review_api.py                          | 284 +++++++++
+ scripts/cdp_write_adapter.py                       | 645 +++++++++++++++++++++
+ tests/test_cdp_write_adapter.py                    | 515 ++++++++++++++++
+ tests/test_governance_consistency.py               |   7 +-
+ 12 files changed, 2063 insertions(+), 17 deletions(-)
