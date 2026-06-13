@@ -1,0 +1,31 @@
+CDP-LIVE-TRANSPORT-CLOSURE-R1 real-path probe
+observed_at=2026-06-13T23:15:13Z
+
+Pre-fix failures:
+- Playwright connect_over_cdp(http://localhost:9222) requested /json/version/ and received HTTP 400.
+- websockets 16 page connection inherited proxy discovery and returned "did not receive a valid HTTP response".
+- Playwright browser.close() closed the shared Chrome pages.
+
+Post-fix page CDP probe:
+- target_id=9C03F71D8E8FEB64024915511317EE04
+- url=https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e
+- page_ready=true
+- prompt_input_present=true
+- editable=true
+- verdict=PASS
+
+Post-fix Playwright browser probe:
+- browser_endpoint_source=http://localhost:9222/json/version
+- connect_over_cdp=true
+- shared_chrome_pages_before=3
+- shared_chrome_pages_after=3
+- verdict=PASS
+
+Authorized write probe:
+- run_id=controlled-multi-gpt-pilot-a1-20260613T061555Z
+- target_id=F4E7A168536757C0B66D3AE9C58F442A
+- conversation_id=6a2de378-9278-83ee-91c3-47571f5a2bbf
+- response=EXECUTOR_SESSION_READY run_id=controlled-multi-gpt-pilot-a1-20260613T061555Z END_MARKER
+- sent=true
+- attribution captured from Target.getTargetInfo
+- verdict=PASS

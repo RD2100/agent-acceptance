@@ -43,6 +43,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import inspect
 import json
 import sys
 import time
@@ -157,7 +158,16 @@ class CDPClient:
 
     async def connect(self) -> None:
         from websockets.asyncio.client import connect as ws_connect
-        self._ws = await ws_connect(self._ws_url, open_timeout=self._timeout)
+        # CDP is a loopback control channel. websockets 16 enables proxy
+        # auto-discovery by default, which can route ws://localhost through an
+        # HTTP proxy and break the WebSocket handshake.
+        kwargs: dict[str, Any] = {"open_timeout": self._timeout}
+        # Proxy auto-discovery was added after the repository's minimum
+        # websockets version. Older versions don't accept the proxy keyword
+        # and also don't need this opt-out.
+        if "proxy" in inspect.signature(ws_connect).parameters:
+            kwargs["proxy"] = None
+        self._ws = await ws_connect(self._ws_url, **kwargs)
 
     async def close(self) -> None:
         if self._ws:

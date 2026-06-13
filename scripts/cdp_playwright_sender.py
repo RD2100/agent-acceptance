@@ -10,6 +10,7 @@ import hashlib
 import json
 import sys
 import time
+import urllib.request
 from pathlib import Path
 
 from playwright.async_api import async_playwright
@@ -28,6 +29,21 @@ from cdp_write_adapter import _conversation_id_from_url
 def _sha256(text: str) -> str:
     """Return the full SHA-256 digest used by evidence records."""
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _resolve_browser_cdp_endpoint(endpoint: str = "http://localhost:9222") -> str:
+    """Resolve an HTTP CDP endpoint to its browser WebSocket URL."""
+    if endpoint.startswith(("ws://", "wss://")):
+        return endpoint
+
+    version_url = f"{endpoint.rstrip('/')}/json/version"
+    with urllib.request.urlopen(version_url, timeout=5) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+
+    ws_url = payload.get("webSocketDebuggerUrl")
+    if not isinstance(ws_url, str) or not ws_url.startswith(("ws://", "wss://")):
+        raise RuntimeError("CDP /json/version did not provide a browser WebSocket URL")
+    return ws_url
 
 
 async def _actual_target_info(page) -> dict:
@@ -161,7 +177,7 @@ async def main() -> int:
     print(f"Resolved reviewer: conv={reviewer_conv}, target={resolved_target.target_id}")
 
     async with async_playwright() as pw:
-        browser = await pw.chromium.connect_over_cdp("http://localhost:9222")
+        browser = await pw.chromium.connect_over_cdp(_resolve_browser_cdp_endpoint())
 
         # Find reviewer page by resolved conversation_id
         reviewer_pages = [
@@ -177,7 +193,6 @@ async def main() -> int:
             )
             print(f"  Binding requires: {resolved_target.url}")
             print(f"  Available tabs: {[p.url for ctx in browser.contexts for p in ctx.pages]}")
-            await browser.close()
             return 1
 
         reviewer_page = reviewer_pages[0]
@@ -193,7 +208,6 @@ async def main() -> int:
                 f"expected target={resolved_target.target_id}, conv={reviewer_conv}; "
                 f"actual target={actual_target_id}, conv={actual_conv}, url={actual_url}"
             )
-            await browser.close()
             return 1
         print(f"Reviewer page: {actual_url}")
         print(f"Attribution verified: binding target == actual page\n")
@@ -286,7 +300,9 @@ async def main() -> int:
         summary_file.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"Summary: {summary_file}")
 
-        await browser.close()
+        # This Browser is attached to the user-owned shared Chrome instance.
+        # Exiting async_playwright() disconnects this client; browser.close()
+        # would close the shared runtime and every project tab.
         return 0 if sent == len(results) and failed == 0 else 1
 
 

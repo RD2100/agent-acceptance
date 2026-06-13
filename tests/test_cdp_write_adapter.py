@@ -13,6 +13,7 @@ import json
 import sys
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -136,6 +137,117 @@ class TestCDPPage:
         })
         with patch.object(adapter, "_list_cdp_pages", return_value=[legitimate, spoofed]):
             assert adapter._find_chatgpt_pages() == [legitimate]
+
+
+class TestCDPTransport:
+    def test_page_websocket_disables_proxy_auto_discovery(self):
+        websocket = object()
+        calls = []
+
+        async def connect(uri, *, open_timeout, proxy):
+            calls.append((uri, open_timeout, proxy))
+            return websocket
+
+        client = adapter.CDPClient("ws://localhost:9222/devtools/page/ABC", timeout=7)
+
+        with patch("websockets.asyncio.client.connect", connect):
+            asyncio.run(client.connect())
+
+        assert client._ws is websocket
+        assert calls == [("ws://localhost:9222/devtools/page/ABC", 7, None)]
+
+    def test_page_websocket_keeps_legacy_websockets_compatibility(self):
+        websocket = object()
+        calls = []
+
+        async def legacy_connect(uri, *, open_timeout):
+            calls.append((uri, open_timeout))
+            return websocket
+
+        client = adapter.CDPClient("ws://localhost:9222/devtools/page/ABC", timeout=7)
+        with patch("websockets.asyncio.client.connect", legacy_connect):
+            asyncio.run(client.connect())
+
+        assert client._ws is websocket
+        assert calls == [("ws://localhost:9222/devtools/page/ABC", 7)]
+
+    def test_playwright_endpoint_uses_json_version_browser_websocket(self):
+        from cdp_playwright_sender import _resolve_browser_cdp_endpoint
+
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps({
+            "webSocketDebuggerUrl": "ws://localhost:9222/devtools/browser/BROWSER",
+        }).encode("utf-8")
+
+        with patch("urllib.request.urlopen", return_value=response) as urlopen:
+            endpoint = _resolve_browser_cdp_endpoint("http://localhost:9222/")
+
+        assert endpoint == "ws://localhost:9222/devtools/browser/BROWSER"
+        urlopen.assert_called_once_with("http://localhost:9222/json/version", timeout=5)
+
+    def test_playwright_endpoint_rejects_missing_browser_websocket(self):
+        from cdp_playwright_sender import _resolve_browser_cdp_endpoint
+
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = b"{}"
+
+        with patch("urllib.request.urlopen", return_value=response):
+            with pytest.raises(RuntimeError, match="browser WebSocket URL"):
+                _resolve_browser_cdp_endpoint()
+
+    def test_sender_never_closes_the_shared_browser(self, tmp_path):
+        import cdp_playwright_sender as sender
+
+        report = {
+            "role": "Verifier",
+            "file": "VERIFY_REPORT.md",
+            "verdict": "PASS",
+            "content": "clean",
+            "content_length": 5,
+        }
+        target = SimpleNamespace(
+            target_id="TARGET1",
+            conversation_id="reviewer",
+            url="https://chatgpt.com/c/reviewer",
+        )
+        page = SimpleNamespace(url=target.url)
+        browser = SimpleNamespace(
+            contexts=[SimpleNamespace(pages=[page])],
+            close=AsyncMock(),
+        )
+        chromium = SimpleNamespace(connect_over_cdp=AsyncMock(return_value=browser))
+        playwright = SimpleNamespace(chromium=chromium)
+
+        class PlaywrightContext:
+            async def __aenter__(self):
+                return playwright
+
+            async def __aexit__(self, exc_type, exc, traceback):
+                return False
+
+        send_result = {
+            "success": True,
+            "sent": True,
+            "response_text": "PASS",
+            "response_time_seconds": 1,
+        }
+        with patch.object(sender, "discover_reports", return_value=[report]), \
+             patch.object(sender, "load_binding", return_value={"bindings": []}), \
+             patch.object(sender, "discover_targets", return_value=[target]), \
+             patch.object(sender, "map_reports_to_reviewers", return_value=[(report, target)]), \
+             patch.object(sender, "format_review_prompt_safe", return_value="prompt"), \
+             patch.object(sender, "_detect_prompt_injection", return_value=[]), \
+             patch.object(sender, "_resolve_browser_cdp_endpoint", return_value="ws://browser"), \
+             patch.object(sender, "_actual_target_info", new=AsyncMock(return_value={
+                 "targetId": target.target_id,
+                 "url": target.url,
+             })), \
+             patch.object(sender, "send_one", new=AsyncMock(return_value=send_result)), \
+             patch.object(sender, "async_playwright", return_value=PlaywrightContext()), \
+             patch.object(sender, "EVIDENCE_DIR", tmp_path):
+            assert asyncio.run(sender.main()) == 0
+
+        browser.close.assert_not_awaited()
 
 
 # ── InjectionResult / DispatchResult ─────────────────────────────────

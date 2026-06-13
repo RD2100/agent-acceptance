@@ -1,78 +1,67 @@
-task_id: CDP-REVIEW-SECURITY-FINALIZE-R1
-title: "Finalize CDP review security closure"
+task_id: CDP-LIVE-TRANSPORT-CLOSURE-R1
+title: "Repair real shared-CDP transport paths"
 priority: P1
 status: completed
-type: security_governance
+type: runtime_repair
 mode: "@go"
 
 description: >
-  Persist independent reviewer evidence, reconcile exact test and risk
-  statements, and create a scoped commit for the completed CDP security fix.
+  Repair page WebSocket proxy handling and Playwright browser endpoint
+  discovery after failures reproduced against the authorized shared Chrome.
 
 write_set:
   - ".ai/current-task.yaml"
   - "scripts/cdp_write_adapter.py"
-  - "scripts/cdp_review_api.py"
   - "scripts/cdp_playwright_sender.py"
   - "tests/test_cdp_write_adapter.py"
-  - "_reports/SECURITY-HARDENING-REPORT-20260613.md"
-  - "_evidence/CDP-REVIEW-SECURITY-REREVIEW-R1/EXECUTION_REPORT.md"
-  - "_evidence/CDP-REVIEW-SECURITY-CLOSURE-R2/**"
-  - "_evidence/CDP-REVIEW-SECURITY-FINALIZE-R1/**"
-  - "tasks/cdp-review-security-rereview-r1.md"
-  - "tasks/cdp-review-security-closure-r2.md"
-  - "tasks/cdp-review-security-finalize-r1.md"
+  - "tasks/cdp-live-transport-closure-r1.md"
+  - "_evidence/CDP-LIVE-TRANSPORT-CLOSURE-R1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Finalize P1 security closure with independent reviewer artifacts."
+  trigger_reason: "P1 real-path CDP transport failures."
   inventory_evidence:
     queried_sources:
-      - "tasks/cdp-review-security-closure-r2.md"
-      - "_evidence/CDP-REVIEW-SECURITY-CLOSURE-R2/EXECUTION_REPORT.md"
-      - "_evidence/CDP-REVIEW-SECURITY-CLOSURE-R2/REVIEWER_INDEX.md"
+      - "scripts/cdp_write_adapter.py"
+      - "scripts/cdp_playwright_sender.py"
+      - "tests/test_cdp_write_adapter.py"
     matched_capabilities:
-      - independent_security_review
-      - cdp_target_resolution
-      - evidence_integrity
-  rules_checked: [core-004, core-008, review-001]
+      - shared_cdp_transport
+      - playwright_cdp_sender
+      - controlled_pilot_runtime
+  rules_checked: [core-004, core-008, sec-002, review-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "No new capability; persist review and exact final status."
+  delta_justification: "Repair existing transports only."
 
 conflict_registry:
   read_set:
     - "scripts/cdp_write_adapter.py"
-    - "scripts/cdp_review_api.py"
     - "scripts/cdp_playwright_sender.py"
     - "tests/test_cdp_write_adapter.py"
   write_set:
     - ".ai/current-task.yaml"
     - "scripts/cdp_write_adapter.py"
-    - "scripts/cdp_review_api.py"
     - "scripts/cdp_playwright_sender.py"
     - "tests/test_cdp_write_adapter.py"
-    - "_reports/SECURITY-HARDENING-REPORT-20260613.md"
-    - "_evidence/CDP-REVIEW-SECURITY-REREVIEW-R1/EXECUTION_REPORT.md"
-    - "_evidence/CDP-REVIEW-SECURITY-CLOSURE-R2/**"
-    - "_evidence/CDP-REVIEW-SECURITY-FINALIZE-R1/**"
-    - "tasks/cdp-review-security-rereview-r1.md"
-    - "tasks/cdp-review-security-closure-r2.md"
-    - "tasks/cdp-review-security-finalize-r1.md"
+    - "tasks/cdp-live-transport-closure-r1.md"
+    - "_evidence/CDP-LIVE-TRANSPORT-CLOSURE-R1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   protected_files_touched: false
   conflict_level: low
 
 acceptance_criteria:
-  - "Independent review artifacts identify the reviewer and reviewed inputs."
-  - "No unresolved P0 or P1 finding remains."
-  - "Reports state exact tests, gaps, and residual risk."
-  - "Only scoped files are staged and committed."
-  - "Commit-time governance hooks pass."
+  - "Page CDP WebSocket bypasses system proxy discovery."
+  - "Playwright resolves the browser WebSocket endpoint from /json/version."
+  - "Unit regressions cover both failures."
+  - "Both transports pass a real shared-Chrome read probe."
+  - "Playwright teardown leaves the user-owned shared Chrome and tabs running."
+  - "Targeted and canonical test outcomes are recorded exactly."
 
-external_runtime_execution_authorized: false
+external_runtime_execution_authorized: true
+authorization_evidence: "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION.json"
 paper_workflow_status: paused
-next_recommended: "Refresh authorized live sessions and rerun Gate 0 after the scoped security commit."
+next_recommended: "Bind the verified executor conversation and refresh Gate 0 with real session evidence."
