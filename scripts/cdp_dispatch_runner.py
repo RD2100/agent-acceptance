@@ -1,37 +1,35 @@
 #!/usr/bin/env python3
-"""CDP Dispatch Runner — execute a dispatch plan via CDP Write Adapter.
+"""CDP Review Dispatcher — send agent reports to independent GPT sessions for review.
 
-Reads the current dispatch plan and conversation binding, discovers
-live CDP targets, maps workers to ChatGPT sessions, and dispatches
-TaskSpecs through the CDP Write Adapter.
+Agent (QoderWork / Codex) executes tasks and produces structured reports.
+This runner delivers those reports to independent ChatGPT sessions via CDP,
+requesting independent review opinions.
 
-This is the **orchestration** layer that sits between the governance
-pipeline (Gate 0 → dispatch plan) and the low-level CDP adapter.
+The ChatGPT sessions are **review seats**, not execution seats.  They receive
+completed reports, assess findings independently, and return review opinions.
 
 Usage
 -----
 ::
 
-  # dry-run: validate all connections without sending
+  # check: are reports ready? are GPT sessions live?
+  python cdp_dispatch_runner.py status
+
+  # dry-run: validate connections without sending
   python cdp_dispatch_runner.py dry-run
 
-  # execute parallel-safe assignments (wave 1)
-  python cdp_dispatch_runner.py run --wave parallel
+  # send all reports to reviewer GPT sessions
+  python cdp_dispatch_runner.py run
 
-  # execute a single assignment to a specific page
-  python cdp_dispatch_runner.py run --assignment Architecture-Reviewer --page-id 9C03F
+  # send a specific report to a specific page
+  python cdp_dispatch_runner.py run --report ARCHITECTURE_REVIEW.md --page-id 9C03F
 
-  # full run with evidence output
-  python cdp_dispatch_runner.py run --wave parallel --output-dir _evidence/CDP-DISPATCH/
-
-Design
-------
+Flow
+----
 ::
 
-  DISPATCH_PLAN_CURRENT.json ──┐
-  CONVERSATION_BINDING.json ───┤
-                               ├─► cdp_dispatch_runner ──► cdp_write_adapter ──► Chrome
-  localhost:9222/json ─────────┘
+  Agent produces reports ──► cdp_dispatch_runner ──► cdp_write_adapter ──► ChatGPT (review)
+       (local execution)         (this script)          (CDP inject)         (independent opinion)
 """
 from __future__ import annotations
 
@@ -59,23 +57,33 @@ from cdp_write_adapter import (
 )
 
 REPO = Path(__file__).resolve().parent.parent
-DISPATCH_PLAN_PATH = REPO / "_reports" / "multi-agent-dispatch-plan-a1" / "DISPATCH_PLAN_CURRENT.json"
 BINDING_PATH = REPO / ".agent" / "CONVERSATION_BINDING.json"
-EVIDENCE_DIR = REPO / "_evidence" / "CDP-DISPATCH"
+EVIDENCE_DIR = REPO / "_evidence" / "CDP-REVIEW"
+
+# Known report directories produced by the agent pipeline
+REPORT_SOURCES = [
+    {
+        "role": "Architecture-Reviewer",
+        "dir": REPO / "_reports" / "multi-agent-architecture-review-a1",
+        "file": "ARCHITECTURE_REVIEW.md",
+        "review_type": "architecture",
+    },
+    {
+        "role": "Verifier",
+        "dir": REPO / "_reports" / "multi-agent-verifier-a1",
+        "file": "VERIFY_REPORT.md",
+        "review_type": "verification",
+    },
+    {
+        "role": "Quality-Reviewer",
+        "dir": REPO / "_reports" / "multi-agent-quality-review-a1",
+        "file": "QUALITY_REVIEW.md",
+        "review_type": "quality",
+    },
+]
 
 
-# ── Plan loading ──────────────────────────────────────────────────────
-
-
-def load_dispatch_plan() -> dict:
-    """Load the current dispatch plan."""
-    if not DISPATCH_PLAN_PATH.exists():
-        # Try alternative name
-        alt = DISPATCH_PLAN_PATH.parent / "DISPATCH_PLAN.json"
-        if alt.exists():
-            return json.loads(alt.read_text(encoding="utf-8"))
-        raise FileNotFoundError(f"Dispatch plan not found: {DISPATCH_PLAN_PATH}")
-    return json.loads(DISPATCH_PLAN_PATH.read_text(encoding="utf-8"))
+# ── Report loading ────────────────────────────────────────────────────
 
 
 def load_binding() -> dict:
@@ -85,24 +93,43 @@ def load_binding() -> dict:
     return json.loads(BINDING_PATH.read_text(encoding="utf-8"))
 
 
-def get_parallel_assignments(plan: dict) -> list[dict]:
-    """Extract parallel-safe assignments from the dispatch plan."""
-    return [
-        a for a in plan.get("assignments", [])
-        if a.get("parallel_safe", False) and a.get("task_spec", {}).get("status") == "ready"
-    ]
+def discover_reports() -> list[dict]:
+    """Discover existing worker reports available for review.
+
+    Returns a list of report metadata dicts with:
+      role, file, path, review_type, content, content_length, verdict
+    """
+    found = []
+    for src in REPORT_SOURCES:
+        report_path = src["dir"] / src["file"]
+        if not report_path.exists():
+            continue
+        content = report_path.read_text(encoding="utf-8")
+        # Extract verdict from first few lines (common pattern: "## Verdict: PASS")
+        verdict = "unknown"
+        for line in content.split("\n")[:20]:
+            lower = line.lower()
+            if "verdict" in lower:
+                if "pass" in lower:
+                    verdict = "PASS"
+                elif "fail" in lower:
+                    verdict = "FAIL"
+                elif "partial" in lower or "conditional" in lower:
+                    verdict = "CONDITIONAL"
+                break
+        found.append({
+            "role": src["role"],
+            "file": src["file"],
+            "path": str(report_path.relative_to(REPO)),
+            "review_type": src["review_type"],
+            "content": content,
+            "content_length": len(content),
+            "verdict": verdict,
+        })
+    return found
 
 
-def get_serial_assignments(plan: dict) -> list[dict]:
-    """Extract serial (non-parallel) assignments that are not completed."""
-    return [
-        a for a in plan.get("assignments", [])
-        if not a.get("parallel_safe", False)
-        and a.get("task_spec", {}).get("status") not in ("completed", "deferred")
-    ]
-
-
-# ── Target mapping ────────────────────────────────────────────────────
+# ── Target discovery and mapping ──────────────────────────────────────
 
 
 def discover_targets(port: int = DEFAULT_CDP_PORT) -> list[CDPPage]:
@@ -110,147 +137,105 @@ def discover_targets(port: int = DEFAULT_CDP_PORT) -> list[CDPPage]:
     return _find_chatgpt_pages(port)
 
 
-def map_workers_to_targets(
-    assignments: list[dict],
+def map_reports_to_reviewers(
+    reports: list[dict],
     binding: dict,
     targets: list[CDPPage],
 ) -> list[tuple[dict, CDPPage]]:
-    """Map worker assignments to CDP targets.
+    """Map worker reports to reviewer GPT sessions.
 
-    Strategy:
-    1. Try to match by conversation_id from binding.
-    2. Fall back to role-based mapping (reviewer → first tab, executor → second).
-    3. If more workers than targets, assign round-robin.
+    All reports go to the **reviewer** session (first ChatGPT tab)
+    by default.  The reviewer session is the independent audit seat
+    that assesses agent-produced reports.
+
+    If a second session (executor) is available, verification reports
+    can optionally be routed there for cross-check.
     """
-    bindings_by_role = {}
+    if not targets:
+        return []
+
+    # Find reviewer target (primary review seat)
+    reviewer_target = targets[0]  # first tab = reviewer
+
+    # Try to match by binding
     for b in binding.get("bindings", []):
-        bindings_by_role[b.get("role", "")] = b
-
-    # Build a lookup from conversation_id to target
-    targets_by_conv = {}
-    for t in targets:
-        if t.conversation_id:
-            targets_by_conv[t.conversation_id] = t
-
-    # Role → preferred agent mapping
-    role_to_agent = {
-        "reviewer": "agent-local-001",
-        "executor": "agent-pilot-beta",
-    }
-
-    mapped: list[tuple[dict, CDPPage]] = []
-    used_targets: set[str] = set()
-
-    for assignment in assignments:
-        role = assignment.get("worker_role", "").lower()
-        target = None
-
-        # Strategy 1: match by binding conversation_id
-        agent_id = role_to_agent.get(role, "")
-        if agent_id:
-            for b in binding.get("bindings", []):
-                if b.get("agent_id") == agent_id:
-                    conv_id = b.get("conversation_id", "")
-                    target = targets_by_conv.get(conv_id)
+        if b.get("role") == "reviewer":
+            conv_id = b.get("conversation_id", "")
+            for t in targets:
+                if t.conversation_id == conv_id:
+                    reviewer_target = t
                     break
 
-        # Strategy 2: role-based fallback
-        if target is None and targets:
-            available = [t for t in targets if t.target_id not in used_targets]
-            if not available:
-                available = targets  # reuse if all used
-            if "review" in role:
-                target = available[0]
-            elif "verif" in role or "quality" in role or "execut" in role:
-                target = available[min(1, len(available) - 1)]
-            else:
-                target = available[0]
-
-        if target:
-            mapped.append((assignment, target))
-            used_targets.add(target.target_id)
-
-    return mapped
+    # Map all reports to reviewer session
+    mappings = [(r, reviewer_target) for r in reports]
+    return mappings
 
 
-# ── Prompt formatting ─────────────────────────────────────────────────
+# ── Review prompt formatting ──────────────────────────────────────────
 
 
-def format_taskspec_prompt(assignment: dict) -> str:
-    """Convert a dispatch assignment into a prompt suitable for ChatGPT.
+MAX_PROMPT_CHARS = 6000  # ChatGPT web can handle much more, but keep reasonable
 
-    Keeps the prompt concise (< 4000 chars) to stay within ChatGPT's
-    input limits while providing all essential task context.
+
+def format_review_prompt(report: dict) -> str:
+    """Format a worker report as a review request for GPT.
+
+    The prompt asks the GPT to independently assess the agent's report,
+    NOT to execute tasks.  It requests a structured review opinion.
     """
-    ts = assignment.get("task_spec", {})
-    role = assignment.get("worker_role", "Worker")
-    task_id = ts.get("task_id", "unknown")
-    title = ts.get("title", assignment.get("target", ""))
-    description = ts.get("description", "")
-    priority = ts.get("priority", "P2")
+    role = report["role"]
+    review_type = report["review_type"]
+    verdict = report["verdict"]
+    content = report["content"]
 
-    # Build structured prompt
-    parts = [
-        f"# Task: {title}",
-        f"**Task ID**: {task_id}",
-        f"**Role**: {role}",
-        f"**Priority**: {priority}",
-        "",
-        "## Description",
-        description,
-        "",
-        "## Target",
-        assignment.get("target", ""),
-        "",
-        "## Scope",
-        f"- **Allowed**: {', '.join(assignment.get('allowed_modify_range', []))}",
-        f"- **Forbidden**: {', '.join(assignment.get('forbidden_modify_range', []))}",
-        "",
-        "## Quality Standard",
-        assignment.get("quality_standard", ""),
-        "",
-        "## Completion Standard",
-        assignment.get("completion_standard", ""),
-        "",
-        "## Blocking Conditions",
-    ]
-    for bc in assignment.get("blocking_conditions", []):
-        parts.append(f"- {bc}")
+    # Truncate long reports to fit prompt limit
+    if len(content) > MAX_PROMPT_CHARS:
+        # Keep the beginning (usually has verdict + summary) and a tail
+        head = content[:MAX_PROMPT_CHARS - 500]
+        tail_note = f"\n\n... [report truncated, {report['content_length']} chars total] ..."
+        content = head + tail_note
 
-    # Add verification commands if present
-    ver_cmds = assignment.get("required_verification_commands", [])
-    if ver_cmds:
-        parts.append("")
-        parts.append("## Required Verification")
-        for cmd in ver_cmds:
-            parts.append(f"```")
-            parts.append(cmd)
-            parts.append(f"```")
+    prompt = f"""# Independent Review Request
 
-    # Add assumptions
-    assumptions = ts.get("assumptions", [])
-    if assumptions:
-        parts.append("")
-        parts.append("## Assumptions")
-        for a in assumptions:
-            parts.append(f"- {a}")
+**Report**: {report['file']}
+**Agent role**: {role}
+**Review type**: {review_type}
+**Agent verdict**: {verdict}
 
-    parts.append("")
-    parts.append("## Instructions")
-    parts.append(
-        "Execute this task within the current repository. "
-        "Produce a structured report with: verdict, changed files, "
-        "tests run, artifacts produced, known gaps, and suggested review focus. "
-        "Do not execute external runtimes or modify files outside the allowed range."
-    )
+---
 
-    return "\n".join(parts)
+## Your task as independent reviewer
+
+You are an independent reviewer. The report below was produced by an agent.
+Please provide your independent assessment:
+
+1. **Verdict agreement** — Do you agree with the agent's verdict ({verdict})? Why or why not?
+2. **Evidence sufficiency** — Is the evidence provided sufficient to support the conclusions?
+3. **Gap identification** — Are there obvious gaps, missing checks, or unstated assumptions?
+4. **Risk flags** — Any P0/P1 concerns the agent may have missed?
+5. **Overall assessment** — APPROVE / CONDITIONAL_APPROVE / REJECT with reasoning.
+
+---
+
+## Agent Report
+
+{content}
+"""
+    return prompt
 
 
-# ── Dispatch execution ────────────────────────────────────────────────
+def format_review_prompt_safe(report: dict) -> str:
+    """Safe wrapper for review prompt formatting."""
+    try:
+        return format_review_prompt(report)
+    except Exception as e:
+        return f"Review request for {report.get('role', 'unknown')}\nError: {e}"
 
 
-async def execute_dispatch(
+# ── Review dispatch ───────────────────────────────────────────────────
+
+
+async def dispatch_review(
     mappings: list[tuple[dict, CDPPage]],
     *,
     wait_for_response: bool = True,
@@ -258,21 +243,21 @@ async def execute_dispatch(
     dry_run: bool = False,
     output_dir: Path | None = None,
 ) -> list[dict]:
-    """Execute dispatch for all worker-target mappings."""
+    """Send reports to reviewer GPT sessions and collect review opinions."""
     results = []
 
-    for assignment, target in mappings:
-        role = assignment.get("worker_role", "unknown")
-        prompt = format_taskspec_prompt_safe(assignment)
+    for report, target in mappings:
+        role = report["role"]
+        prompt = format_review_prompt_safe(report)
 
         print(f"{'='*60}")
-        print(f"Worker: {role}")
+        print(f"Report: {report['file']} ({report['review_type']})")
+        print(f"Verdict: {report['verdict']}  |  Size: {report['content_length']} chars")
         print(f"Target: {target.target_id[:16]}... (conv: {target.conversation_id})")
         print(f"Prompt: {len(prompt)} chars")
 
         if dry_run:
             print("Mode:   DRY-RUN")
-            # Just validate connectivity
             cdp = CDPClient(target.ws_url)
             ctrl = ChatGPTController(cdp)
             try:
@@ -281,7 +266,9 @@ async def execute_dispatch(
                 await cdp.close()
                 print(f"Status: {'PASS' if info.get('hasInput') else 'FAIL'}")
                 results.append({
-                    "worker_role": role,
+                    "report_role": role,
+                    "report_file": report["file"],
+                    "report_verdict": report["verdict"],
                     "target_id": target.target_id,
                     "conversation_id": target.conversation_id,
                     "dry_run": True,
@@ -292,7 +279,8 @@ async def execute_dispatch(
             except Exception as e:
                 print(f"Status: FAIL ({e})")
                 results.append({
-                    "worker_role": role,
+                    "report_role": role,
+                    "report_file": report["file"],
                     "target_id": target.target_id,
                     "dry_run": True,
                     "error": str(e),
@@ -300,8 +288,8 @@ async def execute_dispatch(
                 })
             continue
 
-        # Real dispatch
-        print(f"Mode:   LIVE")
+        # Live dispatch
+        print("Mode:   LIVE — sending report for review")
         result = await dispatch_to_page(
             target.ws_url,
             prompt,
@@ -310,41 +298,45 @@ async def execute_dispatch(
             dry_run=False,
         )
 
-        status = "DISPATCHED" if result.sent else "FAILED"
+        status = "REVIEW_REQUESTED" if result.sent else "FAILED"
         print(f"Status: {status}")
         print(f"Inject: {result.injection.method} ({result.injection.text_length} chars)")
         if result.sent:
             print(f"Time:   {result.response_time_seconds}s")
-            preview = result.response_text[:100] if result.response_text else "(empty)"
-            print(f"Reply:  {preview}...")
+            preview = result.response_text[:120] if result.response_text else "(no response yet)"
+            print(f"Review opinion preview: {preview}...")
         if result.error:
             print(f"Error:  {result.error}")
 
         entry = {
-            "worker_role": role,
-            "task_id": assignment.get("task_spec", {}).get("task_id", ""),
+            "report_role": role,
+            "report_file": report["file"],
+            "report_verdict": report["verdict"],
+            "report_path": report["path"],
+            "report_content_length": report["content_length"],
             "target_id": target.target_id,
             "conversation_id": target.conversation_id,
             "chat_url": target.url,
-            "dispatched_at": _utc_now(),
+            "review_requested_at": _utc_now(),
             "injection": {
                 "success": result.injection.success,
                 "method": result.injection.method,
                 "text_length": result.injection.text_length,
             },
             "sent": result.sent,
-            "response_time_seconds": result.response_time_seconds,
-            "response_text_preview": result.response_text[:500] if result.response_text else "",
-            "response_text_full": result.response_text,
+            "review_time_seconds": result.response_time_seconds,
+            "review_opinion_preview": result.response_text[:500] if result.response_text else "",
+            "review_opinion_full": result.response_text,
             "error": result.error,
             "status": status,
         }
         results.append(entry)
 
-        # Save per-worker evidence
+        # Save per-report review evidence
         if output_dir:
             output_dir.mkdir(parents=True, exist_ok=True)
-            evidence_file = output_dir / f"dispatch-{role.lower()}.json"
+            safe_name = report["file"].replace(".md", "").lower()
+            evidence_file = output_dir / f"review-{safe_name}.json"
             evidence_file.write_text(
                 json.dumps(entry, indent=2, ensure_ascii=False), encoding="utf-8"
             )
@@ -353,83 +345,97 @@ async def execute_dispatch(
     return results
 
 
-def format_taskspec_prompt_safe(assignment: dict) -> str:
-    """Safe wrapper for prompt formatting."""
-    try:
-        return format_taskspec_prompt(assignment)
-    except Exception as e:
-        return f"Task: {assignment.get('worker_role', 'unknown')}\nError formatting prompt: {e}"
-
-
 # ── Summary report ────────────────────────────────────────────────────
 
 
-def generate_dispatch_report(
+def generate_review_summary(
     results: list[dict],
-    plan: dict,
+    reports: list[dict],
     *,
     dry_run: bool = False,
 ) -> dict:
-    """Generate a summary dispatch report."""
-    dispatched = [r for r in results if r.get("sent") or r.get("dry_run")]
-    failed = [r for r in results if r.get("status", "").startswith("FAIL") or r.get("error")]
+    """Generate a summary of the review dispatch cycle."""
+    sent = [r for r in results if r.get("sent") or r.get("dry_run")]
+    failed = [r for r in results if r.get("error")]
 
-    report = {
-        "schema_version": "1.0.0",
-        "report_type": "cdp_dispatch_report",
+    return {
+        "schema_version": "2.0.0",
+        "report_type": "cdp_review_dispatch",
         "generated_at": _utc_now(),
         "dry_run": dry_run,
-        "plan_id": plan.get("plan_id", ""),
-        "plan_status": plan.get("status", ""),
-        "total_assignments": len(plan.get("assignments", [])),
-        "dispatched_count": len(dispatched),
-        "failed_count": len(failed),
+        "total_reports": len(reports),
+        "review_requested": len(sent),
+        "failed": len(failed),
         "results": results,
-        "execution_model": "cdp_write_adapter",
+        "dispatch_model": "cdp_review_dispatch",
         "honesty_declaration": (
-            "Prompts were injected into independent ChatGPT browser sessions "
-            "via Chrome DevTools Protocol (CDP) write API. Each target is a "
-            "separate browser tab with its own conversation context. "
-            "This is real multi-session execution, not sub-agent dispatch."
+            "Agent-produced reports were delivered to independent ChatGPT "
+            "browser sessions via CDP Write Adapter for review. The GPT "
+            "sessions serve as independent audit seats — they assess agent "
+            "reports, not execute tasks. Each session has its own conversation "
+            "context, ensuring review independence."
         ),
     }
-    return report
 
 
 # ── CLI ───────────────────────────────────────────────────────────────
 
 
+def cmd_status(args) -> int:
+    """Show review dispatch readiness."""
+    # Reports
+    reports = discover_reports()
+    print(f"Reports: {len(reports)} found")
+    for r in reports:
+        print(f"  {r['role']:25s} {r['file']:30s} verdict={r['verdict']:12s} {r['content_length']} chars")
+
+    # Binding
+    try:
+        binding = load_binding()
+        agents = binding.get("bindings", [])
+        active = [a for a in agents if a.get("binding_status") == "active"]
+        print(f"Binding: {len(active)}/{len(agents)} active")
+    except FileNotFoundError:
+        print("Binding: NOT FOUND")
+
+    # CDP targets
+    targets = discover_targets(args.port)
+    print(f"CDP:     {len(targets)} ChatGPT pages live")
+
+    # Summary
+    if reports and targets:
+        print("\nSTATUS: READY — reports available, GPT review sessions live")
+        return 0
+    elif not reports:
+        print("\nSTATUS: NO REPORTS — run agent pipeline first to produce reports")
+        return 1
+    else:
+        print("\nSTATUS: NO GPT SESSIONS — open ChatGPT tabs in Chrome with CDP")
+        return 1
+
+
 def cmd_dry_run(args) -> int:
-    """Validate all connections without sending."""
-    plan = load_dispatch_plan()
+    """Validate connections without sending."""
+    reports = discover_reports()
+    if not reports:
+        print("No reports found to review")
+        return 1
+
     binding = load_binding()
     targets = discover_targets(args.port)
-
-    print(f"Plan:    {plan.get('plan_id')} (status: {plan.get('status')})")
-    print(f"Targets: {len(targets)} ChatGPT pages")
-    print(f"Binding: {len(binding.get('bindings', []))} agents")
-    print()
-
-    assignments = get_parallel_assignments(plan)
-    if not assignments:
-        print("No parallel-safe ready assignments found")
+    if not targets:
+        print("No ChatGPT targets found")
         return 1
 
-    mappings = map_workers_to_targets(assignments, binding, targets)
-    if not mappings:
-        print("No worker-to-target mappings possible")
-        return 1
+    mappings = map_reports_to_reviewers(reports, binding, targets)
+    print(f"Reports: {len(reports)}  |  Targets: {len(targets)}  |  Mappings: {len(mappings)}")
+    print()
 
-    print("Mappings:")
-    for assignment, target in mappings:
-        role = assignment.get("worker_role", "?")
-        conv = target.conversation_id or "?"
-        print(f"  {role:25s} → {target.target_id[:16]}... (conv: {conv[:16]}...)")
+    for report, target in mappings:
+        print(f"  {report['role']:25s} → {target.target_id[:16]}... ({target.conversation_id})")
 
     print()
-    results = asyncio.run(execute_dispatch(
-        mappings, dry_run=True, output_dir=None,
-    ))
+    results = asyncio.run(dispatch_review(mappings, dry_run=True))
 
     passed = sum(1 for r in results if r.get("status") == "DRY_RUN_PASS")
     total = len(results)
@@ -438,37 +444,26 @@ def cmd_dry_run(args) -> int:
 
 
 def cmd_run(args) -> int:
-    """Execute dispatch."""
-    plan = load_dispatch_plan()
-    binding = load_binding()
-    targets = discover_targets(args.port)
-
-    # Select assignments
-    if args.wave == "parallel":
-        assignments = get_parallel_assignments(plan)
-    elif args.wave == "serial":
-        assignments = get_serial_assignments(plan)
-    else:
-        assignments = get_parallel_assignments(plan) + get_serial_assignments(plan)
-
-    # Filter by specific assignment if requested
-    if args.assignment:
-        assignments = [
-            a for a in assignments
-            if a.get("worker_role", "").lower() == args.assignment.lower()
-        ]
-
-    if not assignments:
-        print("No matching assignments found")
+    """Send reports to GPT sessions for review."""
+    reports = discover_reports()
+    if not reports:
+        print("No reports found to review")
         return 1
 
-    print(f"Plan:       {plan.get('plan_id')}")
-    print(f"Wave:       {args.wave}")
-    print(f"Assignments: {len(assignments)}")
-    print(f"Targets:    {len(targets)}")
-    print()
+    # Filter by specific report if requested
+    if args.report:
+        reports = [r for r in reports if args.report.lower() in r["file"].lower()]
+        if not reports:
+            print(f"No report matching '{args.report}'")
+            return 1
 
-    mappings = map_workers_to_targets(assignments, binding, targets)
+    binding = load_binding()
+    targets = discover_targets(args.port)
+    if not targets:
+        print("No ChatGPT targets found")
+        return 1
+
+    mappings = map_reports_to_reviewers(reports, binding, targets)
 
     # Override target if --page-id specified
     if args.page_id:
@@ -478,14 +473,18 @@ def cmd_run(args) -> int:
                 target_match = t
                 break
         if target_match:
-            mappings = [(a, target_match) for a in assignments]
+            mappings = [(r, target_match) for r in reports]
         else:
             print(f"Target {args.page_id} not found")
             return 1
 
     output_dir = Path(args.output_dir) if args.output_dir else EVIDENCE_DIR
 
-    results = asyncio.run(execute_dispatch(
+    print(f"Sending {len(reports)} report(s) for independent review")
+    print(f"Target session(s): {len(set(t.target_id for _, t in mappings))}")
+    print()
+
+    results = asyncio.run(dispatch_review(
         mappings,
         wait_for_response=not args.no_wait,
         response_timeout=args.timeout,
@@ -493,89 +492,40 @@ def cmd_run(args) -> int:
         output_dir=output_dir,
     ))
 
-    # Generate and save report
-    report = generate_dispatch_report(results, plan, dry_run=False)
-
-    report_path = output_dir / "CDP_DISPATCH_REPORT.json"
+    # Save summary
+    summary = generate_review_summary(results, reports, dry_run=False)
+    summary_path = output_dir / "REVIEW_DISPATCH_SUMMARY.json"
     output_dir.mkdir(parents=True, exist_ok=True)
-    report_path.write_text(
-        json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
+    summary_path.write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8"
     )
+
     print(f"\n{'='*60}")
-    print(f"Report: {report_path}")
-    print(f"Dispatched: {report['dispatched_count']}/{report['total_assignments']}")
-    print(f"Failed:     {report['failed_count']}")
-    print(f"Model:      {report['execution_model']}")
+    print(f"Summary: {summary_path}")
+    print(f"Review requested: {summary['review_requested']}/{summary['total_reports']}")
+    print(f"Failed:           {summary['failed']}")
+    print(f"Model:            {summary['dispatch_model']}")
 
-    dispatched = report["dispatched_count"]
-    total = len(assignments)
-    return 0 if dispatched == total else 1
-
-
-def cmd_status(args) -> int:
-    """Show dispatch readiness status."""
-    # Check plan
-    try:
-        plan = load_dispatch_plan()
-        print(f"Plan:     {plan.get('status', 'UNKNOWN')}")
-    except FileNotFoundError:
-        print("Plan:     NOT FOUND")
-        plan = None
-
-    # Check binding
-    try:
-        binding = load_binding()
-        agents = binding.get("bindings", [])
-        active = [a for a in agents if a.get("binding_status") == "active"]
-        print(f"Binding:  {len(active)}/{len(agents)} active")
-    except FileNotFoundError:
-        print("Binding:  NOT FOUND")
-        binding = None
-
-    # Check CDP targets
-    targets = discover_targets(args.port)
-    print(f"CDP:      {len(targets)} ChatGPT pages live")
-
-    # Check adapter
-    print(f"Adapter:  cdp_write_adapter.py (websockets async)")
-
-    # Summary
-    if plan and plan.get("status") == "READY" and targets:
-        print("\nSTATUS: READY for CDP dispatch")
-        return 0
-    else:
-        issues = []
-        if not plan:
-            issues.append("no plan")
-        elif plan.get("status") != "READY":
-            issues.append(f"plan status={plan.get('status')}")
-        if not targets:
-            issues.append("no live CDP targets")
-        print(f"\nSTATUS: NOT READY ({', '.join(issues)})")
-        return 1
+    return 0 if summary["failed"] == 0 else 1
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="CDP Dispatch Runner — execute dispatch plans via CDP Write Adapter"
+        description="CDP Review Dispatcher — send agent reports to GPT for independent review"
     )
     sub = parser.add_subparsers(dest="command")
 
-    # status
-    p_status = sub.add_parser("status", help="Show dispatch readiness")
+    p_status = sub.add_parser("status", help="Show review readiness")
     p_status.add_argument("--port", type=int, default=DEFAULT_CDP_PORT)
 
-    # dry-run
     p_dry = sub.add_parser("dry-run", help="Validate connections")
     p_dry.add_argument("--port", type=int, default=DEFAULT_CDP_PORT)
 
-    # run
-    p_run = sub.add_parser("run", help="Execute dispatch")
-    p_run.add_argument("--wave", choices=["parallel", "serial", "all"], default="parallel")
-    p_run.add_argument("--assignment", help="Run specific worker role only")
+    p_run = sub.add_parser("run", help="Send reports for review")
+    p_run.add_argument("--report", help="Send specific report only (filename substring)")
     p_run.add_argument("--page-id", help="Override target (CDP target ID prefix)")
     p_run.add_argument("--port", type=int, default=DEFAULT_CDP_PORT)
-    p_run.add_argument("--no-wait", action="store_true", help="Don't wait for responses")
+    p_run.add_argument("--no-wait", action="store_true", help="Don't wait for review response")
     p_run.add_argument("--timeout", type=int, default=DEFAULT_RESPONSE_TIMEOUT)
     p_run.add_argument("--output-dir", help="Evidence output directory")
 

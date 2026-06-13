@@ -1,7 +1,7 @@
-"""Tests for CDP Write Adapter and Dispatch Runner.
+"""Tests for CDP Write Adapter and Review Dispatcher.
 
 Tests the low-level adapter (cdp_write_adapter.py) and the
-orchestration runner (cdp_dispatch_runner.py).
+review dispatch runner (cdp_dispatch_runner.py).
 
 Integration tests require a live Chrome with --remote-debugging-port=9222
 and at least one ChatGPT tab.  Unit tests use mocks.
@@ -11,7 +11,6 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -115,78 +114,90 @@ class TestResultClasses:
         assert r.response_time_seconds == 5.2
 
 
-# ── Prompt formatting ────────────────────────────────────────────────
+# ── Review prompt formatting ─────────────────────────────────────────
 
 
-class TestFormatTaskSpecPrompt:
+class TestFormatReviewPrompt:
 
-    def test_basic_formatting(self):
-        assignment = {
-            "worker_role": "Architecture-Reviewer",
-            "target": "Confirm dispatch boundaries.",
-            "allowed_modify_range": ["_reports/review/"],
-            "forbidden_modify_range": ["scripts/", "tests/"],
-            "quality_standard": "P0/P1 zero.",
-            "completion_standard": "Report includes verdict.",
-            "blocking_conditions": ["Finds P0 issue"],
-            "task_spec": {
-                "task_id": "ma-arch-a1",
-                "title": "Review architecture",
-                "description": "Check module boundaries.",
-                "priority": "P2",
-                "assumptions": ["Gate 0 may be HUMAN_REQUIRED."],
-            },
+    def _make_report(self, **overrides) -> dict:
+        base = {
+            "role": "Architecture-Reviewer",
+            "file": "ARCHITECTURE_REVIEW.md",
+            "path": "_reports/multi-agent-architecture-review-a1/ARCHITECTURE_REVIEW.md",
+            "review_type": "architecture",
+            "content": "## Verdict: PARTIAL\n\nFindings:\n- P0-001: blocking conditions empty\n- P1-001: forbidden ranges\n\n## Changed Files\n- schema.json\n- dispatch_plan.py",
+            "content_length": 150,
+            "verdict": "CONDITIONAL",
         }
-        prompt = runner.format_taskspec_prompt(assignment)
-        assert "# Task: Review architecture" in prompt
+        base.update(overrides)
+        return base
+
+    def test_prompt_contains_review_instructions(self):
+        report = self._make_report()
+        prompt = runner.format_review_prompt(report)
+        assert "Independent Review Request" in prompt
         assert "Architecture-Reviewer" in prompt
-        assert "ma-arch-a1" in prompt
-        assert "Confirm dispatch boundaries." in prompt
-        assert "_reports/review/" in prompt
-        assert "scripts/" in prompt
-        assert "P0/P1 zero" in prompt
-        assert "Finds P0 issue" in prompt
-        assert "Gate 0 may be HUMAN_REQUIRED" in prompt
+        assert "CONDITIONAL" in prompt
+        assert "Verdict agreement" in prompt
+        assert "Evidence sufficiency" in prompt
+        assert "Gap identification" in prompt
+        assert "Risk flags" in prompt
 
-    def test_prompt_length_reasonable(self):
-        assignment = {
-            "worker_role": "Verifier",
-            "target": "Run tests.",
-            "allowed_modify_range": ["_reports/verifier/"],
-            "forbidden_modify_range": ["scripts/"],
-            "quality_standard": "P0 zero.",
-            "completion_standard": "Report complete.",
-            "blocking_conditions": [],
-            "required_verification_commands": ["pytest tests/ -q"],
-            "task_spec": {
-                "task_id": "ma-verifier",
-                "title": "Run verification",
-                "description": "Run all tests.",
-                "priority": "P2",
-                "assumptions": [],
-            },
-        }
-        prompt = runner.format_taskspec_prompt(assignment)
-        assert len(prompt) < 4000, f"Prompt too long: {len(prompt)} chars"
-        assert "pytest tests/ -q" in prompt
+    def test_prompt_includes_report_content(self):
+        report = self._make_report()
+        prompt = runner.format_review_prompt(report)
+        assert "P0-001: blocking conditions empty" in prompt
+        assert "P1-001: forbidden ranges" in prompt
+
+    def test_prompt_truncates_long_reports(self):
+        long_content = "x" * 10000
+        report = self._make_report(content=long_content, content_length=10000)
+        prompt = runner.format_review_prompt(report)
+        assert "truncated" in prompt
+        assert len(prompt) < 8000
+
+    def test_prompt_asks_for_approve_or_reject(self):
+        report = self._make_report()
+        prompt = runner.format_review_prompt(report)
+        assert "APPROVE" in prompt
+        assert "REJECT" in prompt
 
     def test_safe_wrapper_handles_errors(self):
-        # Pass invalid data that would crash the formatter
-        result = runner.format_taskspec_prompt_safe({"worker_role": "Test"})
-        assert "Test" in result  # Should not raise
+        result = runner.format_review_prompt_safe({"role": "Test", "file": "test.md"})
+        assert "Test" in result
 
 
-# ── Worker-to-target mapping ─────────────────────────────────────────
+# ── Report discovery ─────────────────────────────────────────────────
 
 
-class TestMapWorkersToTargets:
+class TestDiscoverReports:
 
-    def _make_assignment(self, role: str, status: str = "ready") -> dict:
-        return {
-            "worker_role": role,
-            "parallel_safe": True,
-            "task_spec": {"task_id": f"ma-{role.lower()}", "status": status},
-        }
+    def test_discovers_existing_reports(self):
+        """The three worker reports from the dispatch should be found."""
+        reports = runner.discover_reports()
+        assert len(reports) >= 1, "Expected at least 1 report to exist"
+        roles = [r["role"] for r in reports]
+        # At least some of the known reports should be present
+        assert any(r in roles for r in ["Architecture-Reviewer", "Verifier", "Quality-Reviewer"])
+
+    def test_report_has_required_fields(self):
+        reports = runner.discover_reports()
+        if not reports:
+            pytest.skip("No reports present")
+        r = reports[0]
+        assert "role" in r
+        assert "file" in r
+        assert "path" in r
+        assert "content" in r
+        assert "content_length" in r
+        assert "verdict" in r
+        assert r["content_length"] > 0
+
+
+# ── Report-to-reviewer mapping ───────────────────────────────────────
+
+
+class TestMapReportsToReviewers:
 
     def _make_binding(self) -> dict:
         return {
@@ -208,73 +219,38 @@ class TestMapWorkersToTargets:
 
     def _make_targets(self) -> list:
         return [
-            adapter.CDPPage("T1", "https://chatgpt.com/c/aaa-111", "aaa-111", "Tab1", "ws://1"),
-            adapter.CDPPage("T2", "https://chatgpt.com/c/bbb-222", "bbb-222", "Tab2", "ws://2"),
+            adapter.CDPPage("T1", "https://chatgpt.com/c/aaa-111", "aaa-111", "Review Tab", "ws://1"),
+            adapter.CDPPage("T2", "https://chatgpt.com/c/bbb-222", "bbb-222", "Exec Tab", "ws://2"),
         ]
 
-    def test_maps_by_conversation_id(self):
-        assignments = [self._make_assignment("Architecture-Reviewer")]
+    def test_all_reports_go_to_reviewer(self):
+        reports = [
+            {"role": "Architecture-Reviewer", "file": "arch.md"},
+            {"role": "Verifier", "file": "verify.md"},
+            {"role": "Quality-Reviewer", "file": "quality.md"},
+        ]
         binding = self._make_binding()
         targets = self._make_targets()
-        mappings = runner.map_workers_to_targets(assignments, binding, targets)
-        assert len(mappings) == 1
-        assert mappings[0][1].target_id == "T1"  # reviewer → first target
-
-    def test_maps_verifier_to_executor(self):
-        assignments = [self._make_assignment("Verifier")]
-        binding = self._make_binding()
-        targets = self._make_targets()
-        mappings = runner.map_workers_to_targets(assignments, binding, targets)
-        assert len(mappings) == 1
-        assert mappings[0][1].target_id == "T2"  # verifier → second target
+        mappings = runner.map_reports_to_reviewers(reports, binding, targets)
+        assert len(mappings) == 3
+        # All should map to reviewer target (T1)
+        for _, target in mappings:
+            assert target.target_id == "T1"
 
     def test_handles_no_targets(self):
-        assignments = [self._make_assignment("Architecture-Reviewer")]
+        reports = [{"role": "Test", "file": "test.md"}]
         binding = self._make_binding()
-        mappings = runner.map_workers_to_targets(assignments, binding, [])
+        mappings = runner.map_reports_to_reviewers(reports, binding, [])
         assert len(mappings) == 0
 
 
-# ── Plan loading helpers ─────────────────────────────────────────────
-
-
-class TestPlanHelpers:
-
-    def test_get_parallel_assignments(self):
-        plan = {
-            "assignments": [
-                {"worker_role": "A", "parallel_safe": True, "task_spec": {"status": "ready"}},
-                {"worker_role": "B", "parallel_safe": True, "task_spec": {"status": "ready"}},
-                {"worker_role": "C", "parallel_safe": False, "task_spec": {"status": "ready"}},
-                {"worker_role": "D", "parallel_safe": True, "task_spec": {"status": "completed"}},
-            ]
-        }
-        result = runner.get_parallel_assignments(plan)
-        assert len(result) == 2
-        roles = [a["worker_role"] for a in result]
-        assert "A" in roles
-        assert "B" in roles
-
-    def test_get_serial_assignments(self):
-        plan = {
-            "assignments": [
-                {"worker_role": "A", "parallel_safe": True, "task_spec": {"status": "ready"}},
-                {"worker_role": "C", "parallel_safe": False, "task_spec": {"status": "ready"}},
-                {"worker_role": "D", "parallel_safe": False, "task_spec": {"status": "completed"}},
-            ]
-        }
-        result = runner.get_serial_assignments(plan)
-        assert len(result) == 1
-        assert result[0]["worker_role"] == "C"
-
-
-# ── Integration test: CDP connectivity ────────────────────────────────
+# ── Integration tests: CDP connectivity ──────────────────────────────
 
 
 class TestCDPIntegration:
     """Integration tests that require a live Chrome instance.
 
-    These are skipped if CDP is not available.
+    Skipped if CDP is not available.
     """
 
     @pytest.fixture(autouse=True)
@@ -290,7 +266,6 @@ class TestCDPIntegration:
 
     def test_list_chatgpt_pages(self):
         pages = adapter._find_chatgpt_pages()
-        # Should have at least one ChatGPT page in the test environment
         assert isinstance(pages, list)
         assert len(pages) >= 1, "Expected at least 1 ChatGPT page"
 
@@ -299,20 +274,20 @@ class TestCDPIntegration:
         chat_pages = [p for p in pages if p.conversation_id]
         assert len(chat_pages) >= 1, "Expected at least 1 page with conversation_id"
 
-    def test_dispatch_runner_status(self):
-        """Verify the runner can report status."""
-        plan = runner.load_dispatch_plan()
-        assert plan.get("status") == "READY"
+    def test_runner_discovers_reports_and_targets(self):
+        """End-to-end: runner can discover reports and CDP targets."""
+        reports = runner.discover_reports()
+        targets = runner.discover_targets()
+        assert len(reports) >= 1, "Expected at least 1 report"
+        assert len(targets) >= 1, "Expected at least 1 CDP target"
 
-    def test_dispatch_runner_dry_run_mapping(self):
-        """Verify dry-run produces correct mappings."""
-        plan = runner.load_dispatch_plan()
+    def test_runner_can_map_reports(self):
+        """Reports can be mapped to available targets."""
+        reports = runner.discover_reports()
         binding = runner.load_binding()
         targets = runner.discover_targets()
-        assignments = runner.get_parallel_assignments(plan)
-        mappings = runner.map_workers_to_targets(assignments, binding, targets)
+        mappings = runner.map_reports_to_reviewers(reports, binding, targets)
         assert len(mappings) >= 1
-        # Every mapping should have a valid target
-        for assignment, target in mappings:
+        for report, target in mappings:
             assert target.ws_url.startswith("ws://")
-            assert target.conversation_id is not None
+            assert report["content_length"] > 0

@@ -13,7 +13,7 @@
   "has_webSocketDebuggerUrl": true,
   "webSocketDebuggerUrl": "[REDACTED]",
   "cdp_endpoint": "http://localhost:9222",
-  "verified_at": "2026-06-13T11:52:44.181Z",
+  "verified_at": "2026-06-13T12:08:08.496Z",
   "live": true,
   "capture_policy": {
     "must_match_run_id": true,
