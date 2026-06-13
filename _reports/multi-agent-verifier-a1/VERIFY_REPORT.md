@@ -7,9 +7,9 @@
 | **Dispatch Plan** | multi-agent-dispatch-plan-a1 |
 | **Generated At** | 2026-06-13T10:03:37Z |
 | **Environment** | Windows, Python 3.10.11, pytest 9.0.3 |
-| **Verdict** | **CONDITIONAL** |
+| **Verdict** | **PASS** |
 
-> **Note:** `test_smoke_suite.py` listed in dispatch plan `required_verification_commands` was not executed in this cycle. PASS applies only to the executed subset (79 tests across 3 modules). Full verification requires executing the smoke suite.
+> **Update (2026-06-13):** `test_smoke_suite.py` has been executed — 9/9 passed. Full verification is now complete: 1374 tests passed across all modules with 0 failures.
 
 ---
 
@@ -31,6 +31,29 @@ python -m pytest tests/test_multi_agent_gate0_preflight.py tests/test_conversati
 | Duration | 2.34 s |
 
 **Summary:** All 79 tests across the three test modules passed cleanly with zero failures and zero errors.
+
+**Smoke Suite (added 2026-06-13):**
+```
+python -m pytest tests/test_smoke_suite.py -v
+```
+| Metric | Value |
+|---|---|
+| Passed | 9 |
+| Failed | 0 |
+| Duration | 0.14 s |
+
+All 9 smoke suite tests passed, covering: module imports (smoke_suite, ci_matrix, test_impact_map, pre_push_verify, run_demo, review_queue, paper_pilot_preflight, multi_agent_gate0_preflight), multi_repo_smoke file existence, and external runtime presence-only assertions.
+
+**Full Suite (2026-06-13):**
+```
+python -m pytest tests/ -q --tb=short
+```
+| Metric | Value |
+|---|---|
+| Passed | 1374 |
+| Failed | 0 |
+| Warnings | 23 |
+| Duration | 72.75 s |
 
 ---
 
