@@ -74,16 +74,17 @@ def test_plan_schema_task_spec_definition_tracks_nested_contracts():
     assert embedded_conflict["conflict_level"]["enum"] == core_conflict["conflict_level"]["enum"]
 
 
-def test_default_plan_is_human_required_and_read_only():
-    """Current preflight keeps dispatch human-gated while local worker packets are usable."""
+def test_default_plan_matches_preflight_and_is_read_only():
+    """Dispatch plan status tracks the preflight gate — currently PASS → READY."""
     plan = build_plan(preflight_path=PREFLIGHT_PATH)
     valid, errors = validate_plan(plan)
 
     assert valid is True
     assert errors == []
-    assert plan["status"] == "HUMAN_REQUIRED"
+    assert plan["status"] == "READY"
     assert plan["executed_external_runtime"] is False
-    assert plan["source_preflight"]["overall"] == "HUMAN_REQUIRED"
+    assert plan["source_preflight"]["overall"] == "PASS"
+    assert plan["source_preflight"]["human_gate_required"] is False
     assert plan["conflict_summary"]["has_errors"] is False
     assert len(plan["assignments"]) >= 4
     assert any(item["parallel_safe"] for item in plan["assignments"])
@@ -170,8 +171,8 @@ def test_validate_plan_detects_directory_file_write_conflict():
     assert any("write conflict" in error for error in errors)
 
 
-def test_cli_writes_output_and_preserves_human_required_exit(tmp_path):
-    """CLI output is durable JSON and current repo still exits 2 for human gate."""
+def test_cli_writes_output_and_preserves_ready_exit(tmp_path):
+    """CLI output is durable JSON and current repo exits 0 for ready dispatch."""
     output_path = tmp_path / "nested" / "DISPATCH_PLAN.json"
 
     result = subprocess.run(
@@ -188,10 +189,10 @@ def test_cli_writes_output_and_preserves_human_required_exit(tmp_path):
         text=True,
     )
 
-    assert result.returncode == 2
+    assert result.returncode == 0
     stdout_plan = json.loads(result.stdout)
     file_plan = json.loads(output_path.read_text(encoding="utf-8"))
     assert file_plan == stdout_plan
     _assert_schema_valid(PLAN_SCHEMA_PATH, file_plan)
-    assert file_plan["status"] == "HUMAN_REQUIRED"
+    assert file_plan["status"] == "READY"
     assert file_plan["executed_external_runtime"] is False

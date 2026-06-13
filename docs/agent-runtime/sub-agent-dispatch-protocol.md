@@ -248,7 +248,7 @@ conflict_registry:
 2. **Protected files require exclusive lock**: The following files are protected and require an exclusive lock (no other task may read or write them concurrently):
    - `AGENTS.md`, `CLAUDE.md`, `capability-inventory.md`
    - The SADP protocol file (`sub-agent-dispatch-protocol.md`)
-   - Core rules (`docs/agent-runtime/rules/core.md`)
+   - Core rules (`rules/core.md`)
    - Lessons log (`docs/agent-runtime/lessons-learned.md`)
 3. **No git merge as primary resolution**: Agents MUST NOT rely on git merge as the primary conflict resolution mechanism. Serialization and exclusive locks are the mandatory approach.
 

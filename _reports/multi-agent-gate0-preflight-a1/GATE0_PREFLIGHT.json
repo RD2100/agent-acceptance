@@ -1,8 +1,8 @@
 {
-  "overall": "HUMAN_REQUIRED",
+  "overall": "PASS",
   "executed_external_runtime": false,
-  "human_gate_required": true,
-  "agent_count": 1,
+  "human_gate_required": false,
+  "agent_count": 2,
   "checks": [
     {
       "name": "binding_0_valid",
@@ -17,21 +17,15 @@
       "evidence": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json"
     },
     {
-      "name": "agent_agent-local-001_manual_binding",
-      "status": "human_required",
-      "detail": "agent remains pending_manual_binding",
-      "evidence": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json"
-    },
-    {
       "name": "unique_agent_ids",
       "status": "passed",
-      "detail": "1 unique agent id(s)",
+      "detail": "2 unique agent id(s)",
       "evidence": null
     },
     {
       "name": "pilot_agent_count",
-      "status": "human_required",
-      "detail": "pilot requires at least two independently bound agents",
+      "status": "passed",
+      "detail": "2 agent(s) declared",
       "evidence": null
     },
     {
@@ -48,8 +42,8 @@
     },
     {
       "name": "cap_029_execution",
-      "status": "human_required",
-      "detail": "opencode dispatch not executable (status=proposed, usable_for_execution=false)",
+      "status": "passed",
+      "detail": "opencode dispatch executable",
       "evidence": "D:\\agent-acceptance\\docs\\agent-runtime\\capability-inventory.md"
     },
     {

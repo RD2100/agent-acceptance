@@ -1,13 +1,15 @@
 {
   "pilot_id": "multi-agent-multi-gpt-pilot-a1",
   "activation_timestamp": "2026-06-10T02:22:43Z",
+  "last_updated": "2026-06-13T02:30:00+08:00",
+  "update_reason": "Codex review response: corrected binding status to match CONVERSATION_BINDING.json",
   "binding_path": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json",
   "binding_valid": true,
   "schema_validated": true,
   "agent_summary": {
     "total": 2,
-    "active": 1,
-    "pending": 1
+    "active": 2,
+    "pending": 0
   },
   "active_agents": [
     {
@@ -17,20 +19,24 @@
       "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
       "conversation_id": "6a26cc03-235c-83a2-a0fc-cd29be615959",
       "cdp_endpoint": "http://localhost:9222",
-      "cdp_session_verified": true
-    }
-  ],
-  "pending_agents": [
+      "cdp_session_verified": false,
+      "cdp_session_note": "CDP session not re-verified in 2026-06-13 session; binding JSON validates but no live CDP evidence captured"
+    },
     {
       "agent_id": "agent-pilot-beta",
       "role": "executor",
-      "binding_status": "pending_manual_binding"
+      "binding_status": "active",
+      "chat_url": "https://chatgpt.com/c/6a28d545-f918-83a5-b122-dc1503386374",
+      "conversation_id": "6a28d545-f918-83a5-b122-dc1503386374",
+      "cdp_endpoint": "http://localhost:9222",
+      "cdp_session_verified": false,
+      "cdp_session_note": "CDP session not re-verified in 2026-06-13 session; binding JSON validates but no live CDP evidence captured"
     }
   ],
+  "pending_agents": [],
   "cdp_session": {
-    "active": true,
-    "browser": "Chrome/149.0.7827.54",
-    "chat_pages": 1
+    "active": false,
+    "note": "No live CDP session verified in 2026-06-13 pilot; previous CDP evidence from 2026-06-10 not re-validated"
   },
   "governance_scope": {
     "external_runtimes": [
@@ -41,10 +47,17 @@
     "default_execution_policy": "human_gated_for_external_runtime_execution"
   },
   "pilot_readiness": {
-    "all_agents_active": false,
+    "all_agents_active": true,
     "at_least_one_active": true,
     "at_least_two_agents": true,
     "schema_validated": true,
-    "cdp_verified": true
-  }
+    "cdp_verified": false,
+    "cdp_note": "Binding JSON schema validates; live CDP evidence not captured in this session"
+  },
+  "known_gaps": [
+    "No live CDP session evidence captured for either binding",
+    "Authorization was verbal ('授权，开始吧') without run-bound authorization record",
+    "CAP-029 approved status predates this pilot session (set at commit 511c54ab)",
+    "Dispatch plan was not regenerated post-authorization (remains HUMAN_REQUIRED)"
+  ]
 }

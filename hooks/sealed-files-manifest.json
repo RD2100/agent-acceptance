@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-13T10:21:05.1302397+08:00",
+    "generated":  "2026-06-13T10:43:55.2801138+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "5F355E8D4FC1DF34627264AB41E20499C39CA3FDF3F1FEFCEDB364EA6ADB40BD",
@@ -216,7 +216,7 @@
                              "path":  "docs/agent-runtime/inactive-frame-registry.md"
                          },
                          {
-                             "sha256":  "3B75300D5796686A6DB3AD9F5B8B634ACC11779BD72AE9F6AD2804E9F4ACFDFC",
+                             "sha256":  "652A6D7ABAC4CF1E4AABBA1A5ABDDE059A14EC8B1277C71AA1311A858EB986D4",
                              "path":  "docs/agent-runtime/integration-contracts.md"
                          },
                          {
@@ -460,7 +460,7 @@
                              "path":  "docs/agent-runtime/stride-threat-model.md"
                          },
                          {
-                             "sha256":  "152DE1097047E4DDFC065083D34C64175229AFA34D756C967DC5CFF40F35465A",
+                             "sha256":  "D115885B383FA5C01BB29874E14FBB3DB0725C0030ACBBBAAB0AA206706C32DE",
                              "path":  "docs/agent-runtime/sub-agent-dispatch-protocol.md"
                          },
                          {
@@ -636,7 +636,7 @@
                              "path":  "schemas/agent-runtime/source-lock-record.schema.json"
                          },
                          {
-                             "sha256":  "50CEE1ACCBC8A9DC2AE46DA36D5C77F22C91939B44438850A1285BE4FE415F38",
+                             "sha256":  "094EB14E39CA4B5D81A3406269EEF87E1C05ADC4F94E025851719928D898BE5F",
                              "path":  "schemas/agent-runtime/task-spec.schema.json"
                          },
                          {

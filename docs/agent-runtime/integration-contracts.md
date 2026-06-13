@@ -22,24 +22,61 @@ Each contract defines: purpose, producer, consumer, required/optional fields, st
 | **Purpose** | Describe a unit of work before execution begins |
 | **Producer** | Planner agent or human operator |
 | **Consumer** | Executor agent |
-| **Status enum** | `draft`, `ready`, `deferred`, `rejected` |
+| **Status enum** | `draft`, `ready`, `in_progress`, `completed`, `closed`, `deferred`, `rejected`, `accepted_with_limitation`, `pending_human_decision` |
+| **Formats** | JSON schema (`task-spec.schema.json`) for machine validation; markdown (SADP protocol section 1) for human-readable dispatch |
 
-### Required fields
+### Dual-Format Contract
+
+TaskSpec exists in two authoritative formats:
+
+- **JSON schema** (`schemas/agent-runtime/task-spec.schema.json`): machine-validatable subset. Used by dispatch plan validators, gate0 preflight, and automated consumers.
+- **Markdown** (SADP protocol section 1): human-readable projection. Used for agent-to-agent dispatch instructions and execution context.
+
+The JSON schema permits additional properties beyond its defined fields to accommodate markdown-only fields when JSON representation is needed. Fields that exist only in one format are marked below.
+
+### Field Mapping (JSON ↔ Markdown)
+
+| JSON Schema Field | Markdown Field | Present In | Notes |
+|---|---|---|---|
+| `task_id` | ID | Both | |
+| `title` | (in heading `## Task: [title]`) | Both | |
+| `priority` | Priority | Both | |
+| `status` | (implicit from workflow) | JSON only | Markdown uses workflow position |
+| `description` | Goal + Context | Both | Markdown splits into two fields |
+| `depends_on` | (workflow ordering) | JSON only | Markdown uses implicit ordering |
+| `assumptions` | Context (partial) | Both | |
+| `risk_notes` | Risk | Both | JSON: string; Markdown: enum label |
+| `estimated_tools` | (not in markdown) | JSON only | |
+| `gate_0` | Gate 0 Ledger | Both | YAML embedded in markdown |
+| `conflict_registry` | Conflict Registry | Both | YAML embedded in markdown |
+| `security_report` | (not in markdown) | JSON only | Checklist for task completion |
+| — | Batch | Markdown only | Organizational grouping |
+| — | Allowed Files | Markdown only | Covered by `conflict_registry.write_set` in JSON |
+| — | Forbidden | Markdown only | Covered by `deny_paths` in TaskSpec YAML |
+| — | Acceptance Gates | Markdown only | Covered by `gate_0` + external review |
+| — | Expected Output | Markdown only | Covered by `conflict_registry.write_set` in JSON |
+| — | Rollback | Markdown only | Operational instruction |
+| — | Report To | Markdown only | Session routing |
+
+### Required fields (JSON schema)
 | Field | Type | Description |
 |-------|------|-------------|
 | `task_id` | string | Unique identifier |
 | `title` | string | Short description |
 | `priority` | enum | `P0`, `P1`, `P2`, `P3` |
-| `status` | enum | From status enum above |
+| `status` | enum | From 9-value status enum above |
 | `description` | string | What to do and why |
 
-### Optional fields
+### Optional fields (JSON schema)
 | Field | Type | Description |
 |-------|------|-------------|
 | `depends_on` | string[] | Task IDs that must complete first |
 | `assumptions` | string[] | Assumptions made when creating this task |
 | `risk_notes` | string | Known risks or concerns |
 | `estimated_tools` | string[] | Tools likely needed |
+| `gate_0` | object | Gate 0 Reuse-before-Build evidence contract |
+| `conflict_registry` | object | File access scope for parallel dispatch safety |
+| `security_report` | object | Security checklist for sensitive tasks |
 
 ### Minimal JSON
 ```json
@@ -55,8 +92,11 @@ Each contract defines: purpose, producer, consumer, required/optional fields, st
 ### Validation rules
 - `task_id` must be unique within the session
 - `priority` must be one of P0/P1/P2/P3
-- `status` must be one of draft/ready/deferred/rejected
+- `status` must be one of the 9-value enum: draft/ready/in_progress/completed/closed/deferred/rejected/accepted_with_limitation/pending_human_decision
 - `description` must be non-empty
+- `gate_0.inventory_evidence` must include `queried_sources` and `matched_capabilities` when `gate_0.triggered` is true (boolean self-attestation alone is INVALID per LL-007)
+- `conflict_registry` must declare `read_set` and `write_set` before execution
+- JSON schema permits additional properties for markdown projection fields
 
 ---
 

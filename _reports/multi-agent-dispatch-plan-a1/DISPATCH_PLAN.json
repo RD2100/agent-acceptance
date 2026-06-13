@@ -1,14 +1,14 @@
 {
   "plan_id": "multi-agent-dispatch-plan-a1",
-  "generated_at": "2026-06-13T01:11:25.501807Z",
-  "status": "HUMAN_REQUIRED",
+  "generated_at": "2026-06-13T02:37:25.464167Z",
+  "status": "READY",
   "executed_external_runtime": false,
   "source_preflight": {
-    "path": null,
-    "overall": "HUMAN_REQUIRED",
-    "human_gate_required": true,
+    "path": "_reports\\multi-agent-gate0-preflight-a1\\GATE0_PREFLIGHT.json",
+    "overall": "PASS",
+    "human_gate_required": false,
     "executed_external_runtime": false,
-    "detail": "No preflight path supplied; dispatch remains human-gated."
+    "detail": "Loaded Gate 0 preflight artifact."
   },
   "conflict_summary": {
     "has_write_conflicts": false,

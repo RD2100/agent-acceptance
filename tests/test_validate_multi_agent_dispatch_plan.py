@@ -31,12 +31,12 @@ def _write_json(tmp_path: Path, data) -> Path:
 
 
 def test_validator_accepts_current_dispatch_plan():
-    """Current human-gated dispatch plan is structurally and semantically valid."""
+    """Current dispatch plan is structurally and semantically valid."""
     exit_code, report = validate_dispatch_plan(VALID_PLAN)
 
     assert exit_code == 0
     assert report["valid"] is True
-    assert report["dispatch_status"] == "HUMAN_REQUIRED"
+    assert report["dispatch_status"] == "READY"
     assert report["executed_external_runtime"] is False
     assert report["assignment_count"] >= 1
     assert report["errors"] == []
@@ -177,4 +177,4 @@ def test_validator_cli_writes_json_report(tmp_path):
     assert result.returncode == 0
     report = json.loads(result.stdout)
     assert report["valid"] is True
-    assert report["dispatch_status"] == "HUMAN_REQUIRED"
+    assert report["dispatch_status"] == "READY"

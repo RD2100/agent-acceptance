@@ -1,7 +1,7 @@
 ﻿{
     "$schema":  "https://json-schema.org/draft/2020-12/schema",
     "title":  "TaskSpec",
-    "description":  "Describes a unit of work before execution begins. Produced by a planner agent or human operator, consumed by an executor agent. Construction tasks MUST include gate_0 and conflict_registry.",
+    "description":  "Describes a unit of work before execution begins. Produced by a planner agent or human operator, consumed by an executor agent. Construction tasks MUST include gate_0 and conflict_registry. Dual-format contract: this JSON schema is the machine-validatable subset; the SADP protocol defines the human-readable markdown projection with additional fields (Batch, Risk, Allowed Files, Forbidden, Acceptance Gates, Expected Output, Rollback, Report To). See integration-contracts.md for field mapping.",
     "type":  "object",
     "required":  [
                      "task_id",
@@ -245,7 +245,7 @@
                                                             ]
                                            }
                    },
-    "additionalProperties":  false,
+    "additionalProperties":  true,
     "examples":  [
                      {
                          "task_id":  "t-001",
