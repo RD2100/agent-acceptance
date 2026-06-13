@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-12T23:51:09.2215274+08:00",
+    "generated":  "2026-06-13T09:32:23.2553363+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "5F355E8D4FC1DF34627264AB41E20499C39CA3FDF3F1FEFCEDB364EA6ADB40BD",
@@ -246,6 +246,10 @@
                          {
                              "sha256":  "252BB3A9D08E019DD0C7E535EF2026215B346774DDF8F8C26AB634659B12ECF9",
                              "path":  "docs/agent-runtime/memory-context-map.md"
+                         },
+                         {
+                             "sha256":  "CB2FB40161526BB06ED7199D3CF46CDE5F85DC9B9D4136489E5A0466C44FE8AC",
+                             "path":  "docs/agent-runtime/minimum-capability-set.md"
                          },
                          {
                              "sha256":  "26EA6ED024CA31279A1D9569B7DF109DC6455C46C69B03F9A0146C808F5789AD",
@@ -600,7 +604,7 @@
                              "path":  "schemas/agent-runtime/memory-update-record.schema.json"
                          },
                          {
-                             "sha256":  "08A58BE30EAD61DE84A13E9B493EDA2C6E4A4FDA4A4635D907A7C4535D35AB9D",
+                             "sha256":  "2A13C5EFFEC2BD1F629DA78F6EBF663CBB7EF757A9931C45522FF8A6D58166AE",
                              "path":  "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
                          },
                          {
@@ -632,7 +636,7 @@
                              "path":  "schemas/agent-runtime/source-lock-record.schema.json"
                          },
                          {
-                             "sha256":  "410530E7555A11493A8DD30A8FDF26EFDF2FFEE1FC9EF8D2DBBACD7BDCC2CE17",
+                             "sha256":  "50CEE1ACCBC8A9DC2AE46DA36D5C77F22C91939B44438850A1285BE4FE415F38",
                              "path":  "schemas/agent-runtime/task-spec.schema.json"
                          },
                          {

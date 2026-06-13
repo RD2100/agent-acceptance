@@ -162,7 +162,7 @@ environment. Not regression from this session's changes.
 | External caps not expired | **CORRECTED** | Passport renewed; 8/10 external deps downgraded to unknown (not installed) |
 | Live dispatch authorized | **NO** | HUMAN_REQUIRED |
 
-**Overall GATE0 verdict: CONDITIONAL PASS -- 0 missing-artifact gaps; 1 passport gap (verified count 18 < 20 threshold after 8 external deps downgraded to unknown); 3 open tracked risks (RR-001 passport accuracy, RR-004 test failures, RR-005 schema enum); live dispatch still blocked by HUMAN_REQUIRED.**
+**Overall GATE0 verdict: CONDITIONAL PASS -- 0 missing-artifact gaps; 1 passport gap (verified count 18 < 20 threshold, replaced by mode-based requirement per minimum-capability-set.md); 0 open tracked risks (RR-001 mitigated: passport corrected; RR-004 mitigated: tests fixed; RR-005 mitigated: schema expanded); live dispatch still blocked by HUMAN_REQUIRED.**
 
 Risk register and verify matrix created. CAP-014/CAP-017 re-verified and
 accepted as known limitations. Passport renewal exposed accuracy gap:

@@ -259,7 +259,7 @@
         },
         "status": {
           "type": "string",
-          "enum": ["draft", "ready", "deferred", "rejected"]
+          "enum": ["draft", "ready", "in_progress", "completed", "closed", "deferred", "rejected", "accepted_with_limitation", "pending_human_decision"]
         },
         "description": {
           "type": "string",

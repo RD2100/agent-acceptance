@@ -18,6 +18,7 @@ import json
 import os
 import sys
 import tempfile
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -48,6 +49,12 @@ from pre_gpt_gate import (  # noqa: E402
 # Fixtures
 # ---------------------------------------------------------------------------
 
+def _recent_checked_at(offset_hours: float = 1.0) -> str:
+    """Return an ISO-8601 UTC timestamp offset_hours ago (avoids staleness)."""
+    dt = datetime.now(timezone.utc) - timedelta(hours=offset_hours)
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def _make_current_json(tmp_dir, **overrides):
     """Create a valid current.json in tmp_dir and return its path."""
     data = {
@@ -64,7 +71,7 @@ def _make_current_json(tmp_dir, **overrides):
         "last_nav_result": "ok",
         "last_health_decision": "OK",
         "last_health_reasons": [],
-        "last_checked_at": "2026-06-12T12:00:00+08:00",
+        "last_checked_at": _recent_checked_at(),
         "metrics_source": "cdp_dom_count",
         "metrics_freshness": "fresh",
     }

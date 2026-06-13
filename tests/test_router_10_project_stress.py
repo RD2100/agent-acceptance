@@ -30,7 +30,8 @@ import multi_project_router  # noqa: E402
 EXPECTED_PROJECTS = 11
 SHARED_CDP_ENDPOINT = "http://localhost:9222"
 ACTIVE_PROJECT = "agent-acceptance"
-ACTIVE_PROJECTS = ["agent-acceptance", "tripmark", "dev-frame-writing", "dev-frame-opencode"]
+ACTIVE_PROJECTS = ["agent-acceptance", "tripmark", "dev-frame-opencode"]
+SUSPENDED_PROJECTS = ["dev-frame-writing"]
 BOUND_PROJECTS = ["tripmark"]
 PENDING_PROJECTS = [
     "project-gamma",
@@ -159,7 +160,7 @@ class TestRouter10ProjectIsolation:
 
     def _build_10_targets(self) -> list[dict]:
         """10 properly-isolated synthetic targets (shared CDP, unique conversations)."""
-        names = list(dict.fromkeys(ACTIVE_PROJECTS + BOUND_PROJECTS + PENDING_PROJECTS))[:EXPECTED_PROJECTS]
+        names = list(dict.fromkeys(ACTIVE_PROJECTS + SUSPENDED_PROJECTS + BOUND_PROJECTS + PENDING_PROJECTS))[:EXPECTED_PROJECTS]
         return [
             _make_target(
                 project_id=names[i],
@@ -308,6 +309,11 @@ class TestRouter10ProjectClassification:
         for pid in PENDING_PROJECTS:
             assert projects[pid]["binding_status"] == "pending_binding", (
                 f"{pid} should be pending_binding"
+            )
+        # All suspended projects must be suspended
+        for pid in SUSPENDED_PROJECTS:
+            assert projects[pid]["binding_status"] == "suspended", (
+                f"{pid} should be suspended"
             )
 
     def test_active_count(self):

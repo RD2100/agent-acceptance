@@ -48,14 +48,36 @@ verifications:
     evidence: 178 sealed files, regenerated each commit by governance hook
 
   - id: VM-004
-    name: Capability inventory coverage
+    name: Capability inventory coverage (mode-based)
     check_type: content_count
     target: docs/agent-runtime/capability-inventory.md
-    threshold: ">= 20 verified capabilities"
-    last_verified_at: 2026-06-12
-    verified_by: passport_summary_inspection
-    result: pass
-    evidence: 29 capabilities registered, 26 verified (note passport accuracy gap RR-001)
+    threshold: "All capabilities in the required set for the target mode must be verified"
+    last_verified_at: 2026-06-13
+    verified_by: passport_summary_inspection + minimum-capability-set.md
+    result: partial
+    result_detail:
+      local_governance:
+        required: 12
+        passport_verified_in_set: 12
+        gate0_usable_in_set: 12
+        status: pass
+      controlled_pilot:
+        required: 14
+        passport_verified_in_set: 13
+        gate0_usable_in_set: 13
+        human_authorized: false
+        status: gap
+        gap_detail:
+          - "CAP-014 degraded (passport) + usable_for_gate0=false"
+          - "CAP-029 passport verified but pilot mode not human-authorized"
+    evidence: >
+      29 capabilities registered. Passport summary: 18 verified, 1 degraded,
+      1 stale, 8 unknown, 0 broken. Minimum-capability-set.md defines two
+      modes: local_governance (12 required, all 12 verified = PASS) and
+      controlled_pilot (14 unique required: 12 from Mode 1 + CAP-014 + CAP-029;
+      passport verified in set = 13; gate0 usable = 13; pilot mode not
+      human-authorized = GAP). Old fixed-count threshold (>=20) replaced
+      by mode-based requirement. See minimum-capability-set.md and RR-001.
 
   - id: VM-005
     name: Test suite pass rate

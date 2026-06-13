@@ -19,6 +19,7 @@ import sys
 import os
 import tempfile
 import shutil
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
@@ -63,6 +64,12 @@ def _write_latest_json(path: Path, data: dict):
     return str(latest_file)
 
 
+def _recent_checked_at(offset_hours: float = 1.0) -> str:
+    """Return an ISO-8601 UTC timestamp offset_hours ago (avoids staleness)."""
+    dt = datetime.now(timezone.utc) - timedelta(hours=offset_hours)
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def _healthy_metrics():
     """Return healthy metrics data."""
     return {
@@ -77,7 +84,7 @@ def _healthy_metrics():
             "last_gpt_reply_bytes": 5000,
         },
         "last_nav_result": "ok",
-        "last_checked_at": "2026-06-12T10:00:00Z",
+        "last_checked_at": _recent_checked_at(),
         "metrics_source": "cdp_dom_count",
     }
 
@@ -96,7 +103,7 @@ def _degraded_metrics():
             "last_gpt_reply_bytes": 500,
         },
         "last_nav_result": "ok",
-        "last_checked_at": "2026-06-12T10:00:00Z",
+        "last_checked_at": _recent_checked_at(),
         "metrics_source": "cdp_dom_count",
     }
 
@@ -115,7 +122,7 @@ def _auth_required_metrics():
             "last_gpt_reply_bytes": 3000,
         },
         "last_nav_result": "auth_required",
-        "last_checked_at": "2026-06-12T10:00:00Z",
+        "last_checked_at": _recent_checked_at(),
         "metrics_source": "cdp_dom_count",
     }
 

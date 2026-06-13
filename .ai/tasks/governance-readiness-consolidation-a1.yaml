@@ -7,21 +7,19 @@ mode: "@go review"
 
 description: >
   Single consolidation batch resolving governance source drift, TaskSpec schema
-  parity, pre-existing test failures, and capability scope classification.
-  No real dispatch, plugin installation, or paper workflow in scope.
+  parity, 6 failing tests, and capability scope classification. No real dispatch,
+  plugin installation, or paper workflow in scope.
 
 goal:
   user_visible_success: >
-    All governance sources consistent, schema status enum parity achieved,
-    full test suite green, minimum capability set defined with correct
-    per-mode semantics. Ready for independent review.
+    All governance sources consistent, schema covers actual usage, full test
+    suite green, minimum capability set defined. Ready for independent review.
   in_scope:
-    - Sync verify-matrix.yaml VM-004 to mode-based threshold (local_governance PASS, controlled_pilot GAP)
-    - Update risk-register.yaml RR-001/004/005 status
+    - Sync verify-matrix.yaml VM-004 to reflect 18 verified + GAP
+    - Update risk-register.yaml RR-001 status and description
     - Define minimum capability set (local_governance / controlled_pilot / optional)
     - Expand task-spec.schema.json status enum from 4 to 9 values
-    - Sync multi-agent-dispatch-plan.schema.json embedded enum
-    - Fix pre-existing test failures (router + health + advisory staleness)
+    - Fix 6 pre-existing test failures (router + health check)
     - Add governance consistency tests
     - Full pytest green + git diff --check clean
   out_of_scope:
@@ -31,7 +29,6 @@ goal:
     - Paper workflow execution
     - Git push or remote operations
     - Human authorization (separate step)
-    - Full JSON Schema validation of all TaskSpec fields (only status enum parity guaranteed)
 
 write_set:
   - ".ai/current-task.yaml"
@@ -56,7 +53,7 @@ write_set:
 
 gate_0:
   triggered: true
-  trigger_reason: "P1 consolidation: governance sources, schema, tests, capability scope, readiness report"
+  trigger_reason: "P1 consolidation: governance sources, schema, tests, capability scope"
   inventory_evidence:
     queried_sources:
       - ".ai/verify-matrix.yaml"
@@ -82,9 +79,37 @@ deny_paths:
   - "scripts/startup_conversation_health_check.py"
 
 rollback_conditions:
-  - Any test regression beyond the pre-existing failures
-  - Schema change breaks existing TaskSpec status validation
+  - Any test regression beyond the 6 pre-existing failures
+  - Schema change breaks existing TaskSpec validation
   - Governance source inconsistency increases rather than decreases
 
-live_dispatch_authorized: false
-next_recommended: "Human review of consolidation results"
+baseline:
+  pre_head: 86ea6967
+  pre_taskspec_count: 43
+  pre_taskspec_status_distribution:
+    closed: 23
+    completed: 7
+    deferred: 6
+    accepted_with_limitation: 6
+    pending_human_decision: 1
+  pre_capability_passport:
+    verified: 18
+    degraded: 1
+    stale: 1
+    unknown: 8
+    broken: 0
+  pre_test_results:
+    total: 1275
+    passed: 1269
+    failed: 6
+  pre_risk_register:
+    open: 3  # RR-001, RR-004, RR-005
+    accepted: 3  # RR-002, RR-003, RR-006
+  pre_verify_matrix:
+    pass: 8
+    fail: 2  # VM-009, VM-010 (accepted)
+  pre_schema_status_enum:
+    - draft
+    - ready
+    - deferred
+    - rejected

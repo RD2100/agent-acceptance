@@ -34,10 +34,15 @@
                                       "enum":  [
                                                    "draft",
                                                    "ready",
+                                                   "in_progress",
+                                                   "completed",
+                                                   "closed",
                                                    "deferred",
-                                                   "rejected"
+                                                   "rejected",
+                                                   "accepted_with_limitation",
+                                                   "pending_human_decision"
                                                ],
-                                      "description":  "Current status of the task."
+                                      "description":  "Current status of the task. draft: not yet reviewed. ready: approved for dispatch. in_progress: actively being worked. completed: all acceptance criteria met. closed: superseded or no longer needed. deferred: postponed to future phase. rejected: not approved. accepted_with_limitation: accepted with documented constraints. pending_human_decision: requires human authorization."
                                   },
                        "description":  {
                                            "type":  "string",

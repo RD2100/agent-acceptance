@@ -14,6 +14,7 @@ import json
 import os
 import sys
 import tempfile
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -30,11 +31,23 @@ BUILDER_PATH = SCRIPTS_DIR / "build_evidence_pack.py"
 STARTUP_READ_GATE_DOC = Path(__file__).resolve().parent.parent / "docs" / "agent-runtime" / "startup-read-gate.md"
 
 
+def _recent_checked_at(offset_hours: float = 1.0) -> str:
+    """Compute a checked_at timestamp that is `offset_hours` hours ago (UTC).
+
+    This avoids wall-clock-dependent test failures caused by a hardcoded
+    timestamp that goes stale after 12 hours.
+    """
+    dt = datetime.now(timezone.utc) - timedelta(hours=offset_hours)
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def _make_current_json(tmp: Path, decision="OK", msg_count=5, rt=12.0,
                        reply_bytes=3000, freshness="fresh",
                        nav_result="ok", source="cdp_dom_count",
-                       checked_at="2026-06-12T00:00:00Z") -> str:
+                       checked_at=None) -> str:
     """Create a current.json in tmp and return its path."""
+    if checked_at is None:
+        checked_at = _recent_checked_at()
     current_dir = tmp / ".ai" / "conversation"
     current_dir.mkdir(parents=True, exist_ok=True)
     current_path = current_dir / "current.json"
@@ -62,8 +75,11 @@ def _make_current_json(tmp: Path, decision="OK", msg_count=5, rt=12.0,
 
 def _make_latest_json(tmp: Path, decision="OK", msg_count=10, rt=10.0,
                       reply_bytes=5000, freshness="fresh",
-                      nav_result="ok", source="cdp_dom_count") -> str:
+                      nav_result="ok", source="cdp_dom_count",
+                      checked_at=None) -> str:
     """Create a latest.json in tmp and return its path."""
+    if checked_at is None:
+        checked_at = _recent_checked_at()
     latest_dir = tmp / "_evidence" / "conversation-health"
     latest_dir.mkdir(parents=True, exist_ok=True)
     latest_path = latest_dir / "latest.json"
@@ -81,7 +97,7 @@ def _make_latest_json(tmp: Path, decision="OK", msg_count=10, rt=10.0,
         "last_nav_result": nav_result,
         "last_health_decision": decision,
         "last_health_reasons": [],
-        "last_checked_at": "2026-06-12T00:00:00Z",
+        "last_checked_at": checked_at,
         "metrics_source": source,
         "metrics_freshness": freshness,
         "last_health_severity": "INFO",
