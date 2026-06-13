@@ -1,0 +1,56 @@
+{
+  "run_id": "MULTI-AGENT-READINESS-REPAIR-A1-20260613T044849Z",
+  "task_id": "MULTI-AGENT-READINESS-REPAIR-A1",
+  "scenario": "A",
+  "pack": "_evidence\\MULTI-AGENT-READINESS-REPAIR-A1\\REVIEW_BUNDLE.zip",
+  "pack_exists": true,
+  "pack_size": 24624,
+  "pack_sha256": "8a85c2914bba19836cf8fbbdfcbf5a6bfb5e2375b6b7b57af8ee7b40958c7f76",
+  "prompt_chars": 1524,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-13T12:50:13",
+  "reply_chars": 6185,
+  "reply_sha256": "157464e01ea40bcfd088c604cf746cfe40d879e3a80a660472d627741b4d7f65",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "blocked",
+  "capture_reconciliation": {
+    "target_run_id": "MULTI-AGENT-READINESS-REPAIR-A1-20260613T044849Z",
+    "target_task_id": "MULTI-AGENT-READINESS-REPAIR-A1",
+    "before_user_count": 23,
+    "before_assistant_count": 3,
+    "after_user_count": 24,
+    "after_assistant_count": 5,
+    "candidate_indices": [
+      4
+    ],
+    "selected_index": 4,
+    "last_index": 4,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+  "result_path": "_evidence\\MULTI-AGENT-READINESS-REPAIR-A1\\review.md",
+  "report_result_path": "_evidence\\MULTI-AGENT-READINESS-REPAIR-A1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "_evidence\\MULTI-AGENT-READINESS-REPAIR-A1\\GPT_CAPTURE_RECONCILIATION.json"
+}

@@ -36,7 +36,7 @@ def test_validator_accepts_current_dispatch_plan():
 
     assert exit_code == 0
     assert report["valid"] is True
-    assert report["dispatch_status"] == "READY"
+    assert report["dispatch_status"] == "HUMAN_REQUIRED"
     assert report["executed_external_runtime"] is False
     assert report["assignment_count"] >= 1
     assert report["errors"] == []
@@ -177,4 +177,4 @@ def test_validator_cli_writes_json_report(tmp_path):
     assert result.returncode == 0
     report = json.loads(result.stdout)
     assert report["valid"] is True
-    assert report["dispatch_status"] == "READY"
+    assert report["dispatch_status"] == "HUMAN_REQUIRED"

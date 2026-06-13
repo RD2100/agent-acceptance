@@ -1,0 +1,25 @@
+{
+  "task_id": "MULTI-AGENT-READINESS-REPAIR-A1",
+  "generated_at": "2026-06-13T11:14:03.8060369+08:00",
+  "status": "pass",
+  "external_runtime_executed": false,
+  "paper_workflow_executed": false,
+  "ai_guard": {
+    "command": "python tools/ai_guard.py --files <17 scoped files>",
+    "exit_code": 0,
+    "files_checked": 17,
+    "issues": 0,
+    "raw_output": "_evidence/MULTI-AGENT-READINESS-REPAIR-A1/07-ai-guard.txt"
+  },
+  "path_boundary": {
+    "repository_bound_evidence_paths": true,
+    "real_path_negative_test": "test_activation_evidence_cannot_escape_repository_root",
+    "result": "passed"
+  },
+  "secret_scan": {
+    "real_key_patterns_found": false,
+    "staged_diff_scan_run": false,
+    "note": "AI Guard scanned the explicit working file set. Staged-diff scanning remains a pre-commit gate."
+  },
+  "verdict": "pass"
+}

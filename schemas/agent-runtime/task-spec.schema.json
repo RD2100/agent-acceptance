@@ -203,6 +203,11 @@
                                                "type":  "object",
                                                "description":  "Mandatory security report for any task involving external APIs, credentials, or sensitive configuration. Must be completed before task is marked done.",
                                                "properties":  {
+                                                                  "scan_status":  {
+                                                                                      "type":  "string",
+                                                                                      "enum":  ["not_run", "passed", "failed"],
+                                                                                      "description":  "Overall scan lifecycle. Planning defaults to not_run and must not imply completed scanning."
+                                                                                  },
                                                                   "new_external_api":  {
                                                                                            "type":  "boolean",
                                                                                            "description":  "Does this task introduce or modify external API integration?"
@@ -212,11 +217,11 @@
                                                                                            "description":  "Does this task add or modify environment variables?"
                                                                                        },
                                                                   "env_example_placeholders_only":  {
-                                                                                                        "type":  "boolean",
+                                                                                                        "type":  ["boolean", "null"],
                                                                                                         "description":  "Are .env.example files confirmed to contain only placeholders?"
                                                                                                     },
                                                                   "real_key_patterns_found":  {
-                                                                                                  "type":  "boolean",
+                                                                                                  "type":  ["boolean", "null"],
                                                                                                   "description":  "Were any real API key patterns (sk-, ghp_, etc.) found in committed files?"
                                                                                               },
                                                                   "staged_diff_secret_scan_run":  {
@@ -232,12 +237,13 @@
                                                                                                      "description":  "Were packaging/release artifacts scanned for secrets?"
                                                                                                  },
                                                                   "key_rotation_needed":  {
-                                                                                              "type":  "boolean",
+                                                                                              "type":  ["boolean", "null"],
                                                                                               "description":  "Does any API key need rotation as a result of this task?"
                                                                                           }
                                                               },
                                                "required":  [
-                                                                "new_external_api",
+                                                               "scan_status",
+                                                               "new_external_api",
                                                                 "env_example_placeholders_only",
                                                                 "real_key_patterns_found",
                                                                 "staged_diff_secret_scan_run",
@@ -245,7 +251,7 @@
                                                             ]
                                            }
                    },
-    "additionalProperties":  true,
+    "additionalProperties":  false,
     "examples":  [
                      {
                          "task_id":  "t-001",

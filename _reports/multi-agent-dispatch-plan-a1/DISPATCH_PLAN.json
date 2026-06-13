@@ -1,12 +1,12 @@
 {
   "plan_id": "multi-agent-dispatch-plan-a1",
-  "generated_at": "2026-06-13T02:37:25.464167Z",
-  "status": "READY",
+  "generated_at": "2026-06-13T03:13:02.662849Z",
+  "status": "HUMAN_REQUIRED",
   "executed_external_runtime": false,
   "source_preflight": {
     "path": "_reports\\multi-agent-gate0-preflight-a1\\GATE0_PREFLIGHT.json",
-    "overall": "PASS",
-    "human_gate_required": false,
+    "overall": "HUMAN_REQUIRED",
+    "human_gate_required": true,
     "executed_external_runtime": false,
     "detail": "Loaded Gate 0 preflight artifact."
   },
@@ -137,11 +137,12 @@
           "conflict_level": "none"
         },
         "security_report": {
+          "scan_status": "not_run",
           "new_external_api": false,
-          "env_example_placeholders_only": true,
-          "real_key_patterns_found": false,
+          "env_example_placeholders_only": null,
+          "real_key_patterns_found": null,
           "staged_diff_secret_scan_run": false,
-          "key_rotation_needed": false
+          "key_rotation_needed": null
         }
       }
     },
@@ -256,11 +257,12 @@
           "conflict_level": "none"
         },
         "security_report": {
+          "scan_status": "not_run",
           "new_external_api": false,
-          "env_example_placeholders_only": true,
-          "real_key_patterns_found": false,
+          "env_example_placeholders_only": null,
+          "real_key_patterns_found": null,
           "staged_diff_secret_scan_run": false,
-          "key_rotation_needed": false
+          "key_rotation_needed": null
         }
       }
     },
@@ -373,11 +375,12 @@
           "conflict_level": "none"
         },
         "security_report": {
+          "scan_status": "not_run",
           "new_external_api": false,
-          "env_example_placeholders_only": true,
-          "real_key_patterns_found": false,
+          "env_example_placeholders_only": null,
+          "real_key_patterns_found": null,
           "staged_diff_secret_scan_run": false,
-          "key_rotation_needed": false
+          "key_rotation_needed": null
         }
       }
     },
@@ -496,11 +499,12 @@
           "conflict_level": "none"
         },
         "security_report": {
+          "scan_status": "not_run",
           "new_external_api": false,
-          "env_example_placeholders_only": true,
-          "real_key_patterns_found": false,
+          "env_example_placeholders_only": null,
+          "real_key_patterns_found": null,
           "staged_diff_secret_scan_run": false,
-          "key_rotation_needed": false
+          "key_rotation_needed": null
         }
       }
     },
@@ -607,11 +611,12 @@
           "conflict_level": "none"
         },
         "security_report": {
+          "scan_status": "not_run",
           "new_external_api": false,
-          "env_example_placeholders_only": true,
-          "real_key_patterns_found": false,
+          "env_example_placeholders_only": null,
+          "real_key_patterns_found": null,
           "staged_diff_secret_scan_run": false,
-          "key_rotation_needed": false
+          "key_rotation_needed": null
         }
       }
     },
@@ -721,11 +726,12 @@
           "conflict_level": "high"
         },
         "security_report": {
+          "scan_status": "not_run",
           "new_external_api": false,
-          "env_example_placeholders_only": true,
-          "real_key_patterns_found": false,
+          "env_example_placeholders_only": null,
+          "real_key_patterns_found": null,
           "staged_diff_secret_scan_run": false,
-          "key_rotation_needed": false
+          "key_rotation_needed": null
         }
       }
     }

@@ -1,8 +1,21 @@
 {
   "pilot_id": "multi-agent-multi-gpt-pilot-a1",
   "activation_timestamp": "2026-06-10T02:22:43Z",
-  "last_updated": "2026-06-13T02:30:00+08:00",
-  "update_reason": "Codex review response: corrected binding status to match CONVERSATION_BINDING.json",
+  "last_updated": "2026-06-13T12:00:00+08:00",
+  "update_reason": "Readiness semantics repair: static bindings are not current-run authorization or live-session evidence",
+  "run_id": null,
+  "authorization": {
+    "authorized": false,
+    "authorizing_task": null,
+    "exact_command": null,
+    "expected_write_set": [],
+    "evidence_file": null,
+    "decision_maker": null,
+    "decision_reason": null,
+    "approved_at": null,
+    "expires_at": null,
+    "risk_acknowledged": false
+  },
   "binding_path": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json",
   "binding_valid": true,
   "schema_validated": true,
@@ -58,6 +71,6 @@
     "No live CDP session evidence captured for either binding",
     "Authorization was verbal ('授权，开始吧') without run-bound authorization record",
     "CAP-029 approved status predates this pilot session (set at commit 511c54ab)",
-    "Dispatch plan was not regenerated post-authorization (remains HUMAN_REQUIRED)"
+    "Dispatch must remain HUMAN_REQUIRED until fresh run-bound authorization and live session evidence are captured"
   ]
 }

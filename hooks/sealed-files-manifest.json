@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-13T10:43:55.2801138+08:00",
+    "generated":  "2026-06-13T13:06:49.6737673+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "5F355E8D4FC1DF34627264AB41E20499C39CA3FDF3F1FEFCEDB364EA6ADB40BD",
@@ -216,7 +216,7 @@
                              "path":  "docs/agent-runtime/inactive-frame-registry.md"
                          },
                          {
-                             "sha256":  "652A6D7ABAC4CF1E4AABBA1A5ABDDE059A14EC8B1277C71AA1311A858EB986D4",
+                             "sha256":  "909D4B5AE10F3BA2FC763E801F7B54E89F225C027C9A7214A59E95E461A4632D",
                              "path":  "docs/agent-runtime/integration-contracts.md"
                          },
                          {
@@ -592,7 +592,7 @@
                              "path":  "schemas/agent-runtime/evidence-manifest.schema.json"
                          },
                          {
-                             "sha256":  "D8C2BCBFCB737EC086BD520D5F88FB0F2D93EF7BC551FC8CB95E051607CEB661",
+                             "sha256":  "7147C61BCF6AA8CCF1CE2526341E9325C855B4A4C4E7C75C34EF72FB4A97672B",
                              "path":  "schemas/agent-runtime/execution-report.schema.json"
                          },
                          {
@@ -604,7 +604,7 @@
                              "path":  "schemas/agent-runtime/memory-update-record.schema.json"
                          },
                          {
-                             "sha256":  "2A13C5EFFEC2BD1F629DA78F6EBF663CBB7EF757A9931C45522FF8A6D58166AE",
+                             "sha256":  "F895A4FD4727154AEB2C330931E50605B0D349AD1AD830DCAF6511A675546285",
                              "path":  "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
                          },
                          {
@@ -636,7 +636,7 @@
                              "path":  "schemas/agent-runtime/source-lock-record.schema.json"
                          },
                          {
-                             "sha256":  "094EB14E39CA4B5D81A3406269EEF87E1C05ADC4F94E025851719928D898BE5F",
+                             "sha256":  "89F1D4E04526899B6FC1CAEAB282B58A2D979AE09C030FDEE030B0B72A1F04B8",
                              "path":  "schemas/agent-runtime/task-spec.schema.json"
                          },
                          {

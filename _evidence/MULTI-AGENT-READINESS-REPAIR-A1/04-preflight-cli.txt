@@ -1,4 +1,4 @@
-{
+﻿{
   "overall": "HUMAN_REQUIRED",
   "executed_external_runtime": false,
   "human_gate_required": true,
@@ -72,3 +72,4 @@
     }
   ]
 }
+exit_code=2

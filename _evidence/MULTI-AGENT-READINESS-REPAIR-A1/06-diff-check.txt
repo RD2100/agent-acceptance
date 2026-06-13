@@ -1,0 +1,29 @@
+﻿git.exe : warning: in the working copy of '.ai/current-task.yaml', LF will be replaced by CRLF the next time Git touche
+s it
+At line:41 char:1
++ & git diff --check -- .ai/current-task.yaml _reports/multi-agent-disp ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (warning: in the... Git touches it:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+warning: in the working copy of '_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json', LF will be replaced b
+y CRLF the next time Git touches it
+warning: in the working copy of 'docs/agent-runtime/integration-contracts.md', LF will be replaced by CRLF the next tim
+e Git touches it
+warning: in the working copy of 'schemas/agent-runtime/execution-report.schema.json', LF will be replaced by CRLF the n
+ext time Git touches it
+warning: in the working copy of 'schemas/agent-runtime/multi-agent-dispatch-plan.schema.json', LF will be replaced by C
+RLF the next time Git touches it
+warning: in the working copy of 'schemas/agent-runtime/task-spec.schema.json', LF will be replaced by CRLF the next tim
+e Git touches it
+warning: in the working copy of 'scripts/multi_agent_dispatch_plan.py', LF will be replaced by CRLF the next time Git t
+ouches it
+warning: in the working copy of 'scripts/multi_agent_gate0_preflight.py', LF will be replaced by CRLF the next time Git
+ touches it
+warning: in the working copy of 'tests/test_multi_agent_dispatch_plan.py', LF will be replaced by CRLF the next time Gi
+t touches it
+warning: in the working copy of 'tests/test_multi_agent_gate0_preflight.py', LF will be replaced by CRLF the next time 
+Git touches it
+warning: in the working copy of 'tests/test_validate_multi_agent_dispatch_plan.py', LF will be replaced by CRLF the nex
+t time Git touches it
+exit_code=0

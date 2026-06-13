@@ -1,0 +1,20 @@
+{
+  "task_id": "MULTI-AGENT-READINESS-REPAIR-A1",
+  "base_commit": "10d9515740953376b8cadc0d4b5a9e896788630d",
+  "executor_id": "codex-desktop-multi-agent-readiness-repair-a1",
+  "reviewer_id": "chatgpt-conversation-6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+  "reviewer_status": "pending",
+  "diff_sha256": "98e9b5fb3d8754feec194ab784509e443be30b1e4e10e34b892ace9bf5716fe6",
+  "external_runtime_executed": false,
+  "evidence": [
+    "diff.patch",
+    "02-target-tests.txt",
+    "03-full-tests.txt",
+    "04-preflight-cli.txt",
+    "05-plan-validator.txt",
+    "06-diff-check.txt",
+    "07-ai-guard.txt",
+    "safety-report.json",
+    "REVIEWER_INDEX.md"
+  ]
+}

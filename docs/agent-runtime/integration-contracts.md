@@ -27,12 +27,12 @@ Each contract defines: purpose, producer, consumer, required/optional fields, st
 
 ### Dual-Format Contract
 
-TaskSpec exists in two authoritative formats:
+TaskSpec has one canonical machine contract and one authoring representation:
 
-- **JSON schema** (`schemas/agent-runtime/task-spec.schema.json`): machine-validatable subset. Used by dispatch plan validators, gate0 preflight, and automated consumers.
-- **Markdown** (SADP protocol section 1): human-readable projection. Used for agent-to-agent dispatch instructions and execution context.
+- **JSON schema** (`schemas/agent-runtime/task-spec.schema.json`): canonical closed machine contract. Used by dispatch plan validators and automated consumers. Unknown or misspelled fields are rejected.
+- **Markdown** (SADP protocol section 1): human-readable authoring representation used for agent-to-agent instructions. It must be normalized into the canonical JSON fields before machine validation.
 
-The JSON schema permits additional properties beyond its defined fields to accommodate markdown-only fields when JSON representation is needed. Fields that exist only in one format are marked below.
+Markdown-only fields are operational instructions, not undeclared JSON extensions. A consumer must map them through the table below; it must not copy arbitrary markdown labels into canonical JSON.
 
 ### Field Mapping (JSON ↔ Markdown)
 
@@ -53,7 +53,7 @@ The JSON schema permits additional properties beyond its defined fields to accom
 | — | Batch | Markdown only | Organizational grouping |
 | — | Allowed Files | Markdown only | Covered by `conflict_registry.write_set` in JSON |
 | — | Forbidden | Markdown only | Covered by `deny_paths` in TaskSpec YAML |
-| — | Acceptance Gates | Markdown only | Covered by `gate_0` + external review |
+| — | Acceptance Gates | Markdown only | Evaluated by the task runner and external review; not copied into TaskSpec JSON |
 | — | Expected Output | Markdown only | Covered by `conflict_registry.write_set` in JSON |
 | — | Rollback | Markdown only | Operational instruction |
 | — | Report To | Markdown only | Session routing |
@@ -76,7 +76,7 @@ The JSON schema permits additional properties beyond its defined fields to accom
 | `estimated_tools` | string[] | Tools likely needed |
 | `gate_0` | object | Gate 0 Reuse-before-Build evidence contract |
 | `conflict_registry` | object | File access scope for parallel dispatch safety |
-| `security_report` | object | Security checklist for sensitive tasks |
+| `security_report` | object | Security checklist with explicit `scan_status`; planning begins at `not_run` |
 
 ### Minimal JSON
 ```json
@@ -260,7 +260,7 @@ The JSON schema permits additional properties beyond its defined fields to accom
 | **Purpose** | Final structured report of a batch execution |
 | **Producer** | Report generator (Write-Report.ps1 or agent) |
 | **Consumer** | Human reviewer, planning agent |
-| **Status enum** | `draft`, `submitted`, `reviewed`, `accepted`, `rejected` |
+| **Status enum** | `pass`, `fail`, `blocked`, `escalate` |
 
 ### Required fields
 | Field | Type | Description |
@@ -270,6 +270,7 @@ The JSON schema permits additional properties beyond its defined fields to accom
 | `generated_at` | ISO8601 | Report generation timestamp |
 | `status` | enum | From status enum above |
 | `summary` | string | Executive summary |
+| `executor_id` | string | Required when `status=pass`; identifies the execution session/agent |
 
 ### Optional fields
 | Field | Type | Description |
@@ -279,6 +280,7 @@ The JSON schema permits additional properties beyond its defined fields to accom
 | `blocking_issues` | string[] | Issues blocking progress |
 | `recommendations` | string[] | Suggested next actions |
 | `reviewer_decision` | string | Reviewer's gate decision |
+| `reviewer_artifacts` | object | Required when `status=pass`; includes review paths, role, verdict, and `reviewer_id` |
 
 ### Minimal JSON
 ```json
@@ -286,15 +288,16 @@ The JSON schema permits additional properties beyond its defined fields to accom
   "report_id": "rep-001",
   "batch_id": "A1",
   "generated_at": "2026-05-27T10:05:00Z",
-  "status": "submitted",
-  "summary": "Batch A1 read-only inventory complete. 3 paths inventoried."
+  "status": "blocked",
+  "summary": "Batch A1 awaits independent review evidence."
 }
 ```
 
 ### Validation rules
 - `batch_id` must not be empty
 - `summary` must not be empty
-- If `status` is `reviewed`, `reviewer_decision` should be present
+- If `status` is `pass`, `executor_id` and `reviewer_artifacts` are required
+- `reviewer_artifacts.reviewer_id` must differ from `executor_id`; enforce with `scripts/validate_execution_report.py`
 
 ---
 

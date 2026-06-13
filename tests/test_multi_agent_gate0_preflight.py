@@ -3,6 +3,7 @@
 import json
 import subprocess
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -68,13 +69,77 @@ def _activate_binding(binding_path: Path, agent_id: str, conversation_id: str) -
     binding_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
-def test_current_repo_preflight_passes_pilot_ready():
-    """Current workspace pilot is fully activated, gate0 should PASS."""
+def _write_activation_record(
+    path: Path,
+    agent_ids: list[str],
+    *,
+    live_sessions: bool = True,
+    authorized: bool = True,
+    stale_sessions: bool = False,
+) -> Path:
+    now = datetime.now(timezone.utc)
+    verified_at = now - timedelta(hours=2) if stale_sessions else now
+    evidence_dir = path.parent / "_evidence" / "synthetic"
+    evidence_dir.mkdir(parents=True, exist_ok=True)
+    authorization_evidence = evidence_dir / "authorization.json"
+    authorization_evidence.write_text(
+        json.dumps({"run_id": "run-synthetic-001", "authorized": authorized}),
+        encoding="utf-8",
+    )
+    for index, agent_id in enumerate(agent_ids, start=1):
+        (evidence_dir / f"session-{index}.json").write_text(
+            json.dumps(
+                {
+                    "agent_id": agent_id,
+                    "session_id": f"session-{index}",
+                    "live": live_sessions,
+                    "verified_at": verified_at.isoformat(),
+                }
+            ),
+            encoding="utf-8",
+        )
+    data = {
+        "pilot_id": "synthetic-pilot",
+        "run_id": "run-synthetic-001",
+        "authorization": {
+            "authorized": authorized,
+            "authorizing_task": "task-synthetic-authorization",
+            "exact_command": "opencode run --task run-synthetic-001",
+            "expected_write_set": ["_reports/synthetic/**"],
+            "evidence_file": str(authorization_evidence.relative_to(path.parent)),
+            "decision_maker": "human-reviewer",
+            "decision_reason": "bounded synthetic test",
+            "approved_at": now.isoformat(),
+            "expires_at": (now + timedelta(hours=1)).isoformat(),
+            "risk_acknowledged": True,
+        },
+        "active_agents": [
+            {
+                "agent_id": agent_id,
+                "binding_status": "active",
+                "session_id": f"session-{index}",
+                "cdp_session_verified": live_sessions,
+                "verified_at": verified_at.isoformat(),
+                "evidence_file": str(
+                    (evidence_dir / f"session-{index}.json").relative_to(path.parent)
+                ),
+            }
+            for index, agent_id in enumerate(agent_ids, start=1)
+        ],
+        "cdp_session": {"active": live_sessions},
+    }
+    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    return path
+
+
+def test_current_repo_preflight_requires_fresh_authorization_and_live_sessions():
+    """Checked-in declarations are not current-run execution authority."""
     exit_code, report = evaluate_preflight(REPO)
 
     _assert_schema_valid(report)
-    assert exit_code == 0
-    assert report["overall"] == "PASS"
+    assert exit_code == 2
+    assert report["overall"] == "HUMAN_REQUIRED"
+    assert report["human_gate_required"] is True
     assert report["executed_external_runtime"] is False
 
 
@@ -94,12 +159,12 @@ def test_cli_output_writes_same_schema_valid_report(tmp_path):
         text=True,
     )
 
-    assert result.returncode == 0
+    assert result.returncode == 2
     stdout_report = json.loads(result.stdout)
     file_report = json.loads(output_path.read_text(encoding="utf-8"))
     assert file_report == stdout_report
     _assert_schema_valid(file_report)
-    assert file_report["overall"] == "PASS"
+    assert file_report["overall"] == "HUMAN_REQUIRED"
     assert file_report["executed_external_runtime"] is False
 
 
@@ -116,11 +181,16 @@ def test_two_active_bindings_with_approved_capability_pass(tmp_path):
     binding_b = project_b / ".agent" / "CONVERSATION_BINDING.json"
     _activate_binding(binding_a, "agent-alpha", "conv-alpha")
     _activate_binding(binding_b, "agent-beta", "conv-beta")
+    activation_record = _write_activation_record(
+        tmp_path / "ACTIVATION_RECORD.json",
+        ["agent-alpha", "agent-beta"],
+    )
 
     exit_code, report = evaluate_preflight(
         repo_root=tmp_path,
         binding_paths=[binding_a, binding_b],
         project_roots=[str(project_a), str(project_b)],
+        activation_record_path=activation_record,
     )
 
     _assert_schema_valid(report)
@@ -130,9 +200,9 @@ def test_two_active_bindings_with_approved_capability_pass(tmp_path):
     assert all(check["status"] == "passed" for check in report["checks"])
 
 
-def test_proposed_opencode_capability_requires_human_gate(tmp_path):
-    """CAP-029 proposed/false execution state keeps pilot in HUMAN_REQUIRED."""
-    _write_runtime_docs(tmp_path, executable=False)
+def test_active_bindings_without_run_bound_authorization_require_human_gate(tmp_path):
+    """Static active bindings alone must never authorize external dispatch."""
+    _write_runtime_docs(tmp_path, executable=True)
     project_a = tmp_path / "project-a"
     project_b = tmp_path / "project-b"
     project_a.mkdir()
@@ -148,6 +218,177 @@ def test_proposed_opencode_capability_requires_human_gate(tmp_path):
         repo_root=tmp_path,
         binding_paths=[binding_a, binding_b],
         project_roots=[str(project_a), str(project_b)],
+        activation_record_path=tmp_path / "missing-activation.json",
+    )
+
+    _assert_schema_valid(report)
+    assert exit_code == 2
+    assert report["overall"] == "HUMAN_REQUIRED"
+    assert any(check["name"] == "run_authorization" for check in report["checks"])
+
+
+def test_unverified_live_sessions_require_human_gate(tmp_path):
+    """An authorization record cannot substitute for live independent sessions."""
+    _write_runtime_docs(tmp_path, executable=True)
+    project_a = tmp_path / "project-a"
+    project_b = tmp_path / "project-b"
+    project_a.mkdir()
+    project_b.mkdir()
+    create_scaffold(str(project_a))
+    create_scaffold(str(project_b))
+    binding_a = project_a / ".agent" / "CONVERSATION_BINDING.json"
+    binding_b = project_b / ".agent" / "CONVERSATION_BINDING.json"
+    _activate_binding(binding_a, "agent-alpha", "conv-alpha")
+    _activate_binding(binding_b, "agent-beta", "conv-beta")
+    activation_record = _write_activation_record(
+        tmp_path / "ACTIVATION_RECORD.json",
+        ["agent-alpha", "agent-beta"],
+        live_sessions=False,
+    )
+
+    exit_code, report = evaluate_preflight(
+        repo_root=tmp_path,
+        binding_paths=[binding_a, binding_b],
+        project_roots=[str(project_a), str(project_b)],
+        activation_record_path=activation_record,
+    )
+
+    _assert_schema_valid(report)
+    assert exit_code == 2
+    assert report["overall"] == "HUMAN_REQUIRED"
+    assert any(check["name"] == "live_agent_sessions" for check in report["checks"])
+
+
+def test_stale_session_evidence_requires_human_gate(tmp_path):
+    """Previously live sessions must be re-verified for the current run."""
+    _write_runtime_docs(tmp_path, executable=True)
+    project_a = tmp_path / "project-a"
+    project_b = tmp_path / "project-b"
+    project_a.mkdir()
+    project_b.mkdir()
+    create_scaffold(str(project_a))
+    create_scaffold(str(project_b))
+    binding_a = project_a / ".agent" / "CONVERSATION_BINDING.json"
+    binding_b = project_b / ".agent" / "CONVERSATION_BINDING.json"
+    _activate_binding(binding_a, "agent-alpha", "conv-alpha")
+    _activate_binding(binding_b, "agent-beta", "conv-beta")
+    activation_record = _write_activation_record(
+        tmp_path / "ACTIVATION_RECORD.json",
+        ["agent-alpha", "agent-beta"],
+        stale_sessions=True,
+    )
+
+    exit_code, report = evaluate_preflight(
+        repo_root=tmp_path,
+        binding_paths=[binding_a, binding_b],
+        project_roots=[str(project_a), str(project_b)],
+        activation_record_path=activation_record,
+    )
+
+    assert exit_code == 2
+    assert report["overall"] == "HUMAN_REQUIRED"
+    assert any("stale" in check["detail"] for check in report["checks"])
+
+
+def test_future_authorization_approval_requires_human_gate(tmp_path):
+    """An approval timestamp from the future cannot authorize this run."""
+    _write_runtime_docs(tmp_path, executable=True)
+    project_a = tmp_path / "project-a"
+    project_b = tmp_path / "project-b"
+    project_a.mkdir()
+    project_b.mkdir()
+    create_scaffold(str(project_a))
+    create_scaffold(str(project_b))
+    binding_a = project_a / ".agent" / "CONVERSATION_BINDING.json"
+    binding_b = project_b / ".agent" / "CONVERSATION_BINDING.json"
+    _activate_binding(binding_a, "agent-alpha", "conv-alpha")
+    _activate_binding(binding_b, "agent-beta", "conv-beta")
+    activation_record = _write_activation_record(
+        tmp_path / "ACTIVATION_RECORD.json", ["agent-alpha", "agent-beta"]
+    )
+    data = json.loads(activation_record.read_text(encoding="utf-8"))
+    future_approval = datetime.now(timezone.utc) + timedelta(days=1)
+    data["authorization"]["approved_at"] = future_approval.isoformat()
+    data["authorization"]["expires_at"] = (future_approval + timedelta(hours=1)).isoformat()
+    activation_record.write_text(json.dumps(data), encoding="utf-8")
+
+    exit_code, report = evaluate_preflight(
+        repo_root=tmp_path,
+        binding_paths=[binding_a, binding_b],
+        project_roots=[str(project_a), str(project_b)],
+        activation_record_path=activation_record,
+    )
+
+    _assert_schema_valid(report)
+    assert exit_code == 2
+    assert report["overall"] == "HUMAN_REQUIRED"
+    assert any(
+        check["name"] == "run_authorization"
+        and "approved_at is in the future" in check["detail"]
+        for check in report["checks"]
+    )
+
+
+def test_activation_evidence_cannot_escape_repository_root(tmp_path):
+    """Authorization evidence paths are repository-bound and fail closed."""
+    _write_runtime_docs(tmp_path, executable=True)
+    project_a = tmp_path / "project-a"
+    project_b = tmp_path / "project-b"
+    project_a.mkdir()
+    project_b.mkdir()
+    create_scaffold(str(project_a))
+    create_scaffold(str(project_b))
+    binding_a = project_a / ".agent" / "CONVERSATION_BINDING.json"
+    binding_b = project_b / ".agent" / "CONVERSATION_BINDING.json"
+    _activate_binding(binding_a, "agent-alpha", "conv-alpha")
+    _activate_binding(binding_b, "agent-beta", "conv-beta")
+    activation_record = _write_activation_record(
+        tmp_path / "ACTIVATION_RECORD.json", ["agent-alpha", "agent-beta"]
+    )
+    outside = tmp_path.parent / "outside-authorization.json"
+    outside.write_text(
+        json.dumps({"run_id": "run-synthetic-001", "authorized": True}),
+        encoding="utf-8",
+    )
+    data = json.loads(activation_record.read_text(encoding="utf-8"))
+    data["authorization"]["evidence_file"] = str(outside)
+    activation_record.write_text(json.dumps(data), encoding="utf-8")
+
+    exit_code, report = evaluate_preflight(
+        repo_root=tmp_path,
+        binding_paths=[binding_a, binding_b],
+        project_roots=[str(project_a), str(project_b)],
+        activation_record_path=activation_record,
+    )
+
+    assert exit_code == 2
+    assert report["overall"] == "HUMAN_REQUIRED"
+    assert any("within repository root" in check["detail"] for check in report["checks"])
+
+
+def test_proposed_opencode_capability_requires_human_gate(tmp_path):
+    """CAP-029 proposed/false execution state keeps pilot in HUMAN_REQUIRED."""
+    _write_runtime_docs(tmp_path, executable=False)
+    project_a = tmp_path / "project-a"
+    project_b = tmp_path / "project-b"
+    project_a.mkdir()
+    project_b.mkdir()
+    create_scaffold(str(project_a))
+    create_scaffold(str(project_b))
+    binding_a = project_a / ".agent" / "CONVERSATION_BINDING.json"
+    binding_b = project_b / ".agent" / "CONVERSATION_BINDING.json"
+    _activate_binding(binding_a, "agent-alpha", "conv-alpha")
+    _activate_binding(binding_b, "agent-beta", "conv-beta")
+    activation_record = _write_activation_record(
+        tmp_path / "ACTIVATION_RECORD.json",
+        ["agent-alpha", "agent-beta"],
+    )
+
+    exit_code, report = evaluate_preflight(
+        repo_root=tmp_path,
+        binding_paths=[binding_a, binding_b],
+        project_roots=[str(project_a), str(project_b)],
+        activation_record_path=activation_record,
     )
 
     _assert_schema_valid(report)

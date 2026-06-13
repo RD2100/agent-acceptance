@@ -1,0 +1,18 @@
+{
+  "target_run_id": "MULTI-AGENT-READINESS-REPAIR-A1-R2-20260613T045720Z",
+  "target_task_id": "MULTI-AGENT-READINESS-REPAIR-A1",
+  "before_user_count": 24,
+  "before_assistant_count": 5,
+  "after_user_count": 25,
+  "after_assistant_count": 7,
+  "candidate_indices": [
+    6
+  ],
+  "selected_index": 6,
+  "last_index": 6,
+  "last_text_contains_run_id": true,
+  "selected_text_contains_run_id": true,
+  "selected_text_contains_end_marker": true,
+  "capture_mismatch": false,
+  "decision": "selected_and_last_match"
+}

@@ -1,0 +1,56 @@
+{
+  "run_id": "MULTI-AGENT-READINESS-REPAIR-A1-CLOSURE-20260613T050304Z",
+  "task_id": "MULTI-AGENT-READINESS-REPAIR-A1",
+  "scenario": "A",
+  "pack": "_evidence\\MULTI-AGENT-READINESS-REPAIR-A1\\r2\\REVIEW_BUNDLE_R2.zip",
+  "pack_exists": true,
+  "pack_size": 27858,
+  "pack_sha256": "de6fb5ba3e8309c0a5019353befe0d043d8a7e28c904360aa9f892c7af5b74e2",
+  "prompt_chars": 1173,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-13T13:04:03",
+  "reply_chars": 671,
+  "reply_sha256": "9f2c9d93041e4ea0853daad792267a10f69e3f324f270143efe74f95354c8689",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "capture_reconciliation": {
+    "target_run_id": "MULTI-AGENT-READINESS-REPAIR-A1-CLOSURE-20260613T050304Z",
+    "target_task_id": "MULTI-AGENT-READINESS-REPAIR-A1",
+    "before_user_count": 25,
+    "before_assistant_count": 7,
+    "after_user_count": 26,
+    "after_assistant_count": 8,
+    "candidate_indices": [
+      7
+    ],
+    "selected_index": 7,
+    "last_index": 7,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+  "result_path": "_evidence\\MULTI-AGENT-READINESS-REPAIR-A1\\r2\\closure\\review.md",
+  "report_result_path": "_evidence\\MULTI-AGENT-READINESS-REPAIR-A1\\r2\\closure\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "_evidence\\MULTI-AGENT-READINESS-REPAIR-A1\\r2\\closure\\GPT_CAPTURE_RECONCILIATION.json"
+}

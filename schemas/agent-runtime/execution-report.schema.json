@@ -40,6 +40,11 @@
       "minLength": 1,
       "description": "Executive summary. Must not be empty."
     },
+    "executor_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Session or agent identity that executed the implementation. Required for pass reports."
+    },
     "run_ids": {
       "type": "array",
       "items": { "type": "string" },
@@ -111,7 +116,7 @@
     "reviewer_artifacts": {
       "type": "object",
       "description": "Independent reviewer artifacts required before status can be accepted.",
-      "required": ["review_md", "review_yaml", "reviewer_role"],
+      "required": ["review_md", "review_yaml", "reviewer_role", "reviewer_id"],
       "properties": {
         "review_md": {
           "type": "string",
@@ -125,6 +130,11 @@
           "type": "string",
           "not": { "enum": ["executor", "fixer", "coder"] },
           "description": "Role that produced the reviewer artifacts. Must be independent of executor/fixer."
+        },
+        "reviewer_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Independent reviewer session or agent identity. Semantic validation requires it to differ from executor_id."
         },
         "verdict": {
           "type": "string",
@@ -142,7 +152,7 @@
         "required": ["status"]
       },
       "then": {
-        "required": ["reviewer_artifacts"]
+        "required": ["reviewer_artifacts", "executor_id"]
       }
     }
   ],

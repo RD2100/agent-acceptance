@@ -1,102 +1,102 @@
-task_id: GOVERNANCE-READINESS-CONSOLIDATION-A1
-title: "Consolidate governance sources, schema, tests, and capability scope"
-priority: P1
-status: in_progress
-type: consolidation
+task_id: MULTI-AGENT-READINESS-REPAIR-A1
+title: "Repair multi-agent readiness semantics and independent review evidence"
+priority: P0
+status: accepted_with_limitation
+type: governance_repair
 mode: "@go review"
 
 description: >
-  Single consolidation batch resolving governance source drift, TaskSpec schema
-  parity, pre-existing test failures, and capability scope classification.
-  No real dispatch, plugin installation, or paper workflow in scope.
-
-goal:
-  user_visible_success: >
-    All governance sources consistent, schema status enum parity achieved,
-    full test suite green, minimum capability set defined with correct
-    per-mode semantics. Ready for independent review.
-  in_scope:
-    - Sync verify-matrix.yaml VM-004 to mode-based threshold (local_governance PASS, controlled_pilot GAP)
-    - Update risk-register.yaml RR-001/004/005 status
-    - Define minimum capability set (local_governance / controlled_pilot / optional)
-    - Expand task-spec.schema.json status enum from 4 to 9 values
-    - Sync multi-agent-dispatch-plan.schema.json embedded enum
-    - Fix pre-existing test failures (router + health + advisory staleness)
-    - Add governance consistency tests
-    - Full pytest green + git diff --check clean
-  out_of_scope:
-    - opencode run or external runtime invocation
-    - Real multi-agent dispatch
-    - Plugin installation (codex plugins)
-    - Paper workflow execution
-    - Git push or remote operations
-    - Human authorization (separate step)
-    - Full JSON Schema validation of all TaskSpec fields (only status enum parity guaranteed)
+  Remove false-positive readiness, require run-bound authorization and live
+  independent session evidence, restore closed TaskSpec validation, and submit
+  the resulting evidence to an independent ChatGPT reviewer.
 
 write_set:
+  - "tasks/multi-agent-readiness-repair-a1.md"
   - ".ai/current-task.yaml"
-  - ".ai/risk-register.yaml"
-  - ".ai/verify-matrix.yaml"
-  - ".ai/tasks/governance-readiness-consolidation-a1.yaml"
+  - "scripts/multi_agent_gate0_preflight.py"
+  - "scripts/multi_agent_dispatch_plan.py"
+  - "scripts/validate_execution_report.py"
   - "schemas/agent-runtime/task-spec.schema.json"
   - "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
-  - "tests/test_router_10_project_stress.py"
-  - "tests/test_startup_conversation_health_check.py"
-  - "tests/test_pre_gpt_gate.py"
-  - "tests/test_pre_commit_health_advisory.py"
-  - "tests/test_governance_consistency.py"
+  - "schemas/agent-runtime/execution-report.schema.json"
+  - "tests/test_multi_agent_gate0_preflight.py"
   - "tests/test_multi_agent_dispatch_plan.py"
   - "tests/test_validate_multi_agent_dispatch_plan.py"
-  - "docs/agent-runtime/minimum-capability-set.md"
-  - "_reports/THREE-STEP-CLOSURE-REPORT.md"
-  - "_reports/governance-readiness-consolidation-a1/**"
-  - "_reports/LOCAL-GOVERNANCE-READINESS-REPORT.md"
-  - "_reports/multi-agent-dispatch-plan-a1/**"
-  - "_reports/multi-agent-architecture-review-a1/**"
-  - "_reports/multi-agent-verifier-a1/**"
-  - "_reports/multi-agent-quality-review-a1/**"
-  - "_reports/multi-agent-multi-gpt-pilot-a1/**"
-  - "docs/governance/PROGRESS_LOG.md"
-  - "docs/governance/VERIFY_MATRIX.md"
-  - "docs/governance/HANDOFF.md"
+  - "tests/test_governance_consistency.py"
+  - "tests/test_execution_report_schema.py"
+  - "tests/test_validate_execution_report.py"
   - "docs/agent-runtime/integration-contracts.md"
-  - "docs/agent-runtime/sub-agent-dispatch-protocol.md"
+  - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
   - "_reports/multi-agent-gate0-preflight-a1/**"
-  - "_evidence/EVIDENCE-CHAIN-ARCHIVE.md"
+  - "_reports/multi-agent-dispatch-plan-a1/**"
+  - "_reports/multi-agent-readiness-repair-a1/**"
+  - "_evidence/MULTI-AGENT-READINESS-REPAIR-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "P1 consolidation: governance sources, schema, tests, capability scope, readiness report"
+  trigger_reason: "P0 fake-readiness risk in authorization and dispatch state"
   inventory_evidence:
     queried_sources:
-      - ".ai/verify-matrix.yaml"
-      - ".ai/risk-register.yaml"
-      - "docs/agent-runtime/capability-inventory.md"
+      - "scripts/multi_agent_gate0_preflight.py"
+      - "scripts/multi_agent_dispatch_plan.py"
       - "schemas/agent-runtime/task-spec.schema.json"
-      - "_reports/THREE-STEP-CLOSURE-REPORT.md"
+      - "docs/agent-runtime/tool-policy.md"
+      - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
     matched_capabilities:
-      - governance_document_review
-      - schema_validation
-      - capability_passport_management
-  rules_checked: [core-003, core-008]
-  sufficiency_decision: existing_sufficient
-  decision: reuse
-  delta_justification: "Consolidation of existing artifacts. No new capabilities needed."
+      - multi-agent-gate0-preflight
+      - multi-agent-dispatch-plan
+      - SADP TaskSpec validation
+      - independent reviewer evidence
+    compared_against_request:
+      - run-bound human authorization
+      - live independent session evidence
+      - fail-closed dispatch readiness
+  rules_checked: [core-004, core-007, core-008, review-001]
+  sufficiency_decision: existing_partial
+  decision: build_delta
+  delta_justification: >
+    Existing checks validate declarations but not current-run authority or
+    live session evidence.
+
+conflict_registry:
+  read_set:
+    - "scripts/multi_agent_gate0_preflight.py"
+    - "scripts/multi_agent_dispatch_plan.py"
+    - "schemas/agent-runtime/"
+    - "tests/"
+    - "docs/agent-runtime/tool-policy.md"
+  write_set:
+    - "tasks/multi-agent-readiness-repair-a1.md"
+    - ".ai/current-task.yaml"
+    - "scripts/multi_agent_gate0_preflight.py"
+    - "scripts/multi_agent_dispatch_plan.py"
+    - "scripts/validate_execution_report.py"
+    - "schemas/agent-runtime/task-spec.schema.json"
+    - "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
+    - "schemas/agent-runtime/execution-report.schema.json"
+    - "tests/test_multi_agent_gate0_preflight.py"
+    - "tests/test_multi_agent_dispatch_plan.py"
+    - "tests/test_validate_multi_agent_dispatch_plan.py"
+    - "tests/test_governance_consistency.py"
+    - "tests/test_execution_report_schema.py"
+    - "tests/test_validate_execution_report.py"
+    - "docs/agent-runtime/integration-contracts.md"
+    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+    - "_reports/multi-agent-gate0-preflight-a1/**"
+    - "_reports/multi-agent-dispatch-plan-a1/**"
+    - "_reports/multi-agent-readiness-repair-a1/**"
+    - "_evidence/MULTI-AGENT-READINESS-REPAIR-A1/**"
+    - "hooks/sealed-files-manifest.json"
+    - "_evidence/hook-output/**"
+  protected_files_touched: true
+  conflict_level: high
 
 deny_paths:
-  - "scripts/multi_project_router.py"
-  - "scripts/dry_run_dispatch_10.py"
-  - "scripts/tab_target_resolver.py"
-  - ".agent/PROJECT_REGISTRY.json"
-  - "scripts/check_handoff_needed.py"
-  - "scripts/startup_conversation_health_check.py"
-
-rollback_conditions:
-  - Any test regression beyond the pre-existing failures
-  - Schema change breaks existing TaskSpec status validation
-  - Governance source inconsistency increases rather than decreases
+  - ".ai/paper_authorization.json"
+  - "D:/dev-frame/ai-workflow-hub"
+  - "D:/test-frame"
 
 live_dispatch_authorized: false
-next_recommended: "Human review of consolidation results"
+next_recommended: "Selective staging, pre-commit governance scan, and commit"

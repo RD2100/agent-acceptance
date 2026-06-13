@@ -49,12 +49,24 @@ def _paths_conflict(left: str, right: str) -> bool:
     )
 
 
-def _load_json(path: Path) -> dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+def _load_json(path: Path) -> tuple[dict[str, Any] | None, str | None]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
+    except FileNotFoundError:
+        return None, f"file not found: {path}"
+    except json.JSONDecodeError as exc:
+        return None, f"invalid JSON: {exc}"
+    except OSError as exc:
+        return None, f"cannot read file: {path}: {exc}"
+    if not isinstance(data, dict):
+        return None, f"JSON root must be an object: {path}"
+    return data, None
 
 
 def _load_task_spec_validator() -> Draft202012Validator:
-    schema = _load_json(TASK_SPEC_SCHEMA)
+    schema, error = _load_json(TASK_SPEC_SCHEMA)
+    if error or schema is None:
+        raise ValueError(error or "TaskSpec schema load failed")
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema)
 
@@ -127,11 +139,12 @@ def _task_spec(
             "conflict_level": "high" if touched else "none",
         },
         "security_report": {
+            "scan_status": "not_run",
             "new_external_api": False,
-            "env_example_placeholders_only": True,
-            "real_key_patterns_found": False,
+            "env_example_placeholders_only": None,
+            "real_key_patterns_found": None,
             "staged_diff_secret_scan_run": False,
-            "key_rotation_needed": False,
+            "key_rotation_needed": None,
         },
     }
 
@@ -181,7 +194,7 @@ def _assignment(
     }
 
 
-def _default_assignments() -> list[dict[str, Any]]:
+def _default_assignments(*, activation_complete: bool = False) -> list[dict[str, Any]]:
     architecture_task = _task_spec(
         "ma-architecture-review-a1",
         "Review multi-agent architecture boundaries",
@@ -248,7 +261,7 @@ def _default_assignments() -> list[dict[str, Any]]:
         [".agent/CONVERSATION_BINDING.json"],
         [".agent/CONVERSATION_BINDING.json"],
         priority="P1",
-        status="deferred",
+        status="completed" if activation_complete else "deferred",
         risk_notes="Requires human-provided independent binding evidence; do not fabricate chat_url or conversation_id.",
     )
     cap_task = _task_spec(
@@ -262,7 +275,7 @@ def _default_assignments() -> list[dict[str, Any]]:
             "docs/agent-runtime/sub-agent-dispatch-protocol.md",
         ],
         priority="P1",
-        status="deferred",
+        status="completed" if activation_complete else "deferred",
         risk_notes="Requires human/reviewer approval before usable_for_execution can change.",
     )
 
@@ -343,7 +356,11 @@ def _default_assignments() -> list[dict[str, Any]]:
             governance_record_requirements=["Decision log must record source of binding evidence without secrets."],
             parallel_group_id="human-gated-activation",
             parallel_safe=False,
-            blocking_conditions=["No independent binding evidence", "Binding source cannot be verified"],
+            blocking_conditions=(
+                []
+                if activation_complete
+                else ["No independent binding evidence", "Binding source cannot be verified"]
+            ),
         ),
         _assignment(
             worker_role="Human Reviewer",
@@ -358,7 +375,15 @@ def _default_assignments() -> list[dict[str, Any]]:
             governance_record_requirements=["Decision log and risk register must record approval basis and limits."],
             parallel_group_id="human-gated-activation",
             parallel_safe=False,
-            blocking_conditions=["No human/reviewer approval", "CAP-029 remains proposed", "tool policy still blocks execution"],
+            blocking_conditions=(
+                []
+                if activation_complete
+                else [
+                    "No human/reviewer approval",
+                    "CAP-029 remains proposed",
+                    "tool policy still blocks execution",
+                ]
+            ),
         ),
     ]
 
@@ -372,7 +397,15 @@ def _load_preflight(preflight_path: Path | None) -> dict[str, Any]:
             "executed_external_runtime": False,
             "detail": "No preflight path supplied; dispatch remains human-gated.",
         }
-    data = _load_json(preflight_path)
+    data, error = _load_json(preflight_path)
+    if error or data is None:
+        return {
+            "path": str(preflight_path),
+            "overall": "BLOCKED",
+            "human_gate_required": False,
+            "executed_external_runtime": False,
+            "detail": error or "preflight load failed",
+        }
     return {
         "path": str(preflight_path),
         "overall": data.get("overall"),
@@ -435,6 +468,24 @@ def validate_plan(plan: dict[str, Any]) -> tuple[bool, list[str]]:
     if plan.get("source_preflight", {}).get("executed_external_runtime") is True:
         errors.append("source preflight unexpectedly executed external runtime")
 
+    if plan.get("status") == "READY":
+        source = plan.get("source_preflight", {})
+        if source.get("overall") != "PASS" or source.get("human_gate_required") is not False:
+            errors.append("READY plan requires a PASS preflight with human_gate_required=false")
+        for assignment in plan.get("assignments", []):
+            if assignment.get("parallel_group_id") != "human-gated-activation":
+                continue
+            task_spec = assignment.get("task_spec", {})
+            if task_spec.get("status") not in {
+                "completed",
+                "closed",
+                "accepted_with_limitation",
+            } or assignment.get("blocking_conditions"):
+                errors.append(
+                    "READY plan has unresolved human activation task: "
+                    + str(task_spec.get("task_id", "<unknown>"))
+                )
+
     for assignment in plan.get("assignments", []):
         task_spec = assignment.get("task_spec", {})
         schema_errors = sorted(
@@ -455,7 +506,11 @@ def build_plan(
     preflight_path: Path | None = None,
 ) -> dict[str, Any]:
     source_preflight = _load_preflight(preflight_path)
-    assignments = _default_assignments()
+    activation_complete = (
+        source_preflight.get("overall") == "PASS"
+        and source_preflight.get("human_gate_required") is False
+    )
+    assignments = _default_assignments(activation_complete=activation_complete)
     conflict_summary = _summarize_conflicts(assignments)
 
     status = "READY"

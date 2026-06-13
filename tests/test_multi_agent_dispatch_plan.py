@@ -46,6 +46,7 @@ def test_plan_schema_task_spec_definition_tracks_core_task_schema_contract():
     for field in ["priority", "status"]:
         assert embedded["properties"][field]["enum"] == task_schema["properties"][field]["enum"]
     assert embedded["additionalProperties"] is False
+    assert task_schema["additionalProperties"] is False
 
 
 def test_plan_schema_task_spec_definition_tracks_nested_contracts():
@@ -75,16 +76,16 @@ def test_plan_schema_task_spec_definition_tracks_nested_contracts():
 
 
 def test_default_plan_matches_preflight_and_is_read_only():
-    """Dispatch plan status tracks the preflight gate — currently PASS → READY."""
+    """Current artifacts remain human-gated until live authorization exists."""
     plan = build_plan(preflight_path=PREFLIGHT_PATH)
     valid, errors = validate_plan(plan)
 
     assert valid is True
     assert errors == []
-    assert plan["status"] == "READY"
+    assert plan["status"] == "HUMAN_REQUIRED"
     assert plan["executed_external_runtime"] is False
-    assert plan["source_preflight"]["overall"] == "PASS"
-    assert plan["source_preflight"]["human_gate_required"] is False
+    assert plan["source_preflight"]["overall"] == "HUMAN_REQUIRED"
+    assert plan["source_preflight"]["human_gate_required"] is True
     assert plan["conflict_summary"]["has_errors"] is False
     assert len(plan["assignments"]) >= 4
     assert any(item["parallel_safe"] for item in plan["assignments"])
@@ -114,6 +115,28 @@ def test_plan_schema_validates_embedded_task_spec_priority():
         and "P9" in error.message
         for error in errors
     )
+
+
+def test_task_schema_rejects_unknown_fields():
+    """Misspelled governance fields must fail closed in the canonical schema."""
+    plan = build_plan(preflight_path=PREFLIGHT_PATH)
+    task_spec = plan["assignments"][0]["task_spec"]
+    task_spec["security_reprot"] = {"scan_status": "passed"}
+
+    errors = list(_validator(TASK_SCHEMA_PATH).iter_errors(task_spec))
+
+    assert any("Additional properties are not allowed" in error.message for error in errors)
+
+
+def test_generated_security_report_starts_not_run():
+    """Planning must not imply that a secret scan already ran."""
+    plan = build_plan(preflight_path=PREFLIGHT_PATH)
+
+    for assignment in plan["assignments"]:
+        report = assignment["task_spec"]["security_report"]
+        assert report["scan_status"] == "not_run"
+        assert report["real_key_patterns_found"] is None
+        assert report["key_rotation_needed"] is None
 
 
 def test_parallel_ready_assignments_have_disjoint_write_sets():
@@ -171,8 +194,8 @@ def test_validate_plan_detects_directory_file_write_conflict():
     assert any("write conflict" in error for error in errors)
 
 
-def test_cli_writes_output_and_preserves_ready_exit(tmp_path):
-    """CLI output is durable JSON and current repo exits 0 for ready dispatch."""
+def test_cli_writes_output_and_preserves_human_gate_exit(tmp_path):
+    """CLI output is durable JSON and current repo exits 2 for human gate."""
     output_path = tmp_path / "nested" / "DISPATCH_PLAN.json"
 
     result = subprocess.run(
@@ -189,10 +212,44 @@ def test_cli_writes_output_and_preserves_ready_exit(tmp_path):
         text=True,
     )
 
-    assert result.returncode == 0
+    assert result.returncode == 2
     stdout_plan = json.loads(result.stdout)
     file_plan = json.loads(output_path.read_text(encoding="utf-8"))
     assert file_plan == stdout_plan
     _assert_schema_valid(PLAN_SCHEMA_PATH, file_plan)
-    assert file_plan["status"] == "READY"
+    assert file_plan["status"] == "HUMAN_REQUIRED"
     assert file_plan["executed_external_runtime"] is False
+
+
+def test_ready_plan_rejects_deferred_human_activation_tasks(tmp_path):
+    """A forged PASS preflight cannot hide unresolved human activation tasks."""
+    preflight = {
+        "overall": "PASS",
+        "executed_external_runtime": False,
+        "human_gate_required": False,
+        "agent_count": 2,
+        "checks": [],
+    }
+    path = tmp_path / "preflight.json"
+    path.write_text(json.dumps(preflight), encoding="utf-8")
+    plan = build_plan(preflight_path=path)
+    human_task = next(
+        item for item in plan["assignments"]
+        if item["parallel_group_id"] == "human-gated-activation"
+    )
+    human_task["task_spec"]["status"] = "deferred"
+    human_task["blocking_conditions"] = ["authorization missing"]
+    plan["status"] = "READY"
+
+    valid, errors = validate_plan(plan)
+
+    assert valid is False
+    assert any("READY plan has unresolved human activation" in error for error in errors)
+
+
+def test_missing_preflight_returns_blocked_plan_without_traceback(tmp_path):
+    plan = build_plan(preflight_path=tmp_path / "missing.json")
+
+    assert plan["status"] == "BLOCKED"
+    assert plan["source_preflight"]["overall"] == "BLOCKED"
+    assert "file not found" in plan["source_preflight"]["detail"]

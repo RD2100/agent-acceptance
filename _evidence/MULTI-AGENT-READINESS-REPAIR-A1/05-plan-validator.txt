@@ -1,0 +1,9 @@
+﻿{
+  "valid": true,
+  "path": "_reports\\multi-agent-dispatch-plan-a1\\DISPATCH_PLAN.json",
+  "dispatch_status": "HUMAN_REQUIRED",
+  "executed_external_runtime": false,
+  "assignment_count": 6,
+  "errors": []
+}
+exit_code=0
