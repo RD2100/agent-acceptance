@@ -50,6 +50,7 @@ write_set:
   - "_reports/multi-agent-architecture-review-a1/**"
   - "_reports/multi-agent-verifier-a1/**"
   - "_reports/multi-agent-quality-review-a1/**"
+  - "_reports/multi-agent-multi-gpt-pilot-a1/**"
   - "docs/governance/PROGRESS_LOG.md"
   - "docs/governance/VERIFY_MATRIX.md"
   - "docs/governance/HANDOFF.md"
