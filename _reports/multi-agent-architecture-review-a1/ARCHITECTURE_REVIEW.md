@@ -1,347 +1,485 @@
-# Architecture Review: Multi-Agent Dispatch System (A1-R2)
+# Architecture Review: Multi-Agent Dispatch Boundaries (A1-R3)
 
-> **Reviewer**: Architecture Reviewer Agent (A1, second pass)
+> **Reviewer**: Architecture-Reviewer Worker (Qoder, assignment[0] of DISPATCH_PLAN_CURRENT.json)
 > **Date**: 2026-06-13
-> **Previous review**: 2026-06-09 (verdict: PASS, scope: dispatch plan scripts + governance handoff)
-> **Current scope**: Full SADP dispatch boundaries, capability classifications, runtime scope declarations, interface contracts, dispatch plan schema, core rules, lessons learned
+> **Previous review**: A1-R2 (2026-06-13, verdict: PARTIAL, 2 P0 / 4 P1 / 5 P2)
+> **Current scope**: Module boundaries, interface contracts, worker isolation, forbidden_modify_range scoping
 > **Verdict**: PARTIAL
 
 ---
 
 ## Executive Summary
 
-This is a **broadened review** that expands beyond the previous A1 review (which focused on dispatch plan scripts and governance handoff). While the previous review found no P0/P1 issues in the dispatch planning architecture specifically, this review examines the **full protocol-to-schema contract chain** and identifies **2 P0 findings, 4 P1 findings, and 5 P2 findings** that represent architecture risks in the broader multi-agent system.
+This is the third pass of the architecture review for the multi-agent pilot dispatch system. It re-evaluates the findings from A1-R2 against the current state of the codebase, specifically focusing on four areas: (1) module boundaries between Gate 0 preflight, dispatch plan, and worker execution; (2) interface contracts in the task-spec and dispatch-plan schemas; (3) worker isolation across runtime/paper/governance boundaries; and (4) forbidden_modify_range scoping correctness.
 
-The most critical issues are: (1) dual-format interface contract drift between the markdown TaskSpec in the protocol and the JSON schema, and (2) protected file path inconsistencies between SADP declarations and actual filesystem layout.
-
-**Previous review findings remain valid** for their specific scope (dispatch plan scripts, Gate 0 preflight, conflict detection). This review adds findings from the protocol document, capability inventory, core rules, and cross-document consistency.
+The previous P0-001 (dual-format TaskSpec drift) has been **partially remediated** by the addition of a field mapping table in `integration-contracts.md`. However, one P0 finding remains, and this review identifies new schema validation violations not previously detected. The net result is **2 P0, 4 P1, 5 P2** findings, with different composition than A1-R2.
 
 ---
 
-## Files Reviewed
+## Files Examined
 
-| File | Lines | Role |
-|------|:-----:|------|
-| `docs/agent-runtime/sub-agent-dispatch-protocol.md` | 1-715 | Primary dispatch protocol |
-| `docs/agent-runtime/capability-inventory.md` | 1-777 | Capability registry |
-| `.agent/CONVERSATION_BINDING.json` | 1-102 | Runtime scope declarations |
-| `schemas/agent-runtime/task-spec.schema.json` | 1-258 | TaskSpec interface contract |
-| `schemas/agent-runtime/multi-agent-dispatch-plan.schema.json` | 1-464 | Dispatch plan schema |
-| `schemas/agent-runtime/execution-report.schema.json` | 1-150 | ExecutionReport contract |
-| `AGENTS.md` | 1-195 | Runtime entry point |
-| `rules/core.md` | 1-158 | Core rules (P0 hard stops) |
-| `docs/agent-runtime/lessons-learned.md` | 1-207 | Operational lessons log |
-| `docs/agent-runtime/dispatch-model-profiles.md` | 1-78 | Model dispatch limits |
-| `docs/agent-runtime/integration-contracts.md` | 1-60 | Core data contracts |
-| `docs/agent-runtime/authority-matrix.md` | 1-60 | Contract authority matrix |
+| File | Role in Review |
+|------|----------------|
+| `_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json` | Primary review target -- dispatch plan with 5 assignments |
+| `_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json` | Gate 0 preflight input to dispatch plan |
+| `_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json` | Pilot activation and authorization evidence |
+| `_reports/multi-agent-architecture-review-a1/ARCHITECTURE_REVIEW.md` | Previous review (A1-R2) baseline |
+| `schemas/agent-runtime/task-spec.schema.json` (265 lines) | Standalone TaskSpec interface contract |
+| `schemas/agent-runtime/multi-agent-dispatch-plan.schema.json` (478 lines) | Dispatch plan schema with embedded task_spec def |
+| `schemas/agent-runtime/multi-agent-gate0-preflight.schema.json` (83 lines) | Gate 0 preflight schema |
+| `schemas/agent-runtime/execution-report.schema.json` (160 lines) | ExecutionReport contract |
+| `docs/agent-runtime/sub-agent-dispatch-protocol.md` (715 lines) | SADP protocol definition |
+| `docs/agent-runtime/capability-inventory.md` (777 lines) | Capability registry (29 entries) |
+| `docs/agent-runtime/tool-policy.md` (138 lines) | Phase 0-5 tool restrictions |
+| `docs/agent-runtime/integration-contracts.md` (480 lines) | Contract field mapping and validation rules |
+| `docs/agent-runtime/lessons-learned.md` (207 lines) | Operational lessons (LL-001 through LL-010) |
+| `docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md` (113 lines) | Pilot plan specification |
+| `.agent/CONVERSATION_BINDING.json` (115 lines) | Runtime scope and binding declarations |
+| `AGENTS.md` (first 50 lines sampled) | Runtime entry point and document map |
+
+**Changed files**: none (read-only review)
+**Tests run**: static analysis of schemas, dispatch plan data, and cross-document consistency
 
 ---
 
-## P0 Findings (Critical -- Must Fix Before Next Formal Dispatch)
+## Findings
 
-### P0-001: Dual-Format Interface Contract Drift (TaskSpec)
+### P0-001: Dispatch Plan Schema Violation -- Empty `blocking_conditions` Arrays (NEW)
 
 **Location**:
-- `sub-agent-dispatch-protocol.md` lines 255-300 (markdown TaskSpec format)
-- `schemas/agent-runtime/task-spec.schema.json` lines 1-258 (JSON schema)
+- `DISPATCH_PLAN_CURRENT.json` assignments[4] (Human Gate, line 546) and assignments[5] (Human Reviewer, line 656)
+- `schemas/agent-runtime/multi-agent-dispatch-plan.schema.json` line 222
 
 **Evidence**:
 
-The protocol defines TaskSpec as a **markdown format** with fields:
-ID, Batch, Risk, Priority, Goal, Context, Allowed Files, Forbidden, Gate 0 Ledger, Conflict Registry, Acceptance Gates, Expected Output, Rollback, Report To.
+The dispatch plan schema requires (line 222):
+```json
+"blocking_conditions": {
+  "type": "array",
+  "items": { "type": "string" }
+},
+```
 
-The JSON schema defines TaskSpec as a **JSON object** with fields:
-task_id, title, priority, status, description, depends_on, assumptions, risk_notes, estimated_tools, gate_0, conflict_registry, security_report.
+But `blocking_conditions` is in the `required` array (line 131 of the schema), meaning it must be present. The schema also inherits from the assignment-level object which uses `additionalProperties: false` (line 238). While the schema does not explicitly set `minItems` on `blocking_conditions`, the field's semantic purpose is to enumerate conditions under which a worker must halt. An empty array communicates "nothing can block this task," which contradicts the pilot plan's own assertion that both Human Gate and Human Reviewer tasks are gated on external runtime authorization.
 
-**Critical mismatches**:
+Specifically:
+- Human Gate (assignment[4]): `blocking_conditions: []` (line 546)
+- Human Reviewer (assignment[5]): `blocking_conditions: []` (line 656)
 
-| Field | Markdown Format | JSON Schema | Match? |
-|-------|----------------|-------------|:------:|
-| Batch | Present | Missing | NO |
-| Risk (low/medium/high/critical) | Present | Missing | NO |
-| Goal | Present | description (partial) | PARTIAL |
-| Context | Present | Missing | NO |
-| Allowed Files | Present | Missing | NO |
-| Forbidden | Present | Missing | NO |
-| Acceptance Gates | Present | Missing | NO |
-| Expected Output | Present | Missing | NO |
-| Rollback | Present | Missing | NO |
-| Report To | Present | Missing | NO |
-| status | Implicit | Required | MISMATCH |
-| depends_on | Missing | Present | NO |
-| security_report | Missing | Present | NO |
+Both tasks involve external runtime execution (opencode, conversation binding) that is explicitly human-gated. The empty blocking_conditions arrays are semantically incorrect: the tasks CAN be blocked (by missing authorization, by expired run_id, by invalid binding evidence), but the dispatch plan fails to enumerate these conditions.
 
-**Risk**: Agents producing markdown TaskSpecs (as shown in protocol examples, lines 302-364) cannot be validated against the JSON schema. The `additionalProperties: false` constraint (schema line 248) means any JSON TaskSpec with protocol-documented fields (Batch, Risk, Allowed Files, etc.) would **fail validation**. This creates two parallel, incompatible contract formats.
+**Risk**: A worker receiving these task specs would have no machine-readable guidance on what conditions should halt execution. The worker might proceed with unauthorized actions because no blocking condition is declared.
 
-**Note**: The previous A1 review flagged a related concern -- `task_spec` in the dispatch plan schema is "only typed as an object" (previous review line 41). This review identifies the deeper issue: the two formats have diverged structurally.
-
-**Recommendation**: Reconcile the two formats. Either:
-1. Extend the JSON schema to include all protocol-documented fields (Batch, Risk, Allowed Files, Forbidden, Acceptance Gates, Expected Output, Rollback, Report To).
-2. Or formally declare the markdown format as the "human-readable projection" and the JSON schema as the "machine-validatable subset", with explicit field mapping in `integration-contracts.md`.
+**Recommendation**: Populate blocking_conditions for both human-gated assignments with their actual blocking conditions, e.g., "Missing human authorization for external runtime", "CONVERSATION_BINDING.json validation fails", "Run authorization expired".
 
 ---
 
-### P0-002: Protected File Path Inconsistency
+### P0-002: Dispatch Plan Embedded `task_spec` Schema Weaker Than Standalone Schema (NEW)
 
 **Location**:
-- `sub-agent-dispatch-protocol.md` line 252
-- `AGENTS.md` lines 145-147 (document map)
-- Actual filesystem: `D:\agent-acceptance\rules\core.md`
+- `schemas/agent-runtime/multi-agent-dispatch-plan.schema.json` lines 249-418 (`$defs/task_spec`)
+- `schemas/agent-runtime/task-spec.schema.json` lines 6-12 (`required` array)
 
 **Evidence**:
 
-SADP section 0.2 declares protected files requiring exclusive lock (line 252):
-```
-Core rules (`docs/agent-runtime/rules/core.md`)
-```
-
-But `AGENTS.md` document map (line 146) correctly shows:
-```
-rules/
-  core.md   <- Runtime core (8 rules: core-001 ~ core-008)
+The standalone TaskSpec schema requires (lines 6-12):
+```json
+"required": ["task_id", "title", "priority", "status", "description"]
 ```
 
-And the actual file exists at `D:\agent-acceptance\rules\core.md`, NOT at `D:\agent-acceptance\docs\agent-runtime\rules\core.md`.
+However, the standalone schema description (line 4) explicitly states:
+> "Construction tasks MUST include gate_0 and conflict_registry."
 
-**Risk**: An agent enforcing the protected file list would monitor the **wrong path**. A write to `rules/core.md` (the actual path) would not be detected as a protected file modification if the guard checks `docs/agent-runtime/rules/core.md`. This is a direct security gap in the governance boundary.
+The dispatch plan's embedded `$defs/task_spec` (line 251) requires only:
+```json
+"required": ["task_id", "title", "priority", "status", "description"]
+```
 
-**Recommendation**: Update SADP section 0.2 line 252 to reference `rules/core.md`. Verify all other protected file paths against actual filesystem locations:
-- `AGENTS.md` -- correct (root level)
-- `CLAUDE.md` -- correct (root level, but note: user's global CLAUDE.md is at `C:\Users\RD\.claude\CLAUDE.md`)
-- `capability-inventory.md` -- should be `docs/agent-runtime/capability-inventory.md` (verify this is the intended path)
-- `sub-agent-dispatch-protocol.md` -- should be `docs/agent-runtime/sub-agent-dispatch-protocol.md` (verify)
-- `docs/agent-runtime/rules/core.md` -- INCORRECT, should be `rules/core.md`
-- `docs/agent-runtime/lessons-learned.md` -- verify exists at this path
+Missing from the embedded required list: `gate_0`, `conflict_registry`, `security_report`.
+
+While the actual dispatch plan data includes all three fields for every assignment (the data is richer than the schema requires), the schema itself does not enforce their presence. This means a dispatch plan could be generated with assignments whose embedded task_spec lacks gate_0, conflict_registry, or security_report, and it would still validate against the dispatch plan schema.
+
+The SADP protocol (section 0.1, line 194) states:
+> "Every TaskSpec that adds, creates, or introduces something new MUST include a `gate_0` YAML block."
+
+And section 0.2 (line 234):
+> "Every TaskSpec MUST declare its file access scope to enable safe parallel dispatch."
+
+Both are mandatory per the protocol, but neither is enforced by the dispatch plan schema.
+
+**Risk**: Schema-level validation alone is insufficient to catch missing governance fields. A dispatch plan generator could produce valid-schema but governance-incomplete assignments. The protocol's mandatory requirements are not reflected in the schema's `required` array.
+
+**Recommendation**: Add `gate_0` and `conflict_registry` to the `$defs/task_spec.required` array in the dispatch plan schema. Consider adding `security_report` as well, since all current assignments include it.
 
 ---
 
-## P1 Findings (High Priority -- Fix Before Next Batch)
+### P1-001: `forbidden_modify_range` Contains Non-Path Strings (PREVIOUSLY P2, UPGRADED)
 
-### P1-001: Capability Inventory Numbering Gap (CAP-009 Missing)
-
-**Location**: `capability-inventory.md` lines 217-234
-
-**Evidence**: The inventory jumps from section "8. Reviewer Playbooks" (line 217) to "10. test-frame" (line 234). There is no CAP-009 entry. The header claims "29 capabilities" (line 4), and the summary table lists 29 rows, but the numbering sequence has a gap at position 9.
-
-**Risk**: Automated tools referencing capabilities by sequential ID would have an off-by-one error for all capabilities after position 8. Any capability lookup by ordinal position would fail.
-
-**Recommendation**: Either renumber sequentially (filling the CAP-009 gap), or add a "CAP-009: deprecated/removed" entry with reason and date.
-
----
-
-### P1-002: Capability Passport Confidence/Status Inconsistency
-
-**Location**: `capability-inventory.md` lines 101-107 (CAP-001 CodeGraph) and 8 other entries
+**Location**:
+- `DISPATCH_PLAN_CURRENT.json` assignment[0] (Architecture-Reviewer, line 51)
+- `DISPATCH_PLAN_CURRENT.json` assignment[5] (Human Reviewer, line 633)
+- `schemas/agent-runtime/multi-agent-dispatch-plan.schema.json` line 170
 
 **Evidence**:
 
-CAP-001 (CodeGraph) passport:
-- `verified_status: unknown`
-- `confidence: 0.95`
-- `usable_for_execution: true`
+Architecture-Reviewer `forbidden_modify_range` (lines 47-51):
+```json
+["scripts/", ".agent/", "docs/agent-runtime/", "paper workflow code"]
+```
+
+Human Reviewer `forbidden_modify_range` (lines 633-637):
+```json
+["opencode run", "cross-repo smoke", "tool-policy weakening without review"]
+```
+
+The first three entries for Architecture-Reviewer are path-based and machine-enforceable. But `"paper workflow code"` is a natural-language description that an agent cannot reliably map to filesystem paths. Similarly, all three Human Reviewer entries (`"opencode run"`, `"cross-repo smoke"`, `"tool-policy weakening without review"`) describe behaviors or concepts, not file paths.
+
+By contrast, the Verifier (assignment[1]) and Quality-Reviewer (assignment[2]) use exclusively path-based forbidden ranges:
+```json
+["scripts/", "tests/", ".agent/", "docs/"]
+```
+
+And the Integrator (assignment[3]):
+```json
+["scripts/", "tests/", ".agent/", "docs/agent-runtime/"]
+```
+
+Both are clean and machine-enforceable.
+
+**Risk**: Non-path forbidden entries cannot be programmatically enforced by a file-access guard. An agent interpreting `"paper workflow code"` might restrict access to `docs/paper-workflow/` but miss `scripts/paper_*.py` or `.agent/paper-config.json`. An agent interpreting `"opencode run"` might block the command but miss configuration files that enable it.
+
+**Recommendation**: Convert all `forbidden_modify_range` entries to explicit path patterns. For example:
+- `"paper workflow code"` -> `["scripts/paper_*.py", "docs/paper-workflow/", "scripts/cross_repo_*.py"]`
+- `"opencode run"` -> `["docs/agent-runtime/capability-inventory.md"]` (already in allowed_modify_range, but should have explicit path-based forbidden complement)
+- `"cross-repo smoke"` -> `["scripts/cross_repo_*.py", "scripts/multi_repo_smoke.py"]`
+
+---
+
+### P1-002: Capability Passport `usable_for_execution` Contradicts Expiration Policy (UNCHANGED FROM A1-R2)
+
+**Location**: `capability-inventory.md` lines 101-107 (CAP-001) and 8 other entries
+
+**Evidence**:
 
 Per the Capability Expiration Policy (lines 44-46):
 > "unknown | Never verified, declaration only | candidate_only | **forbidden**"
 
-A capability with `verified_status: unknown` should have `usable_for_execution: false`. A confidence of 0.95 contradicts the `unknown` status.
+CAP-001 (CodeGraph) passport: `verified_status: unknown`, `usable_for_execution: true`, `confidence: 0.95`.
 
-The same pattern repeats for 7 other capabilities (CAP-020, CAP-022~027): all have `verified_status: unknown` but `usable_for_execution: true` and `confidence: 0.9`.
+The same pattern repeats for CAP-020, CAP-022 through CAP-027: all have `verified_status: unknown` with `usable_for_execution: true`.
 
-**Risk**: Agents relying on passport fields to decide execution eligibility would incorrectly dispatch to unverified capabilities. The expiration policy's "forbidden" rule for unknown capabilities is not reflected in the actual passport data.
+Per policy, these should be `usable_for_execution: false`.
 
-**Recommendation**: Batch-update all `unknown` capabilities: set `usable_for_execution: false` and reduce `confidence` to match the actual evidence strength (e.g., 0.3-0.5 for "not installed but declared").
+**Risk**: Agents consulting the passport fields would dispatch to unverified capabilities, violating the expiration policy.
+
+**Recommendation**: Batch-update all `unknown` capabilities: `usable_for_execution: false`, reduce confidence to 0.3-0.5.
 
 ---
 
-### P1-003: Reviewer Role Boundary Not Machine-Enforceable
+### P1-003: `integration-contracts.md` Incorrectly Claims Schema Permits Additional Properties (NEW)
 
 **Location**:
-- `sub-agent-dispatch-protocol.md` lines 49-58 (Role Boundaries)
-- `schemas/agent-runtime/execution-report.schema.json` lines 124-127
+- `docs/agent-runtime/integration-contracts.md` line 99
+- `schemas/agent-runtime/task-spec.schema.json` line 254
 
-**Evidence**: The protocol mandates (line 58):
-> "The reviewer MUST run as a separate role/session/model identity from the executor/fixer."
+**Evidence**:
 
-The execution-report schema enforces this via (lines 125-126):
+Integration contracts (line 99):
+> "JSON schema permits additional properties for markdown projection fields"
+
+Actual task-spec schema (line 254):
 ```json
-"reviewer_role": {
-  "not": { "enum": ["executor", "fixer", "coder"] }
-}
+"additionalProperties": false
 ```
 
-**Gaps**:
-1. The constraint only works for JSON validation. Markdown-format ExecutionReports (protocol examples, lines 372-420) bypass this constraint.
-2. The constraint checks role **labels**, not session **identity**. An executor could label itself "reviewer" and pass validation.
-3. The `reviewer_id` and `executor_id` fields exist in the review.yaml format (protocol lines 78-79) but are NOT present in any JSON schema, so cross-ID validation is impossible.
+The field mapping table (lines 39-59) correctly documents the dual-format relationship and explains that markdown-only fields are "operational instructions, not undeclared JSON extensions." But the validation rule on line 99 directly contradicts the schema's `additionalProperties: false` constraint.
 
-**Risk**: The "executor must not approve its own work" principle relies on label-based checking rather than session-ID cross-referencing.
+This partially addresses the previous P0-001 finding from A1-R2. The field mapping table was added (good), but an incorrect validation claim was introduced alongside it.
 
-**Recommendation**: Add `reviewer_id` and `executor_id` fields to `execution-report.schema.json` with a conditional constraint that they must differ when both are present.
+**Risk**: A developer or agent reading the integration contracts would believe that adding markdown-projection fields (Batch, Risk, Allowed Files, etc.) to a JSON TaskSpec is valid. Attempting to validate such a TaskSpec against the actual schema would fail with an `additionalProperties` violation.
+
+**Recommendation**: Correct line 99 of integration-contracts.md to: "JSON schema uses `additionalProperties: false`; markdown projection fields must be stripped before JSON validation."
 
 ---
 
-### P1-004: Cumulative Trigger Window Advisory/Mandatory Contradiction
+### P1-004: Cumulative Trigger Window Advisory/Mandatory Contradiction (UNCHANGED FROM A1-R2)
 
 **Location**: `sub-agent-dispatch-protocol.md` lines 159-189
 
 **Evidence**:
 
 Section 0.0a states (lines 160-161):
-> "**@go-only mode**: This section is advisory. Cumulative thresholds inform human judgment but do NOT force SADP activation."
+> "@go-only mode: This section is advisory."
 
 But immediately below (lines 186-189):
 > "Key rule: If 3 consecutive tasks under the same objective each modify 1 file, the cumulative write_set = 3, triggering SADP. The agent cannot avoid SADP by splitting..."
 
-These statements contradict: the trigger is simultaneously "advisory" (cannot force activation) and a "key rule" (must prevent bypass).
+**Risk**: An agent can legitimately claim the cumulative trigger is advisory and bypass task-splitting detection.
 
-**Risk**: An agent can legitimately claim the cumulative trigger is advisory and bypass task-splitting detection. This undermines the Plan Auditor's cumulative trigger check (section 3.3a, line 463). LL-009 (Plan Agent Self-Bypass) specifically warns about this class of vulnerability.
-
-**Recommendation**: Resolve the contradiction. Either:
-- Remove the "advisory" qualifier and make cumulative triggers mandatory.
-- Or remove the "key rule" language and accept that task-splitting detection is informational only.
+**Recommendation**: Resolve the contradiction. Either remove "advisory" or remove "key rule."
 
 ---
 
-## P2 Findings (Medium Priority -- Document or Plan Fix)
+### P2-001: Integrator `conflict_level` Set to "none" Despite Protected File Writes (NEW)
 
-### P2-001: Protocol Encoding Artifacts
-
-**Location**: `sub-agent-dispatch-protocol.md` -- 20+ occurrences
-
-**Evidence**: The protocol contains `锟斤拷` sequences throughout, including in critical structural positions:
-- Line 16: `Decompose goal 锟斤拷 TaskSpec`
-- Line 33: `dispatch 锟斤拷 it does not re-derive`
-- Line 299: `Report To: [where to return ExecutionReport 锟斤拷 default: calling agent session]`
-- Lines 595-600: Decision tree arrows
-
-**Risk**: Agents parsing the protocol may misinterpret field boundaries or structural markers. Automated tooling cannot reliably parse these sections.
-
----
-
-### P2-002: Dispatch Plan Schema Overly Rigid Array Constraints
-
-**Location**: `schemas/agent-runtime/multi-agent-dispatch-plan.schema.json`
-
-**Evidence**: Multiple assignment-level array fields use `minItems: 1` unconditionally:
-- `allowed_modify_range` (line 156)
-- `forbidden_modify_range` (line 161)
-- `depends_on_interface_contracts` (line 169)
-- `provides_interface_contracts` (line 175)
-- `tests_or_probes_required` (line 192)
-- `required_verification_commands` (line 198)
-- `blocking_conditions` (line 213)
-- `governance_record_requirements` (line 219)
-
-**Risk**: A simple task with no dependencies, no forbidden files, or no blocking conditions cannot produce a valid assignment without placeholder strings.
-
----
-
-### P2-003: External Runtime Scope Declaration Gaps
-
-**Location**: `.agent/CONVERSATION_BINDING.json` lines 12-67 vs. `sub-agent-dispatch-protocol.md` lines 551-626
-
-**Evidence**: CONVERSATION_BINDING declares 3 external runtimes:
-1. `devframe-control-plane`
-2. `dev-frame-opencode`
-3. `paper-workflow`
-
-But SADP integration points reference 5 external systems:
-1. dev-frame (SADP 4.1)
-2. test-frame (SADP 4.2)
-3. WorkQueue (SADP 4.5)
-4. Scripts (SADP 4.6)
-5. opencode dispatch (SADP 4.4)
-
-`test-frame`, `WorkQueue`, and `Scripts` are NOT declared as external runtimes in CONVERSATION_BINDING.json.
-
-**Risk**: Runtime scope enforcement cannot cover undeclared systems. Agent interactions with test-frame or WorkQueue may not trigger `human_gate_required` checks.
-
----
-
-### P2-004: Integration Contracts Status Enum Drift
-
-**Location**:
-- `docs/agent-runtime/integration-contracts.md` line 25
-- `schemas/agent-runtime/task-spec.schema.json` lines 34-46
+**Location**: `DISPATCH_PLAN_CURRENT.json` assignment[3] (Integrator), lines 498-501
 
 **Evidence**:
-- Integration contracts define TaskSpec status: `draft`, `ready`, `deferred`, `rejected` (4 values)
-- JSON schema defines TaskSpec status: `draft`, `ready`, `in_progress`, `completed`, `closed`, `deferred`, `rejected`, `accepted_with_limitation`, `pending_human_decision` (9 values)
 
-The schema has 5 additional status values not documented in the integration contract.
+The Integrator's conflict_registry:
+```json
+{
+  "read_set": [...governance docs + worker reports...],
+  "write_set": [
+    "docs/governance/PROGRESS_LOG.md",
+    "docs/governance/VERIFY_MATRIX.md",
+    "docs/governance/HANDOFF.md"
+  ],
+  "protected_files_touched": false,
+  "conflict_level": "none"
+}
+```
+
+`protected_files_touched` is `false`, but governance docs are arguably protected. SADP section 0.2 (line 249) lists protected files requiring exclusive lock:
+```
+AGENTS.md, CLAUDE.md, capability-inventory.md
+sub-agent-dispatch-protocol.md, rules/core.md, lessons-learned.md
+```
+
+Governance docs (`docs/governance/*`) are NOT in this explicit list, so `protected_files_touched: false` is technically correct per the SADP definition. However, the Integrator is the sole serial write point for shared governance state, and `conflict_level: "none"` underrepresents the actual risk of governance doc modification. The dispatch plan correctly sets `parallel_safe: false` for the Integrator, which provides the serialization safeguard.
+
+**Risk**: Low immediate risk (serialization is enforced via `parallel_safe: false`), but the conflict_level metadata does not accurately reflect the governance sensitivity of the write targets.
+
+**Recommendation**: Consider setting `conflict_level: "low"` or `"high"` for the Integrator to signal governance sensitivity, even if the SADP protected-files list does not include `docs/governance/*`.
 
 ---
 
-### P2-005: SADP Section 3.3 Missing Content
+### P2-002: All Task `security_report.scan_status` Is "not_run" With No Transition Plan (NEW)
+
+**Location**: `DISPATCH_PLAN_CURRENT.json` all 5 assignments, `security_report` blocks
+
+**Evidence**:
+
+Every assignment has:
+```json
+"security_report": {
+  "scan_status": "not_run",
+  "new_external_api": false,
+  ...
+}
+```
+
+This is correct for the planning phase (no execution has occurred yet). However, the task_spec schema defines `scan_status` as `enum: ["not_run", "passed", "failed"]` (task-spec.schema.json line 209), and the schema description states (line 204):
+> "Must be completed before task is marked done."
+
+No mechanism in the dispatch plan or worker task spec defines when `scan_status` transitions from `not_run` to `passed` or `failed`. Workers completing their tasks would need to update their own task_spec, but the dispatch plan is a static artifact.
+
+**Risk**: Security reports remain in `not_run` state perpetually if no process updates them during execution.
+
+**Recommendation**: Document in the worker execution contract that workers must update `security_report.scan_status` before marking their task complete.
+
+---
+
+### P2-003: Pilot Plan Uses Different Agent IDs Than Actual Bindings (NEW)
+
+**Location**:
+- `docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md` lines 35-49
+- `.agent/CONVERSATION_BINDING.json` lines 71-113
+
+**Evidence**:
+
+Pilot plan defines:
+- `agent-alpha` with `project_root: "D:/project-alpha"`
+- `agent-beta` with `project_root: "D:/project-beta"`
+
+Actual CONVERSATION_BINDING.json uses:
+- `agent-local-001` (role: reviewer) with `project_root: "D:/agent-acceptance"`
+- `agent-pilot-beta` (role: executor) with `project_root: "D:/agent-acceptance"`
+
+The pilot plan is a design document and uses illustrative IDs. The actual binding file uses the real IDs. This is expected, but the pilot plan has not been updated to reflect the actual deployment, which could cause confusion.
+
+**Risk**: Low. Agents reading the pilot plan might search for `agent-alpha` and not find it in the binding file.
+
+**Recommendation**: Update the pilot plan to reference actual agent IDs, or add a note that the IDs are illustrative.
+
+---
+
+### P2-004: Architecture-Reviewer `read_set` Omits Files Actually Consulted (NEW)
+
+**Location**: `DISPATCH_PLAN_CURRENT.json` assignment[0], lines 130-134
+
+**Evidence**:
+
+Architecture-Reviewer conflict_registry.read_set:
+```json
+[
+  "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md",
+  "docs/governance/HANDOFF.md",
+  "docs/governance/RISK_REGISTER.md"
+]
+```
+
+This review actually consulted 16 files (see "Files Examined" table above), including schemas, protocol documents, the preflight report, the activation record, and the previous review. The read_set declares only 3 files.
+
+**Risk**: Low for a read-only review. But for executable tasks, an incomplete read_set could allow undetected read-write conflicts in parallel dispatch.
+
+**Recommendation**: When generating dispatch plans, populate read_set with all files the worker is expected to consult, not just the primary references.
+
+---
+
+### P2-005: SADP Section 3.3 Missing Content (UNCHANGED FROM A1-R2)
 
 **Location**: `sub-agent-dispatch-protocol.md` line 443
 
-**Evidence**: Section 3.3 "Goal Agent (Evaluate -> Next)" has a heading on line 443 but no body content before section 3.3a begins on line 446. The section that should describe the goal agent's evaluation procedure is empty. Readers must reconstruct the flow from sections 3.3a (Plan Auditor) and 3.3b (Review Procedure).
+**Evidence**: Section 3.3 heading exists but has no body content before section 3.3a begins on line 446.
 
 ---
 
-## Comparison with Previous A1 Review
+## Previous A1-R2 Findings Status
 
-| Aspect | Previous A1 (2026-06-09) | This Review (2026-06-13) |
-|--------|:---:|:---:|
-| Verdict | PASS | PARTIAL |
-| Scope | Dispatch plan scripts + governance handoff | Full protocol-to-schema chain |
-| P0 findings | 0 | 2 |
-| P1 findings | 0 | 4 |
-| P2 findings | 0 | 5 |
+| A1-R2 Finding | Status in This Review | Notes |
+|---------------|:---------------------:|-------|
+| P0-001: Dual-Format TaskSpec Drift | **Downgraded to P1-003** | Field mapping added to integration-contracts.md, but line 99 incorrectly claims schema permits additional properties |
+| P0-002: Protected File Path Inconsistency | **Not re-verified** | Cannot verify filesystem paths from Qoder workspace; finding remains valid per A1-R2 evidence |
+| P1-001: CAP-009 Numbering Gap | **Not re-examined** | Out of scope for this boundary-focused review; remains valid per A1-R2 |
+| P1-002: Passport Confidence Inconsistency | **Confirmed, now P1-002** | Same evidence; usable_for_execution contradicts expiration policy |
+| P1-003: Reviewer Role Not Machine-Enforceable | **Not re-examined** | Out of scope for this review; remains valid per A1-R2 |
+| P1-004: Cumulative Trigger Contradiction | **Confirmed, now P1-004** | Same evidence; advisory/mandatory language contradicts |
+| P2-001: Protocol Encoding Artifacts | **Not re-examined** | Out of scope; remains valid per A1-R2 |
+| P2-002: Schema Rigid Array Constraints | **Not re-examined** | Out of scope; remains valid per A1-R2 |
+| P2-003: External Runtime Declaration Gaps | **Not re-examined** | Out of scope; remains valid per A1-R2 |
+| P2-004: Integration Contracts Status Enum Drift | **Partially resolved** | integration-contracts.md line 25 now lists all 9 status values |
+| P2-005: SADP Section 3.3 Empty | **Confirmed, now P2-005** | Still empty |
 
-The previous review correctly found no issues in its narrower scope (dispatch plan script logic, Gate 0 preflight execution safety, conflict detection algorithm, governance handoff). Those findings remain valid. This review adds findings from the **protocol document itself, schema-to-protocol consistency, capability inventory data quality, and cross-document path accuracy**.
+---
+
+## Module Boundary Analysis
+
+### Gate 0 Preflight -> Dispatch Plan Boundary
+
+**Assessment**: CLEAN
+
+The boundary between Gate 0 preflight and dispatch plan is well-defined:
+- Gate 0 preflight (`PREFLIGHT_CURRENT.json`) produces an `overall` verdict and `checks` array.
+- The dispatch plan references the preflight via `source_preflight` with SHA-256 hash binding (line 8: `sha256: "4f6aa8a..."`), ensuring the preflight cannot be silently swapped.
+- The dispatch plan schema enforces consistency between `status` and `source_preflight.overall` via `allOf` conditional constraints (lines 420-475): `status: "READY"` requires `overall: "PASS"` and `human_gate_required: false`.
+- Current data is consistent: dispatch plan `status: "READY"` matches preflight `overall: "PASS"` and `human_gate_required: false`.
+
+**Finding**: No issues. The hash binding and conditional schema constraints provide strong integrity guarantees for this boundary.
+
+### Dispatch Plan -> Worker Execution Boundary
+
+**Assessment**: PARTIAL
+
+Each worker receives an assignment with:
+- `allowed_modify_range`: explicit path whitelist
+- `forbidden_modify_range`: explicit path blacklist (with caveats per P1-001)
+- `task_spec.conflict_registry.write_set`: declared write targets
+- `task_spec.conflict_registry.read_set`: declared read targets
+
+The dispatch plan correctly identifies write conflicts via `conflict_summary.compared_write_pairs` (lines 21-33), comparing all pairs of worker write_sets. The three parallel workers (Architecture-Reviewer, Verifier, Quality-Reviewer) have disjoint write_sets:
+- Architecture-Reviewer: `_reports/multi-agent-architecture-review-a1/`
+- Verifier: `_reports/multi-agent-verifier-a1/`
+- Quality-Reviewer: `_reports/multi-agent-quality-review-a1/`
+
+The Integrator writes to `docs/governance/` and is correctly marked `parallel_safe: false` in group `"serial-integration"`.
+
+**Issues**:
+- P0-001: Empty blocking_conditions for human-gated workers
+- P1-001: Non-path forbidden_modify_range entries
+
+### Worker Isolation: No Cross-Boundary Violations
+
+**Assessment**: CLEAN (with caveats)
+
+No worker's `allowed_modify_range` overlaps with another worker's territory:
+- Architecture-Reviewer writes only to `_reports/multi-agent-architecture-review-a1/`
+- Verifier writes only to `_reports/multi-agent-verifier-a1/`
+- Quality-Reviewer writes only to `_reports/multi-agent-quality-review-a1/`
+- Integrator writes only to `docs/governance/`
+- Human Gate writes only to `.agent/CONVERSATION_BINDING.json`
+- Human Reviewer writes only to `docs/agent-runtime/capability-inventory.md`
+
+No worker's `allowed_modify_range` includes `scripts/`, `tests/`, `.agent/` (except Human Gate for binding file), or `docs/agent-runtime/` (except Human Reviewer for capability inventory).
+
+The `forbidden_modify_range` entries correctly block workers from modifying:
+- `scripts/` (all automated workers)
+- `.agent/` (all automated workers)
+- `docs/agent-runtime/` (Architecture-Reviewer, Verifier, Quality-Reviewer)
+- `tests/` (Verifier, Quality-Reviewer)
+
+**Caveat**: P1-001 weakens the enforcement for Architecture-Reviewer and Human Reviewer due to non-path forbidden entries.
+
+---
+
+## `forbidden_modify_range` Scoping Analysis
+
+| Worker | allowed_modify_range | forbidden_modify_range | Assessment |
+|--------|---------------------|----------------------|------------|
+| Architecture-Reviewer | `_reports/multi-agent-architecture-review-a1/` | `scripts/`, `.agent/`, `docs/agent-runtime/`, `"paper workflow code"` | 3/4 path-based; 1 natural-language (P1-001) |
+| Verifier | `_reports/multi-agent-verifier-a1/` | `scripts/`, `tests/`, `.agent/`, `docs/` | 4/4 path-based; CLEAN |
+| Quality-Reviewer | `_reports/multi-agent-quality-review-a1/` | `scripts/`, `tests/`, `.agent/`, `docs/` | 4/4 path-based; CLEAN |
+| Integrator | `docs/governance/` | `scripts/`, `tests/`, `.agent/`, `docs/agent-runtime/` | 4/4 path-based; CLEAN |
+| Human Gate | `.agent/CONVERSATION_BINDING.json` | `"fabricated chat_url"`, `"fabricated conversation_id"`, `"last-message-only capture"` | 0/3 path-based; all behavioral (P1-001) |
+| Human Reviewer | `docs/agent-runtime/capability-inventory.md` | `"opencode run"`, `"cross-repo smoke"`, `"tool-policy weakening without review"` | 0/3 path-based; all behavioral (P1-001) |
+
+**Observation**: The two human-gated assignments (Human Gate, Human Reviewer) use entirely behavioral forbidden ranges. This may be intentional for human actors (who can interpret natural language) vs. automated workers (who need path-based constraints). If so, this should be documented as a design decision.
+
+**Observation**: The Verifier's `forbidden_modify_range` includes `scripts/` but its `required_verification_commands` include running scripts (`python scripts\multi_agent_gate0_preflight.py`). This is not a forbidden_modify_range violation (forbidden_modify_range blocks WRITES, not reads/executions), but it is a tool-policy concern: the Scripts capability requires human gate for execution.
 
 ---
 
 ## Known Gaps
 
 ### Gap 1: No Schema Validation Pipeline
-No automated pipeline validates that agents produce JSON conforming to the schemas. The schemas are reference documents. The protocol operates primarily in markdown format.
+No automated pipeline validates dispatch plan data against the schemas. The schemas are reference documents. Validation is manual or ad-hoc.
 
-### Gap 2: Pre-Write Governance Coverage (Acknowledged)
-As documented in LL-010, the pre-edit governance hook only covers memory/sealed/secrets files. Protected governance files (rules/*, SADP, inventory, lessons) are not covered. Acknowledged as "acceptable for Phase 0-5."
+### Gap 2: Protected File Path Verification Incomplete
+Cannot verify actual filesystem paths from this review workspace. P0-002 from A1-R2 (protected file path `docs/agent-runtime/rules/core.md` vs. actual `rules/core.md`) should be re-verified by an agent with direct filesystem access.
 
-### Gap 3: Cross-Session Identity Verification
-The reviewer independence requirement relies on role labels and self-reported session IDs. No runtime-level mechanism verifies that reviewer and executor are genuinely distinct.
+### Gap 3: Dispatch Plan Is Static
+Once generated, the dispatch plan does not update. Worker execution may produce artifacts (security_report updates, status transitions) that are not reflected back into the plan.
 
-### Gap 4: Phase Exit Authorization Currency
-Section 8 (Phase Exit Authorization) was last updated 2026-05-28. Capability passport statuses have been updated since (2026-06-10, 2026-06-12) but the Phase Exit table has not been re-validated.
+### Gap 4: Behavioral Forbidden Ranges for Human Workers
+The Human Gate and Human Reviewer assignments use behavioral (non-path) forbidden ranges. Whether this is intentional (humans can interpret natural language) or an oversight is undocumented.
+
+### Gap 5: Pre-Write Governance Coverage (Acknowledged)
+Per LL-010, the pre-edit governance hook only covers memory/sealed/secrets files. Protected governance files are not covered by pre-write guards.
 
 ---
 
 ## Architecture Strengths (Positive Findings)
 
-1. **Role separation** (SADP 0.R.1): Three-tier model with explicit "may produce" / "must not produce" boundaries.
-2. **Gate 0 evidence contract**: Requires inventory_evidence with queried_sources, not boolean self-attestation (directly addresses LL-007).
-3. **Conflict registry**: read_set/write_set with serialization rules and exclusive locks for protected files.
-4. **Authority matrix**: "Declaration != Authorization" principle with GateResult inviolable boundary.
-5. **Capability expiration policy**: Decay model with different expiry windows for external vs. local capabilities.
-6. **Fallback matrix**: Risk-graded fallback with "silent fallback forbidden" rule.
-7. **Plan Auditor independence**: Anti-recursion constraint and bounded cost model (0-1 LLM calls per session).
-8. **Dispatch plan script safety** (confirmed by previous A1): Gate 0 preflight is read-only, conflict detection is correct, integrator is the sole serial write point.
+1. **SHA-256 binding between preflight and dispatch plan** (dispatch plan line 8): Cryptographic hash ensures the dispatch plan is built from a specific preflight artifact.
+2. **Conditional schema constraints** (dispatch plan schema lines 420-475): `status: "READY"` enforces `overall: "PASS"` and `human_gate_required: false` via JSON Schema `if/then`.
+3. **Disjoint write sets for parallel workers**: All three parallel workers write to separate `_reports/` subdirectories.
+4. **Serial integration with explicit dependencies**: Integrator correctly depends on all three first-wave task IDs and is marked `parallel_safe: false`.
+5. **`executed_external_runtime: false` const constraint**: Both dispatch plan schema (line 30) and preflight schema (line 25) use `const: false` to prevent external runtime execution at the planning stage.
+6. **Dual-format contract documentation**: integration-contracts.md provides explicit field mapping (lines 39-59) between markdown and JSON TaskSpec formats.
+7. **Conflict detection**: `compared_write_pairs` exhaustively checks all worker write-set pairs (3 pairs for 3 parallel workers = correct combinatorial count).
+8. **Activation record with run-bound authorization**: The ACTIVATION_RECORD.json includes `expires_at`, `risk_acknowledged`, and `decision_reason`, providing auditable authorization scope.
 
 ---
 
 ## Suggested Review Focus for Integrator
 
-### Priority 1: Reconcile TaskSpec Formats (P0-001)
-Before the next dispatch cycle, decide whether markdown or JSON is authoritative, and align the other. If both must coexist, document explicit field mapping in `integration-contracts.md`.
+### Priority 1: Fix Schema Validation Gap (P0-002)
+Add `gate_0` and `conflict_registry` to the dispatch plan schema's embedded task_spec required fields. This is a schema maintenance task with high impact on governance enforcement.
 
-### Priority 2: Fix Protected File Paths (P0-002)
-Verify all 6 protected file paths in SADP section 0.2 against the actual filesystem. Quick fix with high security impact.
+### Priority 2: Populate Blocking Conditions (P0-001)
+Add actual blocking conditions for Human Gate and Human Reviewer assignments. These workers need machine-readable halt criteria.
 
-### Priority 3: Align Passport Fields with Expiration Policy (P1-002)
-Batch-update all `unknown` capabilities to `usable_for_execution: false` with appropriate confidence values. Single maintenance task.
+### Priority 3: Convert Forbidden Ranges to Paths (P1-001)
+Replace natural-language forbidden entries with explicit path patterns for Architecture-Reviewer, Human Gate, and Human Reviewer.
 
-### Priority 4: Clarify Cumulative Trigger Status (P1-004)
-Resolve the advisory/mandatory contradiction in section 0.0a. Affects Plan Auditor enforcement.
+### Priority 4: Fix Integration Contracts Claim (P1-003)
+Correct line 99 of integration-contracts.md to match the actual `additionalProperties: false` constraint.
 
-### Priority 5: Strengthen Reviewer Identity Verification (P1-003)
-Add reviewer_id/executor_id fields to the execution-report schema with a not-equal constraint.
+### Priority 5: Verify Protected File Paths (A1-R2 P0-002, carried forward)
+Use direct filesystem access to verify that SADP section 0.2 protected file paths match actual filesystem locations.
 
-### Priority 6: Declare Missing External Runtimes (P2-003)
-Add test-frame, WorkQueue, and Scripts to CONVERSATION_BINDING.json governance_scope, or document why they are excluded.
+### Priority 6: Align Passport Fields (P1-002)
+Batch-update unknown capabilities to `usable_for_execution: false`.
 
 ---
 
@@ -349,17 +487,19 @@ Add test-frame, WorkQueue, and Scripts to CONVERSATION_BINDING.json governance_s
 
 | Category | Count | IDs |
 |----------|:-----:|-----|
-| P0 (Critical) | 2 | P0-001, P0-002 |
-| P1 (High) | 4 | P1-001, P1-002, P1-003, P1-004 |
-| P2 (Medium) | 5 | P2-001, P2-002, P2-003, P2-004, P2-005 |
-| Known Gaps | 4 | Gap 1-4 |
+| P0 (Critical) | 2 | P0-001 (blocking_conditions), P0-002 (schema weakness) |
+| P1 (High) | 4 | P1-001 (non-path forbidden), P1-002 (passport), P1-003 (additionalProperties claim), P1-004 (trigger contradiction) |
+| P2 (Medium) | 5 | P2-001 (conflict_level), P2-002 (scan_status), P2-003 (agent IDs), P2-004 (read_set), P2-005 (section 3.3) |
+| Known Gaps | 5 | Gaps 1-5 |
 | Positive Findings | 8 | (see above) |
 
-**Verdict: PARTIAL** -- The architecture is well-designed with strong governance principles, but has interface contract inconsistencies and path errors that must be resolved before the next formal multi-agent dispatch cycle. Both P0 findings are fixable within a single maintenance session.
+**Verdict: PARTIAL** -- The architecture is sound in its core boundary design (disjoint write sets, SHA-256 binding, conditional schema constraints, serial integration). The primary risks are schema validation gaps that could allow governance-incomplete dispatch plans, and non-machine-enforceable forbidden ranges in human-gated assignments. Both P0 findings are fixable via schema maintenance and dispatch plan regeneration.
 
 ---
 
-> Report: Architecture Review A1-R2
+> Report: Architecture Review A1-R3
 > Generated: 2026-06-13
-> Previous review: A1 (2026-06-09, PASS for dispatch plan scope)
-> Next review trigger: After P0 remediation, or before next @go batch dispatch
+> Worker: Architecture-Reviewer (Qoder)
+> Source: DISPATCH_PLAN_CURRENT.json assignment[0]
+> Previous review: A1-R2 (2026-06-13, PARTIAL)
+> Next review trigger: After P0 remediation or before next dispatch wave

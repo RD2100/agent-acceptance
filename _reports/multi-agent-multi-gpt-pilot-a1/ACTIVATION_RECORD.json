@@ -1,7 +1,7 @@
 {
   "pilot_id": "multi-agent-multi-gpt-pilot-a1",
   "activation_timestamp": "2026-06-10T02:22:43Z",
-  "last_updated": "2026-06-13T09:49:18.540629Z",
+  "last_updated": "2026-06-13T10:01:50.990470Z",
   "update_reason": "Session evidence refreshed for Gate0 re-run; run-bound authorization recorded",
   "run_id": "controlled-multi-gpt-pilot-a1-20260613T061555Z",
   "authorization": {
@@ -40,7 +40,7 @@
       "cdp_endpoint": "http://localhost:9222",
       "cdp_session_verified": true,
       "session_id": "cdp:9D535B770813D04425D7199D2B307E3B",
-      "verified_at": "2026-06-13T09:49:18.540629Z",
+      "verified_at": "2026-06-13T10:01:50.990470Z",
       "evidence_file": "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-local-001.json",
       "target_id": "9D535B770813D04425D7199D2B307E3B",
       "target_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
@@ -56,7 +56,7 @@
       "cdp_endpoint": "http://localhost:9222",
       "cdp_session_verified": true,
       "session_id": "cdp:28308C06715671F5F6C2C610DEDC6628",
-      "verified_at": "2026-06-13T09:49:18.540629Z",
+      "verified_at": "2026-06-13T10:01:50.990470Z",
       "evidence_file": "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-pilot-beta.json",
       "target_id": "28308C06715671F5F6C2C610DEDC6628",
       "target_url": "https://chatgpt.com/c/6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
@@ -68,7 +68,7 @@
   "cdp_session": {
     "active": true,
     "browser": "Chrome CDP localhost:9222",
-    "verified_at": "2026-06-13T09:49:18.540629Z",
+    "verified_at": "2026-06-13T10:01:50.990470Z",
     "chat_pages": 4,
     "note": "Both bound pilot conversation tabs observed in current CDP page list; authorization recorded."
   },

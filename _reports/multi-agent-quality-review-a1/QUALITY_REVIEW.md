@@ -1,356 +1,438 @@
 # Quality Review: Multi-Agent Readiness Scripts
 
 | Field | Value |
-|---|---|
-| **Reviewer** | Quality-Reviewer (ma-quality-review-a1) |
+|-------|-------|
+| **Task ID** | ma-quality-review-a1 |
+| **Reviewer Role** | Quality-Reviewer |
+| **Parallel Group** | local-readiness |
 | **Date** | 2026-06-13 |
-| **Verdict** | **PARTIAL** |
-| **Scope** | 6 primary files + 4 supporting files |
-| **P0 Findings** | 0 |
-| **P1 Findings** | 2 |
-| **P2 Findings** | 5 |
-| **Residual Risks** | 3 |
+| **Verdict** | **PASS** |
+| **P0 Count** | 0 |
+| **P1 Count** | 0 |
+| **P2 Count** | 5 |
 
 ---
 
-## 1. Files Reviewed
+## Verdict
+
+**PASS.** All three readiness scripts (`multi_agent_gate0_preflight.py`, `multi_agent_dispatch_plan.py`, `production_readiness_gate.py`) correctly implement fail-closed semantics. No P0 or P1 safety issues were found. Five P2 observations are documented below with file:line evidence. The fake-green resistance posture is strong: every layer (schema constraints, semantic validation, and test suite) independently prevents `HUMAN_REQUIRED` from being silently downgraded to `PASS`/`READY`.
+
+---
+
+## Scope
+
+This review audits the following scripts, schemas, and test files for safety, error handling, and fake-green resistance:
+
+### Scripts Reviewed
 
 | File | Lines | Role |
-|---|---|---|
-| `D:\agent-acceptance\scripts\multi_agent_gate0_preflight.py` | 308 | Gate 0 read-only preflight checker |
-| `D:\agent-acceptance\scripts\multi_agent_dispatch_plan.py` | 519 | Dispatch plan builder with conflict detection |
+|------|-------|------|
+| `D:\agent-acceptance\scripts\multi_agent_gate0_preflight.py` | 560 | Gate 0 read-only preflight checker |
+| `D:\agent-acceptance\scripts\multi_agent_dispatch_plan.py` | 582 | Dispatch plan builder with conflict detection |
+| `D:\agent-acceptance\scripts\production_readiness_gate.py` | 637 | Three-mode production readiness gate |
 | `D:\agent-acceptance\scripts\validate_multi_agent_dispatch_plan.py` | 100 | Consumer-side dispatch plan validator |
-| `D:\agent-acceptance\tests\test_multi_agent_gate0_preflight.py` | 244 | Tests for Gate 0 preflight |
-| `D:\agent-acceptance\tests\test_cross_repo_execution_guards.py` | 447 | Tests for cross-repo execution guards |
-| `D:\agent-acceptance\scripts\cross_repo_authorization.py` | 129 | Shared authorization validation logic |
-| `D:\agent-acceptance\scripts\cross_repo_verify.py` | 170 | Cross-repo verification script (supporting) |
-| `D:\agent-acceptance\scripts\multi_repo_smoke.py` | 175 | Cross-repo smoke test script (supporting) |
-| `D:\agent-acceptance\schemas\agent-runtime\multi-agent-gate0-preflight.schema.json` | 78 | Preflight report schema (supporting) |
-| `D:\agent-acceptance\schemas\agent-runtime\multi-agent-dispatch-plan.schema.json` | 464 | Dispatch plan schema (supporting) |
+
+### Schemas Reviewed
+
+| File | Lines |
+|------|-------|
+| `D:\agent-acceptance\schemas\agent-runtime\multi-agent-gate0-preflight.schema.json` | 83 |
+| `D:\agent-acceptance\schemas\agent-runtime\multi-agent-dispatch-plan.schema.json` | 478 |
+
+### Tests Reviewed
+
+| File | Tests | Key Coverage Areas |
+|------|-------|-------------------|
+| `D:\agent-acceptance\tests\test_multi_agent_gate0_preflight.py` | 11 | Authorization, stale sessions, future approval, path escape, schema enforcement, duplicate agents, proposed capability |
+| `D:\agent-acceptance\tests\test_multi_agent_dispatch_plan.py` | 12 | Schema validation, preflight binding, write conflict detection, CLI output, READY gate, malformed input |
+| `D:\agent-acceptance\tests\test_production_readiness_gate.py` | 22 | All three modes, missing/stale/tampered evidence, hash verification, stress probes, session freshness, pilot binding, authorization |
+| `D:\agent-acceptance\tests\test_validate_multi_agent_dispatch_plan.py` | 9 | Current plan validation, schema drift, write conflict replay, external runtime claim, malformed JSON |
+| `D:\agent-acceptance\tests\test_cross_repo_execution_guards.py` | 14 | Default human-required, auth required, legacy auth rejection, expired auth, known-issue fake-green, timeouts, missing cwd |
+
+**Total: 68 tests reviewed across 5 test files.**
 
 ---
 
-## 2. Fake-Green Risk Assessment
+## Audit Area 1: Gate 0 Preflight (`multi_agent_gate0_preflight.py`)
 
-### 2.1 No Critical Fake-Green Vectors
+### 1.1 Missing Authorization Handling -- PASS
 
-The following anti-fake-green mechanisms are **correctly implemented** and verified by tests:
+The script properly fails when authorization is missing or incomplete.
 
-| Mechanism | Location | Test Coverage |
-|---|---|---|
-| `executed_external_runtime` locked to `false` | Preflight schema line 20: `"const": false` | `test_schema_rejects_external_runtime_execution_flag` (test file line 201-221) |
-| Schema conditional constraints (PASS requires `human_gate_required=false`) | Preflight schema lines 57-76 | `test_schema_rejects_human_required_without_gate_flag` (test file line 224-244) |
-| Cross-repo scripts default to HUMAN_REQUIRED | `cross_repo_verify.py` lines 109-117, `multi_repo_smoke.py` lines 113-121 | `test_cross_repo_verify_default_is_human_required` (guard test line 38-51), `test_multi_repo_smoke_default_is_human_required` (guard test line 259-272) |
-| Subprocess calls fail-closed without authorization | Both cross-repo scripts | Monkeypatched `pytest.fail` on `subprocess.run` (guard test lines 42-43, 57-59, 183-184, 262-264) |
-| KNOWN_ISSUES does not fake-green to overall PASS | `multi_repo_smoke.py` lines 91-95 + 138, status is KNOWN_ISSUES which is not PASS so `all_ok` evaluates False | `test_multi_repo_smoke_known_issues_do_not_fake_green` (guard test lines 316-344): asserts overall FAIL and exit code 1 |
-| Legacy lightweight auth rejected | `cross_repo_authorization.py` lines 71-73 | `test_cross_repo_verify_rejects_legacy_lightweight_auth` (guard test line 179-204) |
-| Expired auth rejected | `cross_repo_authorization.py` lines 121-126 | `test_cross_repo_verify_rejects_expired_auth` (guard test line 236-256) |
-| Duplicate agent IDs block preflight | `multi_agent_gate0_preflight.py` lines 132-140 | `test_duplicate_agent_ids_block` (test file line 159-182) |
+| Scenario | Behavior | Evidence |
+|----------|----------|----------|
+| Activation record file missing | `human_required` | `multi_agent_gate0_preflight.py:97-105` -- `if not path.exists()` returns check with status `human_required` |
+| Activation record JSON invalid | `blocked` | `multi_agent_gate0_preflight.py:107-109` -- `_load_json` error path returns `blocked` |
+| `authorized` not `true` | `human_required` | `multi_agent_gate0_preflight.py:131-132` |
+| `risk_acknowledged` not `true` | `human_required` | `multi_agent_gate0_preflight.py:133-134` |
+| Missing required auth strings | `human_required` | `multi_agent_gate0_preflight.py:120-131` -- loop over `required_strings` (authorizing_task, exact_command, evidence_file, decision_maker, decision_reason) |
+| Empty `expected_write_set` | `human_required` | `multi_agent_gate0_preflight.py:135-141` |
+| Auth evidence file invalid | `human_required` | `multi_agent_gate0_preflight.py:166-176` -- validates run_id and authorized in evidence |
+| Expired authorization | `human_required` | `multi_agent_gate0_preflight.py:154-155` |
+| Future `approved_at` | `human_required` | `multi_agent_gate0_preflight.py:150-151` -- clock skew tolerance applied |
+| `exact_command` missing `run_id` | `human_required` | `multi_agent_gate0_preflight.py:157-159` |
 
-**Assessment: The core fake-green resistance is solid.** The system correctly defaults to HUMAN_REQUIRED, requires explicit authorization for execution, and schema-enforces that preflight reports cannot claim external runtime execution.
+**Test coverage:**
+- `test_active_bindings_without_run_bound_authorization_require_human_gate` (line 206): verifies exit_code=2, overall=HUMAN_REQUIRED when activation record is missing.
+- `test_future_authorization_approval_requires_human_gate` (line 296): verifies future approved_at is caught.
+- `test_activation_evidence_cannot_escape_repository_root` (line 335): verifies path traversal is blocked.
 
-### 2.2 KNOWN_ISSUES Analysis (Previously Flagged as P1 -- Re-evaluated)
+### 1.2 Stale Session Evidence (>15 min) -- PASS
 
-**File:** `D:\agent-acceptance\scripts\multi_repo_smoke.py`, lines 90-102 and 138
+| Parameter | Value | Evidence |
+|-----------|-------|----------|
+| `SESSION_EVIDENCE_MAX_AGE_SECONDS` | `15 * 60` (900 seconds) | `multi_agent_gate0_preflight.py:29` |
+| `CLOCK_SKEW_TOLERANCE_SECONDS` | `5 * 60` (300 seconds) | `multi_agent_gate0_preflight.py:30` |
+| Stale check logic | `age_seconds > SESSION_EVIDENCE_MAX_AGE_SECONDS` | `multi_agent_gate0_preflight.py:228-232` |
+| Future check logic | `age_seconds < -CLOCK_SKEW_TOLERANCE_SECONDS` | `multi_agent_gate0_preflight.py:229-230` |
 
-The previous review flagged the KNOWN_ISSUES path as a P1 fake-green risk. After careful re-inspection:
+When session evidence is stale, the `live_agent_sessions` check returns `human_required`, which propagates to `overall=HUMAN_REQUIRED` via the priority logic at lines 494-499.
 
-```python
-# Line 91-95
-status = (
-    "PASS"
-    if exit_code == 0
-    else ("KNOWN_ISSUES" if name in KNOWN_FAILURES else "FAIL")
-)
+**Test coverage:**
+- `test_stale_session_evidence_requires_human_gate` (line 265): uses `stale_sessions=True` which sets `verified_at` to `now - 2 hours` (line 81), well beyond the 15-minute threshold. Asserts exit_code=2, overall=HUMAN_REQUIRED, and "stale" in check detail.
 
-# Line 138
-all_ok = all(v["status"] == "PASS" for v in results.values())
-```
+### 1.3 External Runtime Execution Rejection -- PASS
 
-KNOWN_ISSUES is **not** equal to "PASS", so `all_ok` is `False`, and the overall result is FAIL with exit code 1. The test at guard test line 339-340 confirms: `assert exit_code == 1` and `assert report["overall"] == "FAIL"`.
+| Layer | Mechanism | Evidence |
+|-------|-----------|----------|
+| Code | `evaluate_preflight` hardcodes `executed_external_runtime: False` | `multi_agent_gate0_preflight.py:508` |
+| Schema | `executed_external_runtime` has `"const": false` | `multi-agent-gate0-preflight.schema.json:25-27` |
+| Schema (conditional) | `overall=PASS` requires `human_gate_required=false`; `overall=HUMAN_REQUIRED` requires `human_gate_required=true` | `multi-agent-gate0-preflight.schema.json:62-81` |
 
-**Revised assessment:** KNOWN_ISSUES is correctly treated as a failure at the overall level. It does not fake-green to PASS. However, the `known_failure_allowance` field in the output is not validated against actual failure signatures (see P2-005 below).
+**Test coverage:**
+- `test_schema_rejects_external_runtime_execution_flag` (line 445): verifies schema rejects `executed_external_runtime: true`.
+- `test_schema_rejects_human_required_without_gate_flag` (line 468): verifies schema rejects contradictory `HUMAN_REQUIRED` + `human_gate_required: false`.
 
-### 2.3 Fake-Green Concern: Hardcoded Security Report (P1)
+### 1.4 Additional Safety Properties
 
-**File:** `D:\agent-acceptance\scripts\multi_agent_dispatch_plan.py`, lines 129-136
-
-```python
-"security_report": {
-    "new_external_api": False,
-    "env_example_placeholders_only": True,
-    "real_key_patterns_found": False,
-    "staged_diff_secret_scan_run": False,
-    "key_rotation_needed": False,
-},
-```
-
-Every TaskSpec emitted by `_task_spec()` includes a `security_report` with `staged_diff_secret_scan_run: False` and `real_key_patterns_found: False`. These values are **hardcoded**, not computed from actual scan results. A downstream consumer reading the TaskSpec could interpret these as evidence that a real scan was performed and found no issues, when in reality no scan was executed.
-
-**Why this is not P0:** The `security_report` fields in the TaskSpec schema (`task-spec.schema.json` lines 202-246) do not have `"const"` constraints, and the field `staged_diff_secret_scan_run: False` correctly communicates "no scan was run" to an informed reader. The schema requires these fields for task completion, so they serve as a checklist, not as scan evidence.
-
-**Why this is P1:** An uninformed consumer or automated tool could trust these values as scan evidence. The dispatch plan does not annotate the security report as "pre-populated defaults, not actual scan results."
-
-### 2.4 Fake-Green Concern: Static Gate 0 Evidence (P2)
-
-**File:** `D:\agent-acceptance\scripts\multi_agent_dispatch_plan.py`, lines 62-89
-
-The `_gate0()` function returns a fully static dictionary claiming:
-- `queried_sources` lists 4 documents
-- `matched_capabilities` lists 3 capabilities
-- `sufficiency_decision: "existing_partial"`
-- `decision: "build_delta"`
-
-None of these are computed at runtime. They are hardcoded assertions. While this is appropriate for a plan builder (not an executor), the output looks identical to a genuinely computed Gate 0 result.
+- **Path traversal protection**: `_resolve_evidence_path` at lines 74-91 resolves paths and enforces `candidate.relative_to(root)`, rejecting any evidence file outside the repository root.
+- **Session ID uniqueness**: Lines 265-275 require at least 2 distinct session IDs, preventing a single session from claiming to be multiple agents.
+- **CDP session verification**: Line 251 requires `cdp_session.active=true`.
+- **CAP-029 inventory check**: Lines 396-436 validate that the capability is registered and approved for execution.
+- **Tool policy terms**: Lines 439-467 require specific runtime gate terms in the policy document.
 
 ---
 
-## 3. Findings
+## Audit Area 2: Dispatch Plan (`multi_agent_dispatch_plan.py`)
 
-### P1 Findings
+### 2.1 Preflight PASS Gate Before READY -- PASS
 
-#### P1-001: Hardcoded security_report values indistinguishable from real scan evidence
+The `build_plan()` function at lines 511-540 uses a tiered status determination:
 
-**File:** `D:\agent-acceptance\scripts\multi_agent_dispatch_plan.py`, lines 129-136
+1. Default: `status = "READY"`
+2. If conflict errors exist: `status = "BLOCKED"` (line 525-526)
+3. If preflight is HUMAN_REQUIRED or human_gate_required: `status = "HUMAN_REQUIRED"` (line 527-528)
+4. If preflight is BLOCKED: `status = "BLOCKED"` (line 529-530)
 
-Every TaskSpec emitted includes a `security_report` with hardcoded values. The `staged_diff_secret_scan_run: False` and `real_key_patterns_found: False` fields look like scan results but are static defaults. No annotation distinguishes "not yet scanned" from "scanned and clean."
+The `validate_plan()` function at lines 469-508 adds an independent semantic layer:
 
-**Impact:** Downstream consumers or automated tools may trust these values as evidence of actual security scans.
+| Check | Evidence |
+|-------|----------|
+| `executed_external_runtime` must be `false` | `multi_agent_dispatch_plan.py:473-474` |
+| Source preflight `executed_external_runtime` must not be `true` | `multi_agent_dispatch_plan.py:476-477` |
+| READY status requires PASS preflight with `human_gate_required=false` | `multi_agent_dispatch_plan.py:479-482` |
+| READY status requires all human-gated activation tasks resolved (status in completed/closed/accepted_with_limitation, no blocking conditions) | `multi_agent_dispatch_plan.py:483-495` |
+| Every embedded TaskSpec validated against JSON schema | `multi_agent_dispatch_plan.py:497-504` |
 
-**Recommendation:** Add a `"scan_status": "not_yet_scanned"` field or document in the TaskSpec description that security_report values are defaults to be overwritten during execution.
+The dispatch plan schema adds conditional constraints via `allOf`:
+- `status=READY` implies `source_preflight.overall=PASS` and `source_preflight.human_gate_required=false` (lines 420-454)
+- `status=HUMAN_REQUIRED` implies `source_preflight.human_gate_required=true` (lines 456-476)
+- `executed_external_runtime` has `"const": false` (line 30)
 
-#### P1-002: Unhandled FileNotFoundError in dispatch plan `_load_json`
+**Test coverage:**
+- `test_default_plan_matches_preflight_and_is_read_only` (line 79): verifies current preflight produces HUMAN_REQUIRED plan.
+- `test_ready_plan_rejects_deferred_human_activation_tasks` (line 253): verifies a forged PASS preflight cannot hide unresolved human activation tasks.
+- `test_missing_preflight_returns_blocked_plan_without_traceback` (line 279): verifies missing preflight produces BLOCKED without crashing.
 
-**File:** `D:\agent-acceptance\scripts\multi_agent_dispatch_plan.py`, lines 52-53
+### 2.2 Write Conflict Detection Between Parallel Workers -- PASS
 
-```python
-def _load_json(path: Path) -> dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8-sig"))
-```
+The `_summarize_conflicts()` function at lines 426-466 implements:
 
-This function has no error handling. If the preflight JSON file does not exist, `Path.read_text()` raises an unhandled `FileNotFoundError`. Compare with the preflight module's `_load_json` (line 36-42 of `multi_agent_gate0_preflight.py`) which properly handles both `FileNotFoundError` and `JSONDecodeError`, returning a structured tuple.
+| Check | Evidence |
+|-------|----------|
+| Duplicate `task_id` detection | `multi_agent_dispatch_plan.py:432-435` |
+| `parallel_safe=true` tasks touching protected files flagged | `multi_agent_dispatch_plan.py:438-440` |
+| Write-set overlap detection within same parallel group | `multi_agent_dispatch_plan.py:447-458` |
+| Path normalization for cross-platform comparison | `multi_agent_dispatch_plan.py:39-41` (`_norm` replaces backslashes, strips, removes trailing slash) |
+| Directory/file prefix overlap detection | `multi_agent_dispatch_plan.py:46-50` (`_paths_conflict` handles exact match, parent-child, and child-parent) |
 
-The `build_plan()` function handles the `None` path case via `_load_preflight()` (line 367-374), but when a path IS supplied and the file is missing or malformed, the script crashes with a raw traceback instead of a structured error.
+The `_paths_conflict` function correctly handles three overlap cases:
+1. Exact path match: `left_norm == right_norm`
+2. Left is parent of right: `right_norm.startswith(left_norm + "/")`
+3. Right is parent of left: `left_norm.startswith(right_norm + "/")`
 
-**Impact:** An operator running `--preflight path/to/missing.json` gets a Python traceback instead of a structured BLOCKED report. This is a silent failure path in the CLI.
+**Test coverage:**
+- `test_parallel_ready_assignments_have_disjoint_write_sets` (line 171): verifies default plan has no write overlaps.
+- `test_validate_plan_detects_parallel_write_conflict` (line 185): verifies exact-path overlap is caught.
+- `test_validate_plan_detects_directory_file_write_conflict` (line 204): verifies directory/file prefix overlap is caught.
 
-**Evidence:** Trace the call chain: `main()` line 494 -> `build_plan()` line 457 -> `_load_preflight()` line 375 -> `_load_json()` line 53 -- unhandled crash.
+---
+
+## Audit Area 3: Production Readiness Gate (`production_readiness_gate.py`)
+
+### 3.1 Three-Input Requirement -- PASS
+
+The `evaluate_readiness()` function at lines 545-601 enforces mode-based input requirements:
+
+| Mode | Required Inputs | Evidence |
+|------|----------------|----------|
+| `local_governance` | `local_evidence` | `production_readiness_gate.py:564` |
+| `controlled_pilot` | `local_evidence` + `preflight` + `dispatch_plan` | `production_readiness_gate.py:564-569` |
+| `formal_use` | All of the above + `pilot_evidence` + `production_authorization` | `production_readiness_gate.py:564-585` |
+
+Missing inputs are handled with the `missing_status` parameter in `_load_json`:
+- Missing `local_evidence` produces `blocked` (line 121: `missing_status="blocked"`)
+- Missing `preflight` produces `human_required` (line 245: `missing_status="human_required"`)
+- Missing `dispatch_plan` produces `human_required` (line 284: `missing_status="human_required"`)
+- Missing `pilot_evidence` produces `human_required` (line 359: `missing_status="human_required"`)
+- Missing `production_authorization` produces `human_required` (line 491: `missing_status="human_required"`)
+
+CLI enforces `--local-evidence` as required via argparse (line 608).
+
+**Test coverage:**
+- `test_missing_local_evidence_is_blocked` (line 245): exit_code=1, status=BLOCKED.
+- `test_formal_use_requires_real_pilot_evidence` (line 525): missing pilot evidence produces HUMAN_REQUIRED.
+- `test_formal_use_requires_production_authorization` (line 653): missing authorization produces HUMAN_REQUIRED.
+
+### 3.2 Invalid Input Rejection -- PASS
+
+Each input undergoes multi-layer validation:
+
+**Local evidence** (`_validate_local`, lines 119-239):
+- Freshness check (24h max age via `MAX_EVIDENCE_AGE_SECONDS`, 5min clock skew tolerance)
+- `task_id` must match `PRODUCTION-READINESS-AUTOMATION-A1` (line 128-129)
+- Canonical tests: command must be `python -m pytest tests/ -q`, exit_code=0, failed=0, passed>0 (lines 134-141)
+- SHA256 verification of raw test output (lines 146-153)
+- Raw output text confirmation of passed count (lines 154-156)
+- Three stress probes validated with exact expected behavior: `allowed_edit` (PASS), `forbidden_edit` (BLOCKED), `missing_finish_artifacts` (BLOCKED) (lines 158-229)
+- Each probe evidence file verified for: name, task_id, file, status, exit_code, runner command, output markers (lines 202-229)
+- `executed_external_runtime` must be `false` (lines 231-232)
+
+**Preflight** (`_validate_preflight`, lines 242-276):
+- Freshness check (line 248-252)
+- `executed_external_runtime` must be `false` (lines 253-256)
+- Contradictory state detection: `overall` and `human_gate_required` must be consistent (lines 271-276)
+
+**Dispatch plan** (`_validate_dispatch`, lines 279-349):
+- Freshness check (lines 287-291)
+- `executed_external_runtime` must be `false` (lines 292-293)
+- READY dispatch requires PASS source preflight (lines 296-306)
+- Source preflight path must match the current preflight input (lines 308-318)
+- Source preflight SHA256 must match the actual file on disk (lines 319-327)
+- Source preflight fields (`generated_at`, `overall`, `human_gate_required`) must match actual data (lines 328-338)
+- Source preflight `executed_external_runtime` must be false (lines 337-338)
+- Source preflight freshness independently checked (line 339)
+
+**Pilot evidence** (`_validate_pilot`, lines 352-481):
+- Freshness check on `completed_at` (line 364)
+- `executed_external_runtime` must be `true` (line 371) -- real pilot must have executed
+- SHA256 bindings to exact preflight and dispatch plan artifacts (lines 373-392)
+- At least 2 agent sessions with distinct session IDs (lines 397-440)
+- Each session evidence file validated for freshness, agent_id, session_id, `live=true`, verified_at consistency (lines 400-438)
+- Independent review: verdict=pass, reviewer_id distinct from executor_ids, evidence_files include .md and .yaml (lines 442-470)
+
+**Production authorization** (`_validate_authorization`, lines 484-542):
+- `authorized=true` required (lines 496-502)
+- `scope=formal_use` required (line 505-506)
+- `run_id` must match pilot run_id (lines 507-508)
+- `risk_acknowledged=true` required (lines 509-510)
+- Non-empty `authorization_id`, `decision_maker`, `decision_reason` (lines 511-514)
+- Temporal ordering: `approved_at` must be after pilot `completed_at` (lines 523-524)
+- Expiry check (lines 529-535)
+
+**Test coverage (selected):**
+- `test_stale_local_evidence_is_blocked` (line 257)
+- `test_local_raw_output_hash_mismatch_is_blocked` (line 272)
+- `test_synthetic_probe_without_runner_command_and_output_is_blocked` (line 286)
+- `test_ready_dispatch_requires_pass_source_preflight` (line 343)
+- `test_ready_dispatch_source_preflight_path_must_match_current_preflight` (line 362)
+- `test_ready_dispatch_source_preflight_hash_mismatch_is_blocked` (line 392)
+- `test_formal_use_rejects_duplicate_session_ids` (line 539)
+- `test_formal_use_binds_pilot_to_exact_preflight_artifact` (line 633)
+- `test_production_authorization_must_follow_pilot` (line 683)
+- `test_expired_production_authorization_is_human_required` (line 702)
+- `test_report_never_claims_external_runtime_execution` (line 760, parametrized across all 3 modes)
+
+### 3.3 Repository Path Escape Protection -- PASS
+
+`_load_json` at lines 60-71 and `_resolve_file` at lines 87-104 both enforce `candidate.relative_to(root)`, rejecting any evidence path outside the repository root.
+
+**Test coverage:**
+- `test_repo_escape_is_blocked` (line 745)
+- `test_preflight_repo_escape_is_blocked` (line 507)
+- `test_ready_dispatch_source_preflight_repo_escape_is_blocked` (line 411)
+
+---
+
+## Audit Area 4: Fake-Green Resistance
+
+### 4.1 Schema-Level Defenses
+
+| Schema | Constraint | Evidence |
+|--------|-----------|----------|
+| Preflight | `executed_external_runtime` const `false` | `multi-agent-gate0-preflight.schema.json:25` |
+| Preflight | `overall=PASS` implies `human_gate_required=false` | `multi-agent-gate0-preflight.schema.json:63-71` |
+| Preflight | `overall=HUMAN_REQUIRED` implies `human_gate_required=true` | `multi-agent-gate0-preflight.schema.json:73-80` |
+| Dispatch | `executed_external_runtime` const `false` | `multi-agent-dispatch-plan.schema.json:30` |
+| Dispatch | `status=READY` implies `source_preflight.overall=PASS` and `human_gate_required=false` | `multi-agent-dispatch-plan.schema.json:420-454` |
+| Dispatch | `status=HUMAN_REQUIRED` implies `source_preflight.human_gate_required=true` | `multi-agent-dispatch-plan.schema.json:456-476` |
+| Dispatch | `source_preflight.executed_external_runtime` const `false` | `multi-agent-dispatch-plan.schema.json:63-65` |
+
+### 4.2 Semantic-Level Defenses
+
+| Script | Defense | Evidence |
+|--------|---------|----------|
+| `gate0_preflight` | Three-state output (PASS/HUMAN_REQUIRED/BLOCKED) with explicit priority ordering: blocked > human_required > pass | `multi_agent_gate0_preflight.py:494-502` |
+| `gate0_preflight` | Activation record validation checks 10+ independent conditions including evidence file cross-references | `multi_agent_gate0_preflight.py:94-276` |
+| `dispatch_plan` | `validate_plan` independently verifies READY preconditions beyond schema constraints | `multi_agent_dispatch_plan.py:469-508` |
+| `dispatch_plan` | `_summarize_conflicts` recomputes write conflicts from scratch, does not trust stale summary | `multi_agent_dispatch_plan.py:426-466` |
+| `dispatch_plan` | `main()` re-validates the built plan and forces BLOCKED if validation fails | `multi_agent_dispatch_plan.py:559-565` |
+| `production_readiness` | `_validate_dispatch` recomputes source preflight SHA256 from disk, does not trust embedded claims | `production_readiness_gate.py:319-327` |
+| `production_readiness` | `_validate_pilot` binds to exact preflight and dispatch artifacts via SHA256 comparison | `production_readiness_gate.py:373-392` |
+| `validate_dispatch_plan` | Independent validator re-runs `validate_plan` semantic checks on serialized plans | `validate_multi_agent_dispatch_plan.py:55-84` |
+
+### 4.3 Test-Level Defenses (Fake-Green Specific)
+
+| Test | What It Prevents | Evidence |
+|------|-----------------|----------|
+| `test_schema_rejects_external_runtime_execution_flag` | Cannot claim PASS while asserting external runtime was executed | `test_multi_agent_gate0_preflight.py:445-465` |
+| `test_schema_rejects_human_required_without_gate_flag` | Cannot set HUMAN_REQUIRED without human_gate_required=true | `test_multi_agent_gate0_preflight.py:468-488` |
+| `test_ready_plan_rejects_deferred_human_activation_tasks` | Forged PASS preflight cannot hide unresolved human tasks | `test_multi_agent_dispatch_plan.py:253-276` |
+| `test_validator_rejects_external_runtime_execution_claim` | Dispatch plan cannot claim external runtime execution | `test_validate_multi_agent_dispatch_plan.py:85-95` |
+| `test_validator_rejects_parallel_write_conflict` | Stale conflict summary cannot hide real write conflicts | `test_validate_multi_agent_dispatch_plan.py:61-82` |
+| `test_multi_repo_smoke_known_issues_do_not_fake_green` | KNOWN_ISSUES label cannot convert non-zero exit to PASS | `test_cross_repo_execution_guards.py:316-344` |
+| `test_cross_repo_verify_default_is_human_required` | Default mode never silently executes | `test_cross_repo_execution_guards.py:38-51` |
+| `test_cross_repo_verify_rejects_legacy_lightweight_auth` | Legacy auth cannot authorize execution | `test_cross_repo_execution_guards.py:179-204` |
+| `test_report_never_claims_external_runtime_execution` | All modes hardcode executed_external_runtime=false | `test_production_readiness_gate.py:760-769` |
+| `test_formal_use_requires_real_pilot_evidence` | Cannot skip pilot evidence for formal_use | `test_production_readiness_gate.py:525-536` |
+
+### 4.4 KNOWN_ISSUES Analysis
+
+The `KNOWN_ISSUES` status in `multi_repo_smoke.py` was previously flagged as a potential fake-green vector. Analysis confirms it is safe:
+
+- `KNOWN_ISSUES` is not equal to `"PASS"`, so the overall aggregation `all(v["status"] == "PASS" for v in results.values())` evaluates to `False`.
+- The overall result is `FAIL` with exit code 1 when any repo has `KNOWN_ISSUES` status.
+- The test `test_multi_repo_smoke_known_issues_do_not_fake_green` (line 316) confirms: `assert exit_code == 1` and `assert report["overall"] == "FAIL"`.
+
+---
+
+## Findings
+
+### P0 Findings: None
+
+### P1 Findings: None
 
 ### P2 Findings
 
-#### P2-001: Encoding inconsistency between preflight and dispatch plan JSON loaders
+#### P2-01: Early Return in `_validate_activation_record` Limits Diagnostic Visibility
 
-**Files:**
-- `D:\agent-acceptance\scripts\multi_agent_gate0_preflight.py`, line 38: `encoding="utf-8"`
-- `D:\agent-acceptance\scripts\multi_agent_dispatch_plan.py`, line 53: `encoding="utf-8-sig"`
-- `D:\agent-acceptance\scripts\cross_repo_authorization.py`, line 66: `encoding="utf-8-sig"`
-- `D:\agent-acceptance\scripts\validate_conversation_registry.py`, line 122: `encoding="utf-8"`
+**File**: `D:\agent-acceptance\scripts\multi_agent_gate0_preflight.py:97-105`
 
-The preflight and conversation registry validators read files with `encoding="utf-8"`, while the dispatch plan and authorization modules use `encoding="utf-8-sig"`. On Windows, a binding file saved with UTF-8 BOM (common with Notepad, PowerShell) will cause the preflight loader to include the BOM character in the parsed string. While `json.loads` in modern Python handles BOM in most cases, the inconsistency creates a fragile boundary.
+When the activation record file does not exist, the function returns early with only a `run_authorization` check (status `human_required`). It does not produce `live_agent_sessions` or `independent_session_ids` checks because `agent_ids` is empty at that point (it comes from binding validation, not the activation record). This is correct fail-closed behavior, but it means the report contains fewer diagnostic checks than when the activation record exists but is invalid.
 
-**Impact:** A binding file saved with BOM could behave differently between modules. The test `test_cross_repo_verify_rejects_legacy_utf8_bom_auth` (guard test line 207-233) confirms BOM handling in the authorization path but no equivalent test exists for the preflight path.
+**Severity rationale**: No safety impact. The `human_required` status propagates correctly. Diagnostic completeness issue only.
 
-#### P2-002: `_section()` parser silently returns empty for malformed headings
+#### P2-02: Cross-Group Write Conflicts Not Checked
 
-**File:** `D:\agent-acceptance\scripts\multi_agent_gate0_preflight.py`, lines 45-53
+**File**: `D:\agent-acceptance\scripts\multi_agent_dispatch_plan.py:442-458`
 
-```python
-def _section(text: str, heading: str) -> str:
-    marker = f"## {heading}"
-    start = text.find(marker)
-    if start < 0:
-        return ""
-```
+`_summarize_conflicts()` only checks write conflicts within the same `parallel_group_id`. If tasks from different parallel groups (e.g., `local-readiness` and `serial-integration`) both write to the same path, no conflict is flagged. This is mitigated by the current plan architecture:
+- Serial tasks (`parallel_safe=false`) are excluded from the conflict check loop at line 444
+- The Integrator task (`serial-integration` group) runs only after first-wave tasks complete (declared via `depends_on`)
+- Each parallel group has exclusive write targets (`_reports/multi-agent-*/` directories)
 
-The `_section()` function performs string matching on `## {heading}` markers. If the capability inventory markdown uses a different heading style (e.g., `### 29.` or `## 29. Dev-frame-opencode dispatch` with different casing or spacing), the function silently returns `""`, causing `_validate_capability_inventory` to report "CAP-029 section missing" without distinguishing "section truly absent" from "heading format changed."
+**Severity rationale**: No current risk. The plan architecture prevents cross-group write overlap by design. Would become relevant if the plan structure changes.
 
-**Impact:** A documentation refactor could silently break preflight capability checks. The error message would say "CAP-029 section missing" when the section exists with a slightly different heading format.
+#### P2-03: No Explicit Test for Malformed Activation Record JSON
 
-#### P2-003: No negative test for partial tool-policy terms
+**File**: `D:\agent-acceptance\tests\test_multi_agent_gate0_preflight.py`
 
-**File:** `D:\agent-acceptance\tests\test_multi_agent_gate0_preflight.py`
+While `_load_json` at `multi_agent_gate0_preflight.py:42-53` handles `JSONDecodeError` and returns `blocked`, there is no dedicated test for a corrupt/malformed activation record JSON file. The `test_missing_binding_blocks` test (line 429) covers the missing-file path for bindings but not specifically for the activation record.
 
-The `_write_runtime_docs` helper (lines 34-59) always writes a complete tool policy with all 4 required terms present. No test exercises the case where 1-3 terms are present and verifies the correct "missing policy term(s)" error.
+**Severity rationale**: The code path is covered generically by `_load_json` error handling. Adding a test would improve defense-in-depth documentation but is not required for safety.
 
-The `_validate_tool_policy` function (`multi_agent_gate0_preflight.py` lines 200-228) explicitly handles this case (line 211: `missing = [term for term in required_terms if term not in text]`), but the behavior is untested.
+#### P2-04: CLI/Library Interface Inconsistency for `--local-evidence`
 
-**Impact:** The partial-missing-terms code path in `_validate_tool_policy` is untested. While the logic appears correct, an untested branch is a maintenance risk.
+**File**: `D:\agent-acceptance\scripts\production_readiness_gate.py:549` vs line 608
 
-#### P2-004: No scope-mismatch test for `cross_repo_verify`
+The argparse definition uses `required=True` for `--local-evidence`, but the `evaluate_readiness()` function signature accepts `local_evidence: Path | None = None`. When called programmatically with `local_evidence=None`, `_validate_local` correctly returns a `blocked` check via `_load_json(None, ...)` at lines 57-58 and 120-123. The behavior is correct but the interface contract is inconsistent between CLI and library usage.
 
-**File:** `D:\agent-acceptance\tests\test_cross_repo_execution_guards.py`
+**Severity rationale**: No safety impact. The fail-closed behavior is correct. Documentation clarity issue only.
 
-There is no test verifying that `cross_repo_verify` rejects an authorization record with `scope="multi_repo_smoke"` (wrong scope). The `multi_repo_smoke` module has `test_multi_repo_smoke_rejects_unknown_repo_in_auth` (line 425-447) for repo-set mismatch, but neither module has a dedicated wrong-scope test.
+#### P2-05: Static Gate 0 Evidence in Dispatch Plan Builder
 
-The authorization module (`cross_repo_authorization.py` line 77-78) does check `data.get("scope") != required_scope`, so the code path exists but is only tested implicitly.
+**File**: `D:\agent-acceptance\scripts\multi_agent_dispatch_plan.py:75-102`
 
-**Impact:** Low, because the code is correct and the authorization module itself handles this. But the gap means integration-level scope enforcement is not independently verified for `cross_repo_verify`.
+The `_gate0()` function returns a fully static dictionary for every TaskSpec's `gate_0` field, claiming specific `queried_sources`, `matched_capabilities`, and `sufficiency_decision` values. None of these are computed at runtime; they are hardcoded assertions. While this is appropriate for a plan builder (which declares intent, not execution results), the output looks identical to a genuinely computed Gate 0 result.
 
-#### P2-005: KNOWN_FAILURES allowance is not validated against actual failure evidence
+**Mitigation**: The `security_report.scan_status` is correctly set to `"not_run"` (line 143), which signals to consumers that the task has not yet executed. The test `test_generated_security_report_starts_not_run` (line 160) verifies this.
 
-**File:** `D:\agent-acceptance\scripts\multi_repo_smoke.py`, line 23
-
-```python
-KNOWN_FAILURES = {"devframe-control-plane": 3}
-```
-
-The hardcoded allowance count (3) is not validated against any external evidence source. While KNOWN_ISSUES correctly maps to overall FAIL (confirmed in section 2.2 above), the `known_failure_allowance` field in the output could mislead a consumer into thinking "3 failures are expected and acceptable" when the actual failure count or signatures may differ from expectations.
-
-**Impact:** Low for fake-green risk (overall FAIL is correctly returned). Medium for evidence quality: the allowance number is a static assertion, not a verified bound.
+**Severity rationale**: No safety impact. The `scan_status: "not_run"` field provides a signal. However, the `gate_0` field lacks an equivalent "not yet evaluated" marker.
 
 ---
 
-## 4. Error Handling Audit
+## Changed Files
 
-### 4.1 Robust Error Handling (Good)
-
-| Module | Pattern | Assessment |
-|---|---|---|
-| `multi_agent_gate0_preflight.py` `_load_json` (line 36-42) | Catches FileNotFoundError, JSONDecodeError; returns tuple | Robust |
-| `cross_repo_authorization.py` `validate_cross_repo_authorization` (lines 46-128) | Catches JSONDecodeError, validates all fields, returns structured errors | Robust |
-| `cross_repo_verify.py` `_run_repo_command` (lines 60-98) | Catches TimeoutExpired, FileNotFoundError, OSError; returns structured FAIL | Robust |
-| `multi_repo_smoke.py` `_run_repo_smoke` (lines 53-102) | Same pattern as cross_repo_verify | Robust |
-| `validate_multi_agent_dispatch_plan.py` `_load_json` (lines 25-31) | Uses JSON_LOAD_FAILED sentinel; catches FileNotFoundError, JSONDecodeError | Robust |
-
-### 4.2 Silent Failure or Crash Risk
-
-| Module | Pattern | Assessment |
-|---|---|---|
-| `multi_agent_gate0_preflight.py` `_section()` (lines 45-53) | Returns `""` on missing heading | Silent failure (P2-002) |
-| `multi_agent_dispatch_plan.py` `_load_json` (lines 52-53) | No error handling at all | Crash on missing file (P1-002) |
-
-### 4.3 Fail-Closed Behavior Verification
-
-All cross-repo execution paths correctly fail closed. Summary:
-
-- **Default mode (no --execute):** Returns HUMAN_REQUIRED, exit code 2. Verified by `test_cross_repo_verify_default_is_human_required` and `test_multi_repo_smoke_default_is_human_required`.
-- **--execute without authorization:** Returns HUMAN_REQUIRED, exit code 2. Verified by `test_cross_repo_verify_execute_requires_authorization` and `test_multi_repo_smoke_execute_requires_authorization`.
-- **--execute with expired authorization:** Returns HUMAN_REQUIRED, exit code 2. Verified by `test_cross_repo_verify_rejects_expired_auth`.
-- **--execute with legacy authorization:** Returns HUMAN_REQUIRED, exit code 2. Verified by `test_cross_repo_verify_rejects_legacy_lightweight_auth`.
-- **--execute with legacy BOM authorization:** Returns HUMAN_REQUIRED, exit code 2. Verified by `test_cross_repo_verify_rejects_legacy_utf8_bom_auth`.
-- **--execute with unknown repos in authorization:** Returns HUMAN_REQUIRED, exit code 2. Verified by `test_multi_repo_smoke_rejects_unknown_repo_in_auth`.
-- **Authorized execution with timeout:** Returns FAIL with structured evidence including `error_type: "timeout"`. Verified by `test_cross_repo_verify_timeout_is_structured_fail` and `test_multi_repo_smoke_timeout_is_structured_fail`.
-- **Authorized execution with missing cwd:** Returns FAIL with structured evidence including `error_type: "missing_cwd"`. Verified by `test_cross_repo_verify_missing_cwd_is_structured_fail` and `test_multi_repo_smoke_missing_cwd_is_structured_fail`.
-- **Authorized execution with OSError:** Returns FAIL with structured evidence including `error_type: "execution_exception"`. Verified by `test_cross_repo_verify_execution_exception_is_structured_fail` and `test_multi_repo_smoke_execution_exception_is_structured_fail`.
-
-**Assessment: Fail-closed behavior is comprehensive and well-tested. All 9 distinct failure modes have dedicated test coverage.**
+None. This is a read-only quality audit. No scripts, tests, schemas, docs, or .agent files were modified.
 
 ---
 
-## 5. Security Review
+## Known Gaps
 
-### 5.1 Secret Leak Risk
+1. **No end-to-end pipeline test**: There is no single test that runs `gate0_preflight -> dispatch_plan -> production_readiness_gate` as an integrated chain with consistent artifacts. Each script is tested in isolation with synthetic fixtures. This is acceptable for the current scope (the scripts consume each other's JSON artifacts), but a full-chain integration test would strengthen confidence.
 
-- **No secrets in code.** All scripts use configuration files and JSON records. No API keys, tokens, or credentials are hardcoded.
-- **Authorization records** (`cross_repo_authorization.py`) are JSON files with audit fields but no secrets. The `decision_maker` field is a human-readable string, not a credential.
-- **TaskSpec security_report** is hardcoded to safe defaults (P1-001 above). No real scan data is embedded.
+2. **No fuzz testing on JSON inputs**: Malformed JSON handling is tested for top-level non-object and null cases (`test_validate_multi_agent_dispatch_plan.py:98-126`), but there is no systematic fuzz testing of deeply nested malformed structures.
 
-### 5.2 Path Traversal
+3. **Timestamp-dependent tests**: Several tests use `datetime.now()` in fixture construction, which means they could theoretically become flaky near midnight or during NTP adjustments. The 5-minute clock skew tolerance mitigates this for production code, but test fixtures do not mock the clock.
 
-- **`multi_agent_gate0_preflight.py` line 301:** `output_path.parent.mkdir(parents=True, exist_ok=True)` will create any directory hierarchy specified by `--output`. This is an operator-controlled CLI argument, so the risk is limited to operator error or malicious invocation with an untrusted path.
-- **`multi_agent_dispatch_plan.py` line 507:** Same pattern for `--output` argument.
-- **`cross_repo_authorization.py` line 61:** `Path(record_path)` trusts the caller-supplied path. However, the function only reads the file and validates its JSON contents, so the risk is limited to information disclosure (reading arbitrary JSON files and reporting their structure via error messages).
+4. **Schema `format` keyword not enforced**: The schemas use `"format": "date-time"` but `jsonschema` does not enforce format validation by default without a registered format checker. The scripts implement their own timestamp parsing (`_parse_timestamp` / `_parse_time`), which provides the real validation. The schema `format` keyword serves as documentation only.
 
-### 5.3 Authorization Integrity
-
-- The authorization record (`cross_repo_authorization.py`) uses no cryptographic signatures. It relies on JSON file integrity and human review. This is an acknowledged design choice (the record is "auditable" not "tamper-proof").
-- The `risk_acknowledged: true` field (line 79) is a second boolean gate beyond `authorized: true`, providing defense against accidental authorization.
-- The exact-match repo set validation (lines 94-106) prevents scope creep: both missing and extra repos are rejected.
-- Timestamp validation (lines 24-43, 108-126) requires timezone-aware ISO timestamps and checks that `expires_at > approved_at` and that the record is not expired at evaluation time.
+5. **No partial tool-policy term test**: The `_validate_tool_policy` function handles the case where some but not all required terms are present (line 450: `missing = [term for term in required_terms if term not in text]`), but no test exercises this specific scenario.
 
 ---
 
-## 6. Test Coverage Quality
+## Residual Risk Assessment
 
-### 6.1 `test_multi_agent_gate0_preflight.py` (7 tests)
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| Fake-green via forged preflight artifact | Very Low | High | SHA256 binding, freshness checks, schema constraints, and semantic validation all independently prevent this |
+| Fake-green via stale authorization | Low | High | 15-min session freshness, 24h evidence freshness, expiry checks on all authorization records |
+| Fake-green via path traversal | Very Low | Medium | `relative_to(root)` enforcement on all evidence paths, tested with multiple `test_*_repo_escape_is_blocked` tests |
+| Undetected write conflict in plan | Very Low | Low | Current plan structure prevents this by design; conflict detection is comprehensive within parallel groups |
+| Schema drift between plan and task-spec | Low | Medium | `test_plan_schema_task_spec_definition_tracks_core_task_schema_contract` and nested contract tests detect drift |
 
-| Test | What It Verifies | Fake-Green Risk |
-|---|---|---|
-| `test_current_repo_preflight_passes_pilot_ready` (line 71) | Live repo state produces PASS | Low: depends on real state, but assertions are specific (exit_code==0, overall==PASS, executed_external_runtime==False) |
-| `test_cli_output_writes_same_schema_valid_report` (line 81) | CLI --output matches stdout, schema-valid | Low: verifies file/stdout consistency |
-| `test_two_active_bindings_with_approved_capability_pass` (line 106) | Synthetic happy path | None: fully synthetic, meaningful assertions |
-| `test_proposed_opencode_capability_requires_human_gate` (line 133) | CAP-029 proposed = HUMAN_REQUIRED | None: verifies blocking behavior |
-| `test_duplicate_agent_ids_block` (line 159) | Duplicate agent_id = BLOCKED | None: verifies blocking behavior |
-| `test_missing_binding_blocks` (line 185) | Missing file = BLOCKED | None: verifies blocking behavior |
-| `test_schema_rejects_external_runtime_execution_flag` (line 201) | Schema enforces const false | None: schema-level constraint |
-| `test_schema_rejects_human_required_without_gate_flag` (line 224) | Schema enforces conditional consistency | None: schema-level constraint |
-
-**Gaps:** No test for partial tool-policy terms. No test for malformed capability inventory headings. No test for binding JSON with BOM encoding on the preflight path.
-
-### 6.2 `test_cross_repo_execution_guards.py` (18 tests)
-
-| Category | Tests | Fake-Green Risk |
-|---|---|---|
-| Default/dry-run HUMAN_REQUIRED | 2 (verify + smoke) | None: monkeypatched subprocess with `pytest.fail` ensures no execution |
-| Missing authorization | 2 (verify + smoke) | None: verifies fail-closed |
-| Authorized execution happy path | 2 (verify + smoke) | None: verifies call count matches repo count |
-| Known issues do not fake-green | 1 (smoke only) | None: critical test, asserts overall FAIL and exit 1 |
-| Timeout handling | 2 (verify + smoke) | None: structured FAIL evidence verified |
-| Missing cwd handling | 2 (verify + smoke) | None: structured FAIL evidence verified |
-| OSError handling | 2 (verify + smoke) | None: structured FAIL evidence verified |
-| Legacy auth rejection | 2 (plain + BOM) | None: verifies audit field requirement |
-| Expired auth rejection | 1 (verify only) | None: verifies expiry check |
-| Unknown repo rejection | 1 (smoke only) | None: verifies exact scope match |
-
-**Gaps:** No wrong-scope test for either module. No test for `authorized=false` with otherwise valid record. Authorization expiry boundary not tested at the exact edge (only clearly-expired dates).
+**Overall residual risk: LOW.** The defense-in-depth approach (schema constraints + semantic validation + comprehensive test suite) provides strong protection against false readiness claims. The three-layer architecture ensures that no single compromised layer can produce a fake-green result.
 
 ---
 
-## 7. Residual Risks
+## Reviewer Index
 
-### RR-001: Live-State Test Fragility
-
-`test_current_repo_preflight_passes_pilot_ready` (line 71) and `test_cli_output_writes_same_schema_valid_report` (line 81) run against the actual repository state. If the pilot configuration changes (e.g., a binding is retired, a capability is re-proposed), these tests will fail for reasons unrelated to code correctness. This is acceptable for current-state verification but should not be the sole test of PASS-path behavior. The synthetic test `test_two_active_bindings_with_approved_capability_pass` provides independent coverage.
-
-### RR-002: Authorization Record is Not Tamper-Proof
-
-The authorization record in `cross_repo_authorization.py` is a plain JSON file with no integrity protection (no signature, no hash chain). Any process with write access to the file can create or modify an authorization record. The design mitigates this through auditability (decision_maker, decision_reason, approved_at, expires_at) and human review, but it is not cryptographically tamper-resistant. This is an acknowledged design choice for the pilot phase.
-
-### RR-003: Hardcoded Paths in Cross-Repo Scripts
-
-`cross_repo_verify.py` (lines 19-31) and `multi_repo_smoke.py` (lines 20-22) hardcode absolute Windows paths like `"D:/agent-acceptance"`. The scripts are non-portable and cannot be tested in CI or on machines without the exact directory layout. Tests work around this by monkeypatching `subprocess.run`, but actual authorized execution requires the exact paths. This is an operational fragility, not a security risk.
-
----
-
-## 8. Summary
-
-### Strengths
-
-1. **Fail-closed by default.** Every execution path defaults to HUMAN_REQUIRED. No silent execution can occur without explicit authorization.
-2. **Schema-enforced invariants.** The preflight schema uses `const` and conditional constraints to prevent contradictory reports (e.g., PASS with human_gate_required=true, or any report claiming executed_external_runtime=true).
-3. **Comprehensive error handling in execution paths.** Timeout, missing directory, and OS errors are all caught and converted to structured FAIL evidence with typed `error_type` fields.
-4. **Strong test discipline.** Tests use `pytest.fail` on `subprocess.run` to verify that unauthorized paths never execute. The known-issues fake-green test correctly confirms KNOWN_ISSUES maps to overall FAIL.
-5. **Authorization audit trail.** Required audit fields (decision_maker, decision_reason, approved_at, expires_at, risk_acknowledged) make authorization records reviewable. Exact scope and repo-set matching prevents scope creep.
-6. **Write-conflict detection.** The dispatch plan builder checks for overlapping write sets between parallel-safe tasks in the same group, and the validator verifies these checks.
-7. **KNOWN_ISSUES correctly handled.** Despite a previous review flagging this as P1, re-inspection confirms that KNOWN_ISSUES status is not "PASS" and therefore correctly produces overall FAIL.
-
-### Weaknesses
-
-1. **Hardcoded security reports** look like scan evidence but are static defaults (P1-001).
-2. **Dispatch plan JSON loader** crashes on missing files instead of returning structured errors (P1-002).
-3. **Encoding inconsistency** between modules could cause BOM-related parse issues on Windows (P2-001).
-4. **Static Gate 0 evidence** in the plan builder is indistinguishable from runtime-computed evidence (P2 in section 2.4).
-5. **Test gaps** exist for partial tool-policy terms, wrong-scope authorization, and BOM-encoded binding files on the preflight path.
-
-### Verdict: PARTIAL
-
-The codebase demonstrates strong safety fundamentals: fail-closed defaults, schema-enforced invariants, and well-designed guard tests. The two P1 findings (hardcoded security reports and unhandled file errors) do not create fake-green risk but do reduce evidence quality and operational robustness. The P2 findings are maintenance and portability concerns that do not block current use but should be addressed before the pilot moves beyond local readiness.
-
-**No P0 blocking findings. The system is safe for human-gated operation.** The PARTIAL verdict reflects evidence quality gaps, not safety failures.
+| File | Lines Reviewed | Findings |
+|------|---------------|----------|
+| `D:\agent-acceptance\scripts\multi_agent_gate0_preflight.py` | 1-560 (full) | P2-01, P2-03 |
+| `D:\agent-acceptance\scripts\multi_agent_dispatch_plan.py` | 1-582 (full) | P2-02, P2-05 |
+| `D:\agent-acceptance\scripts\production_readiness_gate.py` | 1-637 (full) | P2-04 |
+| `D:\agent-acceptance\scripts\validate_multi_agent_dispatch_plan.py` | 1-100 (full) | None |
+| `D:\agent-acceptance\schemas\agent-runtime\multi-agent-gate0-preflight.schema.json` | 1-83 (full) | None |
+| `D:\agent-acceptance\schemas\agent-runtime\multi-agent-dispatch-plan.schema.json` | 1-478 (full) | None |
+| `D:\agent-acceptance\tests\test_multi_agent_gate0_preflight.py` | 1-489 (full) | None |
+| `D:\agent-acceptance\tests\test_multi_agent_dispatch_plan.py` | 1-285 (full) | None |
+| `D:\agent-acceptance\tests\test_production_readiness_gate.py` | 1-770 (full) | None |
+| `D:\agent-acceptance\tests\test_validate_multi_agent_dispatch_plan.py` | 1-182 (full) | None |
+| `D:\agent-acceptance\tests\test_cross_repo_execution_guards.py` | 1-448 (full) | None |
 
 ---
 
-## 9. Changed Files
+## Suggested Review Focus for Next Wave
 
-- `D:\agent-acceptance\_reports\multi-agent-quality-review-a1\QUALITY_REVIEW.md` (this report)
+1. **End-to-end pipeline test**: A single test that builds a complete chain from synthetic preflight through dispatch plan to production readiness gate, verifying SHA256 bindings and status propagation end-to-end.
+2. **Clock-mocked tests**: Replace `datetime.now()` calls in test fixtures with a mock clock to eliminate theoretical flakiness near time boundaries.
+3. **Activation record JSON malformation test**: Add an explicit test for corrupt activation record JSON to document the blocked-path behavior.
+4. **Partial tool-policy term test**: Add a test where 1-3 of the 4 required tool-policy terms are present, verifying the correct error message.
 
-No scripts, tests, schemas, docs, or .agent files were modified.
+---
 
-## 10. Tests Run
-
-- Read-only code inspection only. No pytest, cross-repo execution, opencode, live CDP, or paper workflow was executed, per task instructions.
-
-## 11. Governance Notes
+## Governance Notes
 
 - No git operations performed.
 - No forbidden paths modified.
