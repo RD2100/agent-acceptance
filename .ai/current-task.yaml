@@ -1,102 +1,104 @@
-task_id: MULTI-AGENT-READINESS-REPAIR-A1
-title: "Repair multi-agent readiness semantics and independent review evidence"
+task_id: PRODUCTION-READINESS-AUTOMATION-A1
+title: "Formal-use readiness gate and automated proof"
 priority: P0
 status: accepted_with_limitation
-type: governance_repair
-mode: "@go review"
+type: governance_automation
+mode: "@go"
 
 description: >
-  Remove false-positive readiness, require run-bound authorization and live
-  independent session evidence, restore closed TaskSpec validation, and submit
-  the resulting evidence to an independent ChatGPT reviewer.
+  Build a fail-closed readiness gate for local governance, controlled multi-GPT
+  pilot, and formal production use. Historical narrative reports are not
+  accepted as machine evidence.
 
 write_set:
-  - "tasks/multi-agent-readiness-repair-a1.md"
+  - "tasks/production-readiness-automation-a1.md"
   - ".ai/current-task.yaml"
+  - "scripts/production_readiness_gate.py"
   - "scripts/multi_agent_gate0_preflight.py"
   - "scripts/multi_agent_dispatch_plan.py"
-  - "scripts/validate_execution_report.py"
-  - "schemas/agent-runtime/task-spec.schema.json"
+  - "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
   - "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
-  - "schemas/agent-runtime/execution-report.schema.json"
+  - "tests/test_production_readiness_gate.py"
   - "tests/test_multi_agent_gate0_preflight.py"
   - "tests/test_multi_agent_dispatch_plan.py"
-  - "tests/test_validate_multi_agent_dispatch_plan.py"
-  - "tests/test_governance_consistency.py"
-  - "tests/test_execution_report_schema.py"
-  - "tests/test_validate_execution_report.py"
-  - "docs/agent-runtime/integration-contracts.md"
-  - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
-  - "_reports/multi-agent-gate0-preflight-a1/**"
-  - "_reports/multi-agent-dispatch-plan-a1/**"
-  - "_reports/multi-agent-readiness-repair-a1/**"
-  - "_evidence/MULTI-AGENT-READINESS-REPAIR-A1/**"
+  - "docs/agent-runtime/production-readiness.md"
+  - ".ai/verify-matrix.yaml"
+  - "_reports/production-readiness-automation-a1/**"
+  - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json"
+  - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN.json"
+  - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json"
+  - "_evidence/PRODUCTION-READINESS-AUTOMATION-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "P0 fake-readiness risk in authorization and dispatch state"
+  trigger_reason: "P0 formal-use readiness and fake-green prevention"
   inventory_evidence:
     queried_sources:
+      - "docs/agent-runtime/minimum-capability-set.md"
+      - "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md"
       - "scripts/multi_agent_gate0_preflight.py"
       - "scripts/multi_agent_dispatch_plan.py"
-      - "schemas/agent-runtime/task-spec.schema.json"
-      - "docs/agent-runtime/tool-policy.md"
-      - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+      - "_reports/multi-agent-multi-gpt-pilot-a1/PILOT_EXECUTION_REPORT.md"
+      - "D:/dev-frame-opencode/PRODUCTION_PROMOTION_CRITERIA.md"
     matched_capabilities:
-      - multi-agent-gate0-preflight
-      - multi-agent-dispatch-plan
-      - SADP TaskSpec validation
-      - independent reviewer evidence
+      - local_governance_verification
+      - multi_agent_gate0_preflight
+      - multi_agent_dispatch_plan
+      - independent_reviewer_evidence
+      - production_promotion_authorization
     compared_against_request:
-      - run-bound human authorization
-      - live independent session evidence
-      - fail-closed dispatch readiness
+      - "automate until formal use"
+      - "real multi-agent and multi-GPT proof"
+      - "fail-closed production readiness"
   rules_checked: [core-004, core-007, core-008, review-001]
+  lessons_checked: [LL-independent-review-evidence, LL-structured-task-spec]
   sufficiency_decision: existing_partial
   decision: build_delta
   delta_justification: >
-    Existing checks validate declarations but not current-run authority or
-    live session evidence.
+    Existing checks cover individual layers but no authoritative gate composes
+    them into a formal-use decision.
 
 conflict_registry:
   read_set:
+    - "docs/agent-runtime/minimum-capability-set.md"
+    - "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md"
     - "scripts/multi_agent_gate0_preflight.py"
     - "scripts/multi_agent_dispatch_plan.py"
-    - "schemas/agent-runtime/"
-    - "tests/"
-    - "docs/agent-runtime/tool-policy.md"
-  write_set:
-    - "tasks/multi-agent-readiness-repair-a1.md"
-    - ".ai/current-task.yaml"
-    - "scripts/multi_agent_gate0_preflight.py"
-    - "scripts/multi_agent_dispatch_plan.py"
-    - "scripts/validate_execution_report.py"
-    - "schemas/agent-runtime/task-spec.schema.json"
-    - "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
     - "schemas/agent-runtime/execution-report.schema.json"
+    - "_reports/multi-agent-multi-gpt-pilot-a1/"
+    - "D:/dev-frame-opencode/PRODUCTION_PROMOTION_CRITERIA.md"
+  write_set:
+    - "tasks/production-readiness-automation-a1.md"
+    - ".ai/current-task.yaml"
+    - "scripts/production_readiness_gate.py"
+    - "scripts/multi_agent_gate0_preflight.py"
+    - "scripts/multi_agent_dispatch_plan.py"
+    - "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
+    - "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
+    - "tests/test_production_readiness_gate.py"
     - "tests/test_multi_agent_gate0_preflight.py"
     - "tests/test_multi_agent_dispatch_plan.py"
-    - "tests/test_validate_multi_agent_dispatch_plan.py"
-    - "tests/test_governance_consistency.py"
-    - "tests/test_execution_report_schema.py"
-    - "tests/test_validate_execution_report.py"
-    - "docs/agent-runtime/integration-contracts.md"
-    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
-    - "_reports/multi-agent-gate0-preflight-a1/**"
-    - "_reports/multi-agent-dispatch-plan-a1/**"
-    - "_reports/multi-agent-readiness-repair-a1/**"
-    - "_evidence/MULTI-AGENT-READINESS-REPAIR-A1/**"
+    - "docs/agent-runtime/production-readiness.md"
+    - ".ai/verify-matrix.yaml"
+    - "_reports/production-readiness-automation-a1/**"
+    - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json"
+    - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN.json"
+    - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json"
+    - "_evidence/PRODUCTION-READINESS-AUTOMATION-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   protected_files_touched: true
-  conflict_level: high
+  conflict_level: medium
 
 deny_paths:
   - ".ai/paper_authorization.json"
   - "D:/dev-frame/ai-workflow-hub"
+  - "D:/dev-frame-opencode"
+  - "D:/devframe-control-plane"
   - "D:/test-frame"
 
-live_dispatch_authorized: false
-next_recommended: "Selective staging, pre-commit governance scan, and commit"
+external_runtime_execution_authorized: false
+paper_workflow_status: paused
+next_recommended: "Request exact human authorization for CONTROLLED-MULTI-GPT-PILOT-A1 before any live dispatch"

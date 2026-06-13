@@ -1,0 +1,10 @@
+﻿{
+    "probe":  "missing_finish_artifacts",
+    "task_id":  "PRODUCTION-READINESS-AUTOMATION-A1",
+    "file":  null,
+    "expected":  "BLOCKED",
+    "exit_code":  1,
+    "status":  "BLOCKED",
+    "command":  "python scripts\\qoderwork_task_runner.py finish --task-id PRODUCTION-READINESS-AUTOMATION-A1",
+    "output":  "=== SADP Task Runner: FINISH PRODUCTION-READINESS-AUTOMATION-A1 ===\n\nPASS: TaskSpec exists (production-readiness-automation-a1.md)\nBLOCKED: No ExecutionReport found for task_id=PRODUCTION-READINESS-AUTOMATION-A1\n  Searched: _evidence/PRODUCTION-READINESS-AUTOMATION-A1/, tasks/, reports/\nADVISORY: No Reviewer Index �� recommended for SADP compliance\nPASS: Conflict Registry embedded in TaskSpec\n\n[BLOCKED] Task PRODUCTION-READINESS-AUTOMATION-A1 BLOCKED -- missing required artifacts.\n  Create the missing artifacts before reporting completion."
+}

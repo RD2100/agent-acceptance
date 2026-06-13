@@ -502,6 +502,7 @@ def evaluate_preflight(
         exit_code = 0
 
     report = {
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "overall": overall,
         "executed_external_runtime": False,
         "human_gate_required": overall == "HUMAN_REQUIRED",

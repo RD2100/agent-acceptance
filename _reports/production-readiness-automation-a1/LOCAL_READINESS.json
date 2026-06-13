@@ -1,0 +1,14 @@
+{
+  "mode": "local_governance",
+  "status": "READY",
+  "executed_external_runtime": false,
+  "human_gate_required": false,
+  "checks": [
+    {
+      "name": "local_evidence",
+      "status": "passed",
+      "detail": "canonical tests and runner stress probes passed",
+      "evidence": "_reports\\production-readiness-automation-a1\\LOCAL_VERIFICATION.json"
+    }
+  ]
+}

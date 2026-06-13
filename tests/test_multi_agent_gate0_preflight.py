@@ -141,6 +141,8 @@ def test_current_repo_preflight_requires_fresh_authorization_and_live_sessions()
     assert report["overall"] == "HUMAN_REQUIRED"
     assert report["human_gate_required"] is True
     assert report["executed_external_runtime"] is False
+    generated_at = datetime.fromisoformat(report["generated_at"].replace("Z", "+00:00"))
+    assert generated_at.tzinfo is not None
 
 
 def test_cli_output_writes_same_schema_valid_report(tmp_path):
@@ -166,6 +168,7 @@ def test_cli_output_writes_same_schema_valid_report(tmp_path):
     _assert_schema_valid(file_report)
     assert file_report["overall"] == "HUMAN_REQUIRED"
     assert file_report["executed_external_runtime"] is False
+    assert isinstance(file_report["generated_at"], str)
 
 
 def test_two_active_bindings_with_approved_capability_pass(tmp_path):

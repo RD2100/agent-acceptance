@@ -5,6 +5,7 @@
   "description": "Read-only Gate 0 readiness report for multi-agent / multi-GPT pilot startup.",
   "type": "object",
   "required": [
+    "generated_at",
     "overall",
     "executed_external_runtime",
     "human_gate_required",
@@ -12,6 +13,10 @@
     "checks"
   ],
   "properties": {
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
     "overall": {
       "type": "string",
       "enum": ["PASS", "BLOCKED", "HUMAN_REQUIRED"]

@@ -1,0 +1,398 @@
+﻿diff --git a/.ai/current-task.yaml b/.ai/current-task.yaml
+index 56d09d35..3d1e92f5 100644
+--- a/.ai/current-task.yaml
++++ b/.ai/current-task.yaml
+@@ -1,102 +1,104 @@
+-task_id: MULTI-AGENT-READINESS-REPAIR-A1
+-title: "Repair multi-agent readiness semantics and independent review evidence"
++task_id: PRODUCTION-READINESS-AUTOMATION-A1
++title: "Formal-use readiness gate and automated proof"
+ priority: P0
+-status: accepted_with_limitation
+-type: governance_repair
+-mode: "@go review"
++status: in_progress
++type: governance_automation
++mode: "@go"
+
+ description: >
+-  Remove false-positive readiness, require run-bound authorization and live
+-  independent session evidence, restore closed TaskSpec validation, and submit
+-  the resulting evidence to an independent ChatGPT reviewer.
++  Build a fail-closed readiness gate for local governance, controlled multi-GPT
++  pilot, and formal production use. Historical narrative reports are not
++  accepted as machine evidence.
+
+ write_set:
+-  - "tasks/multi-agent-readiness-repair-a1.md"
++  - "tasks/production-readiness-automation-a1.md"
+   - ".ai/current-task.yaml"
++  - "scripts/production_readiness_gate.py"
+   - "scripts/multi_agent_gate0_preflight.py"
+   - "scripts/multi_agent_dispatch_plan.py"
+-  - "scripts/validate_execution_report.py"
+-  - "schemas/agent-runtime/task-spec.schema.json"
++  - "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
+   - "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
+-  - "schemas/agent-runtime/execution-report.schema.json"
++  - "tests/test_production_readiness_gate.py"
+   - "tests/test_multi_agent_gate0_preflight.py"
+   - "tests/test_multi_agent_dispatch_plan.py"
+-  - "tests/test_validate_multi_agent_dispatch_plan.py"
+-  - "tests/test_governance_consistency.py"
+-  - "tests/test_execution_report_schema.py"
+-  - "tests/test_validate_execution_report.py"
+-  - "docs/agent-runtime/integration-contracts.md"
+-  - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+-  - "_reports/multi-agent-gate0-preflight-a1/**"
+-  - "_reports/multi-agent-dispatch-plan-a1/**"
+-  - "_reports/multi-agent-readiness-repair-a1/**"
+-  - "_evidence/MULTI-AGENT-READINESS-REPAIR-A1/**"
++  - "docs/agent-runtime/production-readiness.md"
++  - ".ai/verify-matrix.yaml"
++  - "_reports/production-readiness-automation-a1/**"
++  - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json"
++  - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN.json"
++  - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json"
++  - "_evidence/PRODUCTION-READINESS-AUTOMATION-A1/**"
+   - "hooks/sealed-files-manifest.json"
+   - "_evidence/hook-output/**"
+
+ gate_0:
+   triggered: true
+-  trigger_reason: "P0 fake-readiness risk in authorization and dispatch state"
++  trigger_reason: "P0 formal-use readiness and fake-green prevention"
+   inventory_evidence:
+     queried_sources:
++      - "docs/agent-runtime/minimum-capability-set.md"
++      - "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md"
+       - "scripts/multi_agent_gate0_preflight.py"
+       - "scripts/multi_agent_dispatch_plan.py"
+-      - "schemas/agent-runtime/task-spec.schema.json"
+-      - "docs/agent-runtime/tool-policy.md"
+-      - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
++      - "_reports/multi-agent-multi-gpt-pilot-a1/PILOT_EXECUTION_REPORT.md"
++      - "D:/dev-frame-opencode/PRODUCTION_PROMOTION_CRITERIA.md"
+     matched_capabilities:
+-      - multi-agent-gate0-preflight
+-      - multi-agent-dispatch-plan
+-      - SADP TaskSpec validation
+-      - independent reviewer evidence
++      - local_governance_verification
++      - multi_agent_gate0_preflight
++      - multi_agent_dispatch_plan
++      - independent_reviewer_evidence
++      - production_promotion_authorization
+     compared_against_request:
+-      - run-bound human authorization
+-      - live independent session evidence
+-      - fail-closed dispatch readiness
++      - "automate until formal use"
++      - "real multi-agent and multi-GPT proof"
++      - "fail-closed production readiness"
+   rules_checked: [core-004, core-007, core-008, review-001]
++  lessons_checked: [LL-independent-review-evidence, LL-structured-task-spec]
+   sufficiency_decision: existing_partial
+   decision: build_delta
+   delta_justification: >
+-    Existing checks validate declarations but not current-run authority or
+-    live session evidence.
++    Existing checks cover individual layers but no authoritative gate composes
++    them into a formal-use decision.
+
+ conflict_registry:
+   read_set:
++    - "docs/agent-runtime/minimum-capability-set.md"
++    - "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md"
+     - "scripts/multi_agent_gate0_preflight.py"
+     - "scripts/multi_agent_dispatch_plan.py"
+-    - "schemas/agent-runtime/"
+-    - "tests/"
+-    - "docs/agent-runtime/tool-policy.md"
++    - "schemas/agent-runtime/execution-report.schema.json"
++    - "_reports/multi-agent-multi-gpt-pilot-a1/"
++    - "D:/dev-frame-opencode/PRODUCTION_PROMOTION_CRITERIA.md"
+   write_set:
+-    - "tasks/multi-agent-readiness-repair-a1.md"
++    - "tasks/production-readiness-automation-a1.md"
+     - ".ai/current-task.yaml"
++    - "scripts/production_readiness_gate.py"
+     - "scripts/multi_agent_gate0_preflight.py"
+     - "scripts/multi_agent_dispatch_plan.py"
+-    - "scripts/validate_execution_report.py"
+-    - "schemas/agent-runtime/task-spec.schema.json"
++    - "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
+     - "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
+-    - "schemas/agent-runtime/execution-report.schema.json"
++    - "tests/test_production_readiness_gate.py"
+     - "tests/test_multi_agent_gate0_preflight.py"
+     - "tests/test_multi_agent_dispatch_plan.py"
+-    - "tests/test_validate_multi_agent_dispatch_plan.py"
+-    - "tests/test_governance_consistency.py"
+-    - "tests/test_execution_report_schema.py"
+-    - "tests/test_validate_execution_report.py"
+-    - "docs/agent-runtime/integration-contracts.md"
+-    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+-    - "_reports/multi-agent-gate0-preflight-a1/**"
+-    - "_reports/multi-agent-dispatch-plan-a1/**"
+-    - "_reports/multi-agent-readiness-repair-a1/**"
+-    - "_evidence/MULTI-AGENT-READINESS-REPAIR-A1/**"
++    - "docs/agent-runtime/production-readiness.md"
++    - ".ai/verify-matrix.yaml"
++    - "_reports/production-readiness-automation-a1/**"
++    - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json"
++    - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN.json"
++    - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json"
++    - "_evidence/PRODUCTION-READINESS-AUTOMATION-A1/**"
+     - "hooks/sealed-files-manifest.json"
+     - "_evidence/hook-output/**"
+   protected_files_touched: true
+-  conflict_level: high
++  conflict_level: medium
+
+ deny_paths:
+   - ".ai/paper_authorization.json"
+   - "D:/dev-frame/ai-workflow-hub"
++  - "D:/dev-frame-opencode"
++  - "D:/devframe-control-plane"
+   - "D:/test-frame"
+
+-live_dispatch_authorized: false
+-next_recommended: "Selective staging, pre-commit governance scan, and commit"
++external_runtime_execution_authorized: false
++paper_workflow_status: paused
++next_recommended: "Implement readiness gate, run local stress probes, then independent review"
+diff --git a/.ai/verify-matrix.yaml b/.ai/verify-matrix.yaml
+index a14f45d9..160f3a4a 100644
+--- a/.ai/verify-matrix.yaml
++++ b/.ai/verify-matrix.yaml
+@@ -1,8 +1,8 @@
+-# Verify Matrix -- RD2100 Agent Runtime
++﻿# Verify Matrix -- RD2100 Agent Runtime
+ # Pre-dispatch verification checklist for GATE0 readiness.
+ # Each item must be verified before live multi-agent dispatch.
+ # Created: 2026-06-12
+-# Last verified: 2026-06-12
++# Last verified: 2026-06-13
+
+ metadata:
+   matrix_id: verify-matrix-v1
+@@ -84,10 +84,10 @@ verifications:
+     check_type: test_execution
+     target: pytest (full suite)
+     threshold: ">= 95% pass"
+-    last_verified_at: 2026-06-12
++    last_verified_at: 2026-06-13
+     verified_by: pytest_run
+     result: pass
+-    evidence: 1269/1275 = 99.5% pass; 6 failures are pre-existing (RR-004)
++    evidence: 1344/1344 passed; 21 PytestReturnNotNoneWarning warnings remain non-blocking
+
+   - id: VM-006
+     name: No P0/P1 open findings
+@@ -117,7 +117,7 @@ verifications:
+     last_verified_at: 2026-06-12
+     verified_by: file_creation
+     result: pass
+-    evidence: Created 2026-06-12, 10 verification items
++    evidence: Created 2026-06-12, 11 verification items after VM-011 readiness gate registration
+
+   - id: VM-009
+     name: CAP-014 WorkQueue usability
+@@ -148,3 +148,26 @@ verifications:
+       Phase 6 design docs exist but Phase 6C execution blocked.
+     accepted_risk: true
+     acceptance_note: Accepted as candidate-only until Phase 6 activation
++
++  - id: VM-011
++    name: Formal-use production readiness gate
++    check_type: structured_readiness_evaluation
++    target: scripts/production_readiness_gate.py
++    threshold: "local_governance READY; higher modes must fail closed until their evidence chain is complete"
++    last_verified_at: 2026-06-13
++    verified_by: production_readiness_gate + canonical_tests + task_runner_real_path_probes
++    result: partial
++    result_detail:
++      local_governance: READY
++      controlled_pilot: HUMAN_REQUIRED
++      formal_use: HUMAN_REQUIRED
++    evidence:
++      - _reports/production-readiness-automation-a1/LOCAL_VERIFICATION.json
++      - _reports/production-readiness-automation-a1/LOCAL_READINESS.json
++      - _reports/production-readiness-automation-a1/CONTROLLED_PILOT_READINESS.json
++      - _reports/production-readiness-automation-a1/FORMAL_USE_READINESS.json
++    accepted_risk: false
++    blocking_detail: >
++      Controlled pilot still needs current run-bound authorization and two live
++      independent sessions. Formal use additionally needs a real pilot review
++      chain and explicit production-promotion authorization.
+diff --git a/schemas/agent-runtime/multi-agent-dispatch-plan.schema.json b/schemas/agent-runtime/multi-agent-dispatch-plan.schema.json
+index 33ea4d7f..1b3d0997 100644
+--- a/schemas/agent-runtime/multi-agent-dispatch-plan.schema.json
++++ b/schemas/agent-runtime/multi-agent-dispatch-plan.schema.json
+@@ -34,6 +34,8 @@
+       "type": "object",
+       "required": [
+         "path",
++        "sha256",
++        "generated_at",
+         "overall",
+         "human_gate_required",
+         "executed_external_runtime",
+@@ -43,6 +45,14 @@
+         "path": {
+           "type": ["string", "null"]
+         },
++        "sha256": {
++          "type": ["string", "null"],
++          "pattern": "^[0-9a-fA-F]{64}$"
++        },
++        "generated_at": {
++          "type": ["string", "null"],
++          "format": "date-time"
++        },
+         "overall": {
+           "type": "string",
+           "enum": ["PASS", "HUMAN_REQUIRED", "BLOCKED"]
+diff --git a/schemas/agent-runtime/multi-agent-gate0-preflight.schema.json b/schemas/agent-runtime/multi-agent-gate0-preflight.schema.json
+index 8f6ef47f..c086cf92 100644
+--- a/schemas/agent-runtime/multi-agent-gate0-preflight.schema.json
++++ b/schemas/agent-runtime/multi-agent-gate0-preflight.schema.json
+@@ -5,6 +5,7 @@
+   "description": "Read-only Gate 0 readiness report for multi-agent / multi-GPT pilot startup.",
+   "type": "object",
+   "required": [
++    "generated_at",
+     "overall",
+     "executed_external_runtime",
+     "human_gate_required",
+@@ -12,6 +13,10 @@
+     "checks"
+   ],
+   "properties": {
++    "generated_at": {
++      "type": "string",
++      "format": "date-time"
++    },
+     "overall": {
+       "type": "string",
+       "enum": ["PASS", "BLOCKED", "HUMAN_REQUIRED"]
+diff --git a/scripts/multi_agent_dispatch_plan.py b/scripts/multi_agent_dispatch_plan.py
+index 57da3d3f..e242974b 100644
+--- a/scripts/multi_agent_dispatch_plan.py
++++ b/scripts/multi_agent_dispatch_plan.py
+@@ -9,6 +9,7 @@ assignment packet with explicit write boundaries.
+ from __future__ import annotations
+
+ import argparse
++import hashlib
+ import json
+ import sys
+ from datetime import datetime, timezone
+@@ -392,6 +393,8 @@ def _load_preflight(preflight_path: Path | None) -> dict[str, Any]:
+     if preflight_path is None:
+         return {
+             "path": None,
++            "sha256": None,
++            "generated_at": None,
+             "overall": "HUMAN_REQUIRED",
+             "human_gate_required": True,
+             "executed_external_runtime": False,
+@@ -401,13 +404,18 @@ def _load_preflight(preflight_path: Path | None) -> dict[str, Any]:
+     if error or data is None:
+         return {
+             "path": str(preflight_path),
++            "sha256": None,
++            "generated_at": None,
+             "overall": "BLOCKED",
+             "human_gate_required": False,
+             "executed_external_runtime": False,
+             "detail": error or "preflight load failed",
+         }
++    preflight_sha = hashlib.sha256(preflight_path.read_bytes()).hexdigest()
+     return {
+         "path": str(preflight_path),
++        "sha256": preflight_sha,
++        "generated_at": data.get("generated_at"),
+         "overall": data.get("overall"),
+         "human_gate_required": data.get("human_gate_required"),
+         "executed_external_runtime": data.get("executed_external_runtime"),
+diff --git a/scripts/multi_agent_gate0_preflight.py b/scripts/multi_agent_gate0_preflight.py
+index 356e0391..c8f922b5 100644
+--- a/scripts/multi_agent_gate0_preflight.py
++++ b/scripts/multi_agent_gate0_preflight.py
+@@ -502,6 +502,7 @@ def evaluate_preflight(
+         exit_code = 0
+
+     report = {
++        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+         "overall": overall,
+         "executed_external_runtime": False,
+         "human_gate_required": overall == "HUMAN_REQUIRED",
+diff --git a/tests/test_multi_agent_dispatch_plan.py b/tests/test_multi_agent_dispatch_plan.py
+index d511660f..956a9040 100644
+--- a/tests/test_multi_agent_dispatch_plan.py
++++ b/tests/test_multi_agent_dispatch_plan.py
+@@ -1,5 +1,6 @@
+ """Tests for the multi-agent dispatch plan packet."""
+
++import hashlib
+ import json
+ import subprocess
+ import sys
+@@ -101,6 +102,34 @@ def test_default_plan_validates_against_plan_and_task_schemas():
+         _assert_schema_valid(TASK_SCHEMA_PATH, assignment["task_spec"])
+
+
++def test_source_preflight_is_bound_to_input_artifact(tmp_path):
++    """Dispatch plan records the exact Gate 0 artifact it was derived from."""
++    preflight_path = tmp_path / "preflight.json"
++    preflight = {
++        "generated_at": "2026-06-13T05:42:09Z",
++        "overall": "HUMAN_REQUIRED",
++        "human_gate_required": True,
++        "executed_external_runtime": False,
++        "agent_count": 2,
++        "checks": [
++            {
++                "name": "run_authorization",
++                "status": "human_required",
++                "detail": "synthetic",
++                "evidence": None,
++            }
++        ],
++    }
++    preflight_path.write_text(json.dumps(preflight), encoding="utf-8")
++
++    plan = build_plan(preflight_path=preflight_path)
++    source = plan["source_preflight"]
++
++    assert source["path"] == str(preflight_path)
++    assert source["sha256"] == hashlib.sha256(preflight_path.read_bytes()).hexdigest()
++    assert source["generated_at"] == preflight["generated_at"]
++
++
+ def test_plan_schema_validates_embedded_task_spec_priority():
+     """Plan schema itself rejects invalid embedded TaskSpec fields."""
+     plan = build_plan(preflight_path=PREFLIGHT_PATH)
+diff --git a/tests/test_multi_agent_gate0_preflight.py b/tests/test_multi_agent_gate0_preflight.py
+index 6293a9cd..b4a61c00 100644
+--- a/tests/test_multi_agent_gate0_preflight.py
++++ b/tests/test_multi_agent_gate0_preflight.py
+@@ -141,6 +141,8 @@ def test_current_repo_preflight_requires_fresh_authorization_and_live_sessions()
+     assert report["overall"] == "HUMAN_REQUIRED"
+     assert report["human_gate_required"] is True
+     assert report["executed_external_runtime"] is False
++    generated_at = datetime.fromisoformat(report["generated_at"].replace("Z", "+00:00"))
++    assert generated_at.tzinfo is not None
+
+
+ def test_cli_output_writes_same_schema_valid_report(tmp_path):
+@@ -166,6 +168,7 @@ def test_cli_output_writes_same_schema_valid_report(tmp_path):
+     _assert_schema_valid(file_report)
+     assert file_report["overall"] == "HUMAN_REQUIRED"
+     assert file_report["executed_external_runtime"] is False
++    assert isinstance(file_report["generated_at"], str)
+
+
+ def test_two_active_bindings_with_approved_capability_pass(tmp_path):

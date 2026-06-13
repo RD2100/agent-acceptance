@@ -1,0 +1,18 @@
+{
+  "target_run_id": "production-readiness-a1-r3-20260613T060433Z",
+  "target_task_id": "PRODUCTION-READINESS-AUTOMATION-A1",
+  "before_user_count": 28,
+  "before_assistant_count": 14,
+  "after_user_count": 29,
+  "after_assistant_count": 16,
+  "candidate_indices": [
+    15
+  ],
+  "selected_index": 15,
+  "last_index": 15,
+  "last_text_contains_run_id": true,
+  "selected_text_contains_run_id": true,
+  "selected_text_contains_end_marker": true,
+  "capture_mismatch": false,
+  "decision": "selected_and_last_match"
+}

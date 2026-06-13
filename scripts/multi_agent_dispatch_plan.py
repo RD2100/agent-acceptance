@@ -9,6 +9,7 @@ assignment packet with explicit write boundaries.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from datetime import datetime, timezone
@@ -392,6 +393,8 @@ def _load_preflight(preflight_path: Path | None) -> dict[str, Any]:
     if preflight_path is None:
         return {
             "path": None,
+            "sha256": None,
+            "generated_at": None,
             "overall": "HUMAN_REQUIRED",
             "human_gate_required": True,
             "executed_external_runtime": False,
@@ -401,13 +404,18 @@ def _load_preflight(preflight_path: Path | None) -> dict[str, Any]:
     if error or data is None:
         return {
             "path": str(preflight_path),
+            "sha256": None,
+            "generated_at": None,
             "overall": "BLOCKED",
             "human_gate_required": False,
             "executed_external_runtime": False,
             "detail": error or "preflight load failed",
         }
+    preflight_sha = hashlib.sha256(preflight_path.read_bytes()).hexdigest()
     return {
         "path": str(preflight_path),
+        "sha256": preflight_sha,
+        "generated_at": data.get("generated_at"),
         "overall": data.get("overall"),
         "human_gate_required": data.get("human_gate_required"),
         "executed_external_runtime": data.get("executed_external_runtime"),

@@ -1,0 +1,32 @@
+run_id: production-readiness-a1-r2-20260613T054458Z
+task_id: PRODUCTION-READINESS-AUTOMATION-A1
+overall_judgment: blocked
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+P1 path-traversal / fake-green gap: controlled_pilot can become READY even when DISPATCH_PLAN.source_preflight.path points outside the repository, because scripts/production_readiness_gate.py:293-305 only checks source_preflight.overall and source_preflight.human_gate_required and does not validate source_preflight.path, source_preflight hash, or source_preflight generated_at against the current Gate 0 artifact. The current dispatch artifact contains nested source_preflight.path at _reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json:6-11, but implementation does not bind it to the separately validated preflight file. tests/test_production_readiness_gate.py:110-123 creates READY dispatch evidence without nested path/hash/generated_at binding, and tests/test_production_readiness_gate.py:304-315 asserts controlled_pilot READY on that evidence shape.
+
+P1 live-session evidence freshness gap: formal_use can become READY with referenced session evidence that has no generated_at, verified_at, or freshness validation. scripts/production_readiness_gate.py:377-392 checks only agent_id, session_id, and live=true for session evidence. tests/test_production_readiness_gate.py:140-147 creates executor/reviewer session evidence with no timestamp fields, and tests/test_production_readiness_gate.py:501-514 still asserts formal_use READY with that evidence chain. This leaves stale or timestamp-less live-session evidence able to satisfy formal_use.
+required_fixes:
+
+Bind READY dispatch evidence to the exact current Gate 0 artifact by validating source_preflight.path stays within repo, exists, matches the separately supplied preflight artifact, and includes or is bound to a verified SHA256/current generated_at; add regression tests proving repo-escaping, stale, missing, malformed, contradictory, or hash-mismatched nested source_preflight evidence cannot make controlled_pilot READY.
+
+Require formal_use session evidence to carry current timestamped live-session proof, such as verified_at/generated_at with timezone, freshness bounds, future timestamp rejection, and stale timestamp rejection; add regression tests proving missing, stale, future, malformed, and mismatched session evidence cannot make formal_use READY.
+limitations:
+
+Current machine outputs are honest: LOCAL_READINESS.json is READY, CONTROLLED_PILOT_READINESS.json is HUMAN_REQUIRED, and FORMAL_USE_READINESS.json is HUMAN_REQUIRED.
+
+R1 P1 status-only synthetic runner JSON issue is substantially repaired for the declared local probes: scripts/production_readiness_gate.py:197-229 now validates probe name, task_id, target file, status, exit_code, exact command, and decisive output markers; tests/test_production_readiness_gate.py:260-274 covers missing command/output.
+
+R1 P1 top-level Gate 0 and dispatch timestamp issue is substantially repaired for the artifact files directly passed to the gate: scripts/production_readiness_gate.py:107-116, 242-252, and 279-289 enforce missing/stale/future/malformed generated_at checks; tests/test_production_readiness_gate.py:336-397 covers these timestamp failures.
+
+Pilot binding to exact top-level Gate 0 and dispatch SHA256 values is implemented for formal_use at scripts/production_readiness_gate.py:336-355 and covered by tests/test_production_readiness_gate.py:467-484, but nested dispatch source_preflight binding remains unresolved as a blocker above.
+
+Protected-document debt for CAP-009 numbering and cumulative-trigger wording remains intentionally excluded from positive readiness evidence and should not be treated as production readiness proof.
+next_task_authorization:
+task_id: CONTROLLED-MULTI-GPT-PILOT-A1
+authorized: no
+execute_immediately: no
+ask_before_starting: yes
+END_OF_GPT_RESPONSE_

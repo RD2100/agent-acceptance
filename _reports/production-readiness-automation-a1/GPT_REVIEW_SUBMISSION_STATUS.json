@@ -1,0 +1,56 @@
+{
+  "run_id": "production-readiness-a1-20260613T053308Z",
+  "task_id": "PRODUCTION-READINESS-AUTOMATION-A1",
+  "scenario": "A",
+  "pack": "_evidence\\PRODUCTION-READINESS-AUTOMATION-A1\\PRODUCTION_READINESS_REVIEW_PACK.zip",
+  "pack_exists": true,
+  "pack_size": 38073,
+  "pack_sha256": "0ed092332ea796d03f0e8804d3e9e5a5210fe8476bfd20cd140ead3c56bbb761",
+  "prompt_chars": 1926,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-13T13:35:09",
+  "reply_chars": 3146,
+  "reply_sha256": "4ceeb3f90c84d32b650c4a85c3fb697c997c3de25d037fce64b23847a7aafaeb",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "blocked",
+  "capture_reconciliation": {
+    "target_run_id": "production-readiness-a1-20260613T053308Z",
+    "target_task_id": "PRODUCTION-READINESS-AUTOMATION-A1",
+    "before_user_count": 26,
+    "before_assistant_count": 8,
+    "after_user_count": 27,
+    "after_assistant_count": 11,
+    "candidate_indices": [
+      10
+    ],
+    "selected_index": 10,
+    "last_index": 10,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+  "result_path": "_reports\\production-readiness-automation-a1\\GPT_REVIEW_RESULT.txt",
+  "report_result_path": "_reports\\production-readiness-automation-a1\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "_reports\\production-readiness-automation-a1\\GPT_CAPTURE_RECONCILIATION.json"
+}

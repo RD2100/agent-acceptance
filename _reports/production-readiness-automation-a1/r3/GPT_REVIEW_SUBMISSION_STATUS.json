@@ -1,0 +1,56 @@
+{
+  "run_id": "production-readiness-a1-r3-20260613T060433Z",
+  "task_id": "PRODUCTION-READINESS-AUTOMATION-A1",
+  "scenario": "A",
+  "pack": "_evidence\\PRODUCTION-READINESS-AUTOMATION-A1\\PRODUCTION_READINESS_REVIEW_PACK_R3.zip",
+  "pack_exists": true,
+  "pack_size": 68485,
+  "pack_sha256": "58629d8c5b5b6f0006296f2521b8bcb4697f6498d5da45c641437e02c3ef9cf0",
+  "prompt_chars": 1872,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-13T14:06:06",
+  "reply_chars": 1008,
+  "reply_sha256": "4387095b3df73d6e35138a8080a8a880ceb0c9680498c54877d978ff145a14b0",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "accepted_with_limitation",
+  "capture_reconciliation": {
+    "target_run_id": "production-readiness-a1-r3-20260613T060433Z",
+    "target_task_id": "PRODUCTION-READINESS-AUTOMATION-A1",
+    "before_user_count": 28,
+    "before_assistant_count": 14,
+    "after_user_count": 29,
+    "after_assistant_count": 16,
+    "candidate_indices": [
+      15
+    ],
+    "selected_index": 15,
+    "last_index": 15,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+  "result_path": "_reports\\production-readiness-automation-a1\\r3\\GPT_REVIEW_RESULT.txt",
+  "report_result_path": "_reports\\production-readiness-automation-a1\\r3\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "_reports\\production-readiness-automation-a1\\r3\\GPT_CAPTURE_RECONCILIATION.json"
+}

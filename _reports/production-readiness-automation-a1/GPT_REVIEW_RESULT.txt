@@ -1,0 +1,32 @@
+run_id: production-readiness-a1-20260613T053308Z
+task_id: PRODUCTION-READINESS-AUTOMATION-A1
+overall_judgment: blocked
+evidence_pack_reviewed: true
+attachment_reviewed: true
+blocking_issues:
+
+P1 fake-green risk: local_governance can become READY without verifying that the three stress probes are real task-runner executions. scripts/production_readiness_gate.py:155-185 only checks probe/status/exit_code in JSON and does not require command/output evidence from scripts/qoderwork_task_runner.py; tests/test_production_readiness_gate.py:36-46 creates synthetic probe JSON without command/output and tests/test_production_readiness_gate.py:174-183 still asserts READY.
+
+P1 stale/current-evidence gap: controlled_pilot and formal_use can become READY with timestamp-less or stale Gate 0 and dispatch artifacts. scripts/production_readiness_gate.py:198-227 validates Gate 0 overall/human_gate only, and scripts/production_readiness_gate.py:230-258 validates dispatch status/source_preflight only; neither checks generated_at/freshness. tests/test_production_readiness_gate.py:66-91 creates timestamp-less preflight/dispatch artifacts, while tests/test_production_readiness_gate.py:254-265 and 369-382 assert controlled_pilot/formal_use READY with those artifacts.
+required_fixes:
+
+Require each local stress probe to prove real qoderwork_task_runner execution by validating command, output markers, expected file/task arguments, status, and exit_code; add tests proving synthetic probe JSON without command/output cannot make local_governance READY.
+
+Add freshness/currentness validation for Gate 0 preflight and dispatch artifacts, including missing timestamp, stale timestamp, future timestamp, malformed timestamp, and contradictory timestamp cases; controlled_pilot and formal_use must not become READY with stale or timestamp-less Gate 0/dispatch evidence.
+
+Add regression tests that controlled_pilot and formal_use fail closed or require human action when Gate 0/dispatch evidence is missing, stale, timestamp-less, malformed, repo-escaping, contradictory, or hash-mismatched where applicable.
+limitations:
+
+Current generated outputs are honest: LOCAL_READINESS.json is READY, CONTROLLED_PILOT_READINESS.json is HUMAN_REQUIRED, and FORMAL_USE_READINESS.json is HUMAN_REQUIRED.
+
+Current evidence pack includes real runner probe artifacts whose command/output appear plausible, but the implementation does not yet enforce that proof.
+
+Protected-document debt for CAP-009 numbering and cumulative-trigger wording remains unresolved and is correctly excluded from positive readiness evidence in docs/agent-runtime/production-readiness.md:57-62.
+
+.ai/current-task.yaml includes hooks/sealed-files-manifest.json and _evidence/hook-output/** in write_set at lines 24-25 and 76-77 while conflict_registry marks protected_files_touched: false at line 78; this is non-blocking here because no positive readiness evidence depends on editing those protected paths, but it should be clarified in a follow-up.
+next_task_authorization:
+task_id: CONTROLLED-MULTI-GPT-PILOT-A1
+authorized: no
+execute_immediately: no
+ask_before_starting: yes
+END_OF_GPT_RESPONSE

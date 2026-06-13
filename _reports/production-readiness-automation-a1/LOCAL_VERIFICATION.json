@@ -1,0 +1,29 @@
+﻿{
+    "schema_version":  "1.0.0",
+    "task_id":  "PRODUCTION-READINESS-AUTOMATION-A1",
+    "generated_at":  "2026-06-13T06:04:05.4586900+00:00",
+    "canonical_tests":  {
+                            "command":  "python -m pytest tests/ -q",
+                            "exit_code":  0,
+                            "passed":  1344,
+                            "failed":  0,
+                            "warnings":  21,
+                            "raw_output":  "_evidence/PRODUCTION-READINESS-AUTOMATION-A1/canonical-tests.txt",
+                            "raw_output_sha256":  "85b9fb5a98a4eb30497e45b6fc3cdef0fbe1876cdc09e5673774e6abf5f5fa44"
+                        },
+    "stress_probes":  {
+                          "allowed_edit":  {
+                                               "status":  "PASS",
+                                               "evidence":  "_evidence/PRODUCTION-READINESS-AUTOMATION-A1/runner-allowed-edit.json"
+                                           },
+                          "forbidden_edit":  {
+                                                 "status":  "BLOCKED",
+                                                 "evidence":  "_evidence/PRODUCTION-READINESS-AUTOMATION-A1/runner-forbidden-edit.json"
+                                             },
+                          "missing_finish_artifacts":  {
+                                                           "status":  "BLOCKED",
+                                                           "evidence":  "_evidence/PRODUCTION-READINESS-AUTOMATION-A1/runner-missing-finish.json"
+                                                       }
+                      },
+    "executed_external_runtime":  false
+}

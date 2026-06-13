@@ -1,0 +1,56 @@
+{
+  "run_id": "production-readiness-a1-r2-20260613T054458Z",
+  "task_id": "PRODUCTION-READINESS-AUTOMATION-A1",
+  "scenario": "A",
+  "pack": "_evidence\\PRODUCTION-READINESS-AUTOMATION-A1\\PRODUCTION_READINESS_REVIEW_PACK_R2.zip",
+  "pack_exists": true,
+  "pack_size": 53368,
+  "pack_sha256": "872508d77560a98468da3cb48ab1e8c4da76efd9824abb9089c883fdb5aeac6c",
+  "prompt_chars": 1651,
+  "dry_run": false,
+  "sent": true,
+  "captured": true,
+  "upload_confirmed": true,
+  "chat_url_initial": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+  "clear_composer": {
+    "ok": true
+  },
+  "upload_attempt": {
+    "ok": true,
+    "method": "input[0]"
+  },
+  "send_click": {
+    "ok": true,
+    "selector": "button[data-testid=\"send-button\"]",
+    "index": 0
+  },
+  "sent_at": "2026-06-13T13:46:53",
+  "reply_chars": 3937,
+  "reply_sha256": "b381b3ad9e2375f82add997b242df7af37a96a1fece694c55d04d4d1dc5bcc0d",
+  "run_id_match": true,
+  "has_end_marker": true,
+  "has_overall_judgment": true,
+  "parsed_overall_judgment": "blocked",
+  "capture_reconciliation": {
+    "target_run_id": "production-readiness-a1-r2-20260613T054458Z",
+    "target_task_id": "PRODUCTION-READINESS-AUTOMATION-A1",
+    "before_user_count": 27,
+    "before_assistant_count": 11,
+    "after_user_count": 28,
+    "after_assistant_count": 14,
+    "candidate_indices": [
+      13
+    ],
+    "selected_index": 13,
+    "last_index": 13,
+    "last_text_contains_run_id": true,
+    "selected_text_contains_run_id": true,
+    "selected_text_contains_end_marker": true,
+    "capture_mismatch": false,
+    "decision": "selected_and_last_match"
+  },
+  "chat_url_final": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+  "result_path": "_reports\\production-readiness-automation-a1\\r2\\GPT_REVIEW_RESULT.txt",
+  "report_result_path": "_reports\\production-readiness-automation-a1\\r2\\GPT_REVIEW_RESULT.txt",
+  "reconciliation_path": "_reports\\production-readiness-automation-a1\\r2\\GPT_CAPTURE_RECONCILIATION.json"
+}

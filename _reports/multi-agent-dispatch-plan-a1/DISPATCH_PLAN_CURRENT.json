@@ -1,12 +1,12 @@
 {
   "plan_id": "multi-agent-dispatch-plan-a1",
-  "generated_at": "2026-06-13T06:02:38.742052Z",
+  "generated_at": "2026-06-13T06:01:10.316544Z",
   "status": "HUMAN_REQUIRED",
   "executed_external_runtime": false,
   "source_preflight": {
-    "path": "_reports\\multi-agent-gate0-preflight-a1\\GATE0_PREFLIGHT.json",
-    "sha256": "0520f400bd2aabf8df563aa56a9be3925314e9de9ca41df1d581ca8cb3c9eb3d",
-    "generated_at": null,
+    "path": "_reports\\multi-agent-gate0-preflight-a1\\PREFLIGHT_CURRENT.json",
+    "sha256": "a85530faba20a23e050e0f6702cccd622513bc8590ed51bc60e26c661f448b5f",
+    "generated_at": "2026-06-13T06:01:10.098730Z",
     "overall": "HUMAN_REQUIRED",
     "human_gate_required": true,
     "executed_external_runtime": false,

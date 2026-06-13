@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-13T13:06:49.6737673+08:00",
+    "generated":  "2026-06-13T14:10:41.6545741+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "5F355E8D4FC1DF34627264AB41E20499C39CA3FDF3F1FEFCEDB364EA6ADB40BD",
@@ -282,6 +282,10 @@
                          {
                              "sha256":  "08E700984B3295B48059C6972521B106641D02D030AB0C82174DB4BB009B4533",
                              "path":  "docs/agent-runtime/pre-task-gate.md"
+                         },
+                         {
+                             "sha256":  "DA3049BCA24E1A340E887A62E245A4282AA07FB950CDF6F1A627A529A15B128B",
+                             "path":  "docs/agent-runtime/production-readiness.md"
                          },
                          {
                              "sha256":  "5C4E76709E1E1DD05D7C2C202B00BF6E6CBDF541911C90C2DAE10AD851312419",
@@ -604,11 +608,11 @@
                              "path":  "schemas/agent-runtime/memory-update-record.schema.json"
                          },
                          {
-                             "sha256":  "F895A4FD4727154AEB2C330931E50605B0D349AD1AD830DCAF6511A675546285",
+                             "sha256":  "331E521E389872477F0C60F4DDA3824F9F41E7194F338D2ABB5D528CC35C8706",
                              "path":  "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
                          },
                          {
-                             "sha256":  "D82F0BD476FA115542EE55E7CBA15CD8F5049FA9EABEF39533DDC803D0E6AD37",
+                             "sha256":  "D6856545286AADFAF00F02C380988A5BC29964E8166D9F8F444371C7C72A1BC2",
                              "path":  "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
                          },
                          {

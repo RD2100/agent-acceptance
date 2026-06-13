@@ -1,5 +1,6 @@
 """Tests for the multi-agent dispatch plan packet."""
 
+import hashlib
 import json
 import subprocess
 import sys
@@ -99,6 +100,34 @@ def test_default_plan_validates_against_plan_and_task_schemas():
     _assert_schema_valid(PLAN_SCHEMA_PATH, plan)
     for assignment in plan["assignments"]:
         _assert_schema_valid(TASK_SCHEMA_PATH, assignment["task_spec"])
+
+
+def test_source_preflight_is_bound_to_input_artifact(tmp_path):
+    """Dispatch plan records the exact Gate 0 artifact it was derived from."""
+    preflight_path = tmp_path / "preflight.json"
+    preflight = {
+        "generated_at": "2026-06-13T05:42:09Z",
+        "overall": "HUMAN_REQUIRED",
+        "human_gate_required": True,
+        "executed_external_runtime": False,
+        "agent_count": 2,
+        "checks": [
+            {
+                "name": "run_authorization",
+                "status": "human_required",
+                "detail": "synthetic",
+                "evidence": None,
+            }
+        ],
+    }
+    preflight_path.write_text(json.dumps(preflight), encoding="utf-8")
+
+    plan = build_plan(preflight_path=preflight_path)
+    source = plan["source_preflight"]
+
+    assert source["path"] == str(preflight_path)
+    assert source["sha256"] == hashlib.sha256(preflight_path.read_bytes()).hexdigest()
+    assert source["generated_at"] == preflight["generated_at"]
 
 
 def test_plan_schema_validates_embedded_task_spec_priority():

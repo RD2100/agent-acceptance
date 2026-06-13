@@ -1,0 +1,26 @@
+{
+  "mode": "controlled_pilot",
+  "status": "HUMAN_REQUIRED",
+  "executed_external_runtime": false,
+  "human_gate_required": true,
+  "checks": [
+    {
+      "name": "local_evidence",
+      "status": "passed",
+      "detail": "canonical tests and runner stress probes passed",
+      "evidence": "_reports\\production-readiness-automation-a1\\LOCAL_VERIFICATION.json"
+    },
+    {
+      "name": "gate0_preflight",
+      "status": "human_required",
+      "detail": "current Gate 0 requires run-bound authorization or live sessions",
+      "evidence": "_reports\\multi-agent-gate0-preflight-a1\\PREFLIGHT_CURRENT.json"
+    },
+    {
+      "name": "dispatch_plan",
+      "status": "human_required",
+      "detail": "dispatch plan remains human-gated",
+      "evidence": "_reports\\multi-agent-dispatch-plan-a1\\DISPATCH_PLAN_CURRENT.json"
+    }
+  ]
+}

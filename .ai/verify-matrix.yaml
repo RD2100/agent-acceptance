@@ -1,8 +1,8 @@
-# Verify Matrix -- RD2100 Agent Runtime
+﻿# Verify Matrix -- RD2100 Agent Runtime
 # Pre-dispatch verification checklist for GATE0 readiness.
 # Each item must be verified before live multi-agent dispatch.
 # Created: 2026-06-12
-# Last verified: 2026-06-12
+# Last verified: 2026-06-13
 
 metadata:
   matrix_id: verify-matrix-v1
@@ -84,10 +84,10 @@ verifications:
     check_type: test_execution
     target: pytest (full suite)
     threshold: ">= 95% pass"
-    last_verified_at: 2026-06-12
+    last_verified_at: 2026-06-13
     verified_by: pytest_run
     result: pass
-    evidence: 1269/1275 = 99.5% pass; 6 failures are pre-existing (RR-004)
+    evidence: 1344/1344 passed; 21 PytestReturnNotNoneWarning warnings remain non-blocking
 
   - id: VM-006
     name: No P0/P1 open findings
@@ -117,7 +117,7 @@ verifications:
     last_verified_at: 2026-06-12
     verified_by: file_creation
     result: pass
-    evidence: Created 2026-06-12, 10 verification items
+    evidence: Created 2026-06-12, 11 verification items after VM-011 readiness gate registration
 
   - id: VM-009
     name: CAP-014 WorkQueue usability
@@ -148,3 +148,26 @@ verifications:
       Phase 6 design docs exist but Phase 6C execution blocked.
     accepted_risk: true
     acceptance_note: Accepted as candidate-only until Phase 6 activation
+
+  - id: VM-011
+    name: Formal-use production readiness gate
+    check_type: structured_readiness_evaluation
+    target: scripts/production_readiness_gate.py
+    threshold: "local_governance READY; higher modes must fail closed until their evidence chain is complete"
+    last_verified_at: 2026-06-13
+    verified_by: production_readiness_gate + canonical_tests + task_runner_real_path_probes
+    result: partial
+    result_detail:
+      local_governance: READY
+      controlled_pilot: HUMAN_REQUIRED
+      formal_use: HUMAN_REQUIRED
+    evidence:
+      - _reports/production-readiness-automation-a1/LOCAL_VERIFICATION.json
+      - _reports/production-readiness-automation-a1/LOCAL_READINESS.json
+      - _reports/production-readiness-automation-a1/CONTROLLED_PILOT_READINESS.json
+      - _reports/production-readiness-automation-a1/FORMAL_USE_READINESS.json
+    accepted_risk: false
+    blocking_detail: >
+      Controlled pilot still needs current run-bound authorization and two live
+      independent sessions. Formal use additionally needs a real pilot review
+      chain and explicit production-promotion authorization.
