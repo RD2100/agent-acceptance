@@ -544,8 +544,9 @@
       "quality_standard": "P0/P1 zero; P2 documented with evidence; no external runtime execution.",
       "completion_standard": "Report includes verdict, changed files, tests run, artifacts, known gaps, and suggested review focus.",
       "blocking_conditions": [
-        "No independent binding evidence",
-        "Binding source cannot be verified"
+        "Missing or invalid conversation binding",
+        "Agent count below minimum",
+        "Binding not in active status"
       ],
       "governance_record_requirements": [
         "Decision log must record source of binding evidence without secrets."
@@ -656,9 +657,9 @@
       "quality_standard": "P0/P1 zero; P2 documented with evidence; no external runtime execution.",
       "completion_standard": "Report includes verdict, changed files, tests run, artifacts, known gaps, and suggested review focus.",
       "blocking_conditions": [
-        "No human/reviewer approval",
-        "CAP-029 remains proposed",
-        "tool policy still blocks execution"
+        "CAP-029 not registered",
+        "CAP-029 not approved for gate0",
+        "Tool policy missing runtime gates"
       ],
       "governance_record_requirements": [
         "Decision log and risk register must record approval basis and limits."

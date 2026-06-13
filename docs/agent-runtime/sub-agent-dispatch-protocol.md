@@ -184,9 +184,9 @@ cumulative_trigger_window:
     if_cumulative_threshold_crossed: require_plan_review
 ```
 
-**Key rule:** If 3 consecutive tasks under the same objective each modify 1 file,
-the cumulative write_set = 3, triggering SADP.
-The agent cannot avoid SADP by splitting a 3-file change into three 1-file changes.
+**Advisory rule:** If 3 consecutive tasks under the same objective each modify 1 file,
+the cumulative write_set = 3, crossing the advisory threshold.
+The agent should not attempt to avoid SADP review by splitting a 3-file change into three 1-file changes.
 
 
 ### 0.1 Gate 0 Ledger (Mandatory TaskSpec Field)

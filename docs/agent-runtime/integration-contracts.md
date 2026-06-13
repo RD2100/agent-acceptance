@@ -96,7 +96,7 @@ Markdown-only fields are operational instructions, not undeclared JSON extension
 - `description` must be non-empty
 - `gate_0.inventory_evidence` must include `queried_sources` and `matched_capabilities` when `gate_0.triggered` is true (boolean self-attestation alone is INVALID per LL-007)
 - `conflict_registry` must declare `read_set` and `write_set` before execution
-- JSON schema permits additional properties for markdown projection fields
+- JSON schema sets `additionalProperties: false`; only declared properties are permitted
 
 ---
 

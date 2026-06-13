@@ -263,7 +263,7 @@ def _default_assignments(*, activation_complete: bool = False) -> list[dict[str,
         [".agent/CONVERSATION_BINDING.json"],
         priority="P1",
         status="completed" if activation_complete else "deferred",
-        risk_notes="Requires human-provided independent binding evidence; do not fabricate chat_url or conversation_id.",
+        risk_notes="Requires human-provided independent binding evidence; do not fabricate chat_url or conversation_id; avoid last-message-only capture.",
     )
     cap_task = _task_spec(
         "ma-cap029-approval-a1",
@@ -277,7 +277,7 @@ def _default_assignments(*, activation_complete: bool = False) -> list[dict[str,
         ],
         priority="P1",
         status="completed" if activation_complete else "deferred",
-        risk_notes="Requires human/reviewer approval before usable_for_execution can change.",
+        risk_notes="Requires human/reviewer approval before usable_for_execution can change. Must not execute opencode run or cross-repo smoke without separate human authorization; tool-policy weakening requires review.",
     )
 
     return [
@@ -288,7 +288,7 @@ def _default_assignments(*, activation_complete: bool = False) -> list[dict[str,
             target="Confirm dispatch boundaries and runtime scope before any execution.",
             why_big_module="Architecture gating prevents parallel work from crossing runtime, paper, or governance boundaries.",
             allowed_modify_range=["_reports/multi-agent-architecture-review-a1/"],
-            forbidden_modify_range=["scripts/", ".agent/", "docs/agent-runtime/", "paper workflow code"],
+            forbidden_modify_range=["scripts/", ".agent/", "docs/agent-runtime/", "scripts/paper_*.py"],
             main_flow_to_connect="Gate 0 preflight -> dispatch plan -> reviewer-safe task pool.",
             tests_or_probes_required=["read-only report plus cited file/line evidence"],
             governance_record_requirements=["Report path must be referenced by Integrator before governance docs change."],
@@ -351,17 +351,13 @@ def _default_assignments(*, activation_complete: bool = False) -> list[dict[str,
             target="Provide real independent agent/conversation binding evidence.",
             why_big_module="The pilot cannot be real multi-agent without independent conversation bindings.",
             allowed_modify_range=[".agent/CONVERSATION_BINDING.json"],
-            forbidden_modify_range=["fabricated chat_url", "fabricated conversation_id", "last-message-only capture"],
+            forbidden_modify_range=["scripts/", "tests/", "docs/"],
             main_flow_to_connect="Manual binding evidence -> Gate 0 PASS candidate.",
             tests_or_probes_required=["python scripts\\validate_conversation_registry.py .agent\\CONVERSATION_BINDING.json --project-root D:\\agent-acceptance"],
             governance_record_requirements=["Decision log must record source of binding evidence without secrets."],
             parallel_group_id="human-gated-activation",
             parallel_safe=False,
-            blocking_conditions=(
-                []
-                if activation_complete
-                else ["No independent binding evidence", "Binding source cannot be verified"]
-            ),
+            blocking_conditions=["Missing or invalid conversation binding", "Agent count below minimum", "Binding not in active status"],
         ),
         _assignment(
             worker_role="Human Reviewer",
@@ -370,21 +366,13 @@ def _default_assignments(*, activation_complete: bool = False) -> list[dict[str,
             target="Decide whether dev-frame-opencode dispatch can become executable.",
             why_big_module="Execution approval changes the runtime authority boundary for real dispatch.",
             allowed_modify_range=["docs/agent-runtime/capability-inventory.md"],
-            forbidden_modify_range=["opencode run", "cross-repo smoke", "tool-policy weakening without review"],
+            forbidden_modify_range=["scripts/", "tests/", ".agent/"],
             main_flow_to_connect="Capability approval -> Gate 0 PASS candidate -> real dispatch.",
             tests_or_probes_required=["python scripts\\multi_agent_gate0_preflight.py --output _reports\\multi-agent-gate0-preflight-a1\\GATE0_PREFLIGHT.json"],
             governance_record_requirements=["Decision log and risk register must record approval basis and limits."],
             parallel_group_id="human-gated-activation",
             parallel_safe=False,
-            blocking_conditions=(
-                []
-                if activation_complete
-                else [
-                    "No human/reviewer approval",
-                    "CAP-029 remains proposed",
-                    "tool policy still blocks execution",
-                ]
-            ),
+            blocking_conditions=["CAP-029 not registered", "CAP-029 not approved for gate0", "Tool policy missing runtime gates"],
         ),
     ]
 

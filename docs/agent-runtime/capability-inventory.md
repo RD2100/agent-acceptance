@@ -102,7 +102,7 @@ The inventory must reflect reality, not declaration.
 - **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.95
 - **Passport usable_for_gate0**: false
-- **Passport usable_for_execution**: true
+- **Passport usable_for_execution**: false
 - **Passport dependency_type**: external_dependency
 - **Passport re_verification_note**: 2026-06-12 codex plugin list shows CodeGraph NOT installed. Downgraded from verified to unknown.
 
@@ -431,7 +431,7 @@ JSON
 - **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
 - **Passport usable_for_gate0**: false
-- **Passport usable_for_execution**: true
+- **Passport usable_for_execution**: false
 - **Passport dependency_type**: external_dependency
 - **Passport re_verification_note**: 2026-06-12 codex plugin list shows coderabbit NOT installed. Downgraded from verified to unknown.
 
@@ -471,7 +471,7 @@ JSON
 - **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
 - **Passport usable_for_gate0**: false
-- **Passport usable_for_execution**: true
+- **Passport usable_for_execution**: false
 - **Passport dependency_type**: external_dependency
 - **Passport re_verification_note**: 2026-06-12 codex plugin list shows supabase NOT installed. Downgraded from verified to unknown.
 
@@ -491,7 +491,7 @@ JSON
 - **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
 - **Passport usable_for_gate0**: false
-- **Passport usable_for_execution**: true
+- **Passport usable_for_execution**: false
 - **Passport dependency_type**: external_dependency
 - **Passport re_verification_note**: 2026-06-12 codex plugin list shows github NOT installed. Downgraded from verified to unknown.
 
@@ -511,7 +511,7 @@ JSON
 - **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
 - **Passport usable_for_gate0**: false
-- **Passport usable_for_execution**: true
+- **Passport usable_for_execution**: false
 - **Passport dependency_type**: external_dependency
 - **Passport re_verification_note**: 2026-06-12 codex plugin list shows browser (openai-curated) NOT installed. browser (openai-bundled) is installed/enabled but is a separate marketplace entry. Downgraded from verified to unknown.
 
@@ -531,7 +531,7 @@ JSON
 - **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
 - **Passport usable_for_gate0**: false
-- **Passport usable_for_execution**: true
+- **Passport usable_for_execution**: false
 - **Passport dependency_type**: external_dependency
 - **Passport re_verification_note**: 2026-06-12 codex plugin list shows superpowers NOT installed. Downgraded from verified to unknown.
 
@@ -551,7 +551,7 @@ JSON
 - **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
 - **Passport usable_for_gate0**: false
-- **Passport usable_for_execution**: true
+- **Passport usable_for_execution**: false
 - **Passport dependency_type**: external_dependency
 - **Passport re_verification_note**: 2026-06-12 codex plugin list shows linear NOT installed. Downgraded from verified to unknown.
 
@@ -571,7 +571,7 @@ JSON
 - **Passport last_verified_at**: 2026-06-12
 - **Passport confidence**: 0.9
 - **Passport usable_for_gate0**: false
-- **Passport usable_for_execution**: true
+- **Passport usable_for_execution**: false
 - **Passport dependency_type**: external_dependency
 - **Passport re_verification_note**: 2026-06-12 codex plugin list shows notion NOT installed. Downgraded from verified to unknown.
 

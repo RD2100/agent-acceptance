@@ -2,7 +2,7 @@
 
 ## Current Slice
 
-Task: controlled multi-agent pilot (second-wave) -- 3 parallel workers (Architecture-Reviewer, Verifier, Quality-Reviewer) have been dispatched under human-gated authorization and have reported results. Integration of findings into governance documentation is complete. Architecture review found 2 P0 findings requiring remediation before next formal dispatch; verifier passed 110/110; quality review found 0 P0 with 2 P1. Pilot overall status is PARTIAL pending architecture P0 remediation.
+Task: controlled multi-agent pilot authorization + dispatch + remediation -- Human authorization recorded, Gate0 transitioned to PASS, dispatch plan READY, 3 parallel workers dispatched (sub-agent model, honestly declared), independent review CONDITIONAL_PASS. All previous P0 findings (format drift, path inconsistency) remediated. P0-001 blocking_conditions fixed. Architecture P1s (non-path ranges, unknown capabilities, contracts accuracy, trigger contradiction) resolved. Smoke suite gap closed. 1344 tests pass. Real multi-GPT execution requires external dispatch adapter (user will test separately).
 
 ## Changed Areas
 
@@ -58,9 +58,9 @@ Task: controlled multi-agent pilot (second-wave) -- 3 parallel workers (Architec
 - Do not treat the WriteLab UI download action as real-paper workflow approval. It only downloads the same metadata-only ZIP.
 - Do not treat the WriteLab synthetic E2E probe as real-paper pilot pass. It creates synthetic saved diagnosis metadata and validates the exported ZIP only.
 - Do not treat runtime governance rereview PASS as execution authorization. It only verifies that current gates block execution correctly.
-- Do not claim the controlled pilot passed overall. Architecture review found 2 P0 findings (TaskSpec format drift and protected file path inconsistency) requiring remediation before next formal dispatch.
-- Do not treat the verifier PASS (110/110) as evidence that all architecture concerns are resolved. Verifier confirms tests and execution guards; it does not override the architecture review's contract-drift and path-inconsistency P0 findings.
-- Do not treat quality review PARTIAL as a safety failure. It explicitly states "no P0 blocking findings" and "the system is safe for human-gated operation." The 2 P1 findings are code-quality issues in dispatch plan helpers, not governance bypasses.
+- Do not claim the controlled pilot passed overall with independent multi-GPT execution. Workers were sub-agents within a single QoderWork session. The two ChatGPT sessions are live and verified via CDP, but no dispatch adapter sent TaskSpecs to them.
+- Do not treat the verifier PASS (110/110) as evidence that all architecture concerns are resolved. Verifier confirms tests and execution guards; architecture findings were separately remediated.
+- Do not treat quality review PARTIAL as a safety failure. It explicitly states "no P0 blocking findings" and "the system is safe for human-gated operation." The 2 P1 findings were confirmed already implemented in the codebase.
 
 ## Verification Completed
 
@@ -509,14 +509,15 @@ Verifier execution guards:
 - Unknown authorization: rejected.
 - KNOWN_ISSUES with authorized execution: correctly fails overall.
 
-Architecture P0 findings requiring remediation:
+Architecture P0 findings (remediated):
 
-- P0-001: Dual-Format Interface Contract Drift -- TaskSpec markdown format vs JSON schema have diverged (13 field mismatches). `additionalProperties: false` in JSON schema means protocol-documented fields would fail validation.
-- P0-002: Protected File Path Inconsistency -- SADP section 0.2 references `docs/agent-runtime/rules/core.md` but actual file is at `rules/core.md`. An agent enforcing protected files would monitor the wrong path.
+- P0-001 (blocking_conditions): Dispatch plan schema now enforces minItems:1 on blocking_conditions; Human Gate and Human Reviewer assignments have populated blocking conditions.
+- P0-002 (format drift, originally P0-001 from second-wave): Dual-format contract documented with 19-row field mapping table in integration-contracts.md; additionalProperties relaxed to true in task-spec.schema.json.
+- P0-003 (path inconsistency, originally P0-002 from second-wave): SADP line 251 corrected to reference `rules/core.md` (the actual file location). Independent reviewer confirmed this was valid.
 
-Quality P1 findings (non-blocking):
+Quality P1 findings (confirmed already implemented):
 
-- P1-001: Hardcoded security_report values in dispatch plan `_task_spec()` look like scan evidence but are static defaults.
-- P1-002: Unhandled FileNotFoundError in dispatch plan `_load_json` (crashes on missing file instead of structured error).
+- P1-001: security_report `scan_status: "not_run"` is already set as explicit default in dispatch plan `_task_spec()`.
+- P1-002: `_load_json` already has try/except for FileNotFoundError, JSONDecodeError, and OSError with structured error returns.
 
-Pilot overall: 2 PARTIAL + 1 PASS. Architecture P0s pending remediation. System is safe for human-gated operation per quality review.
+Pilot overall: Authorization executed, dispatch completed (sub-agent model), all P0 remediated, independent review CONDITIONAL_PASS. Real multi-GPT execution pending user testing with external dispatch adapter.
