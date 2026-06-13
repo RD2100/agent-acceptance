@@ -1,95 +1,74 @@
-task_id: PRODUCTION-READINESS-AUTOMATION-A1
-title: "Formal-use readiness gate and automated proof"
-priority: P0
-status: accepted_with_limitation
-type: governance_automation
+task_id: CONTROLLED-MULTI-GPT-PILOT-PREFLIGHT-A1
+title: "Controlled multi-GPT pilot launch packet"
+priority: P1
+status: completed
+type: governance_preflight
 mode: "@go"
 
 description: >
-  Build a fail-closed readiness gate for local governance, controlled multi-GPT
-  pilot, and formal production use. Historical narrative reports are not
-  accepted as machine evidence.
+  Produce a machine-checkable launch packet for the controlled multi-GPT pilot.
+  This task records current CDP/Gate0 blockers and exact authorization/session
+  evidence requirements without executing external runtimes or fabricating
+  authorization.
 
 write_set:
-  - "tasks/production-readiness-automation-a1.md"
+  - "tasks/controlled-multi-gpt-pilot-preflight-a1.md"
   - ".ai/current-task.yaml"
-  - "scripts/production_readiness_gate.py"
-  - "scripts/multi_agent_gate0_preflight.py"
-  - "scripts/multi_agent_dispatch_plan.py"
-  - "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
-  - "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
-  - "tests/test_production_readiness_gate.py"
-  - "tests/test_multi_agent_gate0_preflight.py"
-  - "tests/test_multi_agent_dispatch_plan.py"
-  - "docs/agent-runtime/production-readiness.md"
-  - ".ai/verify-matrix.yaml"
-  - "_reports/production-readiness-automation-a1/**"
-  - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json"
-  - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN.json"
-  - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json"
-  - "_evidence/PRODUCTION-READINESS-AUTOMATION-A1/**"
+  - "_reports/controlled-multi-gpt-pilot-a1/**"
+  - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_LATEST_CHECK.json"
+  - "_evidence/CONTROLLED-MULTI-GPT-PILOT-PREFLIGHT-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "P0 formal-use readiness and fake-green prevention"
+  trigger_reason: "Controlled pilot launch requires run-bound authorization and current live session evidence."
   inventory_evidence:
     queried_sources:
-      - "docs/agent-runtime/minimum-capability-set.md"
+      - "docs/agent-runtime/production-readiness.md"
       - "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md"
+      - "docs/agent-runtime/live-dispatch-human-authorization-template.md"
       - "scripts/multi_agent_gate0_preflight.py"
-      - "scripts/multi_agent_dispatch_plan.py"
-      - "_reports/multi-agent-multi-gpt-pilot-a1/PILOT_EXECUTION_REPORT.md"
-      - "D:/dev-frame-opencode/PRODUCTION_PROMOTION_CRITERIA.md"
+      - "scripts/tab_target_resolver.py"
+      - ".agent/CONVERSATION_BINDING.json"
+      - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
     matched_capabilities:
-      - local_governance_verification
-      - multi_agent_gate0_preflight
-      - multi_agent_dispatch_plan
-      - independent_reviewer_evidence
-      - production_promotion_authorization
+      - controlled_pilot_readiness_gate
+      - shared_cdp_tab_target_resolution
+      - run_bound_activation_record
+      - independent_session_evidence
     compared_against_request:
       - "automate until formal use"
-      - "real multi-agent and multi-GPT proof"
-      - "fail-closed production readiness"
-  rules_checked: [core-004, core-007, core-008, review-001]
+      - "inspect opened Chrome/CDP flow"
+      - "advance toward controlled multi-GPT pilot without fake green"
+  rules_checked: [core-001, core-007, core-008, review-001]
   lessons_checked: [LL-independent-review-evidence, LL-structured-task-spec]
   sufficiency_decision: existing_partial
   decision: build_delta
   delta_justification: >
-    Existing checks cover individual layers but no authoritative gate composes
-    them into a formal-use decision.
+    Existing gates correctly block execution, but the operator needs an exact
+    launch packet that turns HUMAN_REQUIRED into actionable evidence requirements.
 
 conflict_registry:
   read_set:
-    - "docs/agent-runtime/minimum-capability-set.md"
-    - "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md"
-    - "scripts/multi_agent_gate0_preflight.py"
-    - "scripts/multi_agent_dispatch_plan.py"
-    - "schemas/agent-runtime/execution-report.schema.json"
-    - "_reports/multi-agent-multi-gpt-pilot-a1/"
-    - "D:/dev-frame-opencode/PRODUCTION_PROMOTION_CRITERIA.md"
-  write_set:
-    - "tasks/production-readiness-automation-a1.md"
-    - ".ai/current-task.yaml"
-    - "scripts/production_readiness_gate.py"
-    - "scripts/multi_agent_gate0_preflight.py"
-    - "scripts/multi_agent_dispatch_plan.py"
-    - "schemas/agent-runtime/multi-agent-gate0-preflight.schema.json"
-    - "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
-    - "tests/test_production_readiness_gate.py"
-    - "tests/test_multi_agent_gate0_preflight.py"
-    - "tests/test_multi_agent_dispatch_plan.py"
     - "docs/agent-runtime/production-readiness.md"
-    - ".ai/verify-matrix.yaml"
-    - "_reports/production-readiness-automation-a1/**"
-    - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json"
-    - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN.json"
+    - "docs/MULTI_AGENT_MULTI_GPT_PILOT_PLAN.md"
+    - "docs/agent-runtime/live-dispatch-human-authorization-template.md"
+    - "scripts/multi_agent_gate0_preflight.py"
+    - "scripts/tab_target_resolver.py"
+    - ".agent/CONVERSATION_BINDING.json"
+    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+    - "_reports/production-readiness-automation-a1/LOCAL_VERIFICATION.json"
     - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json"
-    - "_evidence/PRODUCTION-READINESS-AUTOMATION-A1/**"
+  write_set:
+    - "tasks/controlled-multi-gpt-pilot-preflight-a1.md"
+    - ".ai/current-task.yaml"
+    - "_reports/controlled-multi-gpt-pilot-a1/**"
+    - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_LATEST_CHECK.json"
+    - "_evidence/CONTROLLED-MULTI-GPT-PILOT-PREFLIGHT-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
-  protected_files_touched: true
+  protected_files_touched: false
   conflict_level: medium
 
 deny_paths:
@@ -101,4 +80,4 @@ deny_paths:
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
-next_recommended: "Request exact human authorization for CONTROLLED-MULTI-GPT-PILOT-A1 before any live dispatch"
+next_recommended: "Open the two bound ChatGPT conversations and provide exact run-bound authorization before live dispatch."

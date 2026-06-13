@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "CONTROLLED-MULTI-GPT-PILOT-PREFLIGHT-A1",
+  "generated_at": "2026-06-13T06:15:55Z",
+  "cdp_endpoint": "http://localhost:9222",
+  "cdp_active": true,
+  "browser": "Chrome/149.0.7827.104",
+  "observed_chatgpt_conversation_tabs": [
+    {
+      "conversation_id": "6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+      "url": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+      "role": "external_review_conversation",
+      "usable_for_controlled_pilot_binding": false
+    },
+    {
+      "conversation_id": "6a297e5f-c9c8-83a8-b413-a8fc414e0e85",
+      "url": "https://chatgpt.com/c/6a297e5f-c9c8-83a8-b413-a8fc414e0e85",
+      "role": "paper_conversation",
+      "usable_for_controlled_pilot_binding": false
+    }
+  ],
+  "required_binding_tabs": [
+    {
+      "agent_id": "agent-local-001",
+      "role": "reviewer",
+      "conversation_id": "6a26cc03-235c-83a2-a0fc-cd29be615959",
+      "url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+      "observed_in_cdp": false
+    },
+    {
+      "agent_id": "agent-pilot-beta",
+      "role": "executor",
+      "conversation_id": "6a28d545-f918-83a5-b122-dc1503386374",
+      "url": "https://chatgpt.com/c/6a28d545-f918-83a5-b122-dc1503386374",
+      "observed_in_cdp": false
+    }
+  ],
+  "tab_target_resolver": {
+    "command": "python scripts\\tab_target_resolver.py --project agent-acceptance",
+    "exit_code": 1,
+    "match_status": "no_match",
+    "decisive_output": "No CDP tab found matching https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959"
+  },
+  "verdict": "human_required",
+  "next_action": "Open both required binding URLs in the shared Chrome instance, then rerun tab_target_resolver and Gate 0 preflight."
+}

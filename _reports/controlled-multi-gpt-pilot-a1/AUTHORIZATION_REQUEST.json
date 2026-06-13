@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "CONTROLLED-MULTI-GPT-PILOT-PREFLIGHT-A1",
+  "pilot_id": "multi-agent-multi-gpt-pilot-a1",
+  "proposed_run_id": "controlled-multi-gpt-pilot-a1-20260613T061555Z",
+  "status": "pending_human_authorization",
+  "generated_at": "2026-06-13T06:15:55Z",
+  "authorization_required": true,
+  "authorization_to_record_later": {
+    "authorized": true,
+    "authorizing_task": "CONTROLLED-MULTI-GPT-PILOT-A1",
+    "exact_command_must_include_run_id": true,
+    "expected_write_set": [
+      "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json",
+      "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json",
+      "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json",
+      "_reports/real-multi-gpt-pilot-a1/**",
+      "_evidence/CONTROLLED-MULTI-GPT-PILOT-A1/**"
+    ],
+    "evidence_file": "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION.json",
+    "risk_acknowledged": true
+  },
+  "currently_missing": [
+    "run-bound human authorization with authorized=true",
+    "two required binding tabs visible in CDP",
+    "agent-local-001 live session evidence JSON",
+    "agent-pilot-beta live session evidence JSON",
+    "two distinct non-empty session_id values",
+    "activation_record.cdp_session.active=true",
+    "Gate 0 PASS artifact generated from the authorized activation record",
+    "dispatch plan READY artifact bound to the PASS Gate 0 artifact"
+  ],
+  "required_binding_urls": [
+    "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+    "https://chatgpt.com/c/6a28d545-f918-83a5-b122-dc1503386374"
+  ],
+  "not_authorized_by_this_file": [
+    "opencode run",
+    "WorkQueue consumption",
+    "cross-repo smoke",
+    "paper workflow execution",
+    "formal production promotion"
+  ],
+  "operator_authorization_sentence": "I authorize CONTROLLED-MULTI-GPT-PILOT-A1 for run_id controlled-multi-gpt-pilot-a1-20260613T061555Z, limited to verifying the two bound ChatGPT sessions, regenerating activation/Gate0/dispatch evidence, and running the controlled pilot within the listed write_set. I acknowledge the external-runtime and evidence-chain risks."
+}
