@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-13T06:01:10.098730Z",
-  "overall": "HUMAN_REQUIRED",
+  "generated_at": "2026-06-13T09:49:55.057627Z",
+  "overall": "PASS",
   "executed_external_runtime": false,
-  "human_gate_required": true,
+  "human_gate_required": false,
   "agent_count": 2,
   "checks": [
     {
@@ -55,20 +55,20 @@
     },
     {
       "name": "run_authorization",
-      "status": "human_required",
-      "detail": "activation record run_id must be non-empty; authorization authorizing_task must be non-empty; authorization exact_command must be non-empty; authorization evidence_file must be non-empty; authorization decision_maker must be non-empty; authorization decision_reason must be non-empty; authorization must set authorized=true; authorization must set risk_acknowledged=true; authorization expected_write_set must be a non-empty string list; authorization approved_at must be a non-empty ISO timestamp; authorization expires_at must be a non-empty ISO timestamp; authorization evidence_file must be a non-empty path",
+      "status": "passed",
+      "detail": "run-bound authorization is current and auditable",
       "evidence": "D:\\agent-acceptance\\_reports\\multi-agent-multi-gpt-pilot-a1\\ACTIVATION_RECORD.json"
     },
     {
       "name": "live_agent_sessions",
-      "status": "human_required",
-      "detail": "agent agent-local-001 lacks live CDP verification; agent agent-local-001 lacks session_id; agent agent-local-001 session evidence_file must be a non-empty path; agent agent-local-001 verified_at must be a non-empty ISO timestamp; agent agent-pilot-beta lacks live CDP verification; agent agent-pilot-beta lacks session_id; agent agent-pilot-beta session evidence_file must be a non-empty path; agent agent-pilot-beta verified_at must be a non-empty ISO timestamp; cdp_session.active must be true",
+      "status": "passed",
+      "detail": "all declared agents have current live session evidence",
       "evidence": "D:\\agent-acceptance\\_reports\\multi-agent-multi-gpt-pilot-a1\\ACTIVATION_RECORD.json"
     },
     {
       "name": "independent_session_ids",
-      "status": "human_required",
-      "detail": "at least two distinct verified session_id values are required",
+      "status": "passed",
+      "detail": "2 unique live session id(s)",
       "evidence": "D:\\agent-acceptance\\_reports\\multi-agent-multi-gpt-pilot-a1\\ACTIVATION_RECORD.json"
     }
   ]

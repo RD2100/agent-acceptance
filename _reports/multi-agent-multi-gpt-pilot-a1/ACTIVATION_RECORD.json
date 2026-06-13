@@ -1,20 +1,26 @@
 {
   "pilot_id": "multi-agent-multi-gpt-pilot-a1",
   "activation_timestamp": "2026-06-10T02:22:43Z",
-  "last_updated": "2026-06-13T06:36:04.258039Z",
-  "update_reason": "Executor binding repaired with real ChatGPT conversation probe; live CDP session evidence refreshed; authorization remains pending",
+  "last_updated": "2026-06-13T09:49:18.540629Z",
+  "update_reason": "Session evidence refreshed for Gate0 re-run; run-bound authorization recorded",
   "run_id": "controlled-multi-gpt-pilot-a1-20260613T061555Z",
   "authorization": {
-    "authorized": false,
-    "authorizing_task": null,
-    "exact_command": null,
-    "expected_write_set": [],
-    "evidence_file": null,
-    "decision_maker": null,
-    "decision_reason": null,
-    "approved_at": null,
-    "expires_at": null,
-    "risk_acknowledged": false
+    "authorized": true,
+    "authorizing_task": "CONTROLLED-MULTI-GPT-PILOT-A1",
+    "exact_command": "CONTROLLED-MULTI-GPT-PILOT-A1 run_id=controlled-multi-gpt-pilot-a1-20260613T061555Z",
+    "expected_write_set": [
+      "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json",
+      "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json",
+      "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json",
+      "_reports/real-multi-gpt-pilot-a1/**",
+      "_evidence/CONTROLLED-MULTI-GPT-PILOT-A1/**"
+    ],
+    "evidence_file": "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION.json",
+    "decision_maker": "human_operator_RD",
+    "decision_reason": "Authorization granted after full audit: dual GPT sessions verified live via CDP, Gate0 correctly HUMAN_REQUIRED, authorization packet structure complete, evidence chain consistent across 5 sources, 1344 tests pass.",
+    "approved_at": "2026-06-13T09:47:43Z",
+    "expires_at": "2026-06-14T09:47:43Z",
+    "risk_acknowledged": true
   },
   "binding_path": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json",
   "binding_valid": true,
@@ -34,7 +40,7 @@
       "cdp_endpoint": "http://localhost:9222",
       "cdp_session_verified": true,
       "session_id": "cdp:9D535B770813D04425D7199D2B307E3B",
-      "verified_at": "2026-06-13T06:36:04.258039Z",
+      "verified_at": "2026-06-13T09:49:18.540629Z",
       "evidence_file": "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-local-001.json",
       "target_id": "9D535B770813D04425D7199D2B307E3B",
       "target_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
@@ -50,7 +56,7 @@
       "cdp_endpoint": "http://localhost:9222",
       "cdp_session_verified": true,
       "session_id": "cdp:28308C06715671F5F6C2C610DEDC6628",
-      "verified_at": "2026-06-13T06:36:04.258039Z",
+      "verified_at": "2026-06-13T09:49:18.540629Z",
       "evidence_file": "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-pilot-beta.json",
       "target_id": "28308C06715671F5F6C2C610DEDC6628",
       "target_url": "https://chatgpt.com/c/6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
@@ -62,9 +68,9 @@
   "cdp_session": {
     "active": true,
     "browser": "Chrome CDP localhost:9222",
-    "verified_at": "2026-06-13T06:36:04.258039Z",
+    "verified_at": "2026-06-13T09:49:18.540629Z",
     "chat_pages": 4,
-    "note": "Both bound pilot conversation tabs observed in current CDP page list; authorization remains pending."
+    "note": "Both bound pilot conversation tabs observed in current CDP page list; authorization recorded."
   },
   "governance_scope": {
     "external_runtimes": [
@@ -80,13 +86,12 @@
     "at_least_two_agents": true,
     "schema_validated": true,
     "cdp_verified": true,
-    "authorization_recorded": false,
-    "ready_for_gate0_pass": false,
-    "cdp_note": "Live sessions are verified, but run-bound human authorization is still required."
+    "authorization_recorded": true,
+    "ready_for_gate0_pass": true,
+    "cdp_note": "Live sessions verified and human authorization recorded. Gate0 and dispatch plan pending regeneration."
   },
   "known_gaps": [
-    "Run-bound human authorization is still pending (authorization.authorized=false)",
-    "Gate 0 must remain HUMAN_REQUIRED until authorization evidence is recorded",
-    "No external runtime or controlled pilot dispatch executed in this session"
+    "Gate 0 and dispatch plan need regeneration to reflect authorization (next step)",
+    "No external runtime or controlled pilot dispatch executed yet"
   ]
 }

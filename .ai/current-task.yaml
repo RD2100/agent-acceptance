@@ -1,68 +1,67 @@
-task_id: CONTROLLED-MULTI-GPT-AUTHORIZATION-PACKET-REFRESH-A1
-title: "Controlled multi-GPT authorization packet refresh"
+task_id: CONTROLLED-MULTI-GPT-AUTHORIZATION-EXECUTION-A1
+title: "Execute controlled multi-GPT pilot authorization"
 priority: P1
-status: completed
-type: governance_preflight
+status: in_progress
+type: governance_execution
 mode: "@go"
 
 description: >
-  Refresh the controlled-pilot authorization packet after executor binding
-  repair. Both live sessions are ready; run-bound human authorization remains
-  the only Gate 0 blocker.
+  Record run-bound human authorization, refresh session evidence,
+  regenerate Gate0 to PASS, rebuild dispatch plan to READY, and
+  validate controlled pilot readiness gate.
 
 write_set:
-  - "tasks/controlled-multi-gpt-authorization-packet-refresh-a1.md"
   - ".ai/current-task.yaml"
-  - "_reports/controlled-multi-gpt-pilot-a1/AUTHORIZATION_REQUEST.json"
-  - "_reports/controlled-multi-gpt-pilot-a1/NEXT_COMMANDS.md"
-  - "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION_TEMPLATE.json"
-  - "_evidence/CONTROLLED-MULTI-GPT-AUTHORIZATION-PACKET-REFRESH-A1/**"
+  - ".ai/tasks/governance-readiness-consolidation-a1.yaml"
+  - "_reports/controlled-multi-gpt-pilot-a1/**"
+  - "_reports/multi-agent-multi-gpt-pilot-a1/**"
+  - "_reports/multi-agent-gate0-preflight-a1/**"
+  - "_reports/multi-agent-dispatch-plan-a1/**"
+  - "tests/test_multi_agent_gate0_preflight.py"
+  - "tests/test_production_readiness_gate.py"
+  - "tests/test_multi_agent_dispatch_plan.py"
+  - "tests/test_validate_multi_agent_dispatch_plan.py"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Authorization packet controls the final human gate before controlled pilot readiness."
+  trigger_reason: "Recording human authorization and regenerating gate/dispatch evidence."
   inventory_evidence:
     queried_sources:
       - "_reports/controlled-multi-gpt-pilot-a1/AUTHORIZATION_REQUEST.json"
-      - "_reports/controlled-multi-gpt-pilot-a1/CDP_DISCOVERY_RECHECK.json"
-      - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_LATEST_CHECK.json"
       - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+      - "docs/agent-runtime/capability-inventory.md"
     matched_capabilities:
       - run_bound_authorization
       - controlled_pilot_readiness_gate
-      - independent_session_evidence
-    compared_against_request:
-      - "advance toward formal use"
-      - "make remaining human gate exact"
-      - "avoid fake authorization"
+      - multi-agent-gate0-preflight
   rules_checked: [core-001, core-007, core-008, review-001]
   lessons_checked: [LL-independent-review-evidence, LL-structured-task-spec]
-  sufficiency_decision: existing_partial
-  decision: build_delta
-  delta_justification: >
-    Existing authorization request is stale after executor binding repair;
-    refresh it to match current Gate 0 evidence.
+  sufficiency_decision: existing_sufficient
+  decision: reuse
+  delta_justification: "Execution of previously prepared authorization packet. No new capabilities needed."
 
 conflict_registry:
   read_set:
     - "_reports/controlled-multi-gpt-pilot-a1/AUTHORIZATION_REQUEST.json"
-    - "_reports/controlled-multi-gpt-pilot-a1/CDP_DISCOVERY_RECHECK.json"
-    - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_LATEST_CHECK.json"
-    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
-  write_set:
-    - "tasks/controlled-multi-gpt-authorization-packet-refresh-a1.md"
-    - ".ai/current-task.yaml"
-    - "_reports/controlled-multi-gpt-pilot-a1/AUTHORIZATION_REQUEST.json"
-    - "_reports/controlled-multi-gpt-pilot-a1/NEXT_COMMANDS.md"
     - "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION_TEMPLATE.json"
-    - "_evidence/CONTROLLED-MULTI-GPT-AUTHORIZATION-PACKET-REFRESH-A1/**"
-    - "hooks/sealed-files-manifest.json"
-    - "_evidence/hook-output/**"
+    - "_reports/controlled-multi-gpt-pilot-a1/NEXT_COMMANDS.md"
+    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+    - "scripts/multi_agent_gate0_preflight.py"
+    - "scripts/multi_agent_dispatch_plan.py"
+    - "scripts/validate_multi_agent_dispatch_plan.py"
+    - "scripts/production_readiness_gate.py"
+  write_set:
+    - "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION.json"
+    - "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-local-001.json"
+    - "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-pilot-beta.json"
+    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+    - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json"
+    - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json"
   protected_files_touched: false
-  conflict_level: medium
+  conflict_level: none
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
-next_recommended: "Human operator records run-bound authorization, then reruns Gate 0 and dispatch plan."
+next_recommended: "Dispatch controlled pilot to two independent GPT sessions."
