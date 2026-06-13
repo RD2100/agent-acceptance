@@ -36,9 +36,11 @@ write_set:
   - "scripts/multi_agent_dispatch_plan.py"
   - "scripts/cdp_write_adapter.py"
   - "scripts/cdp_dispatch_runner.py"
+  - "scripts/cdp_review_api.py"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
   - "_evidence/CDP-DISPATCH/**"
+  - "_evidence/CDP-REVIEW/**"
 
 gate_0:
   triggered: true

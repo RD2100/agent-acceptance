@@ -45,8 +45,21 @@ def _import_runner():
     return mod
 
 
+def _import_api():
+    """Import cdp_review_api module (depends on adapter + runner already in sys.modules)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "cdp_review_api", SCRIPTS / "cdp_review_api.py"
+    )
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules["cdp_review_api"] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
 adapter = _import_adapter()
 runner = _import_runner()
+api = _import_api()
 
 
 # ── CDPPage data class ───────────────────────────────────────────────
@@ -291,3 +304,212 @@ class TestCDPIntegration:
         for report, target in mappings:
             assert target.ws_url.startswith("ws://")
             assert report["content_length"] > 0
+
+
+# ── Review API tests (cdp_review_api.py) ─────────────────────────────
+
+
+class TestCheckReviewReadiness:
+    """Unit tests for check_review_readiness()."""
+
+    def test_returns_expected_keys(self):
+        """API returns dict with all required keys."""
+        from unittest.mock import patch, MagicMock
+
+        mock_reports = [
+            {"role": "Verifier", "file": "VERIFY_REPORT.md", "verdict": "PASS", "content_length": 4600},
+        ]
+        mock_targets = [
+            adapter.CDPPage("T1", "https://chatgpt.com/c/aaa-111", "aaa-111", "Review", "ws://1"),
+        ]
+        mock_binding = {"bindings": [{"binding_status": "active", "role": "reviewer"}]}
+
+        with patch.object(api, "discover_reports", return_value=mock_reports), \
+             patch.object(api, "discover_targets", return_value=mock_targets), \
+             patch.object(api, "load_binding", return_value=mock_binding):
+            result = api.check_review_readiness()
+
+        assert "ready" in result
+        assert "reports" in result
+        assert "targets" in result
+        assert "binding_active" in result
+        assert "issues" in result
+
+    def test_ready_when_reports_and_targets_exist(self):
+        from unittest.mock import patch
+
+        mock_reports = [
+            {"role": "Verifier", "file": "V.md", "verdict": "PASS", "content_length": 100},
+        ]
+        mock_targets = [
+            adapter.CDPPage("T1", "https://chatgpt.com/c/aaa", "aaa", "R", "ws://1"),
+        ]
+        mock_binding = {"bindings": [{"binding_status": "active"}]}
+
+        with patch.object(api, "discover_reports", return_value=mock_reports), \
+             patch.object(api, "discover_targets", return_value=mock_targets), \
+             patch.object(api, "load_binding", return_value=mock_binding):
+            result = api.check_review_readiness()
+
+        assert result["ready"] is True
+        assert result["targets"] == 1
+        assert result["binding_active"] == 1
+        assert len(result["issues"]) == 0
+
+    def test_not_ready_when_no_targets(self):
+        from unittest.mock import patch
+
+        mock_reports = [
+            {"role": "Verifier", "file": "V.md", "verdict": "PASS", "content_length": 100},
+        ]
+
+        with patch.object(api, "discover_reports", return_value=mock_reports), \
+             patch.object(api, "discover_targets", return_value=[]), \
+             patch.object(api, "load_binding", return_value={"bindings": []}):
+            result = api.check_review_readiness()
+
+        assert result["ready"] is False
+        assert result["targets"] == 0
+        assert any("no live ChatGPT pages" in i for i in result["issues"])
+
+    def test_not_ready_when_no_reports(self):
+        from unittest.mock import patch
+
+        mock_targets = [
+            adapter.CDPPage("T1", "https://chatgpt.com/c/aaa", "aaa", "R", "ws://1"),
+        ]
+
+        with patch.object(api, "discover_reports", return_value=[]), \
+             patch.object(api, "discover_targets", return_value=mock_targets), \
+             patch.object(api, "load_binding", return_value={"bindings": []}):
+            result = api.check_review_readiness()
+
+        assert result["ready"] is False
+        assert any("no reports" in i for i in result["issues"])
+
+
+class TestSendForReview:
+    """Unit tests for send_for_review()."""
+
+    def test_returns_error_when_no_reports(self):
+        from unittest.mock import patch
+
+        with patch.object(api, "discover_reports", return_value=[]):
+            result = api.send_for_review()
+
+        assert result["success"] is False
+        assert result["dispatched"] == 0
+        assert "No reports found" in result.get("error", "")
+
+    def test_returns_error_when_no_targets(self):
+        from unittest.mock import patch
+
+        mock_reports = [
+            {"role": "Verifier", "file": "V.md", "verdict": "PASS", "content_length": 100},
+        ]
+
+        with patch.object(api, "discover_reports", return_value=mock_reports), \
+             patch.object(api, "load_binding", return_value={"bindings": []}), \
+             patch.object(api, "discover_targets", return_value=[]):
+            result = api.send_for_review()
+
+        assert result["success"] is False
+        assert "No live ChatGPT targets" in result.get("error", "")
+
+    def test_report_filter_works(self):
+        from unittest.mock import patch
+
+        mock_reports = [
+            {"role": "Architecture-Reviewer", "file": "ARCHITECTURE_REVIEW.md", "verdict": "PASS", "content_length": 100},
+            {"role": "Verifier", "file": "VERIFY_REPORT.md", "verdict": "PASS", "content_length": 50},
+        ]
+
+        with patch.object(api, "discover_reports", return_value=mock_reports), \
+             patch.object(api, "load_binding", return_value={"bindings": []}), \
+             patch.object(api, "discover_targets", return_value=[]):
+            result = api.send_for_review(report_filter="ARCHITECTURE")
+
+        # Should filter to 1 report, but fail because no targets
+        assert result["success"] is False
+        # The filter should have narrowed to 1 report
+        assert result["failed"] == 1
+
+    def test_dry_run_flag_passed_through(self):
+        from unittest.mock import patch, MagicMock
+
+        mock_reports = [
+            {"role": "Verifier", "file": "V.md", "verdict": "PASS", "content_length": 100},
+        ]
+        mock_targets = [
+            adapter.CDPPage("T1", "https://chatgpt.com/c/aaa", "aaa", "R", "ws://1"),
+        ]
+        mock_binding = {"bindings": [{"binding_status": "active"}]}
+        mock_mappings = [(mock_reports[0], mock_targets[0])]
+        mock_results = [{"report_role": "Verifier", "dry_run": True, "status": "DRY_RUN_PASS"}]
+
+        with patch.object(api, "discover_reports", return_value=mock_reports), \
+             patch.object(api, "load_binding", return_value=mock_binding), \
+             patch.object(api, "discover_targets", return_value=mock_targets), \
+             patch.object(api, "map_reports_to_reviewers", return_value=mock_mappings), \
+             patch("asyncio.run", return_value=mock_results):
+            result = api.send_for_review(dry_run=True)
+
+        assert result["dry_run"] is True
+
+
+class TestCaptureReviewResponse:
+    """Unit tests for capture_review_response()."""
+
+    def test_returns_error_when_target_not_found(self):
+        from unittest.mock import patch
+
+        with patch.object(api, "discover_targets", return_value=[]):
+            result = api.capture_review_response("NONEXIST")
+
+        assert result["success"] is False
+        assert "not found" in result.get("error", "")
+
+    def test_finds_matching_target_by_prefix(self):
+        from unittest.mock import patch
+
+        mock_targets = [
+            adapter.CDPPage("ABC12345", "https://chatgpt.com/c/aaa", "aaa", "Review", "ws://abc"),
+            adapter.CDPPage("DEF67890", "https://chatgpt.com/c/bbb", "bbb", "Other", "ws://def"),
+        ]
+
+        mock_capture_result = ("This looks good. APPROVE.", "Review Session")
+
+        with patch.object(api, "discover_targets", return_value=mock_targets), \
+             patch("asyncio.run", return_value=mock_capture_result):
+            result = api.capture_review_response("ABC")
+
+        assert result["success"] is True
+        assert result["target_id"] == "ABC12345"
+        assert result["review_response"] == "This looks good. APPROVE."
+        assert result["title"] == "Review Session"
+
+
+# ── Review API integration tests ──────────────────────────────────────
+
+
+class TestReviewAPIIntegration:
+    """Integration tests that require a live Chrome instance."""
+
+    @pytest.fixture(autouse=True)
+    def check_cdp(self):
+        """Skip if CDP is not available."""
+        try:
+            import urllib.request
+            with urllib.request.urlopen("http://localhost:9222/json", timeout=3) as resp:
+                if resp.status != 200:
+                    pytest.skip("CDP not available")
+        except Exception:
+            pytest.skip("CDP not available")
+
+    def test_check_readiness_live(self):
+        """check_review_readiness works against live Chrome."""
+        result = api.check_review_readiness()
+        assert isinstance(result, dict)
+        assert "ready" in result
+        assert "reports" in result
+        assert isinstance(result["reports"], list)
