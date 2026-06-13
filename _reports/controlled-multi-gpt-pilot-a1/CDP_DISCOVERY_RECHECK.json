@@ -1,22 +1,39 @@
 {
-  "schema_version": "1.0.0",
-  "task_id": "CONTROLLED-MULTI-GPT-PILOT-PREFLIGHT-A1",
-  "generated_at": "2026-06-13T06:15:55Z",
+  "schema_version": "1.1.0",
+  "task_id": "CONTROLLED-MULTI-GPT-LIVE-SESSION-EVIDENCE-A1",
+  "generated_at": "2026-06-13T06:28:28.129917Z",
   "cdp_endpoint": "http://localhost:9222",
   "cdp_active": true,
-  "browser": "Chrome/149.0.7827.104",
-  "observed_chatgpt_conversation_tabs": [
+  "observed_chatgpt_pages": [
     {
-      "conversation_id": "6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
-      "url": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
-      "role": "external_review_conversation",
-      "usable_for_controlled_pilot_binding": false
+      "title": "ChatGPT",
+      "url": "https://chatgpt.com/",
+      "target_id": "BAFCCB085052B6D9BEEB0D2A18C04486",
+      "has_webSocketDebuggerUrl": true
     },
     {
-      "conversation_id": "6a297e5f-c9c8-83a8-b413-a8fc414e0e85",
+      "title": "ChatGPT",
+      "url": "https://chatgpt.com/",
+      "target_id": "DAF9B49D29AC722990A46C7967695C70",
+      "has_webSocketDebuggerUrl": true
+    },
+    {
+      "title": "GPT编码计划与执行8",
+      "url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+      "target_id": "9D535B770813D04425D7199D2B307E3B",
+      "has_webSocketDebuggerUrl": true
+    },
+    {
+      "title": "GPT编码计划与执行9",
+      "url": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+      "target_id": "9C03F71D8E8FEB64024915511317EE04",
+      "has_webSocketDebuggerUrl": true
+    },
+    {
+      "title": "论文项目主体思路&amp;审核",
       "url": "https://chatgpt.com/c/6a297e5f-c9c8-83a8-b413-a8fc414e0e85",
-      "role": "paper_conversation",
-      "usable_for_controlled_pilot_binding": false
+      "target_id": "81227C9B36F43191D78EEE5511AC5EEA",
+      "has_webSocketDebuggerUrl": true
     }
   ],
   "required_binding_tabs": [
@@ -25,22 +42,20 @@
       "role": "reviewer",
       "conversation_id": "6a26cc03-235c-83a2-a0fc-cd29be615959",
       "url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
-      "observed_in_cdp": false
+      "observed_in_cdp": true,
+      "target_id": "9D535B770813D04425D7199D2B307E3B",
+      "observed_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959"
     },
     {
       "agent_id": "agent-pilot-beta",
       "role": "executor",
       "conversation_id": "6a28d545-f918-83a5-b122-dc1503386374",
       "url": "https://chatgpt.com/c/6a28d545-f918-83a5-b122-dc1503386374",
-      "observed_in_cdp": false
+      "observed_in_cdp": false,
+      "target_id": null,
+      "observed_url": null
     }
   ],
-  "tab_target_resolver": {
-    "command": "python scripts\\tab_target_resolver.py --project agent-acceptance",
-    "exit_code": 1,
-    "match_status": "no_match",
-    "decisive_output": "No CDP tab found matching https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959"
-  },
-  "verdict": "human_required",
-  "next_action": "Open both required binding URLs in the shared Chrome instance, then rerun tab_target_resolver and Gate 0 preflight."
+  "verdict": "partial",
+  "next_action": "Create or open a stable executor conversation for agent-pilot-beta, then record run-bound human authorization."
 }

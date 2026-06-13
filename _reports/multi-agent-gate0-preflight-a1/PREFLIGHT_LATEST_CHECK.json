@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-13T06:18:39.376352Z",
+  "generated_at": "2026-06-13T06:28:38.999156Z",
   "overall": "HUMAN_REQUIRED",
   "executed_external_runtime": false,
   "human_gate_required": true,
@@ -56,13 +56,13 @@
     {
       "name": "run_authorization",
       "status": "human_required",
-      "detail": "activation record run_id must be non-empty; authorization authorizing_task must be non-empty; authorization exact_command must be non-empty; authorization evidence_file must be non-empty; authorization decision_maker must be non-empty; authorization decision_reason must be non-empty; authorization must set authorized=true; authorization must set risk_acknowledged=true; authorization expected_write_set must be a non-empty string list; authorization approved_at must be a non-empty ISO timestamp; authorization expires_at must be a non-empty ISO timestamp; authorization evidence_file must be a non-empty path",
+      "detail": "authorization authorizing_task must be non-empty; authorization exact_command must be non-empty; authorization evidence_file must be non-empty; authorization decision_maker must be non-empty; authorization decision_reason must be non-empty; authorization must set authorized=true; authorization must set risk_acknowledged=true; authorization expected_write_set must be a non-empty string list; authorization approved_at must be a non-empty ISO timestamp; authorization expires_at must be a non-empty ISO timestamp; authorization evidence_file must be a non-empty path",
       "evidence": "D:\\agent-acceptance\\_reports\\multi-agent-multi-gpt-pilot-a1\\ACTIVATION_RECORD.json"
     },
     {
       "name": "live_agent_sessions",
       "status": "human_required",
-      "detail": "agent agent-local-001 lacks live CDP verification; agent agent-local-001 lacks session_id; agent agent-local-001 session evidence_file must be a non-empty path; agent agent-local-001 verified_at must be a non-empty ISO timestamp; agent agent-pilot-beta lacks live CDP verification; agent agent-pilot-beta lacks session_id; agent agent-pilot-beta session evidence_file must be a non-empty path; agent agent-pilot-beta verified_at must be a non-empty ISO timestamp; cdp_session.active must be true",
+      "detail": "agent agent-pilot-beta lacks live CDP verification; agent agent-pilot-beta lacks session_id; agent agent-pilot-beta evidence does not prove live=true",
       "evidence": "D:\\agent-acceptance\\_reports\\multi-agent-multi-gpt-pilot-a1\\ACTIVATION_RECORD.json"
     },
     {

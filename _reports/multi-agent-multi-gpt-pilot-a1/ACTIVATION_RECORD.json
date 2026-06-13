@@ -1,9 +1,9 @@
 {
   "pilot_id": "multi-agent-multi-gpt-pilot-a1",
   "activation_timestamp": "2026-06-10T02:22:43Z",
-  "last_updated": "2026-06-13T12:00:00+08:00",
-  "update_reason": "Readiness semantics repair: static bindings are not current-run authorization or live-session evidence",
-  "run_id": null,
+  "last_updated": "2026-06-13T06:28:28.129917Z",
+  "update_reason": "Partial live CDP session evidence captured; executor binding is not currently live; run authorization remains pending",
+  "run_id": "controlled-multi-gpt-pilot-a1-20260613T061555Z",
   "authorization": {
     "authorized": false,
     "authorizing_task": null,
@@ -32,8 +32,14 @@
       "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
       "conversation_id": "6a26cc03-235c-83a2-a0fc-cd29be615959",
       "cdp_endpoint": "http://localhost:9222",
-      "cdp_session_verified": false,
-      "cdp_session_note": "CDP session not re-verified in 2026-06-13 session; binding JSON validates but no live CDP evidence captured"
+      "cdp_session_verified": true,
+      "session_id": "cdp:9D535B770813D04425D7199D2B307E3B",
+      "verified_at": "2026-06-13T06:28:28.129917Z",
+      "evidence_file": "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-local-001.json",
+      "target_id": "9D535B770813D04425D7199D2B307E3B",
+      "target_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+      "has_webSocketDebuggerUrl": true,
+      "cdp_session_note": "exact CDP page match"
     },
     {
       "agent_id": "agent-pilot-beta",
@@ -43,13 +49,22 @@
       "conversation_id": "6a28d545-f918-83a5-b122-dc1503386374",
       "cdp_endpoint": "http://localhost:9222",
       "cdp_session_verified": false,
-      "cdp_session_note": "CDP session not re-verified in 2026-06-13 session; binding JSON validates but no live CDP evidence captured"
+      "session_id": null,
+      "verified_at": "2026-06-13T06:28:28.129917Z",
+      "evidence_file": "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-pilot-beta.json",
+      "target_id": null,
+      "target_url": null,
+      "has_webSocketDebuggerUrl": false,
+      "cdp_session_note": "not live: exact conversation URL missing from CDP page list"
     }
   ],
   "pending_agents": [],
   "cdp_session": {
-    "active": false,
-    "note": "No live CDP session verified in 2026-06-13 pilot; previous CDP evidence from 2026-06-10 not re-validated"
+    "active": true,
+    "browser": "Chrome CDP localhost:9222",
+    "verified_at": "2026-06-13T06:28:28.129917Z",
+    "chat_pages": 5,
+    "note": "Reviewer binding is live; executor binding is not currently an exact conversation tab. Authorization remains pending."
   },
   "governance_scope": {
     "external_runtimes": [
@@ -65,12 +80,14 @@
     "at_least_two_agents": true,
     "schema_validated": true,
     "cdp_verified": false,
-    "cdp_note": "Binding JSON schema validates; live CDP evidence not captured in this session"
+    "authorization_recorded": false,
+    "ready_for_gate0_pass": false,
+    "cdp_note": "Not ready: executor live session evidence is missing and run-bound authorization is still required."
   },
   "known_gaps": [
-    "No live CDP session evidence captured for either binding",
-    "Authorization was verbal ('授权，开始吧') without run-bound authorization record",
-    "CAP-029 approved status predates this pilot session (set at commit 511c54ab)",
-    "Dispatch must remain HUMAN_REQUIRED until fresh run-bound authorization and live session evidence are captured"
+    "agent-pilot-beta bound conversation is not currently a live exact CDP tab",
+    "Run-bound human authorization is still pending (authorization.authorized=false)",
+    "Gate 0 must remain HUMAN_REQUIRED until both live sessions and authorization evidence are recorded",
+    "No external runtime or controlled pilot dispatch executed in this session"
   ]
 }
