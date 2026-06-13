@@ -11,7 +11,6 @@ import json
 import sys
 import time
 from pathlib import Path
-from urllib.parse import urlparse
 
 from playwright.async_api import async_playwright
 
@@ -23,22 +22,12 @@ from cdp_dispatch_runner import (
     map_reports_to_reviewers, format_review_prompt_safe, _detect_prompt_injection,
     EVIDENCE_DIR,
 )
+from cdp_write_adapter import _conversation_id_from_url
 
 
 def _sha256(text: str) -> str:
     """Return the full SHA-256 digest used by evidence records."""
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
-
-
-def _conversation_id_from_url(url: str) -> str | None:
-    """Extract a conversation ID only from an exact ChatGPT conversation URL."""
-    parsed = urlparse(url)
-    if parsed.scheme != "https" or parsed.hostname not in {"chatgpt.com", "www.chatgpt.com"}:
-        return None
-    parts = [part for part in parsed.path.split("/") if part]
-    if len(parts) != 2 or parts[0] != "c":
-        return None
-    return parts[1] or None
 
 
 async def _actual_target_info(page) -> dict:
@@ -60,6 +49,15 @@ def _attribution_matches(expected_target, actual_target: dict) -> bool:
     )
 
 
+async def _paste_via_clipboard(page, prompt: str) -> None:
+    """Paste a prompt and clear the OS clipboard before returning."""
+    await page.evaluate("(text) => navigator.clipboard.writeText(text)", prompt)
+    try:
+        await page.keyboard.press("Control+v")
+    finally:
+        await page.evaluate("() => navigator.clipboard.writeText('')")
+
+
 async def send_one(page, prompt: str, *, timeout: int = 300, need_reload: bool = False) -> dict:
     """Send one prompt and wait for response.
     
@@ -79,11 +77,9 @@ async def send_one(page, prompt: str, *, timeout: int = 300, need_reload: bool =
     await page.keyboard.press("Backspace")
     await asyncio.sleep(0.3)
 
-    # Use clipboard paste for reliable React state sync
-    import json as _json
-    await page.evaluate(f"""(text) => navigator.clipboard.writeText(text)""", prompt)
+    # Use clipboard paste for reliable React state sync, then remove sensitive content.
     await asyncio.sleep(0.3)
-    await page.keyboard.press("Control+v")
+    await _paste_via_clipboard(page, prompt)
     await asyncio.sleep(1.0)
 
     text = await ta.inner_text()

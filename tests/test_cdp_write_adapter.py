@@ -109,6 +109,34 @@ class TestCDPPage:
         page = adapter.CDPPage.from_cdp_json(data)
         assert page.conversation_id == "11111111-2222-3333-4444-555555555555"
 
+    def test_from_cdp_json_rejects_non_chatgpt_host_spoof(self):
+        data = {
+            "id": "EVIL",
+            "url": "https://attacker.example/chatgpt.com/c/reviewer-123",
+            "title": "Not ChatGPT",
+            "webSocketDebuggerUrl": "ws://localhost:9222/devtools/page/EVIL",
+        }
+        page = adapter.CDPPage.from_cdp_json(data)
+        assert page.conversation_id is None
+
+    def test_find_chatgpt_pages_excludes_spoofed_url(self):
+        from unittest.mock import patch
+
+        legitimate = adapter.CDPPage.from_cdp_json({
+            "id": "GOOD",
+            "url": "https://chatgpt.com/c/reviewer-123",
+            "title": "ChatGPT",
+            "webSocketDebuggerUrl": "ws://localhost:9222/devtools/page/GOOD",
+        })
+        spoofed = adapter.CDPPage.from_cdp_json({
+            "id": "EVIL",
+            "url": "https://attacker.example/chatgpt.com/c/reviewer-123",
+            "title": "Not ChatGPT",
+            "webSocketDebuggerUrl": "ws://localhost:9222/devtools/page/EVIL",
+        })
+        with patch.object(adapter, "_list_cdp_pages", return_value=[legitimate, spoofed]):
+            assert adapter._find_chatgpt_pages() == [legitimate]
+
 
 # ── InjectionResult / DispatchResult ─────────────────────────────────
 
@@ -526,7 +554,11 @@ class TestCaptureReviewResponse:
 
         mock_capture_result = ("This looks good. APPROVE.", "Review Session")
 
+        mock_binding = {"bindings": [
+            {"role": "reviewer", "binding_status": "active", "conversation_id": "aaa"},
+        ]}
         with patch.object(api, "discover_targets", return_value=mock_targets), \
+             patch.object(api, "load_binding", return_value=mock_binding), \
              patch("asyncio.run", side_effect=_close_coroutine_and_return(mock_capture_result)):
             result = api.capture_review_response("ABC")
 
@@ -534,6 +566,36 @@ class TestCaptureReviewResponse:
         assert result["target_id"] == "ABC12345"
         assert result["review_response"] == "This looks good. APPROVE."
         assert result["title"] == "Review Session"
+
+    def test_rejects_ambiguous_target_prefix(self):
+        from unittest.mock import patch
+
+        targets = [
+            adapter.CDPPage("ABC111", "https://chatgpt.com/c/aaa", "aaa", "A", "ws://1"),
+            adapter.CDPPage("ABC222", "https://chatgpt.com/c/bbb", "bbb", "B", "ws://2"),
+        ]
+        with patch.object(api, "discover_targets", return_value=targets):
+            result = api.capture_review_response("ABC")
+
+        assert result["success"] is False
+        assert "matched 2 targets" in result["error"]
+
+    def test_rejects_capture_from_non_reviewer_target(self):
+        from unittest.mock import patch
+
+        targets = [
+            adapter.CDPPage("EXEC1", "https://chatgpt.com/c/executor", "executor", "E", "ws://1"),
+            adapter.CDPPage("REV1", "https://chatgpt.com/c/reviewer", "reviewer", "R", "ws://2"),
+        ]
+        binding = {"bindings": [
+            {"role": "reviewer", "binding_status": "active", "conversation_id": "reviewer"},
+        ]}
+        with patch.object(api, "discover_targets", return_value=targets), \
+             patch.object(api, "load_binding", return_value=binding):
+            result = api.capture_review_response("EXEC")
+
+        assert result["success"] is False
+        assert "verified reviewer binding" in result["error"]
 
 
 # ── Review API integration tests ──────────────────────────────────────
@@ -907,5 +969,47 @@ class TestEvidenceAttribution:
         report = {"role": "Verifier", "file": "V.md", "verdict": "PASS", "content_length": 1}
         with patch.object(sender, "discover_reports", return_value=[report]), \
              patch.object(sender, "load_binding", return_value={"bindings": []}), \
-             patch.object(sender, "discover_targets", return_value=[]):
+            patch.object(sender, "discover_targets", return_value=[]):
             assert asyncio.run(sender.main()) == 1
+
+    def test_clipboard_is_cleared_after_paste(self):
+        from cdp_playwright_sender import _paste_via_clipboard
+
+        class FakeKeyboard:
+            async def press(self, key):
+                assert key == "Control+v"
+
+        class FakePage:
+            def __init__(self):
+                self.keyboard = FakeKeyboard()
+                self.calls = []
+
+            async def evaluate(self, expression, *args):
+                self.calls.append((expression, args))
+
+        page = FakePage()
+        asyncio.run(_paste_via_clipboard(page, "sensitive prompt"))
+
+        assert page.calls[0][1] == ("sensitive prompt",)
+        assert page.calls[-1][0] == "() => navigator.clipboard.writeText('')"
+
+    def test_clipboard_is_cleared_when_paste_fails(self):
+        from cdp_playwright_sender import _paste_via_clipboard
+
+        class FailingKeyboard:
+            async def press(self, key):
+                raise RuntimeError("paste failed")
+
+        class FakePage:
+            def __init__(self):
+                self.keyboard = FailingKeyboard()
+                self.calls = []
+
+            async def evaluate(self, expression, *args):
+                self.calls.append((expression, args))
+
+        page = FakePage()
+        with pytest.raises(RuntimeError, match="paste failed"):
+            asyncio.run(_paste_via_clipboard(page, "sensitive prompt"))
+
+        assert page.calls[-1][0] == "() => navigator.clipboard.writeText('')"

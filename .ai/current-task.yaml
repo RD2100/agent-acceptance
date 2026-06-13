@@ -1,88 +1,78 @@
-task_id: CONTROLLED-MULTI-GPT-AUTHORIZATION-EXECUTION-A1
-title: "Execute controlled multi-GPT pilot authorization"
+task_id: CDP-REVIEW-SECURITY-FINALIZE-R1
+title: "Finalize CDP review security closure"
 priority: P1
-status: in_progress
-type: governance_execution
+status: completed
+type: security_governance
 mode: "@go"
 
 description: >
-  Record run-bound human authorization, refresh session evidence,
-  regenerate Gate0 to PASS, rebuild dispatch plan to READY, and
-  validate controlled pilot readiness gate.
+  Persist independent reviewer evidence, reconcile exact test and risk
+  statements, and create a scoped commit for the completed CDP security fix.
 
 write_set:
   - ".ai/current-task.yaml"
-  - ".ai/tasks/governance-readiness-consolidation-a1.yaml"
-  - "_reports/controlled-multi-gpt-pilot-a1/**"
-  - "_reports/multi-agent-multi-gpt-pilot-a1/**"
-  - "_reports/multi-agent-architecture-review-a1/**"
-  - "_reports/multi-agent-verifier-a1/**"
-  - "_reports/multi-agent-quality-review-a1/**"
-  - "_reports/multi-agent-cdp-execution-layer-a1/**"
-  - "_reports/multi-agent-gate0-preflight-a1/**"
-  - "_reports/multi-agent-dispatch-plan-a1/**"
-  - "tests/test_multi_agent_gate0_preflight.py"
-  - "tests/test_production_readiness_gate.py"
-  - "tests/test_multi_agent_dispatch_plan.py"
-  - "tests/test_validate_multi_agent_dispatch_plan.py"
-  - "tests/test_cdp_write_adapter.py"
-  - "tests/test_governance_consistency.py"
-  - "docs/agent-runtime/capability-inventory.md"
-  - "docs/agent-runtime/integration-contracts.md"
-  - "docs/agent-runtime/sub-agent-dispatch-protocol.md"
-  - "docs/governance/HANDOFF.md"
-  - "docs/governance/PROGRESS_LOG.md"
-  - "docs/governance/VERIFY_MATRIX.md"
-  - "schemas/agent-runtime/multi-agent-dispatch-plan.schema.json"
-  - "scripts/multi_agent_dispatch_plan.py"
   - "scripts/cdp_write_adapter.py"
-  - "scripts/cdp_dispatch_runner.py"
   - "scripts/cdp_review_api.py"
   - "scripts/cdp_playwright_sender.py"
+  - "tests/test_cdp_write_adapter.py"
+  - "_reports/SECURITY-HARDENING-REPORT-20260613.md"
+  - "_evidence/CDP-REVIEW-SECURITY-REREVIEW-R1/EXECUTION_REPORT.md"
+  - "_evidence/CDP-REVIEW-SECURITY-CLOSURE-R2/**"
+  - "_evidence/CDP-REVIEW-SECURITY-FINALIZE-R1/**"
+  - "tasks/cdp-review-security-rereview-r1.md"
+  - "tasks/cdp-review-security-closure-r2.md"
+  - "tasks/cdp-review-security-finalize-r1.md"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
-  - "_evidence/CDP-DISPATCH/**"
-  - "_evidence/CDP-REVIEW/**"
-  - "_evidence/CDP-REVIEW-SECURITY-REREVIEW-R1/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Recording human authorization and regenerating gate/dispatch evidence."
+  trigger_reason: "Finalize P1 security closure with independent reviewer artifacts."
   inventory_evidence:
     queried_sources:
-      - "_reports/controlled-multi-gpt-pilot-a1/AUTHORIZATION_REQUEST.json"
-      - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
-      - "docs/agent-runtime/capability-inventory.md"
+      - "tasks/cdp-review-security-closure-r2.md"
+      - "_evidence/CDP-REVIEW-SECURITY-CLOSURE-R2/EXECUTION_REPORT.md"
+      - "_evidence/CDP-REVIEW-SECURITY-CLOSURE-R2/REVIEWER_INDEX.md"
     matched_capabilities:
-      - run_bound_authorization
-      - controlled_pilot_readiness_gate
-      - multi-agent-gate0-preflight
-  rules_checked: [core-001, core-007, core-008, review-001]
-  lessons_checked: [LL-independent-review-evidence, LL-structured-task-spec]
+      - independent_security_review
+      - cdp_target_resolution
+      - evidence_integrity
+  rules_checked: [core-004, core-008, review-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "Execution of previously prepared authorization packet. No new capabilities needed."
+  delta_justification: "No new capability; persist review and exact final status."
 
 conflict_registry:
   read_set:
-    - "_reports/controlled-multi-gpt-pilot-a1/AUTHORIZATION_REQUEST.json"
-    - "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION_TEMPLATE.json"
-    - "_reports/controlled-multi-gpt-pilot-a1/NEXT_COMMANDS.md"
-    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
-    - "scripts/multi_agent_gate0_preflight.py"
-    - "scripts/multi_agent_dispatch_plan.py"
-    - "scripts/validate_multi_agent_dispatch_plan.py"
-    - "scripts/production_readiness_gate.py"
+    - "scripts/cdp_write_adapter.py"
+    - "scripts/cdp_review_api.py"
+    - "scripts/cdp_playwright_sender.py"
+    - "tests/test_cdp_write_adapter.py"
   write_set:
-    - "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION.json"
-    - "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-local-001.json"
-    - "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-pilot-beta.json"
-    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
-    - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json"
-    - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json"
+    - ".ai/current-task.yaml"
+    - "scripts/cdp_write_adapter.py"
+    - "scripts/cdp_review_api.py"
+    - "scripts/cdp_playwright_sender.py"
+    - "tests/test_cdp_write_adapter.py"
+    - "_reports/SECURITY-HARDENING-REPORT-20260613.md"
+    - "_evidence/CDP-REVIEW-SECURITY-REREVIEW-R1/EXECUTION_REPORT.md"
+    - "_evidence/CDP-REVIEW-SECURITY-CLOSURE-R2/**"
+    - "_evidence/CDP-REVIEW-SECURITY-FINALIZE-R1/**"
+    - "tasks/cdp-review-security-rereview-r1.md"
+    - "tasks/cdp-review-security-closure-r2.md"
+    - "tasks/cdp-review-security-finalize-r1.md"
+    - "hooks/sealed-files-manifest.json"
+    - "_evidence/hook-output/**"
   protected_files_touched: false
-  conflict_level: none
+  conflict_level: low
+
+acceptance_criteria:
+  - "Independent review artifacts identify the reviewer and reviewed inputs."
+  - "No unresolved P0 or P1 finding remains."
+  - "Reports state exact tests, gaps, and residual risk."
+  - "Only scoped files are staged and committed."
+  - "Commit-time governance hooks pass."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
-next_recommended: "Dispatch controlled pilot to two independent GPT sessions."
+next_recommended: "Refresh authorized live sessions and rerun Gate 0 after the scoped security commit."

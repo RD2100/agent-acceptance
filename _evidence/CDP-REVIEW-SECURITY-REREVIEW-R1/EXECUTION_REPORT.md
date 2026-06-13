@@ -8,7 +8,7 @@ PARTIAL PASS. The reviewed CDP review paths are hardened and their targeted regr
 
 - Reviewed baseline commit: `38292166`
 - External CDP or ChatGPT runtime executed: no
-- Existing live evidence modified: no
+- Existing live evidence modified during this task execution: no. The later commit `b3311061` nevertheless bundled refreshed live-session timestamps, activation-record changes, and prior CDP review evidence outside this report's task scope.
 - Unrelated dirty worktree files modified: no
 
 ## Security Findings And Fixes
@@ -54,4 +54,4 @@ The failing tests are:
 - Prompt-injection detection is intentionally conservative and can require human review for security reports that quote attack strings.
 - Browser-derived attribution is covered through the production helper and a fake CDP session; no real Chrome target was contacted.
 - Repository-wide readiness remains HUMAN_REQUIRED until fresh live-session evidence is supplied through the authorized runtime flow.
-
+- This R1 report is superseded for final security closure by `CDP-REVIEW-SECURITY-CLOSURE-R2`; commit `b3311061` did not include the R1 TaskSpec.

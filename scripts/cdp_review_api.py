@@ -251,14 +251,30 @@ def capture_review_response(
         Save the captured response to this file.
     """
     targets = discover_targets(port)
-    target = None
-    for t in targets:
-        if t.target_id.startswith(page_id_prefix):
-            target = t
-            break
-
-    if not target:
+    matches = [target for target in targets if target.target_id.startswith(page_id_prefix)]
+    if not matches:
         return {"success": False, "error": f"Target '{page_id_prefix}' not found"}
+    if len(matches) > 1:
+        return {
+            "success": False,
+            "error": f"Target prefix '{page_id_prefix}' matched {len(matches)} targets",
+        }
+
+    try:
+        binding = load_binding()
+    except FileNotFoundError:
+        return {"success": False, "error": "Binding file not found"}
+
+    reviewer_target, reviewer_error = resolve_reviewer_target(binding, targets)
+    if reviewer_target is None:
+        return {"success": False, "error": f"Reviewer mapping unavailable: {reviewer_error}"}
+
+    target = matches[0]
+    if target.target_id != reviewer_target.target_id:
+        return {
+            "success": False,
+            "error": "Requested target does not match the verified reviewer binding",
+        }
 
     async def _capture():
         cdp = CDPClient(target.ws_url)

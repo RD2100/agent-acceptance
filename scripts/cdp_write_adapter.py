@@ -51,6 +51,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 REPO = Path(__file__).resolve().parent.parent
 DEFAULT_CDP_PORT = 9222
@@ -58,6 +59,17 @@ DEFAULT_RESPONSE_TIMEOUT = 300  # seconds — 5 min for complex tasks
 DEFAULT_POLL_INTERVAL = 3       # seconds between response polls
 
 # ── Data classes ──────────────────────────────────────────────────────
+
+
+def _conversation_id_from_url(url: str) -> str | None:
+    """Extract an ID only from an exact HTTPS ChatGPT conversation URL."""
+    parsed = urlparse(url)
+    if parsed.scheme != "https" or parsed.hostname not in {"chatgpt.com", "www.chatgpt.com"}:
+        return None
+    parts = [part for part in parsed.path.split("/") if part]
+    if len(parts) != 2 or parts[0] != "c":
+        return None
+    return parts[1] or None
 
 
 @dataclass
@@ -72,13 +84,10 @@ class CDPPage:
     @classmethod
     def from_cdp_json(cls, data: dict) -> "CDPPage":
         url = data.get("url", "")
-        conv_id = None
-        if "/c/" in url:
-            conv_id = url.split("/c/")[-1].split("?")[0].split("#")[0]
         return cls(
             target_id=data["id"],
             url=url,
-            conversation_id=conv_id,
+            conversation_id=_conversation_id_from_url(url),
             title=data.get("title", ""),
             ws_url=data.get("webSocketDebuggerUrl", ""),
         )
@@ -127,7 +136,7 @@ def _list_cdp_pages(port: int = DEFAULT_CDP_PORT) -> list[CDPPage]:
 
 def _find_chatgpt_pages(port: int = DEFAULT_CDP_PORT) -> list[CDPPage]:
     """Filter to ChatGPT conversation pages only."""
-    return [p for p in _list_cdp_pages(port) if "chatgpt.com/c/" in p.url]
+    return [page for page in _list_cdp_pages(port) if page.conversation_id is not None]
 
 
 # ── CDP WebSocket client ─────────────────────────────────────────────
