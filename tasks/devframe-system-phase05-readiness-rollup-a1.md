@@ -1,23 +1,16 @@
-task_id: DEVFRAME-SYSTEM-PHASE05-READINESS-ROLLUP-A1
-title: "Consolidate devframe-system Phase 0.5 readiness"
-priority: P1
-status: in_progress
-type: governance_readiness_rollup
-mode: "direct"
+# TaskSpec: DEVFRAME-SYSTEM-PHASE05-READINESS-ROLLUP-A1
 
-description: >
-  Consolidate the current Phase 0.5 readiness state after strict gate, dirty
-  baseline triage, and repository-specific owner-action reports. This task must
-  not create D:\devframe-system, add submodules, run external runtimes, or
-  mutate external repositories.
+**ID**: devframe-system-phase05-readiness-rollup-a1
+**Priority**: P1
+**Status**: in_progress
+**Type**: governance_readiness_rollup
 
-write_set:
-  - "tasks/devframe-system-phase05-readiness-rollup-a1.md"
-  - ".ai/current-task.yaml"
-  - "_reports/devframe-system-phase05-readiness-rollup-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-PHASE05-READINESS-ROLLUP-A1/**"
-  - "hooks/sealed-files-manifest.json"
-  - "_evidence/hook-output/**"
+## Intent
+
+Consolidate the current Phase 0.5 readiness state after strict gate, dirty
+baseline triage, and repository-specific owner-action reports. This task must
+not create `D:\devframe-system`, add submodules, run external runtimes, or
+mutate external repositories.
 
 gate_0:
   triggered: true
@@ -56,24 +49,21 @@ conflict_registry:
     - "_reports/opencode-dirty-split-owner-action-a1/OWNER_ACTION_REPORT.md"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/devframe-system-phase05-readiness-rollup-a1.md"
-    - ".ai/current-task.yaml"
-    - "_reports/devframe-system-phase05-readiness-rollup-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-PHASE05-READINESS-ROLLUP-A1/**"
-    - "hooks/sealed-files-manifest.json"
-    - "_evidence/hook-output/**"
+    - tasks/devframe-system-phase05-readiness-rollup-a1.md
+    - .ai/current-task.yaml
+    - _reports/devframe-system-phase05-readiness-rollup-a1/**
+    - _evidence/DEVFRAME-SYSTEM-PHASE05-READINESS-ROLLUP-A1/**
+    - hooks/sealed-files-manifest.json
+    - _evidence/hook-output/**
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
   protected_files_touched: false
   conflict_level: medium
 
-acceptance_criteria:
-  - "Runner start, edit-check, and finish complete without blocking."
-  - "Rollup states physical D:\\devframe-system bootstrap remains blocked."
-  - "Rollup distinguishes current state from older snapshot reports where state drift occurred."
-  - "Rollup lists prioritized owner actions for all remaining blockers."
-  - "No external repo mutation, external runtime, external test, submodule command, or paper workflow is executed."
-  - "Targeted checks pass and staged commit contains only this rollup package plus hook-managed manifest."
-
-external_runtime_execution_authorized: false
-paper_workflow_status: paused
+**Acceptance Gates**:
+  1. Runner start, edit-check, and finish complete without blocking.
+  2. Rollup states physical `D:\devframe-system` bootstrap remains blocked.
+  3. Rollup distinguishes current state from older snapshot reports where state drift occurred.
+  4. Rollup lists prioritized owner actions for all remaining blockers.
+  5. No external repo mutation, external runtime, external test, submodule command, or paper workflow is executed.
+  6. Targeted checks pass and staged commit contains only this rollup package plus hook-managed manifest.
