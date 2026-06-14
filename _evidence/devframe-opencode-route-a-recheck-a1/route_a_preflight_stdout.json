@@ -1,0 +1,121 @@
+﻿{
+  "generated_at": "2026-06-14T10:44:47.191529Z",
+  "route": "ROUTE_A_STRICT_CLEAN_BASELINE",
+  "overall": "HUMAN_REQUIRED",
+  "executed_external_runtime": false,
+  "performed_mutation": false,
+  "human_gate_required": true,
+  "source_repositories": [
+    {
+      "project_id": "agent-acceptance",
+      "path": "D:\\agent-acceptance",
+      "exists": true,
+      "status": "human_required",
+      "branch": "master",
+      "head": "df97ec0f33dea44ed83d598fba79b567bb4003bb",
+      "upstream": "origin/master",
+      "upstream_head": "ce0a8398cfd0a904695c4a97b25f3aff0f28c74c",
+      "dirty": {
+        "tracked_dirty": 189,
+        "staged": 0,
+        "unstaged": 189,
+        "untracked": 408,
+        "total": 597
+      },
+      "sample_status": [
+        " M _evidence/hook-output/latest.json",
+        " D _projects/project-gamma/.agent/CONVERSATION_BINDING.json",
+        " D _projects/project-gamma/AGENTS.md",
+        " D _projects/project-gamma/docs/agent-runtime/capability-inventory.md",
+        " D _projects/project-gamma/docs/agent-runtime/dispatch-model-profiles.md",
+        " D _projects/project-gamma/docs/agent-runtime/governance-manifest.md",
+        " D _projects/project-gamma/docs/agent-runtime/integration-contracts.md",
+        " D _projects/project-gamma/docs/agent-runtime/lessons-learned.md",
+        " D _projects/project-gamma/docs/agent-runtime/negative-acceptance-tests.md",
+        " D _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-001-missing-pre-git-status.json",
+        " D _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-002-fake-green-failed-as-pass.json",
+        " D _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-003-source-of-truth-unapproved.json"
+      ],
+      "detail": "worktree is dirty; cannot freeze current HEAD as baseline"
+    },
+    {
+      "project_id": "devframe-control-plane",
+      "path": "D:\\devframe-control-plane",
+      "exists": true,
+      "status": "passed",
+      "branch": "codex/route-a-baseline-candidate",
+      "head": "311847818927d3c7ec8c8718949b38c74605fc83",
+      "upstream": "origin/codex/route-a-baseline-candidate",
+      "upstream_head": "311847818927d3c7ec8c8718949b38c74605fc83",
+      "dirty": {
+        "tracked_dirty": 0,
+        "staged": 0,
+        "unstaged": 0,
+        "untracked": 0,
+        "total": 0
+      },
+      "sample_status": [],
+      "detail": "clean worktree with HEAD equal to upstream"
+    },
+    {
+      "project_id": "dev-frame-opencode",
+      "path": "D:\\dev-frame-opencode",
+      "exists": true,
+      "status": "human_required",
+      "branch": "master",
+      "head": "da4de796c38d466a6df31422e5a066445edc05f4",
+      "upstream": "origin/master",
+      "upstream_head": "da4de796c38d466a6df31422e5a066445edc05f4",
+      "dirty": {
+        "tracked_dirty": 7,
+        "staged": 0,
+        "unstaged": 7,
+        "untracked": 10511,
+        "total": 10518
+      },
+      "sample_status": [
+        " M AGENTS.md",
+        " M ai-workflow-hub/pyproject.toml",
+        " M ai-workflow-hub/src/ai_workflow_hub/cli.py",
+        " M ai-workflow-hub/src/ai_workflow_hub/daemon.py",
+        " M ai-workflow-hub/src/ai_workflow_hub/task_queue.py",
+        " M ai-workflow-hub/tasks.yaml",
+        " M smoke_report.txt",
+        "?? .agent/CONVERSATION_BINDING.json",
+        "?? .agents/skills/oracle-gpt-review-handoff/SKILL.md",
+        "?? .ai/ledger/issues.jsonl",
+        "?? .ai/ledger/recurrence-index.json",
+        "?? .ai/reports/2026-05-31-go-agent-issue-ledger-result.md"
+      ],
+      "detail": "worktree is dirty; cannot freeze current HEAD as baseline"
+    },
+    {
+      "project_id": "test-frame",
+      "path": "D:\\test-frame",
+      "exists": true,
+      "status": "passed",
+      "branch": "codex/harden-baseline",
+      "head": "aeb4a31f770e35e7f698e5c3169406ddba231a4d",
+      "upstream": "origin/codex/harden-baseline",
+      "upstream_head": "aeb4a31f770e35e7f698e5c3169406ddba231a4d",
+      "dirty": {
+        "tracked_dirty": 0,
+        "staged": 0,
+        "unstaged": 0,
+        "untracked": 0,
+        "total": 0
+      },
+      "sample_status": [],
+      "detail": "clean worktree with HEAD equal to upstream"
+    }
+  ],
+  "target": {
+    "path": "D:\\devframe-system",
+    "exists": true,
+    "status": "human_required",
+    "detail": "target path already exists; route approval required before bootstrap",
+    "has_git_dir": false,
+    "has_gitmodules": false,
+    "item_count": 0
+  }
+}
