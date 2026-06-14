@@ -1,22 +1,16 @@
-task_id: project-gamma-deletion-restore-a1
-title: "Restore project-gamma deletion set"
-priority: P1
-status: completed
-type: scoped_workspace_restore
-mode: "direct"
+# TaskSpec: project-gamma-deletion-restore-a1
 
-description: >
-  Restore only the tracked _projects/project-gamma deletion set to remove a
-  local agent-acceptance Route A blocker. Do not touch external repositories,
-  run external runtimes, or broad-stage unrelated dirty work.
+**ID**: project-gamma-deletion-restore-a1
+**Priority**: P1
+**Status**: completed
+**Type**: scoped_workspace_restore
 
-write_set:
-  - ".ai/current-task.yaml"
-  - "tasks/project-gamma-deletion-restore-a1.md"
-  - "_projects/project-gamma/**"
-  - "_reports/project-gamma-deletion-restore-a1/**"
-  - "_evidence/project-gamma-deletion-restore-a1/**"
-  - "hooks/sealed-files-manifest.json"
+## Intent
+
+Restore the tracked `_projects/project-gamma/**` deletion set only, because it
+is blocking the local `agent-acceptance` Route A readiness baseline and previous
+decision packets recommended restore unless the owner explicitly intended the
+large governance-heavy deletion.
 
 gate_0:
   triggered: true
@@ -35,6 +29,7 @@ gate_0:
   lessons_checked:
     - "Do not broad-stage unrelated dirty work."
     - "Resolve local baseline deletion risk before claiming Route A readiness."
+    - "Use scoped restore only after confirming every target status entry is a tracked deletion."
   sufficiency_decision: existing_sufficient
   decision: restore
   delta_justification: "Restoring a tracked deletion set is the smallest action that removes this local baseline blocker."
@@ -46,12 +41,12 @@ conflict_registry:
     - "git status --porcelain=v1 -uall -- _projects/project-gamma"
     - "git diff --stat -- _projects/project-gamma"
   write_set:
-    - ".ai/current-task.yaml"
-    - "tasks/project-gamma-deletion-restore-a1.md"
-    - "_projects/project-gamma/**"
-    - "_reports/project-gamma-deletion-restore-a1/**"
-    - "_evidence/project-gamma-deletion-restore-a1/**"
-    - "hooks/sealed-files-manifest.json"
+    - .ai/current-task.yaml
+    - tasks/project-gamma-deletion-restore-a1.md
+    - _projects/project-gamma/**
+    - _reports/project-gamma-deletion-restore-a1/**
+    - _evidence/project-gamma-deletion-restore-a1/**
+    - hooks/sealed-files-manifest.json
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
     - "hooks/sealed-files-manifest.json"
@@ -59,12 +54,10 @@ conflict_registry:
   protected_file_justification: "The target restore set contains nested governance fixtures by design; no top-level active governance policy is changed."
   conflict_level: medium
 
-acceptance_criteria:
-  - "Pre-restore evidence proves every _projects/project-gamma status entry is a tracked deletion."
-  - "Restore operation is scoped to _projects/project-gamma/** only."
-  - "Post-restore status for _projects/project-gamma is clean."
-  - "Runner start/edit-check/finish and targeted checks pass."
-
-external_runtime_execution_authorized: false
-registry_migration_authorized: false
-devframe_system_physical_merge_authorized: false
+**Acceptance Gates**:
+  1. Pre-restore evidence proves every `_projects/project-gamma` status entry is a tracked deletion.
+  2. Restore operation is scoped to `_projects/project-gamma/**` only.
+  3. Post-restore status for `_projects/project-gamma` is clean.
+  4. No external repository mutation, runtime execution, cleanup, reset, stash, checkout, submodule command, or paper workflow is performed.
+  5. Runner start/edit-check/finish passes.
+  6. `git diff --check` and targeted Route A/router tests pass.
