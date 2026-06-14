@@ -1,75 +1,72 @@
-task_id: DEVFRAME-SYSTEM-PHASE05-HANDOFF-BRIEF-A1
-title: "Create devframe-system Phase 0.5 handoff brief"
+task_id: DEVFRAME-SYSTEM-PHASE05-FRESHNESS-SNAPSHOT-A1
+title: "Capture devframe-system Phase 0.5 freshness snapshot"
 priority: P1
 status: in_progress
-type: governance_handoff_brief
+type: governance_read_only_freshness_snapshot
 mode: "direct"
 
 description: >
-  Create a concise handoff brief for GPT-5.5 Pro or a future agent to continue
-  the devframe-system Phase 0.5 work safely. The brief must point to the
-  canonical index, summarize the current HUMAN_REQUIRED state, include
-  copy-ready next-agent instructions, and preserve all non-execution boundaries.
+  Create a read-only freshness snapshot of the four source repositories relevant
+  to future devframe-system work. The task may inspect branch, HEAD, remote, and
+  dirty status, then record the findings inside D:\agent-acceptance. It must not
+  create D:\devframe-system, run external runtimes/tests/builds, add submodules,
+  or mutate external repositories.
 
 write_set:
-  - "tasks/devframe-system-phase05-handoff-brief-a1.md"
+  - "tasks/devframe-system-phase05-freshness-snapshot-a1.md"
   - ".ai/current-task.yaml"
-  - "docs/agent-runtime/devframe-system-phase05-index.md"
-  - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-  - "_reports/devframe-system-phase05-handoff-brief-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-PHASE05-HANDOFF-BRIEF-A1/**"
+  - "_reports/devframe-system-phase05-freshness-snapshot-a1/**"
+  - "_evidence/DEVFRAME-SYSTEM-PHASE05-FRESHNESS-SNAPSHOT-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Continue Phase 0.5 by packaging the current governance state into a compact handoff brief."
+  trigger_reason: "Continue Phase 0.5 by refreshing source repository readiness facts without side effects."
   inventory_evidence:
     queried_sources:
       - "docs/agent-runtime/devframe-system-phase05-index.md"
-      - "docs/agent-runtime/devframe-system-route-decision-packet.md"
+      - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
       - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
       - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
     matched_capabilities:
       - sadp_governance
-      - handoff_documentation
-      - human_gate_recording
+      - read_only_inventory
+      - freshness_snapshot
       - external_runtime_non_execution_gate
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "The task creates a documentation handoff only and does not execute any bootstrap route."
+  delta_justification: "The task collects read-only git facts and writes governance artifacts only."
 
 conflict_registry:
   read_set:
     - "docs/agent-runtime/devframe-system-phase05-index.md"
-    - "docs/agent-runtime/devframe-system-route-decision-packet.md"
-    - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
-    - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
+    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+    - "D:/agent-acceptance/.git"
+    - "D:/dev-frame-opencode/.git"
+    - "D:/devframe-control-plane/.git"
+    - "D:/test-frame/.git"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/devframe-system-phase05-handoff-brief-a1.md"
+    - "tasks/devframe-system-phase05-freshness-snapshot-a1.md"
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-phase05-index.md"
-    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-    - "_reports/devframe-system-phase05-handoff-brief-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-PHASE05-HANDOFF-BRIEF-A1/**"
+    - "_reports/devframe-system-phase05-freshness-snapshot-a1/**"
+    - "_evidence/DEVFRAME-SYSTEM-PHASE05-FRESHNESS-SNAPSHOT-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-phase05-index.md"
-    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Handoff brief identifies the canonical index and current default as HUMAN_REQUIRED."
-  - "Handoff brief includes copy-ready next-agent instructions and the exact forbidden actions."
-  - "Handoff brief preserves test-frame as controlled verification runtime candidate, not plugin and not GateResult authority."
-  - "Phase 0.5 index links the handoff brief."
-  - "No D:\\devframe-system directory is created and no external repository is mutated."
+  - "Snapshot records path, branch, HEAD, remote, and dirty counts for agent-acceptance, dev-frame-opencode, devframe-control-plane, and test-frame."
+  - "Snapshot states whether D:\\devframe-system exists."
+  - "Snapshot preserves current verdict as HUMAN_REQUIRED unless all strict Route A requirements are proven clean."
+  - "No external runtime/test/build/package install, cleanup/reset/stash/checkout/delete/stage/commit, submodule command, or paper workflow is executed."
+  - "Targeted checks pass and staged commit contains only this freshness-snapshot package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
