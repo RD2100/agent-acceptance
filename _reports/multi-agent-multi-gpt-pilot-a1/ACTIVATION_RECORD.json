@@ -1,8 +1,8 @@
 {
   "pilot_id": "multi-agent-multi-gpt-pilot-a1",
   "activation_timestamp": "2026-06-10T02:22:43Z",
-  "last_updated": "2026-06-13T10:35:29.662672Z",
-  "update_reason": "Session evidence refreshed for Gate0 re-run; run-bound authorization recorded",
+  "last_updated": "2026-06-13T23:18:30Z",
+  "update_reason": "Observed reviewer and executor targets rebound; session evidence atomically refreshed",
   "run_id": "controlled-multi-gpt-pilot-a1-20260613T061555Z",
   "authorization": {
     "authorized": true,
@@ -25,25 +25,21 @@
   "binding_path": "D:\\agent-acceptance\\.agent\\CONVERSATION_BINDING.json",
   "binding_valid": true,
   "schema_validated": true,
-  "agent_summary": {
-    "total": 2,
-    "active": 2,
-    "pending": 0
-  },
+  "agent_summary": {"total": 2, "active": 2, "pending": 0},
   "active_agents": [
     {
       "agent_id": "agent-local-001",
       "role": "reviewer",
       "binding_status": "active",
-      "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
-      "conversation_id": "6a26cc03-235c-83a2-a0fc-cd29be615959",
+      "chat_url": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+      "conversation_id": "6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
       "cdp_endpoint": "http://localhost:9222",
       "cdp_session_verified": true,
-      "session_id": "cdp:9D535B770813D04425D7199D2B307E3B",
-      "verified_at": "2026-06-13T15:18:30.774760+00:00",
+      "session_id": "cdp:9C03F71D8E8FEB64024915511317EE04",
+      "verified_at": "2026-06-13T23:18:30Z",
       "evidence_file": "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-local-001.json",
-      "target_id": "9D535B770813D04425D7199D2B307E3B",
-      "target_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+      "target_id": "9C03F71D8E8FEB64024915511317EE04",
+      "target_url": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
       "has_webSocketDebuggerUrl": true,
       "cdp_session_note": "exact CDP page match"
     },
@@ -51,33 +47,29 @@
       "agent_id": "agent-pilot-beta",
       "role": "executor",
       "binding_status": "active",
-      "chat_url": "https://chatgpt.com/c/6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
-      "conversation_id": "6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
+      "chat_url": "https://chatgpt.com/c/6a2de378-9278-83ee-91c3-47571f5a2bbf",
+      "conversation_id": "6a2de378-9278-83ee-91c3-47571f5a2bbf",
       "cdp_endpoint": "http://localhost:9222",
       "cdp_session_verified": true,
-      "session_id": "cdp:28308C06715671F5F6C2C610DEDC6628",
-      "verified_at": "2026-06-13T15:18:30.774760+00:00",
+      "session_id": "cdp:F4E7A168536757C0B66D3AE9C58F442A",
+      "verified_at": "2026-06-13T23:18:30Z",
       "evidence_file": "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/agent-pilot-beta.json",
-      "target_id": "28308C06715671F5F6C2C610DEDC6628",
-      "target_url": "https://chatgpt.com/c/6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
+      "target_id": "F4E7A168536757C0B66D3AE9C58F442A",
+      "target_url": "https://chatgpt.com/c/6a2de378-9278-83ee-91c3-47571f5a2bbf",
       "has_webSocketDebuggerUrl": true,
-      "cdp_session_note": "exact CDP page match"
+      "cdp_session_note": "exact CDP page match with bootstrap response"
     }
   ],
   "pending_agents": [],
   "cdp_session": {
     "active": true,
     "browser": "Chrome CDP localhost:9222",
-    "verified_at": "2026-06-13T15:18:30.774760+00:00",
-    "chat_pages": 4,
-    "note": "Both bound pilot conversation tabs observed in current CDP page list; authorization recorded."
+    "verified_at": "2026-06-13T23:18:30Z",
+    "chat_pages": 3,
+    "note": "Both bound pilot conversations observed in the same current CDP snapshot."
   },
   "governance_scope": {
-    "external_runtimes": [
-      "devframe-control-plane",
-      "dev-frame-opencode",
-      "paper-workflow"
-    ],
+    "external_runtimes": ["devframe-control-plane", "dev-frame-opencode", "paper-workflow"],
     "default_execution_policy": "human_gated_for_external_runtime_execution"
   },
   "pilot_readiness": {
@@ -88,11 +80,8 @@
     "cdp_verified": true,
     "authorization_recorded": true,
     "ready_for_gate0_pass": true,
-    "cdp_note": "Live sessions verified and human authorization recorded. Gate0 and dispatch plan pending regeneration."
+    "cdp_note": "Live sessions and run-bound authorization are current."
   },
-  "known_gaps": [
-    "Gate 0 and dispatch plan need regeneration to reflect authorization (next step)",
-    "No external runtime or controlled pilot dispatch executed yet"
-  ],
-  "verified_at": "2026-06-13T15:24:08Z"
+  "known_gaps": ["Gate 0 and dispatch plan pending regeneration"],
+  "verified_at": "2026-06-13T23:18:30Z"
 }

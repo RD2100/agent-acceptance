@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-13T09:49:55.057627Z",
-  "overall": "PASS",
+  "generated_at": "2026-06-14T06:53:45.349140Z",
+  "overall": "HUMAN_REQUIRED",
   "executed_external_runtime": false,
-  "human_gate_required": false,
+  "human_gate_required": true,
   "agent_count": 2,
   "checks": [
     {
@@ -61,8 +61,8 @@
     },
     {
       "name": "live_agent_sessions",
-      "status": "passed",
-      "detail": "all declared agents have current live session evidence",
+      "status": "human_required",
+      "detail": "agent agent-local-001 session evidence is stale; agent agent-pilot-beta session evidence is stale",
       "evidence": "D:\\agent-acceptance\\_reports\\multi-agent-multi-gpt-pilot-a1\\ACTIVATION_RECORD.json"
     },
     {

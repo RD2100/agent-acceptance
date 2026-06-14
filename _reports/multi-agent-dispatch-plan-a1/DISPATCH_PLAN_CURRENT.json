@@ -1,14 +1,14 @@
 {
   "plan_id": "multi-agent-dispatch-plan-a1",
-  "generated_at": "2026-06-13T09:50:08.767202Z",
-  "status": "READY",
+  "generated_at": "2026-06-14T06:53:54.212529Z",
+  "status": "HUMAN_REQUIRED",
   "executed_external_runtime": false,
   "source_preflight": {
     "path": "_reports\\multi-agent-gate0-preflight-a1\\PREFLIGHT_CURRENT.json",
-    "sha256": "4f6aa8a9a0a60627c15a9b100edb29f9db676a1de4edea03fef60b27502569bb",
-    "generated_at": "2026-06-13T09:49:55.057627Z",
-    "overall": "PASS",
-    "human_gate_required": false,
+    "sha256": "1497260194499b4c981f165e8d163b3ccfa2d8dbe106040995542ca3ff24dd9e",
+    "generated_at": "2026-06-14T06:53:45.349140Z",
+    "overall": "HUMAN_REQUIRED",
+    "human_gate_required": true,
     "executed_external_runtime": false,
     "detail": "Loaded Gate 0 preflight artifact."
   },
@@ -47,7 +47,7 @@
         "scripts/",
         ".agent/",
         "docs/agent-runtime/",
-        "paper workflow code"
+        "scripts/paper_*.py"
       ],
       "depends_on_interface_contracts": [
         "schemas/agent-runtime/task-spec.schema.json",
@@ -521,9 +521,9 @@
         ".agent/CONVERSATION_BINDING.json"
       ],
       "forbidden_modify_range": [
-        "fabricated chat_url",
-        "fabricated conversation_id",
-        "last-message-only capture"
+        "scripts/",
+        "tests/",
+        "docs/"
       ],
       "depends_on_interface_contracts": [
         "schemas/agent-runtime/task-spec.schema.json",
@@ -544,9 +544,9 @@
       "quality_standard": "P0/P1 zero; P2 documented with evidence; no external runtime execution.",
       "completion_standard": "Report includes verdict, changed files, tests run, artifacts, known gaps, and suggested review focus.",
       "blocking_conditions": [
-        "CONVERSATION_BINDING.json validation fails or evidence insufficient",
-        "Binding evidence cannot be independently verified via CDP",
-        "Human gate not explicitly approved by operator"
+        "Missing or invalid conversation binding",
+        "Agent count below minimum",
+        "Binding not in active status"
       ],
       "governance_record_requirements": [
         "Decision log must record source of binding evidence without secrets."
@@ -555,14 +555,14 @@
         "task_id": "ma-manual-binding-a1",
         "title": "Record independent conversation binding evidence",
         "priority": "P1",
-        "status": "completed",
+        "status": "deferred",
         "description": "Human-gated activation task for replacing pending manual bindings with verified independent conversation evidence.",
         "depends_on": [],
         "assumptions": [
           "Current Gate 0 preflight may remain HUMAN_REQUIRED.",
           "Worker must not execute opencode, live CDP, cross-repo smoke, or paper workflow without separate human authorization."
         ],
-        "risk_notes": "Requires human-provided independent binding evidence; do not fabricate chat_url or conversation_id.",
+        "risk_notes": "Requires human-provided independent binding evidence; do not fabricate chat_url or conversation_id; avoid last-message-only capture.",
         "estimated_tools": [
           "rg",
           "python",
@@ -634,9 +634,9 @@
         "docs/agent-runtime/capability-inventory.md"
       ],
       "forbidden_modify_range": [
-        "opencode run",
-        "cross-repo smoke",
-        "tool-policy weakening without review"
+        "scripts/",
+        "tests/",
+        ".agent/"
       ],
       "depends_on_interface_contracts": [
         "schemas/agent-runtime/task-spec.schema.json",
@@ -657,9 +657,9 @@
       "quality_standard": "P0/P1 zero; P2 documented with evidence; no external runtime execution.",
       "completion_standard": "Report includes verdict, changed files, tests run, artifacts, known gaps, and suggested review focus.",
       "blocking_conditions": [
-        "CAP-029 approval not granted by human reviewer",
-        "Tool policy change required but not authorized",
-        "Reviewer identifies unacceptable risk in execution plan"
+        "CAP-029 not registered",
+        "CAP-029 not approved for gate0",
+        "Tool policy missing runtime gates"
       ],
       "governance_record_requirements": [
         "Decision log and risk register must record approval basis and limits."
@@ -668,14 +668,14 @@
         "task_id": "ma-cap029-approval-a1",
         "title": "Review CAP-029 execution approval",
         "priority": "P1",
-        "status": "completed",
+        "status": "deferred",
         "description": "Human/reviewer-gated task for deciding whether dev-frame-opencode dispatch may become execution-usable.",
         "depends_on": [],
         "assumptions": [
           "Current Gate 0 preflight may remain HUMAN_REQUIRED.",
           "Worker must not execute opencode, live CDP, cross-repo smoke, or paper workflow without separate human authorization."
         ],
-        "risk_notes": "Requires human/reviewer approval before usable_for_execution can change.",
+        "risk_notes": "Requires human/reviewer approval before usable_for_execution can change. Must not execute opencode run or cross-repo smoke without separate human authorization; tool-policy weakening requires review.",
         "estimated_tools": [
           "rg",
           "python",

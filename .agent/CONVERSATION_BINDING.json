@@ -15,18 +15,8 @@
         "runtime_kind": "control_plane",
         "path": "D:/dev-frame/ai-workflow-hub",
         "governance_status": "in_scope_read_only",
-        "allowed_actions": [
-          "read_policy",
-          "adapter_dry_run",
-          "pipeline_provenance_reference"
-        ],
-        "forbidden_actions": [
-          "modify_runtime_files",
-          "run_ai_workflow_hub",
-          "run_smoke_test",
-          "produce_gate_result",
-          "write_tasks_yaml_without_authorization"
-        ],
+        "allowed_actions": ["read_policy", "adapter_dry_run", "pipeline_provenance_reference"],
+        "forbidden_actions": ["modify_runtime_files", "run_ai_workflow_hub", "run_smoke_test", "produce_gate_result", "write_tasks_yaml_without_authorization"],
         "human_gate_required": true
       },
       {
@@ -34,17 +24,8 @@
         "runtime_kind": "agent_dispatch",
         "path": null,
         "governance_status": "in_scope_human_gated",
-        "allowed_actions": [
-          "dispatch_with_taskspec",
-          "return_execution_report",
-          "provide_diff_and_test_evidence"
-        ],
-        "forbidden_actions": [
-          "direct_gpt_submission",
-          "manual_flow_outcome",
-          "authoritative_closure_without_reviewer",
-          "bypass_submission_adapter"
-        ],
+        "allowed_actions": ["dispatch_with_taskspec", "return_execution_report", "provide_diff_and_test_evidence"],
+        "forbidden_actions": ["direct_gpt_submission", "manual_flow_outcome", "authoritative_closure_without_reviewer", "bypass_submission_adapter"],
         "human_gate_required": true
       },
       {
@@ -52,17 +33,8 @@
         "runtime_kind": "business_workflow",
         "path": null,
         "governance_status": "in_scope_pilot_only",
-        "allowed_actions": [
-          "synthetic_reference_pipeline",
-          "sanitized_paper_probe",
-          "evidence_pack_generation"
-        ],
-        "forbidden_actions": [
-          "real_user_paper_without_authorization",
-          "live_cdp_without_authorization",
-          "ad_hoc_playwright_submission",
-          "fabricated_gpt_review"
-        ],
+        "allowed_actions": ["synthetic_reference_pipeline", "sanitized_paper_probe", "evidence_pack_generation"],
+        "forbidden_actions": ["real_user_paper_without_authorization", "live_cdp_without_authorization", "ad_hoc_playwright_submission", "fabricated_gpt_review"],
         "human_gate_required": true
       }
     ]
@@ -72,29 +44,10 @@
       "agent_id": "agent-local-001",
       "role": "reviewer",
       "binding_status": "active",
-      "conversation_id": "6a26cc03-235c-83a2-a0fc-cd29be615959",
-      "chat_url": "https://chatgpt.com/c/6a26cc03-235c-83a2-a0fc-cd29be615959",
+      "conversation_id": "6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
+      "chat_url": "https://chatgpt.com/c/6a297f76-3e7c-83a5-a0e5-b4413d923c7e",
       "cdp_endpoint": "http://localhost:9222",
-      "allowed_task_scope": [
-        "*"
-      ],
-      "capture_policy": {
-        "must_match_run_id": true,
-        "must_match_task_id": true,
-        "must_include_end_marker": true,
-        "forbid_last_message_only_capture": true
-      }
-    },
-    {
-      "agent_id": "agent-pilot-beta",
-      "role": "executor",
-      "binding_status": "active",
-      "conversation_id": "6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
-      "chat_url": "https://chatgpt.com/c/6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
-      "cdp_endpoint": "http://localhost:9222",
-      "allowed_task_scope": [
-        "*"
-      ],
+      "allowed_task_scope": ["*"],
       "capture_policy": {
         "must_match_run_id": true,
         "must_match_task_id": true,
@@ -102,13 +55,33 @@
         "forbid_last_message_only_capture": true
       },
       "binding_repair": {
-        "task_id": "CONTROLLED-MULTI-GPT-EXECUTOR-BINDING-REPAIR-A1",
+        "task_id": "CONTROLLED-MULTI-GPT-LIVE-REFRESH-R1",
         "run_id": "controlled-multi-gpt-pilot-a1-20260613T061555Z",
-        "repaired_at": "2026-06-13T06:36:04.258039Z",
-        "old_conversation_id": "6a28d545-f918-83a5-b122-dc1503386374",
-        "old_chat_url": "https://chatgpt.com/c/6a28d545-f918-83a5-b122-dc1503386374",
-        "evidence_file": "_reports/controlled-multi-gpt-pilot-a1/executor-binding-repair/BINDING_PROBE_RESULT.json",
-        "reason": "previous bound conversation redirected to ChatGPT home and could not provide live CDP evidence"
+        "repaired_at": "2026-06-13T23:18:30Z",
+        "old_conversation_id": "6a26cc03-235c-83a2-a0fc-cd29be615959",
+        "reason": "previous reviewer URL redirected; operator-designated review conversation observed live"
+      }
+    },
+    {
+      "agent_id": "agent-pilot-beta",
+      "role": "executor",
+      "binding_status": "active",
+      "conversation_id": "6a2de378-9278-83ee-91c3-47571f5a2bbf",
+      "chat_url": "https://chatgpt.com/c/6a2de378-9278-83ee-91c3-47571f5a2bbf",
+      "cdp_endpoint": "http://localhost:9222",
+      "allowed_task_scope": ["*"],
+      "capture_policy": {
+        "must_match_run_id": true,
+        "must_match_task_id": true,
+        "must_include_end_marker": true,
+        "forbid_last_message_only_capture": true
+      },
+      "binding_repair": {
+        "task_id": "CONTROLLED-MULTI-GPT-LIVE-REFRESH-R1",
+        "run_id": "controlled-multi-gpt-pilot-a1-20260613T061555Z",
+        "repaired_at": "2026-06-13T23:18:30Z",
+        "old_conversation_id": "6a2cfa0c-6d34-83ee-87b2-e06dede1f685",
+        "reason": "previous executor URL redirected to home; authorized bootstrap created a live executor session with exact run marker"
       }
     }
   ]

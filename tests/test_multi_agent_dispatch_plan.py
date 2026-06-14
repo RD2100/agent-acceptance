@@ -276,6 +276,31 @@ def test_ready_plan_rejects_deferred_human_activation_tasks(tmp_path):
     assert any("READY plan has unresolved human activation" in error for error in errors)
 
 
+def test_pass_preflight_resolves_human_activation_blockers(tmp_path):
+    preflight = {
+        "overall": "PASS",
+        "executed_external_runtime": False,
+        "human_gate_required": False,
+        "agent_count": 2,
+        "checks": [],
+    }
+    path = tmp_path / "preflight.json"
+    path.write_text(json.dumps(preflight), encoding="utf-8")
+
+    plan = build_plan(preflight_path=path)
+    valid, errors = validate_plan(plan)
+    human_tasks = [
+        item for item in plan["assignments"]
+        if item["parallel_group_id"] == "human-gated-activation"
+    ]
+
+    assert valid is True
+    assert errors == []
+    assert plan["status"] == "READY"
+    assert all(item["task_spec"]["status"] == "completed" for item in human_tasks)
+    assert all(item["blocking_conditions"] for item in human_tasks)
+
+
 def test_missing_preflight_returns_blocked_plan_without_traceback(tmp_path):
     plan = build_plan(preflight_path=tmp_path / "missing.json")
 

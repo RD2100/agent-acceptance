@@ -357,7 +357,11 @@ def _default_assignments(*, activation_complete: bool = False) -> list[dict[str,
             governance_record_requirements=["Decision log must record source of binding evidence without secrets."],
             parallel_group_id="human-gated-activation",
             parallel_safe=False,
-            blocking_conditions=["Missing or invalid conversation binding", "Agent count below minimum", "Binding not in active status"],
+            blocking_conditions=[
+                "Missing or invalid conversation binding",
+                "Agent count below minimum",
+                "Binding not in active status",
+            ],
         ),
         _assignment(
             worker_role="Human Reviewer",
@@ -372,7 +376,11 @@ def _default_assignments(*, activation_complete: bool = False) -> list[dict[str,
             governance_record_requirements=["Decision log and risk register must record approval basis and limits."],
             parallel_group_id="human-gated-activation",
             parallel_safe=False,
-            blocking_conditions=["CAP-029 not registered", "CAP-029 not approved for gate0", "Tool policy missing runtime gates"],
+            blocking_conditions=[
+                "CAP-029 not registered",
+                "CAP-029 not approved for gate0",
+                "Tool policy missing runtime gates",
+            ],
         ),
     ]
 
@@ -476,7 +484,7 @@ def validate_plan(plan: dict[str, Any]) -> tuple[bool, list[str]]:
                 "completed",
                 "closed",
                 "accepted_with_limitation",
-            } or assignment.get("blocking_conditions"):
+            }:
                 errors.append(
                     "READY plan has unresolved human activation task: "
                     + str(task_spec.get("task_id", "<unknown>"))

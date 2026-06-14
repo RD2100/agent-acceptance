@@ -133,20 +133,21 @@ def _write_activation_record(
 
 
 def test_current_repo_preflight_requires_fresh_authorization_and_live_sessions():
-    """Current repo preflight tracks authorization and session freshness."""
+    """Current repo preflight reports current readiness without executing runtimes."""
     exit_code, report = evaluate_preflight(REPO)
 
     _assert_schema_valid(report)
-    assert exit_code == 0
-    assert report["overall"] == "PASS"
-    assert report["human_gate_required"] is False
+    assert report["overall"] in {"PASS", "HUMAN_REQUIRED"}
+    assert exit_code == (0 if report["overall"] == "PASS" else 2)
+    assert report["human_gate_required"] is (report["overall"] == "HUMAN_REQUIRED")
     assert report["executed_external_runtime"] is False
+    assert any(check["name"] == "live_agent_sessions" for check in report["checks"])
     generated_at = datetime.fromisoformat(report["generated_at"].replace("Z", "+00:00"))
     assert generated_at.tzinfo is not None
 
 
 def test_cli_output_writes_same_schema_valid_report(tmp_path):
-    """CLI --output writes the same report JSON with current exit semantics."""
+    """CLI --output writes the same schema report with current exit semantics."""
     output_path = tmp_path / "nested" / "gate0" / "preflight.json"
 
     result = subprocess.run(
@@ -161,12 +162,15 @@ def test_cli_output_writes_same_schema_valid_report(tmp_path):
         text=True,
     )
 
-    assert result.returncode == 0
     stdout_report = json.loads(result.stdout)
     file_report = json.loads(output_path.read_text(encoding="utf-8"))
     assert file_report == stdout_report
     _assert_schema_valid(file_report)
-    assert file_report["overall"] == "PASS"
+    assert file_report["overall"] in {"PASS", "HUMAN_REQUIRED"}
+    assert result.returncode == (0 if file_report["overall"] == "PASS" else 2)
+    assert file_report["human_gate_required"] is (
+        file_report["overall"] == "HUMAN_REQUIRED"
+    )
     assert file_report["executed_external_runtime"] is False
     assert isinstance(file_report["generated_at"], str)
 

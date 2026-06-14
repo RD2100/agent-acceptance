@@ -1,76 +1,85 @@
-task_id: DEVFRAME-SYSTEM-GAP-TRACKER-REFRESH-A1
-title: "Refresh devframe-system gap tracker after router stress resolution"
+task_id: CONTROLLED-MULTI-GPT-LIVE-REFRESH-R1
+title: "Record controlled multi-GPT binding refresh as current HUMAN_REQUIRED state"
 priority: P1
-status: completed
-type: governance_gap_tracker_refresh
+status: accepted_with_limitation
+type: controlled_multi_gpt_live_refresh
 mode: "direct"
 
 description: >
-  Refresh Phase 0.5 navigation after commit 78689129 resolved the local
-  registry/router stress-test blocker. Keep the physical bootstrap verdict at
-  HUMAN_REQUIRED because source repositories remain dirty and no external
-  runtime execution is authorized.
+  Adopt the controlled multi-GPT live refresh package as a factual governance
+  record while preserving the current verdict as HUMAN_REQUIRED because live
+  session evidence is stale. This task does not execute external runtimes and
+  does not claim READY activation.
 
 write_set:
-  - "tasks/devframe-system-gap-tracker-refresh-a1.md"
   - ".ai/current-task.yaml"
-  - "docs/agent-runtime/devframe-system-phase05-index.md"
-  - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-  - "_reports/devframe-system-gap-tracker-refresh-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-GAP-TRACKER-REFRESH-A1/**"
+  - ".agent/CONVERSATION_BINDING.json"
+  - "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/**"
+  - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+  - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json"
+  - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json"
+  - "scripts/multi_agent_dispatch_plan.py"
+  - "tests/test_multi_agent_dispatch_plan.py"
+  - "tests/test_multi_agent_gate0_preflight.py"
+  - "tests/test_cdp_write_adapter.py"
+  - "_evidence/CONTROLLED-MULTI-GPT-LIVE-REFRESH-R1/**"
+  - "tasks/controlled-multi-gpt-live-refresh-r1.md"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "The previous current gap tracker recorded router stress failure; targeted local validation now passes after router-registry-current-count-sync-a1."
+  trigger_reason: "Controlled multi-GPT session binding package exists, but current Gate 0 must remain HUMAN_REQUIRED due stale live-session evidence."
   inventory_evidence:
     queried_sources:
-      - "_reports/devframe-system-current-gap-tracker-a1/CURRENT_GAP_TRACKER.md"
-      - "_reports/router-registry-current-count-sync-a1/EXECUTION_REPORT.md"
-      - "docs/agent-runtime/devframe-system-phase05-index.md"
-      - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-      - "python -m pytest tests/test_validate_project_registry_bindings.py tests/test_router_10_project_stress.py tests/test_multi_agent_dispatch_plan.py tests/test_multi_agent_gate0_preflight.py -q"
+      - ".agent/CONVERSATION_BINDING.json"
+      - "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION.json"
+      - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+      - "scripts/multi_agent_gate0_preflight.py"
+      - "scripts/multi_agent_dispatch_plan.py"
     matched_capabilities:
-      - sadp_governance
-      - documentation_navigation
-      - multi_project_registry
-      - shared_cdp_router
-      - external_runtime_non_execution_gate
-  rules_checked: [core-001, core-004, core-005, core-008, review-001, git-001]
+      - run_bound_authorization
+      - shared_cdp_transport
+      - multi_agent_gate0_preflight
+      - multi_agent_dispatch_plan
+  rules_checked: [core-004, core-007, core-008, review-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "This task refreshes governance navigation only and does not mutate registry or external repositories."
+  delta_justification: "Record current HUMAN_REQUIRED state from local governance checks; no external runtime execution."
 
 conflict_registry:
   read_set:
-    - "_reports/devframe-system-current-gap-tracker-a1/CURRENT_GAP_TRACKER.md"
-    - "_reports/router-registry-current-count-sync-a1/EXECUTION_REPORT.md"
-    - "docs/agent-runtime/devframe-system-phase05-index.md"
-    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-    - ".ai/current-task.yaml"
+    - ".agent/CONVERSATION_BINDING.json"
+    - "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION.json"
+    - "scripts/multi_agent_gate0_preflight.py"
+    - "scripts/multi_agent_dispatch_plan.py"
   write_set:
-    - "tasks/devframe-system-gap-tracker-refresh-a1.md"
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-phase05-index.md"
-    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-    - "_reports/devframe-system-gap-tracker-refresh-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-GAP-TRACKER-REFRESH-A1/**"
+    - ".agent/CONVERSATION_BINDING.json"
+    - "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/**"
+    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
+    - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json"
+    - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json"
+    - "scripts/multi_agent_dispatch_plan.py"
+    - "tests/test_multi_agent_dispatch_plan.py"
+    - "tests/test_multi_agent_gate0_preflight.py"
+    - "tests/test_cdp_write_adapter.py"
+    - "_evidence/CONTROLLED-MULTI-GPT-LIVE-REFRESH-R1/**"
+    - "tasks/controlled-multi-gpt-live-refresh-r1.md"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
+    - ".agent/CONVERSATION_BINDING.json"
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-phase05-index.md"
-    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
   protected_files_touched: false
-  conflict_level: medium
+  conflict_level: low
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Index and handoff identify the current gap refresh as the latest status overlay."
-  - "Refresh report says router stress blocker is resolved, but Route A/Route B remain blocked."
-  - "Targeted local governance/router tests pass."
-  - "No external repository or runtime is touched."
+  - "Current Gate 0 preflight reports HUMAN_REQUIRED and executed_external_runtime=false."
+  - "Current dispatch plan validates with dispatch_status=HUMAN_REQUIRED."
+  - "Targeted canonical tests pass."
+  - "No paper workflow, dev-frame-opencode runtime, or devframe-control-plane runtime is executed."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
