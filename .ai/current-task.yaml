@@ -1,73 +1,73 @@
-task_id: DEVFRAME-SYSTEM-ACTIVATION-GATES-A1
-title: "Define devframe-system activation gates"
+task_id: DEVFRAME-SYSTEM-ROUTE-DECISION-PACKET-A1
+title: "Create devframe-system route decision packet"
 priority: P1
 status: in_progress
-type: governance_activation_gate
+type: governance_route_decision_packet
 mode: "direct"
 
 description: >
-  Create a canonical activation-gates document for the future devframe-system
-  superproject. This records the exact conditions for strict clean-baseline
-  bootstrap versus dirty-aware skeleton bootstrap, without creating
-  D:\devframe-system, adding submodules, executing external runtimes, or
-  mutating external repositories.
+  Create a human-facing route decision packet for the future devframe-system
+  superproject. The packet must translate the existing activation gates into
+  copy-ready approval, rejection, and deferral language without selecting a
+  route, creating D:\devframe-system, adding submodules, executing external
+  runtimes, or mutating external repositories.
 
 write_set:
-  - "tasks/devframe-system-activation-gates-a1.md"
+  - "tasks/devframe-system-route-decision-packet-a1.md"
   - ".ai/current-task.yaml"
-  - "docs/agent-runtime/devframe-system-activation-gates.md"
-  - "_reports/devframe-system-activation-gates-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-ACTIVATION-GATES-A1/**"
+  - "docs/agent-runtime/devframe-system-route-decision-packet.md"
+  - "_reports/devframe-system-route-decision-packet-a1/**"
+  - "_evidence/DEVFRAME-SYSTEM-ROUTE-DECISION-PACKET-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Continue Phase 0.5 by converting readiness reports and draft contracts into an executable activation gate document."
+  trigger_reason: "Continue Phase 0.5 by making Route A / Route B selection auditable and copy-ready."
   inventory_evidence:
     queried_sources:
-      - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
+      - "docs/agent-runtime/devframe-system-activation-gates.md"
+      - "_reports/devframe-system-activation-gates-a1/ACTIVATION_GATES_REPORT.md"
       - "_reports/devframe-system-contract-only-plan-a1/CONTRACT_ONLY_PLAN.md"
-      - "_reports/devframe-system-contract-drafts-a1/CONTRACT_DRAFTS_REPORT.md"
-      - "schemas/draft/devframe-system-contracts.schema.draft.json"
+      - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
     matched_capabilities:
       - sadp_governance
-      - contract_only_planning
-      - activation_gate_documentation
+      - route_decision_documentation
+      - human_gate_recording
       - external_runtime_non_execution_gate
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "The task creates governance documentation only and preserves inactive external-frame boundaries."
+  delta_justification: "The task creates governance documentation only and does not execute either bootstrap route."
 
 conflict_registry:
   read_set:
-    - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
+    - "docs/agent-runtime/devframe-system-activation-gates.md"
+    - "_reports/devframe-system-activation-gates-a1/ACTIVATION_GATES_REPORT.md"
     - "_reports/devframe-system-contract-only-plan-a1/CONTRACT_ONLY_PLAN.md"
-    - "_reports/devframe-system-contract-drafts-a1/CONTRACT_DRAFTS_REPORT.md"
-    - "schemas/draft/devframe-system-contracts.schema.draft.json"
+    - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/devframe-system-activation-gates-a1.md"
+    - "tasks/devframe-system-route-decision-packet-a1.md"
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-activation-gates.md"
-    - "_reports/devframe-system-activation-gates-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-ACTIVATION-GATES-A1/**"
+    - "docs/agent-runtime/devframe-system-route-decision-packet.md"
+    - "_reports/devframe-system-route-decision-packet-a1/**"
+    - "_evidence/DEVFRAME-SYSTEM-ROUTE-DECISION-PACKET-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-activation-gates.md"
+    - "docs/agent-runtime/devframe-system-route-decision-packet.md"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Activation gates document names both allowed future routes: strict clean-baseline bootstrap and dirty-aware skeleton."
-  - "Document keeps test-frame as controlled verification runtime candidate, not plugin and not GateResult authority."
-  - "Document records that external runtimes, submodule add, cleanup/reset/stash, and paper workflow remain forbidden in Phase 0.5."
+  - "Decision packet provides copy-ready choices for Route A, Route B, and continue contract-only planning."
+  - "Route B language explicitly forbids submodule add, external runtime execution, cleanup/reset/stash, and trusted-baseline claims."
+  - "Packet states test-frame is a controlled verification runtime candidate, not a plugin and not GateResult authority."
   - "No D:\\devframe-system directory is created and no external repository is mutated."
-  - "Targeted checks pass and staged commit contains only this activation-gates package plus hook-managed manifest."
+  - "Targeted checks pass and staged commit contains only this decision-packet package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
