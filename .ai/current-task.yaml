@@ -1,40 +1,40 @@
-task_id: CONTROL-PLANE-ARTIFACT-POLICY-OWNER-ACTION-A1
-title: "Record owner action for devframe-control-plane artifact policy"
+task_id: OPENCODE-DIRTY-SPLIT-OWNER-ACTION-A1
+title: "Classify dev-frame-opencode dirty baseline"
 priority: P1
 status: in_progress
 type: governance_owner_action_report
 mode: "direct"
 
 description: >
-  Record the owner action needed for D:\devframe-control-plane artifact-only
-  dirty state without cleaning, resetting, committing, testing, or executing the
-  external repository. This classifies the blocker as artifact-policy work, not
-  source-code readiness work.
+  Classify the dirty D:\dev-frame-opencode baseline into source/config changes,
+  generated state, and evidence/artifact noise without cleaning, resetting,
+  committing, testing, or executing the external repository.
 
 write_set:
-  - "tasks/control-plane-artifact-policy-owner-action-a1.md"
+  - "tasks/opencode-dirty-split-owner-action-a1.md"
   - ".ai/current-task.yaml"
-  - "_reports/control-plane-artifact-policy-owner-action-a1/**"
-  - "_evidence/CONTROL-PLANE-ARTIFACT-POLICY-OWNER-ACTION-A1/**"
+  - "_reports/opencode-dirty-split-owner-action-a1/**"
+  - "_evidence/OPENCODE-DIRTY-SPLIT-OWNER-ACTION-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Continue ordered progress by addressing the second dirty-baseline blocker: devframe-control-plane artifacts."
+  trigger_reason: "Continue ordered progress by addressing the largest dirty-baseline blocker: dev-frame-opencode."
   inventory_evidence:
     queried_sources:
-      - "D:/devframe-control-plane AGENTS.md existence"
-      - "D:/devframe-control-plane git status"
-      - "D:/devframe-control-plane git diff --stat"
-      - "D:/devframe-control-plane git diff --check"
-      - "D:/devframe-control-plane .gitignore"
+      - "D:/dev-frame-opencode/AGENTS.md"
+      - "D:/dev-frame-opencode git status"
+      - "D:/dev-frame-opencode git diff --name-status"
+      - "D:/dev-frame-opencode git diff --numstat"
+      - "D:/dev-frame-opencode git diff --check"
+      - "D:/dev-frame-opencode .gitignore"
       - "_reports/devframe-system-dirty-baseline-triage-a1/TRIAGE_REPORT.md"
     matched_capabilities:
       - sadp_governance
       - external_runtime_non_execution_gate
       - dirty_baseline_triage
-      - control_plane_owner_action
+      - opencode_owner_action
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
@@ -42,18 +42,19 @@ gate_0:
 
 conflict_registry:
   read_set:
-    - "D:/devframe-control-plane AGENTS.md existence"
-    - "D:/devframe-control-plane git status"
-    - "D:/devframe-control-plane git diff --stat"
-    - "D:/devframe-control-plane git diff --check"
-    - "D:/devframe-control-plane .gitignore"
+    - "D:/dev-frame-opencode/AGENTS.md"
+    - "D:/dev-frame-opencode git status"
+    - "D:/dev-frame-opencode git diff --name-status"
+    - "D:/dev-frame-opencode git diff --numstat"
+    - "D:/dev-frame-opencode git diff --check"
+    - "D:/dev-frame-opencode .gitignore"
     - "_reports/devframe-system-dirty-baseline-triage-a1/TRIAGE_REPORT.md"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/control-plane-artifact-policy-owner-action-a1.md"
+    - "tasks/opencode-dirty-split-owner-action-a1.md"
     - ".ai/current-task.yaml"
-    - "_reports/control-plane-artifact-policy-owner-action-a1/**"
-    - "_evidence/CONTROL-PLANE-ARTIFACT-POLICY-OWNER-ACTION-A1/**"
+    - "_reports/opencode-dirty-split-owner-action-a1/**"
+    - "_evidence/OPENCODE-DIRTY-SPLIT-OWNER-ACTION-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
@@ -63,10 +64,10 @@ conflict_registry:
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Report classifies devframe-control-plane dirty state as artifact-policy owner action, not source-code blocker."
-  - "Report identifies tracked artifacts/run_history.jsonl, untracked CLI artifacts, and .coverage."
+  - "Report separates source/config changes from generated state and evidence/artifact noise."
+  - "Report identifies the large cli.py and tasks.yaml deltas as hard blockers for submodule pinning."
   - "Report gives owner actions without performing them."
-  - "No devframe-control-plane commit, reset, clean, stash, runtime, build, or test is executed."
+  - "No opencode commit, reset, clean, stash, runtime, build, or test is executed."
   - "Targeted checks pass and staged commit contains only this governance package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
