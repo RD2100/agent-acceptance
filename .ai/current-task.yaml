@@ -1,69 +1,73 @@
-task_id: DEVFRAME-SYSTEM-CONTRACT-DRAFTS-A1
-title: "Create inactive devframe-system contract draft packet"
+task_id: DEVFRAME-SYSTEM-ACTIVATION-GATES-A1
+title: "Define devframe-system activation gates"
 priority: P1
 status: in_progress
-type: governance_contract_draft
+type: governance_activation_gate
 mode: "direct"
 
 description: >
-  Create an inactive draft schema packet for the future devframe-system
-  contract-only boundary. This must not activate validation, create
-  D:\devframe-system, add submodules, execute external runtimes, or mutate
-  external repositories.
+  Create a canonical activation-gates document for the future devframe-system
+  superproject. This records the exact conditions for strict clean-baseline
+  bootstrap versus dirty-aware skeleton bootstrap, without creating
+  D:\devframe-system, adding submodules, executing external runtimes, or
+  mutating external repositories.
 
 write_set:
-  - "tasks/devframe-system-contract-drafts-a1.md"
+  - "tasks/devframe-system-activation-gates-a1.md"
   - ".ai/current-task.yaml"
-  - "schemas/draft/devframe-system-contracts.schema.draft.json"
-  - "_reports/devframe-system-contract-drafts-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-CONTRACT-DRAFTS-A1/**"
+  - "docs/agent-runtime/devframe-system-activation-gates.md"
+  - "_reports/devframe-system-activation-gates-a1/**"
+  - "_evidence/DEVFRAME-SYSTEM-ACTIVATION-GATES-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Continue contract-only progress by turning planning contract names into inactive draft schema definitions."
+  trigger_reason: "Continue Phase 0.5 by converting readiness reports and draft contracts into an executable activation gate document."
   inventory_evidence:
     queried_sources:
-      - "schemas/draft/boundary-envelope.schema.draft.json"
-      - "schemas/draft/frame-manifest.schema.draft.json"
+      - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
       - "_reports/devframe-system-contract-only-plan-a1/CONTRACT_ONLY_PLAN.md"
+      - "_reports/devframe-system-contract-drafts-a1/CONTRACT_DRAFTS_REPORT.md"
+      - "schemas/draft/devframe-system-contracts.schema.draft.json"
     matched_capabilities:
       - sadp_governance
       - contract_only_planning
-      - draft_schema_authoring
+      - activation_gate_documentation
       - external_runtime_non_execution_gate
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "The task creates inactive draft schema documentation only."
+  delta_justification: "The task creates governance documentation only and preserves inactive external-frame boundaries."
 
 conflict_registry:
   read_set:
-    - "schemas/draft/boundary-envelope.schema.draft.json"
-    - "schemas/draft/frame-manifest.schema.draft.json"
+    - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
     - "_reports/devframe-system-contract-only-plan-a1/CONTRACT_ONLY_PLAN.md"
+    - "_reports/devframe-system-contract-drafts-a1/CONTRACT_DRAFTS_REPORT.md"
+    - "schemas/draft/devframe-system-contracts.schema.draft.json"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/devframe-system-contract-drafts-a1.md"
+    - "tasks/devframe-system-activation-gates-a1.md"
     - ".ai/current-task.yaml"
-    - "schemas/draft/devframe-system-contracts.schema.draft.json"
-    - "_reports/devframe-system-contract-drafts-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-CONTRACT-DRAFTS-A1/**"
+    - "docs/agent-runtime/devframe-system-activation-gates.md"
+    - "_reports/devframe-system-activation-gates-a1/**"
+    - "_evidence/DEVFRAME-SYSTEM-ACTIVATION-GATES-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
+    - "docs/agent-runtime/devframe-system-activation-gates.md"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Draft schema is valid JSON and explicitly marked DRAFT / NOT ACTIVE."
-  - "Draft schema covers RepoBaselineRecord, SuperprojectLock, RuntimeExecutionRequest, FrameActivationRecord, and VerificationRuntimeResult."
-  - "Draft schema preserves GateResult authority as forbidden for external frames."
-  - "No validator wiring, external repo mutation, external runtime/test, submodule command, or paper workflow is executed."
-  - "Targeted checks pass and staged commit contains only this draft package plus hook-managed manifest."
+  - "Activation gates document names both allowed future routes: strict clean-baseline bootstrap and dirty-aware skeleton."
+  - "Document keeps test-frame as controlled verification runtime candidate, not plugin and not GateResult authority."
+  - "Document records that external runtimes, submodule add, cleanup/reset/stash, and paper workflow remain forbidden in Phase 0.5."
+  - "No D:\\devframe-system directory is created and no external repository is mutated."
+  - "Targeted checks pass and staged commit contains only this activation-gates package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
