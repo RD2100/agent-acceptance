@@ -1,6 +1,6 @@
-"""Phase 3 Stress Test: 11-Project Multi-Project Router (v2 Shared Chrome).
+"""Phase 3 Stress Test: Multi-Project Router (v2 Shared Chrome).
 
-Stress-tests the multi_project_router.py against the real 11-project
+Stress-tests the multi_project_router.py against the real project
 PROJECT_REGISTRY.json with single_chrome_shared_cdp architecture.
 Uses actual registry and binding files on disk; only _check_cdp is mocked.
 
@@ -27,16 +27,26 @@ import multi_project_router  # noqa: E402
 
 # ── Constants ──────────────────────────────────────────────────────────
 
-EXPECTED_PROJECTS = 11
+EXPECTED_PROJECTS = 17
 SHARED_CDP_ENDPOINT = "http://localhost:9222"
 ACTIVE_PROJECT = "agent-acceptance"
-ACTIVE_PROJECTS = ["agent-acceptance", "tripmark", "dev-frame-opencode"]
+ACTIVE_PROJECTS = [
+    "agent-acceptance",
+    "dev-frame-opencode",
+    "tripmark",
+    "fitness-manager",
+    "test-frame",
+    "order-dish",
+    "pigle-simulator",
+    "time-goal-manager",
+    "agent-memory",
+]
 SUSPENDED_PROJECTS = ["dev-frame-writing"]
 BOUND_PROJECTS = ["tripmark"]
 PENDING_PROJECTS = [
-    "project-gamma",
     "project-delta", "project-epsilon", "project-zeta",
     "project-eta", "project-theta", "project-iota",
+    "devframe-system",
 ]
 
 

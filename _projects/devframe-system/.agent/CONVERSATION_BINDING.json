@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0.0",
+  "awsp_version": "1.3.0",
+  "project_id": "devframe-system",
+  "project_root": "D:/devframe-system",
+  "architecture": "single_chrome_shared_cdp",
+  "default_conversation_policy": "one_agent_one_conversation",
+  "governance_scope": {
+    "default_execution_policy": "human_gated_for_external_runtime_execution",
+    "forbid_ad_hoc_gpt_submission": true,
+    "forbid_cross_repo_smoke_without_human_gate": true,
+    "external_runtimes": [
+      {
+        "runtime_id": "devframe-control-plane",
+        "runtime_kind": "control_plane",
+        "path": "D:/devframe-control-plane",
+        "governance_status": "in_scope_read_only",
+        "allowed_actions": ["read_policy", "adapter_dry_run", "pipeline_provenance_reference"],
+        "forbidden_actions": ["modify_runtime_files", "start_control_plane", "run_dispatch", "produce_gate_result"],
+        "human_gate_required": true
+      },
+      {
+        "runtime_id": "dev-frame-opencode",
+        "runtime_kind": "agent_dispatch",
+        "path": "D:/dev-frame-opencode",
+        "governance_status": "in_scope_human_gated",
+        "allowed_actions": ["contract_review", "adapter_dry_run", "return_execution_report"],
+        "forbidden_actions": ["opencode_run", "direct_gpt_submission", "authoritative_closure_without_reviewer"],
+        "human_gate_required": true
+      },
+      {
+        "runtime_id": "paper-workflow",
+        "runtime_kind": "business_workflow",
+        "path": null,
+        "governance_status": "in_scope_pilot_only",
+        "allowed_actions": ["synthetic_reference_pipeline", "sanitized_paper_probe", "evidence_pack_generation"],
+        "forbidden_actions": ["real_user_paper_without_authorization", "live_cdp_without_authorization", "fabricated_gpt_review"],
+        "human_gate_required": true
+      }
+    ]
+  },
+  "superproject_scope": {
+    "control_conversation_purpose": "Phase 0.5 planning and governance coordination for devframe-system.",
+    "subprojects": [
+      "agent-acceptance",
+      "dev-frame-opencode",
+      "devframe-control-plane",
+      "test-frame"
+    ],
+    "test_frame_role": "controlled_verification_runtime_candidate",
+    "test_frame_is_plugin": false,
+    "runtime_execution_authorized": false
+  },
+  "bindings": [
+    {
+      "agent_id": "agent-devframe-system-control-001",
+      "role": "orchestrator",
+      "binding_status": "paused",
+      "conversation_id": "6a2def7d-504c-83e8-8d2a-87a5d1b8db3a",
+      "chat_url": "https://chatgpt.com/c/6a2def7d-504c-83e8-8d2a-87a5d1b8db3a",
+      "cdp_endpoint": "http://localhost:9222",
+      "allowed_task_scope": ["devframe-system-phase0.5-planning"],
+      "activation_status": "future_control_registered_not_runtime_authorized",
+      "registered_at": "2026-06-14T01:15:58Z",
+      "capture_policy": {
+        "must_match_run_id": true,
+        "must_match_task_id": true,
+        "must_include_end_marker": true,
+        "forbid_last_message_only_capture": true
+      }
+    }
+  ]
+}

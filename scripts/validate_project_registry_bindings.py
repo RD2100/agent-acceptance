@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 
 REGISTRY = Path(r"D:\agent-acceptance\.agent\PROJECT_REGISTRY.json")
+ACTIVE_STATUS = "active"
 
 def load_registry():
     return json.loads(REGISTRY.read_text(encoding="utf-8"))
@@ -127,12 +128,16 @@ def validate():
     results.append(("Rule 6: binding.project_root matches", r6,
                      "PASS" if r6 else f"Issues: {r6_issues}"))
 
-    # Rule 8: no duplicate conversation_id
+    # Rule 8: no duplicate active conversation_id
     conv_ids = []
     for pid, pdata in projects.items():
+        if pdata.get("binding_status") != ACTIVE_STATUS:
+            continue
         binding, bpath = load_binding(pid, pdata["project_root"])
         if binding:
             for b in binding.get("bindings", []):
+                if b.get("binding_status") != ACTIVE_STATUS:
+                    continue
                 cid = b.get("conversation_id")
                 if cid and not cid.startswith("pending-"):
                     conv_ids.append((pid, cid))
@@ -144,7 +149,7 @@ def validate():
             dup_convs[cid] = [pid]
     real_dups = {cid: pids for cid, pids in dup_convs.items() if len(pids) > 1}
     r8 = len(real_dups) == 0
-    results.append(("Rule 8: no duplicate conversation_id", r8,
+    results.append(("Rule 8: no duplicate active conversation_id", r8,
                      "PASS" if r8 else f"Duplicates: {real_dups}"))
 
     # Print results
@@ -172,6 +177,8 @@ def validate():
             print(f"  {pid}: Registry -> Binding({bpath}) -> chat_url={url} -> ROUTABLE")
         elif status == "pending_binding":
             print(f"  {pid}: Registry -> pending_binding -> NO AUTO-SUBMIT -> SAFE")
+        elif status == "suspended":
+            print(f"  {pid}: Registry -> suspended -> NO AUTO-SUBMIT -> SAFE")
         else:
             print(f"  {pid}: Registry -> NO BINDING -> NOT ROUTABLE (issue!)")
 

@@ -7,7 +7,7 @@
   "isolation_model": "conversation_target_bound",
   "cdp_mode": "shared_single_chrome",
   "generated_at": "2026-06-10T16:00:00Z",
-  "total_projects": 10,
+  "total_projects": 17,
   "shared_cdp_port": 9222,
   "shared_cdp_endpoint": "http://localhost:9222",
   "shared_profile_dir": "D:\\agent-acceptance\\_cdp_profiles\\shared",
@@ -18,6 +18,13 @@
       "binding_status": "active",
       "registered_at": "2026-06-10T16:00:00Z"
     },
+    "devframe-system": {
+      "project_id": "devframe-system",
+      "project_root": "D:\\devframe-system",
+      "binding_status": "pending_binding",
+      "registered_at": "2026-06-14T01:15:58Z",
+      "registration_note": "Future superproject control conversation registered only; runtime execution is not authorized."
+    },
     "dev-frame-writing": {
       "project_id": "dev-frame-writing",
       "project_root": "D:\\agent-acceptance\\_projects\\dev-frame-writing",
@@ -25,12 +32,6 @@
       "registered_at": "2026-06-10T16:00:00Z",
       "suspended_at": "2026-06-12T05:00:00Z",
       "suspension_reason": "duplicate conversation_id with dev-frame-opencode (LIVE-DISPATCH-READINESS-FIX-A1)"
-    },
-    "project-gamma": {
-      "project_id": "project-gamma",
-      "project_root": "D:\\agent-acceptance\\_projects\\project-gamma",
-      "binding_status": "pending_binding",
-      "registered_at": "2026-06-10T16:00:00Z"
     },
     "project-delta": {
       "project_id": "project-delta",
@@ -76,10 +77,46 @@
     },
     "tripmark": {
       "project_id": "tripmark",
-      "project_root": "D:\\agent-acceptance\\_projects\\project-alpha",
+      "project_root": "D:\\tripmark",
+      "binding_status": "active",
+      "registered_at": "2026-06-10T16:00:00Z"
+    },
+    "fitness-manager": {
+      "project_id": "fitness-manager",
+      "project_root": "D:\\fitness-manager",
+      "binding_status": "active",
+      "registered_at": "2026-06-14T00:42:17Z"
+    },
+    "test-frame": {
+      "project_id": "test-frame",
+      "project_root": "D:\\test-frame",
+      "binding_status": "active",
+      "registered_at": "2026-06-14T01:00:32Z"
+    },
+    "order-dish": {
+      "project_id": "order-dish",
+      "project_root": "D:\\order-dish",
+      "binding_status": "active",
+      "registered_at": "2026-06-14T01:03:16Z"
+    },
+    "pigle-simulator": {
+      "project_id": "pigle-simulator",
+      "project_root": "D:\\pigle-simulator",
+      "binding_status": "active",
+      "registered_at": "2026-06-14T01:03:30Z"
+    },
+    "time-goal-manager": {
+      "project_id": "time-goal-manager",
+      "project_root": "D:\\time-goal-manager",
+      "binding_status": "active",
+      "registered_at": "2026-06-14T01:03:42Z"
+    },
+    "agent-memory": {
+      "project_id": "agent-memory",
+      "project_root": "D:\\agent-memory",
       "binding_status": "active",
       "registered_at": "2026-06-10T16:00:00Z"
     }
   },
-  "updated_at": "2026-06-12T05:57:20Z"
+  "updated_at": "2026-06-14T01:15:58Z"
 }

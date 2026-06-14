@@ -1,0 +1,47 @@
+{
+  "task_id": "REGISTRY-CONVERGENCE-DEVFRAME-BINDING-A1",
+  "read_set": [
+    ".agent/PROJECT_REGISTRY.json",
+    "_projects/devframe-system/.agent/CONVERSATION_BINDING.json",
+    "scripts/validate_project_registry_bindings.py",
+    "tests/test_validate_project_registry_bindings.py",
+    "tests/test_router_10_project_stress.py",
+    "git status --short"
+  ],
+  "write_set": [
+    "tasks/registry-convergence-devframe-binding-a1.md",
+    "tasks/devframe-system-master-binding-a1.md",
+    "tasks/project-registry-validator-active-scope-a1.md",
+    ".ai/current-task.yaml",
+    ".agent/PROJECT_REGISTRY.json",
+    "_projects/devframe-system/.agent/CONVERSATION_BINDING.json",
+    "_projects/devframe-system/.agent/CONVERSATION_REGISTRY.schema.json",
+    "scripts/validate_project_registry_bindings.py",
+    "tests/test_validate_project_registry_bindings.py",
+    "tests/test_router_10_project_stress.py",
+    "_evidence/DEVFRAME-SYSTEM-MASTER-BINDING-A1/**",
+    "_evidence/PROJECT-REGISTRY-VALIDATOR-ACTIVE-SCOPE-A1/**",
+    "_evidence/REGISTRY-CONVERGENCE-DEVFRAME-BINDING-A1/**",
+    "hooks/sealed-files-manifest.json",
+    "_evidence/hook-output/**"
+  ],
+  "excluded_dirty_items": [
+    ".agent/CONVERSATION_BINDING.json",
+    "_projects/project-gamma/**",
+    "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/**",
+    "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json",
+    "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json",
+    "scripts/multi_agent_dispatch_plan.py",
+    "tests/test_cdp_write_adapter.py",
+    "tests/test_multi_agent_dispatch_plan.py",
+    "tests/test_multi_agent_gate0_preflight.py"
+  ],
+  "protected_files_touched": false,
+  "conflict_level": "medium",
+  "runtime_execution": {
+    "opencode_run": false,
+    "control_plane_started": false,
+    "test_frame_runtime_command": false,
+    "paper_workflow": false
+  }
+}

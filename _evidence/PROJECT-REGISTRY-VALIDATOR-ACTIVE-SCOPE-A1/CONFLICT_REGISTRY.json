@@ -1,0 +1,25 @@
+{
+  "task_id": "PROJECT-REGISTRY-VALIDATOR-ACTIVE-SCOPE-A1",
+  "read_set": [
+    ".agent/PROJECT_REGISTRY.json",
+    "_projects/dev-frame-writing/.agent/CONVERSATION_BINDING.json",
+    "D:/dev-frame-opencode/.agent/CONVERSATION_BINDING.json",
+    "scripts/validate_project_registry_bindings.py"
+  ],
+  "write_set": [
+    "tasks/project-registry-validator-active-scope-a1.md",
+    ".ai/current-task.yaml",
+    "scripts/validate_project_registry_bindings.py",
+    "tests/test_validate_project_registry_bindings.py",
+    "tests/test_router_10_project_stress.py",
+    "_evidence/PROJECT-REGISTRY-VALIDATOR-ACTIVE-SCOPE-A1/**"
+  ],
+  "protected_files_touched": false,
+  "conflict_level": "low",
+  "runtime_execution": {
+    "opencode_run": false,
+    "control_plane_started": false,
+    "test_frame_runtime_command": false,
+    "paper_workflow": false
+  }
+}

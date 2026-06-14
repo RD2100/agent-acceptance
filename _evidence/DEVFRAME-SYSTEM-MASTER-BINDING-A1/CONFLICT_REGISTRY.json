@@ -1,0 +1,24 @@
+{
+  "task_id": "DEVFRAME-SYSTEM-MASTER-BINDING-A1",
+  "read_set": [
+    ".agent/PROJECT_REGISTRY.json",
+    ".agent/CONVERSATION_BINDING.json",
+    "CDP http://localhost:9222/json/list"
+  ],
+  "write_set": [
+    "tasks/devframe-system-master-binding-a1.md",
+    ".ai/current-task.yaml",
+    ".agent/PROJECT_REGISTRY.json",
+    "_projects/devframe-system/.agent/CONVERSATION_BINDING.json",
+    "_projects/devframe-system/.agent/CONVERSATION_REGISTRY.schema.json",
+    "_evidence/DEVFRAME-SYSTEM-MASTER-BINDING-A1/**"
+  ],
+  "protected_files_touched": false,
+  "governance_adjacent_files_modified": [
+    ".agent/PROJECT_REGISTRY.json"
+  ],
+  "conflict_level": "low",
+  "known_unrelated_conflicts": [
+    "validate_project_registry_bindings.py reports a pre-existing duplicate conversation between dev-frame-writing and dev-frame-opencode."
+  ]
+}

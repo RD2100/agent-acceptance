@@ -1,67 +1,88 @@
-task_id: CDP-LIVE-TRANSPORT-CLOSURE-R1
-title: "Repair real shared-CDP transport paths"
+task_id: REGISTRY-CONVERGENCE-DEVFRAME-BINDING-A1
+title: "Commit registry convergence and devframe-system binding precision package"
 priority: P1
-status: completed
-type: runtime_repair
-mode: "@go"
+status: in_progress
+type: governance_commit_closure
+mode: "direct"
 
 description: >
-  Repair page WebSocket proxy handling and Playwright browser endpoint
-  discovery after failures reproduced against the authorized shared Chrome.
+  Commit the precise registry convergence, devframe-system control binding,
+  and active-scope registry validator package without staging unrelated dirty
+  workspace changes.
 
 write_set:
+  - "tasks/registry-convergence-devframe-binding-a1.md"
+  - "tasks/devframe-system-master-binding-a1.md"
+  - "tasks/project-registry-validator-active-scope-a1.md"
   - ".ai/current-task.yaml"
-  - "scripts/cdp_write_adapter.py"
-  - "scripts/cdp_playwright_sender.py"
-  - "tests/test_cdp_write_adapter.py"
-  - "tasks/cdp-live-transport-closure-r1.md"
-  - "_evidence/CDP-LIVE-TRANSPORT-CLOSURE-R1/**"
+  - ".agent/PROJECT_REGISTRY.json"
+  - "_projects/devframe-system/.agent/CONVERSATION_BINDING.json"
+  - "_projects/devframe-system/.agent/CONVERSATION_REGISTRY.schema.json"
+  - "scripts/validate_project_registry_bindings.py"
+  - "tests/test_validate_project_registry_bindings.py"
+  - "tests/test_router_10_project_stress.py"
+  - "_evidence/DEVFRAME-SYSTEM-MASTER-BINDING-A1/**"
+  - "_evidence/PROJECT-REGISTRY-VALIDATOR-ACTIVE-SCOPE-A1/**"
+  - "_evidence/REGISTRY-CONVERGENCE-DEVFRAME-BINDING-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "P1 real-path CDP transport failures."
+  trigger_reason: "User authorized committing the precise registry/binding/validator package."
   inventory_evidence:
     queried_sources:
-      - "scripts/cdp_write_adapter.py"
-      - "scripts/cdp_playwright_sender.py"
-      - "tests/test_cdp_write_adapter.py"
+      - ".agent/PROJECT_REGISTRY.json"
+      - "_projects/devframe-system/.agent/CONVERSATION_BINDING.json"
+      - "scripts/validate_project_registry_bindings.py"
+      - "tests/test_validate_project_registry_bindings.py"
+      - "tests/test_router_10_project_stress.py"
     matched_capabilities:
+      - conversation_registry
+      - bind_chrome_conversation
+      - project_registry_validation
       - shared_cdp_transport
-      - playwright_cdp_sender
-      - controlled_pilot_runtime
-  rules_checked: [core-004, core-008, sec-002, review-001]
+  rules_checked: [core-004, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "Repair existing transports only."
+  delta_justification: "This is a commit closure task for already verified governance changes."
 
 conflict_registry:
   read_set:
-    - "scripts/cdp_write_adapter.py"
-    - "scripts/cdp_playwright_sender.py"
-    - "tests/test_cdp_write_adapter.py"
+    - ".agent/PROJECT_REGISTRY.json"
+    - "_projects/devframe-system/.agent/CONVERSATION_BINDING.json"
+    - "scripts/validate_project_registry_bindings.py"
+    - "tests/test_validate_project_registry_bindings.py"
+    - "tests/test_router_10_project_stress.py"
+    - "git status --short"
   write_set:
+    - "tasks/registry-convergence-devframe-binding-a1.md"
+    - "tasks/devframe-system-master-binding-a1.md"
+    - "tasks/project-registry-validator-active-scope-a1.md"
     - ".ai/current-task.yaml"
-    - "scripts/cdp_write_adapter.py"
-    - "scripts/cdp_playwright_sender.py"
-    - "tests/test_cdp_write_adapter.py"
-    - "tasks/cdp-live-transport-closure-r1.md"
-    - "_evidence/CDP-LIVE-TRANSPORT-CLOSURE-R1/**"
+    - ".agent/PROJECT_REGISTRY.json"
+    - "_projects/devframe-system/.agent/CONVERSATION_BINDING.json"
+    - "_projects/devframe-system/.agent/CONVERSATION_REGISTRY.schema.json"
+    - "scripts/validate_project_registry_bindings.py"
+    - "tests/test_validate_project_registry_bindings.py"
+    - "tests/test_router_10_project_stress.py"
+    - "_evidence/DEVFRAME-SYSTEM-MASTER-BINDING-A1/**"
+    - "_evidence/PROJECT-REGISTRY-VALIDATOR-ACTIVE-SCOPE-A1/**"
+    - "_evidence/REGISTRY-CONVERGENCE-DEVFRAME-BINDING-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
+  governance_adjacent_files_modified:
+    - ".agent/PROJECT_REGISTRY.json"
   protected_files_touched: false
-  conflict_level: low
+  conflict_level: medium
 
 acceptance_criteria:
-  - "Page CDP WebSocket bypasses system proxy discovery."
-  - "Playwright resolves the browser WebSocket endpoint from /json/version."
-  - "Unit regressions cover both failures."
-  - "Both transports pass a real shared-Chrome read probe."
-  - "Playwright teardown leaves the user-owned shared Chrome and tabs running."
-  - "Targeted and canonical test outcomes are recorded exactly."
+  - "Only the authorized precision package is staged."
+  - "Registry validation returns 8/8 rules passed."
+  - "devframe-system binding validates with schema_validated=true."
+  - "Targeted tests pass."
+  - "Commit hook passes or any block is reported without broad staging."
+  - "No external runtime, test-frame runtime, or paper workflow is executed."
 
-external_runtime_execution_authorized: true
-authorization_evidence: "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION.json"
+external_runtime_execution_authorized: false
 paper_workflow_status: paused
-next_recommended: "Bind the verified executor conversation and refresh Gate 0 with real session evidence."
