@@ -1,0 +1,66 @@
+# TaskSpec: DEVFRAME-SYSTEM-PHASE05-NAVIGATION-INDEX-A1
+
+**ID**: devframe-system-phase05-navigation-index-a1
+**Priority**: P1
+**Status**: in_progress
+**Type**: governance_navigation_index
+
+## Intent
+
+Create a single navigation index for the devframe-system Phase 0.5 governance
+chain. The index must identify the correct reading order, current state,
+allowed next actions, and hard stops without creating `D:\devframe-system`,
+executing external runtimes, adding submodules, or mutating external
+repositories.
+
+gate_0:
+  triggered: true
+  trigger_reason: "Continue Phase 0.5 by adding a canonical navigation entrypoint for the accumulated devframe-system governance artifacts."
+  inventory_evidence:
+    queried_sources:
+      - "_reports/devframe-system-phase05-strict-gate-a1/PREFLIGHT_REPORT.md"
+      - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
+      - "_reports/devframe-system-contract-only-plan-a1/CONTRACT_ONLY_PLAN.md"
+      - "docs/agent-runtime/devframe-system-activation-gates.md"
+      - "docs/agent-runtime/devframe-system-route-decision-packet.md"
+      - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
+    matched_capabilities:
+      - sadp_governance
+      - navigation_index_documentation
+      - human_gate_recording
+      - external_runtime_non_execution_gate
+  rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
+  sufficiency_decision: existing_sufficient
+  decision: reuse
+  delta_justification: "The task creates a documentation index only and does not execute any bootstrap route."
+
+conflict_registry:
+  read_set:
+    - "_reports/devframe-system-phase05-strict-gate-a1/PREFLIGHT_REPORT.md"
+    - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
+    - "_reports/devframe-system-contract-only-plan-a1/CONTRACT_ONLY_PLAN.md"
+    - "docs/agent-runtime/devframe-system-activation-gates.md"
+    - "docs/agent-runtime/devframe-system-route-decision-packet.md"
+    - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
+    - ".ai/current-task.yaml"
+  write_set:
+    - tasks/devframe-system-phase05-navigation-index-a1.md
+    - .ai/current-task.yaml
+    - docs/agent-runtime/devframe-system-phase05-index.md
+    - _reports/devframe-system-phase05-navigation-index-a1/**
+    - _evidence/DEVFRAME-SYSTEM-PHASE05-NAVIGATION-INDEX-A1/**
+    - hooks/sealed-files-manifest.json
+    - _evidence/hook-output/**
+  governance_adjacent_files_modified:
+    - ".ai/current-task.yaml"
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
+  protected_files_touched: false
+  conflict_level: medium
+
+**Acceptance Gates**:
+  1. Runner start, edit-check, and finish complete without blocking.
+  2. Index names the current default state as HUMAN_REQUIRED and contract-only planning.
+  3. Index links the strict gate, readiness rollup, contract-only plan, draft contracts, activation gates, route decision packet, and Route B no-op checklist.
+  4. Index states `test-frame` is a controlled verification runtime candidate, not a plugin and not GateResult authority.
+  5. No `D:\devframe-system` directory is created and no external repository is mutated.
+  6. Targeted checks pass and staged commit contains only this navigation-index package plus hook-managed manifest.

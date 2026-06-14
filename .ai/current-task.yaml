@@ -1,71 +1,77 @@
-task_id: DEVFRAME-SYSTEM-ROUTE-B-NOOP-DRY-RUN-A1
-title: "Create Route B no-op dry-run checklist"
+task_id: DEVFRAME-SYSTEM-PHASE05-NAVIGATION-INDEX-A1
+title: "Create devframe-system Phase 0.5 navigation index"
 priority: P1
 status: in_progress
-type: governance_noop_dry_run_checklist
+type: governance_navigation_index
 mode: "direct"
 
 description: >
-  Create a no-op dry-run checklist for future Route B dirty-aware skeleton
-  bootstrap. The checklist must describe how to rehearse Route B with zero side
-  effects before any physical D:\devframe-system creation, submodule command,
-  external runtime execution, cleanup/reset/stash, or external repository
-  mutation.
+  Create a single navigation index for the devframe-system Phase 0.5 governance
+  chain. The index must identify the correct reading order, current state,
+  allowed next actions, and hard stops without creating D:\devframe-system,
+  executing external runtimes, adding submodules, or mutating external
+  repositories.
 
 write_set:
-  - "tasks/devframe-system-route-b-noop-dry-run-a1.md"
+  - "tasks/devframe-system-phase05-navigation-index-a1.md"
   - ".ai/current-task.yaml"
-  - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
-  - "_reports/devframe-system-route-b-noop-dry-run-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-ROUTE-B-NOOP-DRY-RUN-A1/**"
+  - "docs/agent-runtime/devframe-system-phase05-index.md"
+  - "_reports/devframe-system-phase05-navigation-index-a1/**"
+  - "_evidence/DEVFRAME-SYSTEM-PHASE05-NAVIGATION-INDEX-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Continue Phase 0.5 by turning Route B decision language into a zero-side-effect dry-run checklist."
+  trigger_reason: "Continue Phase 0.5 by adding a canonical navigation entrypoint for the accumulated devframe-system governance artifacts."
   inventory_evidence:
     queried_sources:
-      - "docs/agent-runtime/devframe-system-route-decision-packet.md"
+      - "_reports/devframe-system-phase05-strict-gate-a1/PREFLIGHT_REPORT.md"
+      - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
+      - "_reports/devframe-system-contract-only-plan-a1/CONTRACT_ONLY_PLAN.md"
       - "docs/agent-runtime/devframe-system-activation-gates.md"
-      - "_reports/devframe-system-route-decision-packet-a1/ROUTE_DECISION_REPORT.md"
+      - "docs/agent-runtime/devframe-system-route-decision-packet.md"
+      - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
     matched_capabilities:
       - sadp_governance
-      - route_b_dry_run_planning
+      - navigation_index_documentation
       - human_gate_recording
       - external_runtime_non_execution_gate
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "The task creates dry-run governance documentation only and does not execute Route B."
+  delta_justification: "The task creates a documentation index only and does not execute any bootstrap route."
 
 conflict_registry:
   read_set:
-    - "docs/agent-runtime/devframe-system-route-decision-packet.md"
+    - "_reports/devframe-system-phase05-strict-gate-a1/PREFLIGHT_REPORT.md"
+    - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
+    - "_reports/devframe-system-contract-only-plan-a1/CONTRACT_ONLY_PLAN.md"
     - "docs/agent-runtime/devframe-system-activation-gates.md"
-    - "_reports/devframe-system-route-decision-packet-a1/ROUTE_DECISION_REPORT.md"
+    - "docs/agent-runtime/devframe-system-route-decision-packet.md"
+    - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/devframe-system-route-b-noop-dry-run-a1.md"
+    - "tasks/devframe-system-phase05-navigation-index-a1.md"
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
-    - "_reports/devframe-system-route-b-noop-dry-run-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-ROUTE-B-NOOP-DRY-RUN-A1/**"
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
+    - "_reports/devframe-system-phase05-navigation-index-a1/**"
+    - "_evidence/DEVFRAME-SYSTEM-PHASE05-NAVIGATION-INDEX-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Checklist is explicitly no-op and does not authorize Route B execution."
-  - "Checklist contains preflight, dry-run, pass/fail, evidence, and abort sections."
-  - "Checklist forbids directory creation, submodule commands, runtime execution, external tests/builds, cleanup/reset/stash, and trusted-baseline claims."
+  - "Index names the current default state as HUMAN_REQUIRED and contract-only planning."
+  - "Index links the strict gate, readiness rollup, contract-only plan, draft contracts, activation gates, route decision packet, and Route B no-op checklist."
+  - "Index states test-frame is a controlled verification runtime candidate, not a plugin and not GateResult authority."
   - "No D:\\devframe-system directory is created and no external repository is mutated."
-  - "Targeted checks pass and staged commit contains only this checklist package plus hook-managed manifest."
+  - "Targeted checks pass and staged commit contains only this navigation-index package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
