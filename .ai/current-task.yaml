@@ -1,79 +1,75 @@
-task_id: DEVFRAME-SYSTEM-PHASE05-READINESS-ROLLUP-A1
-title: "Consolidate devframe-system Phase 0.5 readiness"
+task_id: DEVFRAME-SYSTEM-CONTRACT-ONLY-PLAN-A1
+title: "Define devframe-system contract-only planning boundary"
 priority: P1
 status: in_progress
-type: governance_readiness_rollup
+type: governance_contract_planning
 mode: "direct"
 
 description: >
-  Consolidate the current Phase 0.5 readiness state after strict gate, dirty
-  baseline triage, and repository-specific owner-action reports. This task must
-  not create D:\devframe-system, add submodules, run external runtimes, or
-  mutate external repositories.
+  Define the minimum contract-only planning boundary for devframe-system while
+  physical bootstrap remains blocked. This task updates governance
+  documentation inside D:\agent-acceptance only. It must not create
+  D:\devframe-system, add submodules, execute external runtimes, or mutate
+  external repositories.
 
 write_set:
-  - "tasks/devframe-system-phase05-readiness-rollup-a1.md"
+  - "tasks/devframe-system-contract-only-plan-a1.md"
   - ".ai/current-task.yaml"
-  - "_reports/devframe-system-phase05-readiness-rollup-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-PHASE05-READINESS-ROLLUP-A1/**"
+  - "docs/agent-runtime/inactive-frame-registry.md"
+  - "_reports/devframe-system-contract-only-plan-a1/**"
+  - "_evidence/DEVFRAME-SYSTEM-CONTRACT-ONLY-PLAN-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Consolidate current devframe-system Phase 0.5 readiness after four repository triage slices."
+  trigger_reason: "Proceed along the READY contract-only planning path identified by the Phase 0.5 readiness rollup."
   inventory_evidence:
     queried_sources:
-      - "D:/agent-acceptance git status"
-      - "D:/test-frame git status"
-      - "D:/devframe-control-plane git status"
-      - "D:/dev-frame-opencode git status"
-      - "_reports/devframe-system-phase05-strict-gate-a1/PREFLIGHT_REPORT.md"
-      - "_reports/devframe-system-dirty-baseline-triage-a1/TRIAGE_REPORT.md"
-      - "_reports/test-frame-bootstrap-owner-action-a1/OWNER_ACTION_REPORT.md"
-      - "_reports/control-plane-artifact-policy-owner-action-a1/OWNER_ACTION_REPORT.md"
-      - "_reports/opencode-dirty-split-owner-action-a1/OWNER_ACTION_REPORT.md"
+      - "docs/agent-runtime/integration-contracts.md"
+      - "docs/agent-runtime/inactive-frame-registry.md"
+      - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
+      - "schemas/agent-runtime"
+      - "schemas/resource-integration"
     matched_capabilities:
       - sadp_governance
-      - superproject_preflight
-      - dirty_baseline_triage
+      - contract_only_planning
+      - inactive_frame_registry
       - external_runtime_non_execution_gate
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "The task creates a governance readiness rollup in agent-acceptance only."
+  delta_justification: "The task records planning contracts and inactive frame boundaries only."
 
 conflict_registry:
   read_set:
-    - "D:/agent-acceptance git status"
-    - "D:/test-frame git status"
-    - "D:/devframe-control-plane git status"
-    - "D:/dev-frame-opencode git status"
-    - "_reports/devframe-system-phase05-strict-gate-a1/PREFLIGHT_REPORT.md"
-    - "_reports/devframe-system-dirty-baseline-triage-a1/TRIAGE_REPORT.md"
-    - "_reports/test-frame-bootstrap-owner-action-a1/OWNER_ACTION_REPORT.md"
-    - "_reports/control-plane-artifact-policy-owner-action-a1/OWNER_ACTION_REPORT.md"
-    - "_reports/opencode-dirty-split-owner-action-a1/OWNER_ACTION_REPORT.md"
+    - "docs/agent-runtime/integration-contracts.md"
+    - "docs/agent-runtime/inactive-frame-registry.md"
+    - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
+    - "schemas/agent-runtime"
+    - "schemas/resource-integration"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/devframe-system-phase05-readiness-rollup-a1.md"
+    - "tasks/devframe-system-contract-only-plan-a1.md"
     - ".ai/current-task.yaml"
-    - "_reports/devframe-system-phase05-readiness-rollup-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-PHASE05-READINESS-ROLLUP-A1/**"
+    - "docs/agent-runtime/inactive-frame-registry.md"
+    - "_reports/devframe-system-contract-only-plan-a1/**"
+    - "_evidence/DEVFRAME-SYSTEM-CONTRACT-ONLY-PLAN-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
+    - "docs/agent-runtime/inactive-frame-registry.md"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Rollup states physical D:\\devframe-system bootstrap remains blocked."
-  - "Rollup distinguishes current state from older snapshot reports where state drift occurred."
-  - "Rollup lists prioritized owner actions for all remaining blockers."
-  - "No external repo mutation, external runtime, external test, submodule command, or paper workflow is executed."
-  - "Targeted checks pass and staged commit contains only this rollup package plus hook-managed manifest."
+  - "Contract-only plan defines minimal future inputs/outputs without creating active runtime contracts."
+  - "Inactive frame registry includes dev-frame-opencode, devframe-control-plane, test-frame, and devframe-system boundaries."
+  - "Plan preserves physical bootstrap as blocked and external runtime execution as forbidden."
+  - "No external repository mutation, external runtime, external test, submodule command, or paper workflow is executed."
+  - "Targeted checks pass and staged commit contains only this contract-only package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused

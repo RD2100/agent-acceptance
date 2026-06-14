@@ -31,17 +31,55 @@ notes: Not a git repo. R3 adapter_dry_run authorized but never executed.
 - Adapter dry-run requested and approved
 - Active consumption by agent-acceptance requested
 
+### dev-frame-opencode
+
+```yaml
+status: inactive
+role: execution_runtime_candidate
+path: D:\dev-frame-opencode
+data_flow: none
+execution: forbidden
+may_produce: { RunSpec: candidate_only, EvidenceIndex: historical_only, GateResult: forbidden }
+may_consume: { TaskSpec: "1.0.0", RuntimeExecutionRequest: future_candidate }
+notes: Dirty baseline as of 2026-06-14. Contains real source/config changes, paper CLI expansion, large tasks.yaml delta, and large untracked workspace. Not eligible for submodule pinning.
+```
+
+**Activation triggers** (all required):
+- Worktree reaches an owner-approved clean commit
+- Paper-domain CLI changes receive separate review or are explicitly de-scoped
+- Runtime execution request is created and human-gated
+- Boundary envelope and source lock are defined for any data flow
+
+### devframe-control-plane
+
+```yaml
+status: inactive
+role: control_plane_candidate
+path: D:\devframe-control-plane
+data_flow: none
+execution: forbidden
+may_produce: { RunSpec: candidate_only, EvidenceIndex: historical_only, GateResult: forbidden }
+may_consume: { RepoBaselineRecord: future_candidate, RuntimeExecutionRequest: future_candidate }
+notes: Dirty baseline as of 2026-06-14 is artifact-policy focused: run_history.jsonl, .coverage, and CLI test JSON artifacts. Not eligible for submodule pinning until owner policy is applied.
+```
+
+**Activation triggers** (all required):
+- Worktree reaches an owner-approved clean commit
+- Artifact ignore/archive/commit policy is resolved
+- Control-plane execution is explicitly human-gated
+- Boundary envelope and source lock are defined for any data flow
+
 ### test-frame
 
 ```yaml
 status: inactive
-role: evidence_provider_candidate
+role: controlled_verification_runtime_candidate
 path: D:\test-frame
 data_flow: none
 execution: forbidden
 may_produce: { EvidenceIndex: historical_observation_only, GateResult: forbidden }
 may_consume: { TaskSpec: "1.0.0" }
-notes: R2 evidence provider. 23 forbidden actions. All evidence is historical only.
+notes: Bootstrap package was externally committed at 215d1e4. Remaining dirty state exists as of 2026-06-14. It is not a plugin, not a governance source of truth, and not a verdict authority.
 ```
 
 **Activation triggers** (any one):
@@ -49,6 +87,25 @@ notes: R2 evidence provider. 23 forbidden actions. All evidence is historical on
 - Approved run requested and human-gated
 - Attribution execution requested
 - Orchestrator/CLI scheduled for execution
+
+### devframe-system
+
+```yaml
+status: inactive
+role: future_superproject_control
+path: D:\devframe-system
+data_flow: none
+execution: forbidden
+may_produce: { RepoBaselineRecord: future_candidate, SuperprojectLock: future_candidate, GateResult: forbidden }
+may_consume: { RepoBaselineRecord: future_candidate, BoundaryEnvelope: future_candidate }
+notes: Target directory does not exist as of 2026-06-14. Physical bootstrap and submodule add remain blocked by dirty source repositories. Contract-only planning is allowed in agent-acceptance reports.
+```
+
+**Activation triggers** (all required):
+- All source repositories reach owner-approved clean commits, or human explicitly authorizes dirty-aware skeleton without submodules
+- Local-only portability status is documented
+- Source lock records are defined
+- Human approves physical directory creation
 
 ---
 
