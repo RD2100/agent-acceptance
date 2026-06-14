@@ -25,3 +25,20 @@ __pycache__/
 _cdp_profile/
 _cdp_profiles/
 .report.json
+
+# Generated governance/runtime artifacts kept local, not baseline inputs.
+.agent/*.bak-*
+.agent/*.pre-path-fix-*
+_evidence/hook-output/
+_evidence/EVIDENCE-CHAIN-ARCHIVE/
+_evidence/GOVERNANCE-CLOSURE-*/
+_evidence/GOVERNANCE-CLOSURE-R*/
+_evidence/GOVERNANCE-CONSOLIDATION-CORRECTION-R*/
+_evidence/GOVERNANCE-FINAL-CLOSURE-R*/
+_evidence/devframe-control-plane-merge-readiness-a1/
+_reports/SESSION-CHANGE-REPORT-*.md
+_reports/multi-agent-gate0-preflight-a1/VERIFY_GATE0-SNAPSHOT.json
+tasks/evidence-chain-archive.md
+tasks/governance-closure-*.md
+tasks/governance-consolidation-correction-r*.md
+tasks/governance-final-closure-r*.md

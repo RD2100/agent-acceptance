@@ -1,0 +1,64 @@
+# TaskSpec: agent-acceptance-runtime-artifact-ignore-a1
+
+**ID**: agent-acceptance-runtime-artifact-ignore-a1
+**Priority**: P1
+**Status**: completed
+**Type**: runtime_artifact_baseline_cleanup
+
+## Intent
+
+Remove runtime-generated local evidence noise from the strict Route A baseline
+surface without deleting local files. The task should ignore known generated
+artifacts and stop tracking `_evidence/hook-output/latest.json`, which is a
+rotating hook output state file.
+
+gate_0:
+  triggered: true
+  trigger_reason: "After restoring project-gamma, agent-acceptance still has runtime/evidence noise that blocks clean baseline checks."
+  inventory_evidence:
+    queried_sources:
+      - "git status --porcelain=v1 -uall"
+      - ".gitignore"
+      - "_evidence/hook-output/latest.json git history/diff"
+      - "_reports/devframe-system-workspace-risk-triage-a1/WORKSPACE_RISK_TRIAGE.md"
+    matched_capabilities:
+      - sadp_governance
+      - runtime_artifact_governance
+      - route_a_readiness_governance
+  rules_checked: [core-001, core-004, core-005, core-008, review-001, git-001]
+  lessons_checked:
+    - "Do not delete generated artifacts to manufacture clean status."
+    - "Runtime latest files should not be tracked as immutable baseline inputs."
+    - "Ignore precise generated artifact families rather than broad source paths."
+  sufficiency_decision: existing_sufficient
+  decision: update_ignore_rules
+  delta_justification: "A small .gitignore update and index-only untrack removes runtime noise while preserving local evidence files."
+
+conflict_registry:
+  read_set:
+    - ".gitignore"
+    - "git status --porcelain=v1 -uall"
+    - "git diff -- _evidence/hook-output/latest.json"
+  write_set:
+    - .ai/current-task.yaml
+    - .gitignore
+    - tasks/agent-acceptance-runtime-artifact-ignore-a1.md
+    - tasks/devframe-system-decision-index-refresh-a1.md
+    - _reports/agent-acceptance-runtime-artifact-ignore-a1/**
+    - _evidence/agent-acceptance-runtime-artifact-ignore-a1/**
+    - _evidence/hook-output/latest.json
+    - hooks/sealed-files-manifest.json
+  governance_adjacent_files_modified:
+    - ".ai/current-task.yaml"
+    - "hooks/sealed-files-manifest.json"
+  protected_files_touched: true
+  protected_file_justification: "current task activation and possible sealed manifest refresh are required for commit-time governance."
+  conflict_level: medium
+
+**Acceptance Gates**:
+  1. Ignore rules are limited to known runtime or archived governance artifacts.
+  2. `_evidence/hook-output/latest.json` is removed from the index without deleting the local file.
+  3. Stale untracked TaskSpec is closed rather than hidden by ignore rules.
+  4. No source, test, schema, rule, or active governance document path is hidden by a broad ignore pattern.
+  5. Runner start/edit-check/finish passes.
+  6. `git diff --check` and targeted Route A/router tests pass.

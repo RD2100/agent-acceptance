@@ -1,0 +1,5 @@
+﻿ M .gitignore
+D  _evidence/hook-output/latest.json
+?? _evidence/agent-acceptance-runtime-artifact-ignore-a1/pre_ignore_status.txt
+?? tasks/agent-acceptance-runtime-artifact-ignore-a1.md
+?? tasks/devframe-system-decision-index-refresh-a1.md
