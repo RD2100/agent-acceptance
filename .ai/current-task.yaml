@@ -1,41 +1,40 @@
-task_id: TEST-FRAME-BOOTSTRAP-OWNER-ACTION-A1
-title: "Record owner action status for test-frame bootstrap package"
+task_id: CONTROL-PLANE-ARTIFACT-POLICY-OWNER-ACTION-A1
+title: "Record owner action for devframe-control-plane artifact policy"
 priority: P1
 status: in_progress
 type: governance_owner_action_report
 mode: "direct"
 
 description: >
-  Record the owner action status for the dirty D:\test-frame bootstrap package
-  without committing, unstaging, cleaning, testing, or otherwise mutating the
-  external repository. During this task an external actor committed the staged
-  bootstrap package, leaving only blackboard drift as the test-frame blocker.
+  Record the owner action needed for D:\devframe-control-plane artifact-only
+  dirty state without cleaning, resetting, committing, testing, or executing the
+  external repository. This classifies the blocker as artifact-policy work, not
+  source-code readiness work.
 
 write_set:
-  - "tasks/test-frame-bootstrap-owner-action-a1.md"
+  - "tasks/control-plane-artifact-policy-owner-action-a1.md"
   - ".ai/current-task.yaml"
-  - "_reports/test-frame-bootstrap-owner-action-a1/**"
-  - "_evidence/TEST-FRAME-BOOTSTRAP-OWNER-ACTION-A1/**"
+  - "_reports/control-plane-artifact-policy-owner-action-a1/**"
+  - "_evidence/CONTROL-PLANE-ARTIFACT-POLICY-OWNER-ACTION-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Continue ordered progress by addressing the first dirty-baseline blocker: test-frame staged bootstrap package."
+  trigger_reason: "Continue ordered progress by addressing the second dirty-baseline blocker: devframe-control-plane artifacts."
   inventory_evidence:
     queried_sources:
-      - "D:/test-frame/AGENTS.md"
-      - "D:/test-frame git status"
-      - "D:/test-frame git log --oneline -5"
-      - "D:/test-frame git show --name-status HEAD"
-      - "D:/test-frame git diff --cached --check"
-      - "D:/test-frame git diff --check"
+      - "D:/devframe-control-plane AGENTS.md existence"
+      - "D:/devframe-control-plane git status"
+      - "D:/devframe-control-plane git diff --stat"
+      - "D:/devframe-control-plane git diff --check"
+      - "D:/devframe-control-plane .gitignore"
       - "_reports/devframe-system-dirty-baseline-triage-a1/TRIAGE_REPORT.md"
     matched_capabilities:
       - sadp_governance
       - external_runtime_non_execution_gate
       - dirty_baseline_triage
-      - test_frame_owner_action
+      - control_plane_owner_action
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
@@ -43,19 +42,18 @@ gate_0:
 
 conflict_registry:
   read_set:
-    - "D:/test-frame/AGENTS.md"
-    - "D:/test-frame git status"
-    - "D:/test-frame git log --oneline -5"
-    - "D:/test-frame git show --name-status HEAD"
-    - "D:/test-frame git diff --cached --check"
-    - "D:/test-frame git diff --check"
+    - "D:/devframe-control-plane AGENTS.md existence"
+    - "D:/devframe-control-plane git status"
+    - "D:/devframe-control-plane git diff --stat"
+    - "D:/devframe-control-plane git diff --check"
+    - "D:/devframe-control-plane .gitignore"
     - "_reports/devframe-system-dirty-baseline-triage-a1/TRIAGE_REPORT.md"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/test-frame-bootstrap-owner-action-a1.md"
+    - "tasks/control-plane-artifact-policy-owner-action-a1.md"
     - ".ai/current-task.yaml"
-    - "_reports/test-frame-bootstrap-owner-action-a1/**"
-    - "_evidence/TEST-FRAME-BOOTSTRAP-OWNER-ACTION-A1/**"
+    - "_reports/control-plane-artifact-policy-owner-action-a1/**"
+    - "_evidence/CONTROL-PLANE-ARTIFACT-POLICY-OWNER-ACTION-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
@@ -65,10 +63,10 @@ conflict_registry:
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Report states that test-frame Phase 0-5 forbids agent-side git mutations."
-  - "Report identifies the externally committed bootstrap package and remaining blackboard drift."
-  - "Report gives remaining owner actions without performing them."
-  - "No test-frame commit, reset, clean, stash, unstage, runtime, build, or test is executed."
+  - "Report classifies devframe-control-plane dirty state as artifact-policy owner action, not source-code blocker."
+  - "Report identifies tracked artifacts/run_history.jsonl, untracked CLI artifacts, and .coverage."
+  - "Report gives owner actions without performing them."
+  - "No devframe-control-plane commit, reset, clean, stash, runtime, build, or test is executed."
   - "Targeted checks pass and staged commit contains only this governance package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
