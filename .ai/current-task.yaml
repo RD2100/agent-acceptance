@@ -1,85 +1,67 @@
-task_id: CONTROLLED-MULTI-GPT-LIVE-REFRESH-R1
-title: "Record controlled multi-GPT binding refresh as current HUMAN_REQUIRED state"
+task_id: devframe-system-workspace-risk-triage-a1
+title: "Record current workspace risks before devframe-system activation"
 priority: P1
-status: accepted_with_limitation
-type: controlled_multi_gpt_live_refresh
+status: completed
+type: governance_triage
 mode: "direct"
 
 description: >
-  Adopt the controlled multi-GPT live refresh package as a factual governance
-  record while preserving the current verdict as HUMAN_REQUIRED because live
-  session evidence is stale. This task does not execute external runtimes and
-  does not claim READY activation.
+  Create a factual triage report for the current agent-acceptance worktree:
+  devframe-control-plane registry migration is human-required, project-gamma
+  deletions are not accepted for staging, and devframe-system remains
+  non-activated.
 
 write_set:
   - ".ai/current-task.yaml"
-  - ".agent/CONVERSATION_BINDING.json"
-  - "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/**"
-  - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
-  - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json"
-  - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json"
-  - "scripts/multi_agent_dispatch_plan.py"
-  - "tests/test_multi_agent_dispatch_plan.py"
-  - "tests/test_multi_agent_gate0_preflight.py"
-  - "tests/test_cdp_write_adapter.py"
-  - "_evidence/CONTROLLED-MULTI-GPT-LIVE-REFRESH-R1/**"
-  - "tasks/controlled-multi-gpt-live-refresh-r1.md"
+  - "tasks/devframe-system-workspace-risk-triage-a1.md"
+  - "_reports/devframe-system-workspace-risk-triage-a1/**"
+  - "_evidence/devframe-system-workspace-risk-triage-a1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Controlled multi-GPT session binding package exists, but current Gate 0 must remain HUMAN_REQUIRED due stale live-session evidence."
+  trigger_reason: "The worktree contains a registry migration diff and a large project-gamma deletion set after the controlled multi-GPT refresh commit."
   inventory_evidence:
     queried_sources:
-      - ".agent/CONVERSATION_BINDING.json"
-      - "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION.json"
-      - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
-      - "scripts/multi_agent_gate0_preflight.py"
-      - "scripts/multi_agent_dispatch_plan.py"
+      - ".agent/PROJECT_REGISTRY.json"
+      - "_projects/project-gamma/**"
+      - "git status --short"
+      - "git diff --stat -- _projects/project-gamma"
+      - "python -m pytest tests/test_validate_project_registry_bindings.py tests/test_router_10_project_stress.py -q"
     matched_capabilities:
-      - run_bound_authorization
-      - shared_cdp_transport
-      - multi_agent_gate0_preflight
-      - multi_agent_dispatch_plan
+      - project_registry_validation
+      - multi_project_router
+      - sadp_task_runner
   rules_checked: [core-004, core-007, core-008, review-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "Record current HUMAN_REQUIRED state from local governance checks; no external runtime execution."
+  delta_justification: "This task writes a triage report only; it does not mutate registry data or external repositories."
 
 conflict_registry:
   read_set:
-    - ".agent/CONVERSATION_BINDING.json"
-    - "_reports/controlled-multi-gpt-pilot-a1/HUMAN_AUTHORIZATION.json"
-    - "scripts/multi_agent_gate0_preflight.py"
-    - "scripts/multi_agent_dispatch_plan.py"
+    - ".agent/PROJECT_REGISTRY.json"
+    - "_projects/project-gamma/**"
+    - "tests/test_validate_project_registry_bindings.py"
+    - "tests/test_router_10_project_stress.py"
   write_set:
     - ".ai/current-task.yaml"
-    - ".agent/CONVERSATION_BINDING.json"
-    - "_reports/controlled-multi-gpt-pilot-a1/live-session-evidence/**"
-    - "_reports/multi-agent-multi-gpt-pilot-a1/ACTIVATION_RECORD.json"
-    - "_reports/multi-agent-gate0-preflight-a1/PREFLIGHT_CURRENT.json"
-    - "_reports/multi-agent-dispatch-plan-a1/DISPATCH_PLAN_CURRENT.json"
-    - "scripts/multi_agent_dispatch_plan.py"
-    - "tests/test_multi_agent_dispatch_plan.py"
-    - "tests/test_multi_agent_gate0_preflight.py"
-    - "tests/test_cdp_write_adapter.py"
-    - "_evidence/CONTROLLED-MULTI-GPT-LIVE-REFRESH-R1/**"
-    - "tasks/controlled-multi-gpt-live-refresh-r1.md"
+    - "tasks/devframe-system-workspace-risk-triage-a1.md"
+    - "_reports/devframe-system-workspace-risk-triage-a1/**"
+    - "_evidence/devframe-system-workspace-risk-triage-a1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
-    - ".agent/CONVERSATION_BINDING.json"
     - ".ai/current-task.yaml"
   protected_files_touched: false
   conflict_level: low
 
 acceptance_criteria:
-  - "Runner start, edit-check, and finish complete without blocking."
-  - "Current Gate 0 preflight reports HUMAN_REQUIRED and executed_external_runtime=false."
-  - "Current dispatch plan validates with dispatch_status=HUMAN_REQUIRED."
-  - "Targeted canonical tests pass."
-  - "No paper workflow, dev-frame-opencode runtime, or devframe-control-plane runtime is executed."
+  - "Report records .agent/PROJECT_REGISTRY.json as HUMAN_REQUIRED rather than committed."
+  - "Report records _projects/project-gamma deletions as not accepted for staging."
+  - "Report confirms D:\\devframe-system exists but is not a git repo and not an activated superproject baseline."
+  - "Targeted registry/router validation result is recorded."
+  - "No external repository runtime, build, test, cleanup, reset, stash, checkout, or commit is executed."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
