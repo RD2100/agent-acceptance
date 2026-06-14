@@ -28,8 +28,16 @@ Required before even a no-op dry-run can be marked complete:
 1. Human decision packet exists.
 2. Activation gates document exists.
 3. Draft contracts packet exists.
-4. The operator confirms this is a no-op rehearsal, not Route B activation.
-5. The operator confirms paper workflow remains paused.
+4. Latest freshness snapshot exists for current repository facts.
+5. The operator confirms this is a no-op rehearsal, not Route B activation.
+6. The operator confirms paper workflow remains paused.
+
+Latest recorded source-status artifact:
+
+`_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md`
+
+Older readiness and owner-action reports remain useful context, but they should
+not be treated as the newest HEAD/count ledger.
 
 ## Explicitly Forbidden In No-Op Dry-Run
 
@@ -118,7 +126,8 @@ The dry-run must be marked `FAILED` or `HUMAN_REQUIRED` if any statement is true
 A later real Route B task must create or reference:
 
 - The exact human Route B approval text.
-- Dirty snapshots for all four source repositories.
+- The latest freshness snapshot, or a newer dirty snapshot for all four source
+  repositories.
 - A `SuperprojectLock` or successor record marking every dirty source
   `HUMAN_REQUIRED`.
 - Confirmation that no submodules exist.

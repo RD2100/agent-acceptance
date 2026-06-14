@@ -34,6 +34,16 @@ Route A requires read-only baseline facts for all four source repositories:
 | `D:\devframe-control-plane` | path, branch, HEAD, remote, dirty status | yes or owner-approved artifact policy |
 | `D:\test-frame` | path, branch, HEAD, remote, dirty status | yes |
 
+## Current Evidence Source
+
+Before a later Route A task captures a new baseline, use the latest recorded
+read-only source-status artifact for current repository facts:
+
+`_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md`
+
+Older readiness and owner-action reports remain useful context, but they should
+not be treated as the newest HEAD/count ledger.
+
 ## Read-Only Commands Allowed Later
 
 These commands are examples for a later authorized inventory task. They are
@@ -107,6 +117,8 @@ true:
 A later real Route A task must create or reference:
 
 - The exact human Route A approval text.
+- The latest freshness snapshot, or a newer read-only baseline captured after
+  approval.
 - A `RepoBaselineRecord` for each source repository.
 - Clean status evidence or owner-approved scoped exception for each source.
 - A `SuperprojectLock` or successor record with intended local paths and

@@ -1,37 +1,39 @@
-task_id: DEVFRAME-SYSTEM-PHASE05-ROUTE-PROMPT-SOURCE-REFRESH-A1
-title: "Refresh devframe-system route decision prompt sources"
+task_id: DEVFRAME-SYSTEM-PHASE05-ROUTE-CHECKLIST-SOURCE-REFRESH-A1
+title: "Refresh devframe-system Route A/B checklist source references"
 priority: P1
 status: completed
-type: governance_route_prompt_source_refresh
+type: governance_route_checklist_source_refresh
 mode: "direct"
 
 description: >
-  Refresh the route decision packet so future GPT-5.5 Pro or agent prompts use
-  the latest freshness snapshot for repository facts. The readiness rollup
-  remains owner-action context, but it should not be the only source listed for
-  physical bootstrap readiness decisions.
+  Refresh the Route A and Route B no-op checklists so they point future
+  operators to the latest freshness snapshot for repository facts. The
+  checklists already forbid physical bootstrap and runtime execution; this task
+  only clarifies the current evidence source used before any later route
+  activation.
 
 write_set:
-  - "tasks/devframe-system-phase05-route-prompt-source-refresh-a1.md"
+  - "tasks/devframe-system-phase05-route-checklist-source-refresh-a1.md"
   - ".ai/current-task.yaml"
-  - "docs/agent-runtime/devframe-system-route-decision-packet.md"
-  - "_reports/devframe-system-phase05-route-prompt-source-refresh-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-PHASE05-ROUTE-PROMPT-SOURCE-REFRESH-A1/**"
+  - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
+  - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
+  - "_reports/devframe-system-phase05-route-checklist-source-refresh-a1/**"
+  - "_evidence/DEVFRAME-SYSTEM-PHASE05-ROUTE-CHECKLIST-SOURCE-REFRESH-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "The route decision packet still points GPT-5.5 Pro primarily at the older readiness rollup after the freshness snapshot became the latest source-status record."
+  trigger_reason: "Route A/B checklists do not yet name the freshness snapshot as the latest repository-fact source."
   inventory_evidence:
     queried_sources:
+      - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
+      - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
       - "docs/agent-runtime/devframe-system-route-decision-packet.md"
-      - "docs/agent-runtime/devframe-system-phase05-index.md"
       - "_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md"
-      - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
     matched_capabilities:
       - sadp_governance
-      - route_decision_prompting
+      - route_checklist_refresh
       - documentation_navigation
       - external_runtime_non_execution_gate
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
@@ -41,31 +43,33 @@ gate_0:
 
 conflict_registry:
   read_set:
+    - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
+    - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
     - "docs/agent-runtime/devframe-system-route-decision-packet.md"
-    - "docs/agent-runtime/devframe-system-phase05-index.md"
     - "_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md"
-    - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/devframe-system-phase05-route-prompt-source-refresh-a1.md"
+    - "tasks/devframe-system-phase05-route-checklist-source-refresh-a1.md"
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-route-decision-packet.md"
-    - "_reports/devframe-system-phase05-route-prompt-source-refresh-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-PHASE05-ROUTE-PROMPT-SOURCE-REFRESH-A1/**"
+    - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
+    - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
+    - "_reports/devframe-system-phase05-route-checklist-source-refresh-a1/**"
+    - "_evidence/DEVFRAME-SYSTEM-PHASE05-ROUTE-CHECKLIST-SOURCE-REFRESH-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-route-decision-packet.md"
+    - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
+    - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Route decision packet names the freshness snapshot as the latest repository-fact source."
-  - "GPT-5.5 Pro minimum prompt includes the freshness snapshot and treats readiness rollup as owner-action context."
+  - "Route A checklist names the freshness snapshot as the latest repository-fact source."
+  - "Route B checklist names the freshness snapshot as the latest repository-fact source."
   - "Verdict remains HUMAN_REQUIRED and no physical bootstrap/runtime/submodule/paper workflow action is performed."
-  - "Targeted checks pass and staged commit contains only this route-prompt refresh package plus hook-managed manifest."
+  - "Targeted checks pass and staged commit contains only this route-checklist refresh package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
