@@ -1,88 +1,73 @@
-task_id: REGISTRY-CONVERGENCE-DEVFRAME-BINDING-A1
-title: "Commit registry convergence and devframe-system binding precision package"
+task_id: DEVFRAME-SYSTEM-PHASE05-STRICT-GATE-A1
+title: "Record devframe-system Phase 0.5 strict gate preflight"
 priority: P1
 status: in_progress
-type: governance_commit_closure
+type: governance_preflight_closure
 mode: "direct"
 
 description: >
-  Commit the precise registry convergence, devframe-system control binding,
-  and active-scope registry validator package without staging unrelated dirty
-  workspace changes.
+  Record the Phase 0.5 strict gate decision for the future devframe-system
+  superproject. This task documents a HUMAN_REQUIRED result because all four
+  candidate source repositories are dirty, and it must not create the
+  superproject, add submodules, run external runtimes, or modify source
+  repositories outside D:\agent-acceptance.
 
 write_set:
-  - "tasks/registry-convergence-devframe-binding-a1.md"
-  - "tasks/devframe-system-master-binding-a1.md"
-  - "tasks/project-registry-validator-active-scope-a1.md"
+  - "tasks/devframe-system-phase05-strict-gate-a1.md"
   - ".ai/current-task.yaml"
-  - ".agent/PROJECT_REGISTRY.json"
-  - "_projects/devframe-system/.agent/CONVERSATION_BINDING.json"
-  - "_projects/devframe-system/.agent/CONVERSATION_REGISTRY.schema.json"
-  - "scripts/validate_project_registry_bindings.py"
-  - "tests/test_validate_project_registry_bindings.py"
-  - "tests/test_router_10_project_stress.py"
-  - "_evidence/DEVFRAME-SYSTEM-MASTER-BINDING-A1/**"
-  - "_evidence/PROJECT-REGISTRY-VALIDATOR-ACTIVE-SCOPE-A1/**"
-  - "_evidence/REGISTRY-CONVERGENCE-DEVFRAME-BINDING-A1/**"
+  - "_reports/devframe-system-phase05-strict-gate-a1/**"
+  - "_evidence/DEVFRAME-SYSTEM-PHASE05-STRICT-GATE-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "User authorized committing the precise registry/binding/validator package."
+  trigger_reason: "User requested implementation of the Phase 0.5 strict gate plan."
   inventory_evidence:
     queried_sources:
-      - ".agent/PROJECT_REGISTRY.json"
-      - "_projects/devframe-system/.agent/CONVERSATION_BINDING.json"
-      - "scripts/validate_project_registry_bindings.py"
-      - "tests/test_validate_project_registry_bindings.py"
-      - "tests/test_router_10_project_stress.py"
+      - "D:/agent-acceptance git status"
+      - "D:/dev-frame-opencode git status"
+      - "D:/devframe-control-plane git status"
+      - "D:/test-frame git status"
+      - "D:/devframe-system path existence"
     matched_capabilities:
-      - conversation_registry
-      - bind_chrome_conversation
       - project_registry_validation
-      - shared_cdp_transport
-  rules_checked: [core-004, core-007, core-008, review-001, git-001]
+      - sadp_governance
+      - superproject_preflight
+      - external_runtime_non_execution_gate
+  rules_checked: [core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "This is a commit closure task for already verified governance changes."
+  delta_justification: "This task documents a strict HUMAN_REQUIRED gate and does not require new runtime capability."
 
 conflict_registry:
   read_set:
-    - ".agent/PROJECT_REGISTRY.json"
-    - "_projects/devframe-system/.agent/CONVERSATION_BINDING.json"
-    - "scripts/validate_project_registry_bindings.py"
-    - "tests/test_validate_project_registry_bindings.py"
-    - "tests/test_router_10_project_stress.py"
-    - "git status --short"
-  write_set:
-    - "tasks/registry-convergence-devframe-binding-a1.md"
-    - "tasks/devframe-system-master-binding-a1.md"
-    - "tasks/project-registry-validator-active-scope-a1.md"
+    - "D:/agent-acceptance git status"
+    - "D:/dev-frame-opencode git status"
+    - "D:/devframe-control-plane git status"
+    - "D:/test-frame git status"
+    - "D:/devframe-system path existence"
     - ".ai/current-task.yaml"
-    - ".agent/PROJECT_REGISTRY.json"
-    - "_projects/devframe-system/.agent/CONVERSATION_BINDING.json"
-    - "_projects/devframe-system/.agent/CONVERSATION_REGISTRY.schema.json"
-    - "scripts/validate_project_registry_bindings.py"
-    - "tests/test_validate_project_registry_bindings.py"
-    - "tests/test_router_10_project_stress.py"
-    - "_evidence/DEVFRAME-SYSTEM-MASTER-BINDING-A1/**"
-    - "_evidence/PROJECT-REGISTRY-VALIDATOR-ACTIVE-SCOPE-A1/**"
-    - "_evidence/REGISTRY-CONVERGENCE-DEVFRAME-BINDING-A1/**"
+  write_set:
+    - "tasks/devframe-system-phase05-strict-gate-a1.md"
+    - ".ai/current-task.yaml"
+    - "_reports/devframe-system-phase05-strict-gate-a1/**"
+    - "_evidence/DEVFRAME-SYSTEM-PHASE05-STRICT-GATE-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
-    - ".agent/PROJECT_REGISTRY.json"
+    - ".ai/current-task.yaml"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
-  - "Only the authorized precision package is staged."
-  - "Registry validation returns 8/8 rules passed."
-  - "devframe-system binding validates with schema_validated=true."
-  - "Targeted tests pass."
-  - "Commit hook passes or any block is reported without broad staging."
-  - "No external runtime, test-frame runtime, or paper workflow is executed."
+  - "Runner start, edit-check, and finish complete without blocking."
+  - "Preflight report verdict is HUMAN_REQUIRED, not READY."
+  - "Report states test-frame is a controlled verification runtime candidate, not a plugin."
+  - "No D:\\devframe-system directory is created."
+  - "No external source repository is modified."
+  - "No external runtime, submodule add, cleanup/reset/stash, or paper workflow is executed."
+  - "Targeted registry/router tests and git diff check pass."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
