@@ -15,6 +15,18 @@ The current safe default remains:
 HUMAN_REQUIRED: keep Phase 0.5 in contract-only planning mode.
 ```
 
+## Current Evidence Sources
+
+Use these artifacts when judging whether a physical bootstrap route can proceed:
+
+1. `docs/agent-runtime/devframe-system-phase05-index.md` is the canonical
+   navigation entrypoint.
+2. `_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md`
+   is the latest recorded repository HEAD/count source.
+3. `_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md`
+   is owner-action and prioritization context, not the latest source-status
+   ledger.
+
 ## Decision Options
 
 ### Option 1: Continue Contract-Only Planning
@@ -153,7 +165,9 @@ You are reviewing the devframe-system Phase 0.5 route decision.
 Read:
 - docs/agent-runtime/devframe-system-activation-gates.md
 - docs/agent-runtime/devframe-system-route-decision-packet.md
-- _reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md
+- docs/agent-runtime/devframe-system-phase05-index.md
+- _reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md
+- _reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md as owner-action context only
 
 Do not create D:\devframe-system unless the human explicitly selected Route A or Route B.
 Do not run external runtimes, tests, paper workflow, cleanup, reset, stash, checkout, or submodule commands.
