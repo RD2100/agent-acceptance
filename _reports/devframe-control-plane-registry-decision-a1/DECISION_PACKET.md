@@ -3,7 +3,7 @@
 Date: 2026-06-14
 Created at: 2026-06-14T15:09:14.4308011+08:00
 Task: devframe-control-plane-registry-decision-a1
-Verdict: HUMAN_REQUIRED
+Verdict: APPROVED_FOR_SCOPED_REGISTRY_MIGRATION
 
 ## Decision Record Draft
 
@@ -38,9 +38,9 @@ decision_record:
     Defer registry migration unless a near-term task needs routing awareness of
     devframe-control-plane. This keeps devframe-control-plane governed by
     inactive-frame-registry while other agents finish work in external repos.
-  human_decision: "PENDING_HUMAN_RESPONSE"
-  authorization: "PENDING_HUMAN_RESPONSE"
-  committed_with: "PENDING_FUTURE_AUTHORIZED_COMMIT"
+  human_decision: "Approve registry migration"
+  authorization: "User replied: 授权！"
+  committed_with: "devframe-control-plane-registry-migration-a1"
 ```
 
 ## Current Diff Summary
@@ -70,6 +70,25 @@ python -m pytest tests/test_validate_project_registry_bindings.py tests/test_rou
 
 This is only technical evidence. It does not authorize the registry migration.
 
+## Human Authorization
+
+On 2026-06-14, the user explicitly replied:
+
+```text
+授权！
+```
+
+This was interpreted as approval for
+`DECISION-20260614-DEVFRAME-CONTROL-PLANE-REGISTRY-A1` option:
+`Approve registry migration`.
+
+The authorization is limited to committing the
+`devframe-control-plane` pending binding entry in
+`.agent/PROJECT_REGISTRY.json`. It does not authorize external runtime
+execution, physical `devframe-system` bootstrap, submodule operations, or
+mutation of `D:\dev-frame-opencode`, `D:\test-frame`, `D:\devframe-control-plane`,
+or `D:\devframe-system`.
+
 ## Authority Boundary
 
 Per `docs/agent-runtime/human-required-decision-record.md`, changing project
@@ -78,14 +97,15 @@ Migration. The agent must not self-authorize this action.
 
 ## Explicit Non-Actions
 
-- `.agent/PROJECT_REGISTRY.json` is not staged by this task.
+- `.agent/PROJECT_REGISTRY.json` is staged only by the follow-up authorized
+  task `devframe-control-plane-registry-migration-a1`.
 - `_projects/project-gamma` deletions are not staged by this task.
 - No external repository runtime is executed.
 - No external repository tests are executed.
 - No paper workflow is executed.
 - No cleanup, reset, stash, checkout, delete, or broad staging is performed.
 
-## Copy-Ready Human Decision Blocks
+## Historical Copy-Ready Human Decision Blocks
 
 Approve:
 

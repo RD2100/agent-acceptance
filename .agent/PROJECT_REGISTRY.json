@@ -7,7 +7,7 @@
   "isolation_model": "conversation_target_bound",
   "cdp_mode": "shared_single_chrome",
   "generated_at": "2026-06-10T16:00:00Z",
-  "total_projects": 17,
+  "total_projects": 18,
   "shared_cdp_port": 9222,
   "shared_cdp_endpoint": "http://localhost:9222",
   "shared_profile_dir": "D:\\agent-acceptance\\_cdp_profiles\\shared",
@@ -24,6 +24,12 @@
       "binding_status": "pending_binding",
       "registered_at": "2026-06-14T01:15:58Z",
       "registration_note": "Future superproject control conversation registered only; runtime execution is not authorized."
+    },
+    "devframe-control-plane": {
+      "project_id": "devframe-control-plane",
+      "project_root": "D:\\devframe-control-plane",
+      "binding_status": "pending_binding",
+      "registered_at": "2026-06-14T06:17:57Z"
     },
     "dev-frame-writing": {
       "project_id": "dev-frame-writing",
@@ -118,5 +124,5 @@
       "registered_at": "2026-06-10T16:00:00Z"
     }
   },
-  "updated_at": "2026-06-14T01:15:58Z"
+  "updated_at": "2026-06-14T06:17:57Z"
 }

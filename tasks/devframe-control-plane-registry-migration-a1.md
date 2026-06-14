@@ -1,24 +1,16 @@
-task_id: devframe-control-plane-registry-migration-a1
-title: "Commit devframe-control-plane registry migration"
-priority: P1
-status: completed
-type: project_registry_migration
-mode: "direct"
+# TaskSpec: devframe-control-plane-registry-migration-a1
 
-description: >
-  Commit the already-reviewed devframe-control-plane pending binding entry in
-  .agent/PROJECT_REGISTRY.json after explicit human authorization. This task
-  must not run external runtimes, mutate external repositories, commit
-  unrelated dirty files, or activate devframe-system physical bootstrap.
+**ID**: devframe-control-plane-registry-migration-a1
+**Priority**: P1
+**Status**: completed
+**Type**: project_registry_migration
 
-write_set:
-  - ".ai/current-task.yaml"
-  - ".agent/PROJECT_REGISTRY.json"
-  - "tasks/devframe-control-plane-registry-migration-a1.md"
-  - "_reports/devframe-control-plane-registry-migration-a1/**"
-  - "_evidence/devframe-control-plane-registry-migration-a1/**"
-  - "_reports/devframe-control-plane-registry-decision-a1/DECISION_PACKET.md"
-  - "hooks/sealed-files-manifest.json"
+## Intent
+
+Commit the already-reviewed `devframe-control-plane` pending binding entry in
+`.agent/PROJECT_REGISTRY.json` after explicit human authorization. This task
+must not run external runtimes, mutate external repositories, commit unrelated
+dirty files, or activate `devframe-system` physical bootstrap.
 
 gate_0:
   triggered: true
@@ -64,13 +56,13 @@ conflict_registry:
     - "scripts/qoderwork_task_runner.py"
     - "scripts/sadp_pre_task_enforcer.py"
   write_set:
-    - ".ai/current-task.yaml"
-    - ".agent/PROJECT_REGISTRY.json"
-    - "tasks/devframe-control-plane-registry-migration-a1.md"
-    - "_reports/devframe-control-plane-registry-migration-a1/**"
-    - "_evidence/devframe-control-plane-registry-migration-a1/**"
-    - "_reports/devframe-control-plane-registry-decision-a1/DECISION_PACKET.md"
-    - "hooks/sealed-files-manifest.json"
+    - .ai/current-task.yaml
+    - .agent/PROJECT_REGISTRY.json
+    - tasks/devframe-control-plane-registry-migration-a1.md
+    - _reports/devframe-control-plane-registry-migration-a1/**
+    - _evidence/devframe-control-plane-registry-migration-a1/**
+    - _reports/devframe-control-plane-registry-decision-a1/DECISION_PACKET.md
+    - hooks/sealed-files-manifest.json
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
     - ".agent/PROJECT_REGISTRY.json"
@@ -80,14 +72,10 @@ conflict_registry:
   protected_file_justification: ".agent/PROJECT_REGISTRY.json is intentionally migrated after human authorization; sealed manifest may be pre-commit regenerated."
   conflict_level: medium
 
-acceptance_criteria:
-  - "Registry diff only adds devframe-control-plane pending binding and updates total_projects/updated_at."
-  - "Decision packet records the human-approved option."
-  - "devframe-system remains NOT_MERGED."
-  - "No external runtime or external repository mutation occurs."
-  - "Targeted registry/router tests pass."
-  - "Runner start/edit-check/finish and pre-commit governance pass."
-
-external_runtime_execution_authorized: false
-registry_migration_authorized: true
-devframe_system_physical_merge_authorized: false
+**Acceptance Gates**:
+  1. Registry diff only adds `devframe-control-plane` pending binding and updates `total_projects`/`updated_at`.
+  2. Decision packet records the human-approved option.
+  3. `devframe-system` remains `NOT_MERGED`.
+  4. No external runtime or external repository mutation occurs.
+  5. Targeted registry/router tests pass.
+  6. Runner start/edit-check/finish and pre-commit governance pass.
