@@ -89,6 +89,13 @@ Return:
 
 ## Recommended Next No-Op Step
 
-If no route is selected, the next safe action is a read-only freshness snapshot
-of the four source repository states, recorded inside `D:\agent-acceptance`
-only. It must not clean or mutate those repositories.
+The read-only freshness snapshot has been captured at:
+
+`_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md`
+
+If no route is selected, the next safe action is to continue contract-only
+planning or ask the human to choose one of the route decision blocks. Repeat the
+freshness snapshot only if there is reason to believe one of the four source
+repository states changed.
+
+Current physical-bootstrap verdict remains `HUMAN_REQUIRED`.

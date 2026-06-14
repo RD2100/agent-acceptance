@@ -1,72 +1,78 @@
-task_id: DEVFRAME-SYSTEM-PHASE05-FRESHNESS-SNAPSHOT-A1
-title: "Capture devframe-system Phase 0.5 freshness snapshot"
+task_id: DEVFRAME-SYSTEM-PHASE05-NAVIGATION-REFRESH-A1
+title: "Refresh devframe-system Phase 0.5 navigation after freshness snapshot"
 priority: P1
-status: in_progress
-type: governance_read_only_freshness_snapshot
+status: completed
+type: governance_navigation_refresh
 mode: "direct"
 
 description: >
-  Create a read-only freshness snapshot of the four source repositories relevant
-  to future devframe-system work. The task may inspect branch, HEAD, remote, and
-  dirty status, then record the findings inside D:\agent-acceptance. It must not
-  create D:\devframe-system, run external runtimes/tests/builds, add submodules,
-  or mutate external repositories.
+  Refresh the Phase 0.5 navigation and handoff documents after the freshness
+  snapshot completed. This task keeps all work inside D:\agent-acceptance,
+  records that the latest freshness snapshot is now part of the canonical
+  reading order, and removes stale language that still names the snapshot as
+  the next pending action.
 
 write_set:
+  - "tasks/devframe-system-phase05-navigation-refresh-a1.md"
   - "tasks/devframe-system-phase05-freshness-snapshot-a1.md"
   - ".ai/current-task.yaml"
-  - "_reports/devframe-system-phase05-freshness-snapshot-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-PHASE05-FRESHNESS-SNAPSHOT-A1/**"
+  - "docs/agent-runtime/devframe-system-phase05-index.md"
+  - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+  - "_reports/devframe-system-phase05-navigation-refresh-a1/**"
+  - "_evidence/DEVFRAME-SYSTEM-PHASE05-NAVIGATION-REFRESH-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Continue Phase 0.5 by refreshing source repository readiness facts without side effects."
+  trigger_reason: "The latest freshness snapshot is complete, but Phase 0.5 navigation still points to it as a future next step."
   inventory_evidence:
     queried_sources:
       - "docs/agent-runtime/devframe-system-phase05-index.md"
       - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-      - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
-      - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
+      - "_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md"
+      - "tasks/devframe-system-phase05-freshness-snapshot-a1.md"
     matched_capabilities:
       - sadp_governance
-      - read_only_inventory
-      - freshness_snapshot
+      - documentation_navigation
+      - handoff_refresh
       - external_runtime_non_execution_gate
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "The task collects read-only git facts and writes governance artifacts only."
+  delta_justification: "The task updates governance navigation only and does not require new runtime capability."
 
 conflict_registry:
   read_set:
     - "docs/agent-runtime/devframe-system-phase05-index.md"
     - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-    - "D:/agent-acceptance/.git"
-    - "D:/dev-frame-opencode/.git"
-    - "D:/devframe-control-plane/.git"
-    - "D:/test-frame/.git"
-    - ".ai/current-task.yaml"
-  write_set:
+    - "_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md"
     - "tasks/devframe-system-phase05-freshness-snapshot-a1.md"
     - ".ai/current-task.yaml"
-    - "_reports/devframe-system-phase05-freshness-snapshot-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-PHASE05-FRESHNESS-SNAPSHOT-A1/**"
+  write_set:
+    - "tasks/devframe-system-phase05-navigation-refresh-a1.md"
+    - "tasks/devframe-system-phase05-freshness-snapshot-a1.md"
+    - ".ai/current-task.yaml"
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
+    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+    - "_reports/devframe-system-phase05-navigation-refresh-a1/**"
+    - "_evidence/DEVFRAME-SYSTEM-PHASE05-NAVIGATION-REFRESH-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
+    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Snapshot records path, branch, HEAD, remote, and dirty counts for agent-acceptance, dev-frame-opencode, devframe-control-plane, and test-frame."
-  - "Snapshot states whether D:\\devframe-system exists."
-  - "Snapshot preserves current verdict as HUMAN_REQUIRED unless all strict Route A requirements are proven clean."
-  - "No external runtime/test/build/package install, cleanup/reset/stash/checkout/delete/stage/commit, submodule command, or paper workflow is executed."
-  - "Targeted checks pass and staged commit contains only this freshness-snapshot package plus hook-managed manifest."
+  - "Phase 0.5 index includes the completed freshness snapshot in reading order."
+  - "Handoff brief no longer lists freshness snapshot capture as the next pending no-op step."
+  - "Previous freshness snapshot TaskSpec is closed as completed."
+  - "Verdict remains HUMAN_REQUIRED and no physical bootstrap/runtime/submodule/paper workflow action is performed."
+  - "Targeted checks pass and staged commit contains only this navigation-refresh package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused

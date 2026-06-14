@@ -35,6 +35,7 @@ HUMAN_REQUIRED: no physical bootstrap, no runtime execution, no submodule add.
 | 8 | `docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md` | Rehearses Route A clean-baseline checks with zero side effects. | Route A no-op checklist |
 | 9 | `docs/agent-runtime/devframe-system-route-b-noop-dry-run.md` | Rehearses Route B with zero side effects. | Route B no-op checklist |
 | 10 | `docs/agent-runtime/devframe-system-phase05-handoff-brief.md` | Gives GPT-5.5 Pro or a future agent a compact safe handoff. | Handoff brief |
+| 11 | `_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md` | Captures the latest read-only four-repository state. | Current freshness snapshot |
 
 ## Route Summary
 
@@ -81,6 +82,8 @@ Allowed without new human route selection:
 - Read-only inventory snapshots.
 - Owner-action reports that classify existing dirty state without modifying it.
 - Navigation, checklist, and review improvements.
+- Refreshing this index or the handoff brief when a completed governance
+  artifact changes the current reading order.
 
 Requires explicit human route selection:
 
@@ -88,6 +91,15 @@ Requires explicit human route selection:
 - Any Route A or Route B physical bootstrap step.
 - Any external runtime execution.
 - Any source repository cleanup or baseline mutation.
+
+## Latest Snapshot
+
+The latest recorded read-only repository freshness snapshot is:
+
+`_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md`
+
+It preserves the operative verdict as `HUMAN_REQUIRED` because all four source
+repositories remain dirty. `D:\devframe-system` remains absent.
 
 ## Minimal Prompt For The Next Agent
 
