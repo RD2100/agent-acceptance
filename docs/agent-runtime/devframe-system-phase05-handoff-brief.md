@@ -127,6 +127,10 @@ gap tracker has been resolved by commit `78689129`; targeted local governance
 and router checks returned `50 passed`. This does not authorize Route A, Route
 B, external runtime execution, submodules, or a completed-merge claim.
 
+`devframe-control-plane` has reached clean baseline candidate status, but
+`devframe-system` physical merge remains blocked until all source repos are
+clean or a dirty-aware route is explicitly approved.
+
 The one-page human route worksheet is:
 
 `docs/agent-runtime/devframe-system-route-decision-worksheet.md`

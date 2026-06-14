@@ -1,65 +1,91 @@
-task_id: project-gamma-deletion-decision-a1
-title: "Prepare project-gamma deletion decision packet"
+task_id: devframe-control-plane-merge-readiness-a1
+title: "Record devframe-control-plane merge readiness"
 priority: P1
 status: completed
-type: human_required_decision_packet
+type: devframe_system_merge_readiness
 mode: "direct"
 
 description: >
-  Prepare a Human Required decision packet for the current
-  _projects/project-gamma tracked deletion set without restoring, staging, or
-  committing those deletions.
+  Determine and record whether D:\devframe-control-plane can enter the
+  devframe-system merge admission chain as a clean baseline candidate. This
+  task is governance-only inside D:\agent-acceptance and must not mutate
+  D:\devframe-control-plane, D:\dev-frame-opencode, D:\test-frame, or
+  D:\devframe-system.
 
 write_set:
   - ".ai/current-task.yaml"
-  - "tasks/project-gamma-deletion-decision-a1.md"
-  - "_reports/project-gamma-deletion-decision-a1/**"
-  - "_evidence/project-gamma-deletion-decision-a1/**"
+  - "tasks/devframe-control-plane-merge-readiness-a1.md"
+  - "_reports/devframe-control-plane-merge-readiness-a1/**"
+  - "_evidence/devframe-control-plane-merge-readiness-a1/**"
+  - "docs/agent-runtime/devframe-system-phase05-index.md"
+  - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
   - "hooks/sealed-files-manifest.json"
-  - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "The worktree contains 188 tracked deletions under _projects/project-gamma, including governance docs, schemas, rules, and templates."
+  trigger_reason: "devframe-control-plane reached a clean candidate state and needs a devframe-system merge-admission record without physical merge."
   inventory_evidence:
     queried_sources:
-      - "git status --short -- _projects/project-gamma"
-      - "git diff --stat -- _projects/project-gamma"
-      - "git diff --name-status -- _projects/project-gamma"
-      - "docs/agent-runtime/human-required-decision-record.md"
-      - "_reports/devframe-system-workspace-risk-triage-a1/WORKSPACE_RISK_TRIAGE.md"
+      - "D:\\devframe-control-plane git status/rev-parse/diff-check output"
+      - "_reports/devframe-control-plane-registry-decision-a1/DECISION_PACKET.md"
+      - ".agent/PROJECT_REGISTRY.json diff"
+      - "docs/agent-runtime/devframe-system-phase05-index.md"
+      - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+      - "scripts/qoderwork_task_runner.py"
+      - "scripts/sadp_pre_task_enforcer.py"
+      - "hooks/pre-commit.governance.ps1"
     matched_capabilities:
-      - sadp_task_runner
-      - human_required_decision_record
-      - dirty_baseline_triage
-  rules_checked: [core-001, core-005, core-008, review-001]
+      - sadp_governance
+      - devframe_system_route_governance
+      - merge_readiness_reporting
+      - registry_migration_human_gate
+      - external_runtime_non_execution_gate
+      - pre_commit_scope_gate
+  rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
+  lessons_checked:
+    - "Do not claim physical merge completion from a single clean source repository."
+    - "Do not commit registry migration without explicit human authorization."
+    - "Keep pre-commit scope evidence aligned with the active current task."
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "This task only creates a decision packet for an existing dirty deletion set; it does not mutate the deletion set."
+  delta_justification: "This task records status using existing governance/reporting capability only."
 
 conflict_registry:
   read_set:
-    - "_projects/project-gamma/**"
-    - "docs/agent-runtime/human-required-decision-record.md"
-    - "_reports/devframe-system-workspace-risk-triage-a1/WORKSPACE_RISK_TRIAGE.md"
+    - "D:\\devframe-control-plane git status/rev-parse/diff-check output"
+    - "_reports/devframe-control-plane-registry-decision-a1/DECISION_PACKET.md"
+    - ".agent/PROJECT_REGISTRY.json"
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
+    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+    - "scripts/qoderwork_task_runner.py"
+    - "scripts/sadp_pre_task_enforcer.py"
+    - "hooks/pre-commit.governance.ps1"
   write_set:
     - ".ai/current-task.yaml"
-    - "tasks/project-gamma-deletion-decision-a1.md"
-    - "_reports/project-gamma-deletion-decision-a1/**"
-    - "_evidence/project-gamma-deletion-decision-a1/**"
+    - "tasks/devframe-control-plane-merge-readiness-a1.md"
+    - "_reports/devframe-control-plane-merge-readiness-a1/**"
+    - "_evidence/devframe-control-plane-merge-readiness-a1/**"
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
+    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
     - "hooks/sealed-files-manifest.json"
-    - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
-  protected_files_touched: false
-  conflict_level: low
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
+    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+    - "hooks/sealed-files-manifest.json"
+  protected_files_touched: true
+  protected_file_justification: "hooks/sealed-files-manifest.json is pre-commit auto-regenerated because sealed docs changed; no manual policy change."
+  conflict_level: medium
 
 acceptance_criteria:
-  - "Decision packet records 188 tracked deletions and 14301 deleted lines."
-  - "Decision packet offers restore, accept-with-dedicated-review, and defer routes."
-  - "Decision packet leaves human_decision and authorization as pending."
-  - "No _projects/project-gamma deletion is staged or committed by this task."
-  - "No cleanup, reset, stash, checkout, delete, or broad staging is executed."
+  - "Phase 0 read-only checks prove D:\\devframe-control-plane is clean and HEAD equals origin/codex/route-a-baseline-candidate."
+  - "Report conclusion is exactly READY_AS_CLEAN_BASELINE_CANDIDATE for devframe-control-plane."
+  - "Report does not claim devframe-system is merged or full-merge ready."
+  - "Registry migration remains HUMAN_REQUIRED unless explicit approval is provided."
+  - "No mutation occurs in D:\\devframe-control-plane, D:\\dev-frame-opencode, D:\\test-frame, or D:\\devframe-system."
+  - "Runner start/edit-check/finish and requested validation commands complete with pass or documented non-blocking warnings."
+  - "Any sealed manifest change is limited to pre-commit hash/timestamp regeneration for touched sealed docs."
 
 external_runtime_execution_authorized: false
-paper_workflow_status: paused
+registry_migration_authorized: false
+devframe_system_physical_merge_authorized: false

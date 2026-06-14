@@ -143,6 +143,10 @@ artifact was resolved by commit `78689129`, with targeted local tests returning
 `50 passed`. This does not change the physical-bootstrap verdict: Route A and
 Route B remain blocked for the reasons listed above.
 
+`devframe-control-plane` has reached clean baseline candidate status, but
+`devframe-system` physical merge remains blocked until all source repos are
+clean or a dirty-aware route is explicitly approved.
+
 ## Minimal Prompt For The Next Agent
 
 ```text
