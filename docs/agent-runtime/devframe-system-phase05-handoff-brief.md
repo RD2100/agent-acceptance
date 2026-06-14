@@ -118,6 +118,15 @@ The current gap tracker is:
 It records the newer fact that `D:\devframe-system` exists while the operative
 verdict remains `HUMAN_REQUIRED`.
 
+The latest gap-status overlay is:
+
+`_reports/devframe-system-gap-tracker-refresh-a1/CURRENT_GAP_REFRESH.md`
+
+It records that the local registry/router stress-test blocker from the current
+gap tracker has been resolved by commit `78689129`; targeted local governance
+and router checks returned `50 passed`. This does not authorize Route A, Route
+B, external runtime execution, submodules, or a completed-merge claim.
+
 The one-page human route worksheet is:
 
 `docs/agent-runtime/devframe-system-route-decision-worksheet.md`

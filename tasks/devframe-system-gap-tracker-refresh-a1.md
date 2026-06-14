@@ -1,25 +1,17 @@
-task_id: DEVFRAME-SYSTEM-GAP-TRACKER-REFRESH-A1
-title: "Refresh devframe-system gap tracker after router stress resolution"
-priority: P1
-status: completed
-type: governance_gap_tracker_refresh
-mode: "direct"
+# TaskSpec: DEVFRAME-SYSTEM-GAP-TRACKER-REFRESH-A1
 
-description: >
-  Refresh Phase 0.5 navigation after commit 78689129 resolved the local
-  registry/router stress-test blocker. Keep the physical bootstrap verdict at
-  HUMAN_REQUIRED because source repositories remain dirty and no external
-  runtime execution is authorized.
+**ID**: devframe-system-gap-tracker-refresh-a1
+**Priority**: P1
+**Status**: completed
+**Type**: governance_gap_tracker_refresh
 
-write_set:
-  - "tasks/devframe-system-gap-tracker-refresh-a1.md"
-  - ".ai/current-task.yaml"
-  - "docs/agent-runtime/devframe-system-phase05-index.md"
-  - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-  - "_reports/devframe-system-gap-tracker-refresh-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-GAP-TRACKER-REFRESH-A1/**"
-  - "hooks/sealed-files-manifest.json"
-  - "_evidence/hook-output/**"
+## Intent
+
+Refresh the devframe-system Phase 0.5 navigation after the router/registry
+stress-test blocker recorded in the current gap tracker was resolved by commit
+`78689129`. The refresh must keep the larger Route A/Route B verdict unchanged:
+`HUMAN_REQUIRED` because source repositories remain dirty and external runtime
+execution is still unauthorized.
 
 gate_0:
   triggered: true
@@ -50,14 +42,14 @@ conflict_registry:
     - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/devframe-system-gap-tracker-refresh-a1.md"
-    - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-phase05-index.md"
-    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-    - "_reports/devframe-system-gap-tracker-refresh-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-GAP-TRACKER-REFRESH-A1/**"
-    - "hooks/sealed-files-manifest.json"
-    - "_evidence/hook-output/**"
+    - tasks/devframe-system-gap-tracker-refresh-a1.md
+    - .ai/current-task.yaml
+    - docs/agent-runtime/devframe-system-phase05-index.md
+    - docs/agent-runtime/devframe-system-phase05-handoff-brief.md
+    - _reports/devframe-system-gap-tracker-refresh-a1/**
+    - _evidence/DEVFRAME-SYSTEM-GAP-TRACKER-REFRESH-A1/**
+    - hooks/sealed-files-manifest.json
+    - _evidence/hook-output/**
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
     - "docs/agent-runtime/devframe-system-phase05-index.md"
@@ -65,12 +57,9 @@ conflict_registry:
   protected_files_touched: false
   conflict_level: medium
 
-acceptance_criteria:
-  - "Runner start, edit-check, and finish complete without blocking."
-  - "Index and handoff identify the current gap refresh as the latest status overlay."
-  - "Refresh report says router stress blocker is resolved, but Route A/Route B remain blocked."
-  - "Targeted local governance/router tests pass."
-  - "No external repository or runtime is touched."
-
-external_runtime_execution_authorized: false
-paper_workflow_status: paused
+**Acceptance Gates**:
+  1. Runner start, edit-check, and finish complete without blocking.
+  2. Index and handoff identify the current gap refresh as the latest status overlay.
+  3. Refresh report says router stress blocker is resolved, but Route A/Route B remain blocked.
+  4. Targeted local governance/router tests pass.
+  5. No external repository or runtime is touched.

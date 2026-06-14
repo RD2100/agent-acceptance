@@ -43,6 +43,7 @@ HUMAN_REQUIRED: no physical bootstrap, no runtime execution, no submodule add.
 | 13 | `_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md` | Captures the latest read-only four-repository state. | Current freshness snapshot |
 | 14 | `_reports/devframe-system-phase05-route-checklist-source-refresh-a1/ROUTE_CHECKLIST_SOURCE_REFRESH.md` | Records that Route A/B checklists now point to the freshness snapshot as the current repository-fact source. | Checklist source-maintenance evidence |
 | 15 | `_reports/devframe-system-current-gap-tracker-a1/CURRENT_GAP_TRACKER.md` | Records the current gap list after `D:\devframe-system` was manually created while source repositories remain dirty. | Current gap tracker |
+| 16 | `_reports/devframe-system-gap-tracker-refresh-a1/CURRENT_GAP_REFRESH.md` | Records that the local router stress blocker from the previous gap tracker has been resolved while Route A/B remain blocked. | Latest gap-status overlay |
 
 ## Route Summary
 
@@ -132,6 +133,15 @@ The latest current-gap artifact is:
 It records that `D:\devframe-system` exists, but the correct verdict remains
 `HUMAN_REQUIRED` until source repositories are clean or a dirty-aware Route B
 approval is recorded.
+
+The latest gap-status overlay is:
+
+`_reports/devframe-system-gap-tracker-refresh-a1/CURRENT_GAP_REFRESH.md`
+
+It records that the local router stress blocker in the earlier current-gap
+artifact was resolved by commit `78689129`, with targeted local tests returning
+`50 passed`. This does not change the physical-bootstrap verdict: Route A and
+Route B remain blocked for the reasons listed above.
 
 ## Minimal Prompt For The Next Agent
 
