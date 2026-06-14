@@ -1,75 +1,69 @@
-task_id: DEVFRAME-SYSTEM-CONTRACT-ONLY-PLAN-A1
-title: "Define devframe-system contract-only planning boundary"
+task_id: DEVFRAME-SYSTEM-CONTRACT-DRAFTS-A1
+title: "Create inactive devframe-system contract draft packet"
 priority: P1
 status: in_progress
-type: governance_contract_planning
+type: governance_contract_draft
 mode: "direct"
 
 description: >
-  Define the minimum contract-only planning boundary for devframe-system while
-  physical bootstrap remains blocked. This task updates governance
-  documentation inside D:\agent-acceptance only. It must not create
+  Create an inactive draft schema packet for the future devframe-system
+  contract-only boundary. This must not activate validation, create
   D:\devframe-system, add submodules, execute external runtimes, or mutate
   external repositories.
 
 write_set:
-  - "tasks/devframe-system-contract-only-plan-a1.md"
+  - "tasks/devframe-system-contract-drafts-a1.md"
   - ".ai/current-task.yaml"
-  - "docs/agent-runtime/inactive-frame-registry.md"
-  - "_reports/devframe-system-contract-only-plan-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-CONTRACT-ONLY-PLAN-A1/**"
+  - "schemas/draft/devframe-system-contracts.schema.draft.json"
+  - "_reports/devframe-system-contract-drafts-a1/**"
+  - "_evidence/DEVFRAME-SYSTEM-CONTRACT-DRAFTS-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Proceed along the READY contract-only planning path identified by the Phase 0.5 readiness rollup."
+  trigger_reason: "Continue contract-only progress by turning planning contract names into inactive draft schema definitions."
   inventory_evidence:
     queried_sources:
-      - "docs/agent-runtime/integration-contracts.md"
-      - "docs/agent-runtime/inactive-frame-registry.md"
-      - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
-      - "schemas/agent-runtime"
-      - "schemas/resource-integration"
+      - "schemas/draft/boundary-envelope.schema.draft.json"
+      - "schemas/draft/frame-manifest.schema.draft.json"
+      - "_reports/devframe-system-contract-only-plan-a1/CONTRACT_ONLY_PLAN.md"
     matched_capabilities:
       - sadp_governance
       - contract_only_planning
-      - inactive_frame_registry
+      - draft_schema_authoring
       - external_runtime_non_execution_gate
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "The task records planning contracts and inactive frame boundaries only."
+  delta_justification: "The task creates inactive draft schema documentation only."
 
 conflict_registry:
   read_set:
-    - "docs/agent-runtime/integration-contracts.md"
-    - "docs/agent-runtime/inactive-frame-registry.md"
-    - "_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md"
-    - "schemas/agent-runtime"
-    - "schemas/resource-integration"
+    - "schemas/draft/boundary-envelope.schema.draft.json"
+    - "schemas/draft/frame-manifest.schema.draft.json"
+    - "_reports/devframe-system-contract-only-plan-a1/CONTRACT_ONLY_PLAN.md"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/devframe-system-contract-only-plan-a1.md"
+    - "tasks/devframe-system-contract-drafts-a1.md"
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/inactive-frame-registry.md"
-    - "_reports/devframe-system-contract-only-plan-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-CONTRACT-ONLY-PLAN-A1/**"
+    - "schemas/draft/devframe-system-contracts.schema.draft.json"
+    - "_reports/devframe-system-contract-drafts-a1/**"
+    - "_evidence/DEVFRAME-SYSTEM-CONTRACT-DRAFTS-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/inactive-frame-registry.md"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Contract-only plan defines minimal future inputs/outputs without creating active runtime contracts."
-  - "Inactive frame registry includes dev-frame-opencode, devframe-control-plane, test-frame, and devframe-system boundaries."
-  - "Plan preserves physical bootstrap as blocked and external runtime execution as forbidden."
-  - "No external repository mutation, external runtime, external test, submodule command, or paper workflow is executed."
-  - "Targeted checks pass and staged commit contains only this contract-only package plus hook-managed manifest."
+  - "Draft schema is valid JSON and explicitly marked DRAFT / NOT ACTIVE."
+  - "Draft schema covers RepoBaselineRecord, SuperprojectLock, RuntimeExecutionRequest, FrameActivationRecord, and VerificationRuntimeResult."
+  - "Draft schema preserves GateResult authority as forbidden for external frames."
+  - "No validator wiring, external repo mutation, external runtime/test, submodule command, or paper workflow is executed."
+  - "Targeted checks pass and staged commit contains only this draft package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
