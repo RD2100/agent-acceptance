@@ -6,6 +6,10 @@ Verdict: HUMAN_REQUIRED
 
 ## Summary
 
+Status: historical owner-action rollup. For the latest recorded repository
+HEAD/count facts, use
+`_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md`.
+
 Physical `D:\devframe-system` bootstrap remains blocked. The Phase 0.5 work has
 made progress by converting vague "dirty repository" risk into explicit owner
 actions, but no source repository is currently clean enough for strict submodule
@@ -14,7 +18,7 @@ pinning.
 `D:\devframe-system` still does not exist. No submodule command, external
 runtime, external test, cleanup, reset, stash, or paper workflow was run.
 
-## Current State
+## Historical State From This Rollup
 
 | Repository | HEAD | Branch | Status entries | Current blocker | Severity |
 |---|---|---|---:|---|---|
@@ -47,6 +51,11 @@ Important progress:
 
 Older reports are historical snapshots. Current state supersedes them where
 counts differ.
+
+The latest recorded current-state artifact is
+`_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md`.
+This rollup should be read as owner-action context, not as the newest
+repository status ledger.
 
 - The `test-frame` owner-action report recorded two modified blackboard files.
   Current state has four modified files: `.claude/blackboard/state.json`,

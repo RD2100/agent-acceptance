@@ -27,7 +27,7 @@ HUMAN_REQUIRED: no physical bootstrap, no runtime execution, no submodule add.
 |---:|---|---|---|
 | 1 | `_reports/devframe-system-phase05-strict-gate-a1/PREFLIGHT_REPORT.md` | Establishes why physical bootstrap was blocked. | Strict gate preflight |
 | 2 | `_reports/devframe-system-dirty-baseline-triage-a1/TRIAGE_REPORT.md` | Classifies dirty source repositories. | Dirty baseline context |
-| 3 | `_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md` | Summarizes current readiness and owner actions. | Current readiness snapshot |
+| 3 | `_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md` | Summarizes readiness and owner actions from an earlier snapshot. | Owner-action rollup; use the freshness snapshot for current repository facts |
 | 4 | `_reports/devframe-system-contract-only-plan-a1/CONTRACT_ONLY_PLAN.md` | Defines contract-only planning boundary. | Safe planning mode |
 | 5 | `schemas/draft/devframe-system-contracts.schema.draft.json` | Captures draft contract packet. | Inactive schema only |
 | 6 | `docs/agent-runtime/devframe-system-activation-gates.md` | Defines Route A and Route B activation gates. | Gate reference |
@@ -100,6 +100,10 @@ The latest recorded read-only repository freshness snapshot is:
 
 It preserves the operative verdict as `HUMAN_REQUIRED` because all four source
 repositories remain dirty. `D:\devframe-system` remains absent.
+
+For current repository HEAD/count facts, prefer this freshness snapshot over
+older readiness or owner-action reports. Older reports remain useful for
+history, prioritization, and owner-action context.
 
 ## Minimal Prompt For The Next Agent
 
