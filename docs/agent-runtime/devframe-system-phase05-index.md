@@ -34,6 +34,7 @@ HUMAN_REQUIRED: no physical bootstrap, no runtime execution, no submodule add.
 | 7 | `docs/agent-runtime/devframe-system-route-decision-packet.md` | Provides copy-ready human decision blocks. | Human decision entrypoint |
 | 8 | `docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md` | Rehearses Route A clean-baseline checks with zero side effects. | Route A no-op checklist |
 | 9 | `docs/agent-runtime/devframe-system-route-b-noop-dry-run.md` | Rehearses Route B with zero side effects. | Route B no-op checklist |
+| 10 | `docs/agent-runtime/devframe-system-phase05-handoff-brief.md` | Gives GPT-5.5 Pro or a future agent a compact safe handoff. | Handoff brief |
 
 ## Route Summary
 
