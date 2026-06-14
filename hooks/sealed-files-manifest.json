@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-14T12:25:32.3586658+08:00",
+    "generated":  "2026-06-14T12:33:25.9255468+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "5F355E8D4FC1DF34627264AB41E20499C39CA3FDF3F1FEFCEDB364EA6ADB40BD",
@@ -148,11 +148,11 @@
                              "path":  "docs/agent-runtime/devframe-system-activation-gates.md"
                          },
                          {
-                             "sha256":  "EE00B513A9EB1CF95492C75378A0954318A9081546AEA220ECF61C30D7F4F450",
+                             "sha256":  "88FE72EDDE74738CA23720EABBAE9BFB80B9F9C57CE419296296EB5F6E86ABB3",
                              "path":  "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
                          },
                          {
-                             "sha256":  "DFA8326680DC9AC9276D4420C7FEF84F28512315460E509F835B48294AB7F6CD",
+                             "sha256":  "E25CED05DA6D37A3ED2A6FBE6394946C89F22CFB999B950D5868B9D2ED1CADB1",
                              "path":  "docs/agent-runtime/devframe-system-phase05-index.md"
                          },
                          {
@@ -160,7 +160,7 @@
                              "path":  "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
                          },
                          {
-                             "sha256":  "E2A227BD2675D09F12DE60358E22A8A96EAA1063199152CA1BAE4C021B95D16B",
+                             "sha256":  "84102B099059CAB41D2BE3139B043A0BC1D4CC3A1CAD8B1258288343CDE1968E",
                              "path":  "docs/agent-runtime/devframe-system-route-approval-record-template.md"
                          },
                          {

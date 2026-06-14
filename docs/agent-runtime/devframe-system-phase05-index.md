@@ -29,7 +29,7 @@ HUMAN_REQUIRED: no physical bootstrap, no runtime execution, no submodule add.
 | 2 | `_reports/devframe-system-dirty-baseline-triage-a1/TRIAGE_REPORT.md` | Classifies dirty source repositories. | Dirty baseline context |
 | 3 | `_reports/devframe-system-phase05-readiness-rollup-a1/READINESS_ROLLUP.md` | Summarizes readiness and owner actions from an earlier snapshot. | Owner-action rollup; use the freshness snapshot for current repository facts |
 | 4 | `_reports/devframe-system-contract-only-plan-a1/CONTRACT_ONLY_PLAN.md` | Defines contract-only planning boundary. | Safe planning mode |
-| 5 | `schemas/draft/devframe-system-contracts.schema.draft.json` | Captures draft contract packet. | Inactive schema only |
+| 5 | `schemas/draft/devframe-system-contracts.schema.draft.json` | Captures draft contract packet, including inactive `HumanRouteApprovalRecord` structure. | Inactive schema only |
 | 6 | `docs/agent-runtime/devframe-system-activation-gates.md` | Defines Route A and Route B activation gates. | Gate reference |
 | 7 | `docs/agent-runtime/devframe-system-route-decision-packet.md` | Provides copy-ready human decision blocks. | Human decision entrypoint |
 | 8 | `docs/agent-runtime/devframe-system-route-decision-worksheet.md` | Compresses route choice, missing evidence, and forbidden actions into a one-page human decision worksheet. | Human decision worksheet |

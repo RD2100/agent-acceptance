@@ -120,6 +120,13 @@ The approval record template is:
 Use it only to record an explicit human route approval. A blank or partial copy
 does not authorize any action.
 
+Its inactive draft schema is:
+
+`schemas/draft/devframe-system-contracts.schema.draft.json#/$defs/HumanRouteApprovalRecord`
+
+The schema is for structural review and future validation planning only; it is
+not an active runtime or gate validator.
+
 If no route is selected, the next safe action is to continue contract-only
 planning or ask the human to choose one of the route decision blocks. Repeat the
 freshness snapshot only if there is reason to believe one of the four source

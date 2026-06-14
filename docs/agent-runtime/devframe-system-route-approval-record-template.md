@@ -3,6 +3,7 @@
 Status: template only
 Default verdict without completed record: HUMAN_REQUIRED
 Related worksheet: `docs/agent-runtime/devframe-system-route-decision-worksheet.md`
+Inactive draft schema: `schemas/draft/devframe-system-contracts.schema.draft.json#/$defs/HumanRouteApprovalRecord`
 
 ## Purpose
 
@@ -12,6 +13,10 @@ when a human decision record is filled with a concrete route and stored as
 evidence.
 
 This template does not authorize any action by itself.
+
+The draft schema reference above is inactive. It is for structural review and
+future validation planning only; it is not wired into active validators or
+runtime gates.
 
 ## Copy-Ready Approval Record
 
