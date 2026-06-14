@@ -1,57 +1,61 @@
-task_id: DEVFRAME-SYSTEM-DIRTY-BASELINE-TRIAGE-A1
-title: "Classify dirty baseline blocking devframe-system Phase 0.5"
+task_id: TEST-FRAME-BOOTSTRAP-OWNER-ACTION-A1
+title: "Record owner action status for test-frame bootstrap package"
 priority: P1
 status: in_progress
-type: governance_triage
+type: governance_owner_action_report
 mode: "direct"
 
 description: >
-  Classify the dirty baseline that blocks devframe-system Phase 0.5 physical
-  bootstrap. This task must not clean, reset, stash, commit, test, or execute
-  any external repository. It records the next safe owner actions while keeping
-  the overall verdict HUMAN_REQUIRED.
+  Record the owner action status for the dirty D:\test-frame bootstrap package
+  without committing, unstaging, cleaning, testing, or otherwise mutating the
+  external repository. During this task an external actor committed the staged
+  bootstrap package, leaving only blackboard drift as the test-frame blocker.
 
 write_set:
-  - "tasks/devframe-system-dirty-baseline-triage-a1.md"
+  - "tasks/test-frame-bootstrap-owner-action-a1.md"
   - ".ai/current-task.yaml"
-  - "_reports/devframe-system-dirty-baseline-triage-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-DIRTY-BASELINE-TRIAGE-A1/**"
+  - "_reports/test-frame-bootstrap-owner-action-a1/**"
+  - "_evidence/TEST-FRAME-BOOTSTRAP-OWNER-ACTION-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Continue ordered progress after the Phase 0.5 strict gate recorded HUMAN_REQUIRED."
+  trigger_reason: "Continue ordered progress by addressing the first dirty-baseline blocker: test-frame staged bootstrap package."
   inventory_evidence:
     queried_sources:
-      - "D:/agent-acceptance git status and diff stat"
-      - "D:/dev-frame-opencode git status and diff stat"
-      - "D:/devframe-control-plane git status and diff stat"
-      - "D:/test-frame git status and diff stat"
-      - "_reports/devframe-system-phase05-strict-gate-a1/PREFLIGHT_REPORT.md"
+      - "D:/test-frame/AGENTS.md"
+      - "D:/test-frame git status"
+      - "D:/test-frame git log --oneline -5"
+      - "D:/test-frame git show --name-status HEAD"
+      - "D:/test-frame git diff --cached --check"
+      - "D:/test-frame git diff --check"
+      - "_reports/devframe-system-dirty-baseline-triage-a1/TRIAGE_REPORT.md"
     matched_capabilities:
       - sadp_governance
-      - superproject_preflight
-      - dirty_baseline_triage
       - external_runtime_non_execution_gate
-  rules_checked: [core-004, core-005, core-007, core-008, review-001, git-001]
+      - dirty_baseline_triage
+      - test_frame_owner_action
+  rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "The required capability is governance triage and read-only repository inventory."
+  delta_justification: "The task creates a governance owner-action report in agent-acceptance only."
 
 conflict_registry:
   read_set:
-    - "D:/agent-acceptance git status and diff stat"
-    - "D:/dev-frame-opencode git status and diff stat"
-    - "D:/devframe-control-plane git status and diff stat"
-    - "D:/test-frame git status and diff stat"
-    - "_reports/devframe-system-phase05-strict-gate-a1/PREFLIGHT_REPORT.md"
+    - "D:/test-frame/AGENTS.md"
+    - "D:/test-frame git status"
+    - "D:/test-frame git log --oneline -5"
+    - "D:/test-frame git show --name-status HEAD"
+    - "D:/test-frame git diff --cached --check"
+    - "D:/test-frame git diff --check"
+    - "_reports/devframe-system-dirty-baseline-triage-a1/TRIAGE_REPORT.md"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/devframe-system-dirty-baseline-triage-a1.md"
+    - "tasks/test-frame-bootstrap-owner-action-a1.md"
     - ".ai/current-task.yaml"
-    - "_reports/devframe-system-dirty-baseline-triage-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-DIRTY-BASELINE-TRIAGE-A1/**"
+    - "_reports/test-frame-bootstrap-owner-action-a1/**"
+    - "_evidence/TEST-FRAME-BOOTSTRAP-OWNER-ACTION-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
@@ -61,11 +65,11 @@ conflict_registry:
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Report classifies each source repository dirty state without mutating it."
-  - "Report preserves Phase 0.5 verdict as HUMAN_REQUIRED."
-  - "Report identifies which repositories need owner action before submodule pinning."
-  - "No external runtime, external test, cleanup, reset, stash, commit, submodule add, or paper workflow is executed."
-  - "Targeted checks pass and staged commit contains only this triage package plus hook-managed manifest."
+  - "Report states that test-frame Phase 0-5 forbids agent-side git mutations."
+  - "Report identifies the externally committed bootstrap package and remaining blackboard drift."
+  - "Report gives remaining owner actions without performing them."
+  - "No test-frame commit, reset, clean, stash, unstage, runtime, build, or test is executed."
+  - "Targeted checks pass and staged commit contains only this governance package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused
