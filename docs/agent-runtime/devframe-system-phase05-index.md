@@ -156,10 +156,10 @@ It is produced by the read-only validator:
 
 `scripts/devframe_system_route_a_preflight.py`
 
-The current validator result is `HUMAN_REQUIRED`: `devframe-control-plane` is
-ready as a clean baseline candidate, while `agent-acceptance`,
-`dev-frame-opencode`, and `test-frame` still have dirty state and the existing
-empty `D:\devframe-system` target directory still requires route approval.
+The current validator result is `HUMAN_REQUIRED`: `devframe-control-plane` and
+`test-frame` are ready as clean baseline candidates, while `agent-acceptance`
+and `dev-frame-opencode` still have dirty state and the existing empty
+`D:\devframe-system` target directory still requires route approval.
 
 ## Minimal Prompt For The Next Agent
 

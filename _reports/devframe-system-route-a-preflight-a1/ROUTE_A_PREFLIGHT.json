@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-14T08:36:30.666491Z",
+  "generated_at": "2026-06-14T08:42:56.839600Z",
   "route": "ROUTE_A_STRICT_CLEAN_BASELINE",
   "overall": "HUMAN_REQUIRED",
   "executed_external_runtime": false,
@@ -12,19 +12,17 @@
       "exists": true,
       "status": "human_required",
       "branch": "master",
-      "head": "f2265cf4fb4306d9b53fcb3332516a8e2877f332",
+      "head": "796a2988e0f12aaa2093181224c5d4447101e95c",
       "upstream": "origin/master",
       "upstream_head": "ce0a8398cfd0a904695c4a97b25f3aff0f28c74c",
       "dirty": {
-        "tracked_dirty": 191,
+        "tracked_dirty": 189,
         "staged": 0,
-        "unstaged": 191,
-        "untracked": 399,
-        "total": 590
+        "unstaged": 189,
+        "untracked": 403,
+        "total": 592
       },
       "sample_status": [
-        " M .agent/PROJECT_REGISTRY.json",
-        " M .ai/current-task.yaml",
         " M _evidence/hook-output/latest.json",
         " D _projects/project-gamma/.agent/CONVERSATION_BINDING.json",
         " D _projects/project-gamma/AGENTS.md",
@@ -34,7 +32,9 @@
         " D _projects/project-gamma/docs/agent-runtime/integration-contracts.md",
         " D _projects/project-gamma/docs/agent-runtime/lessons-learned.md",
         " D _projects/project-gamma/docs/agent-runtime/negative-acceptance-tests.md",
-        " D _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-001-missing-pre-git-status.json"
+        " D _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-001-missing-pre-git-status.json",
+        " D _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-002-fake-green-failed-as-pass.json",
+        " D _projects/project-gamma/docs/agent-runtime/negative-test-fixtures/NEG-003-source-of-truth-unapproved.json"
       ],
       "detail": "worktree is dirty; cannot freeze current HEAD as baseline"
     },
@@ -70,8 +70,8 @@
         "tracked_dirty": 7,
         "staged": 0,
         "unstaged": 7,
-        "untracked": 10458,
-        "total": 10465
+        "untracked": 10462,
+        "total": 10469
       },
       "sample_status": [
         " M AGENTS.md",
@@ -93,23 +93,20 @@
       "project_id": "test-frame",
       "path": "D:\\test-frame",
       "exists": true,
-      "status": "human_required",
+      "status": "passed",
       "branch": "codex/harden-baseline",
       "head": "aeb4a31f770e35e7f698e5c3169406ddba231a4d",
       "upstream": "origin/codex/harden-baseline",
       "upstream_head": "aeb4a31f770e35e7f698e5c3169406ddba231a4d",
       "dirty": {
-        "tracked_dirty": 2,
+        "tracked_dirty": 0,
         "staged": 0,
-        "unstaged": 2,
+        "unstaged": 0,
         "untracked": 0,
-        "total": 2
+        "total": 0
       },
-      "sample_status": [
-        " M .claude/blackboard/state.json",
-        " M .claude/blackboard/state.json.bak"
-      ],
-      "detail": "worktree is dirty; cannot freeze current HEAD as baseline"
+      "sample_status": [],
+      "detail": "clean worktree with HEAD equal to upstream"
     }
   ],
   "target": {
