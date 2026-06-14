@@ -12,8 +12,11 @@ done next.
 
 ## Current State
 
-`D:\devframe-system` does not exist and must not be created unless the human
-explicitly chooses Route A or Route B from the route decision packet.
+`D:\devframe-system` now exists as a manually created local directory, but it is
+not an activated superproject, not a trusted baseline, and not proof that the
+four source repositories have been merged. No submodule, runtime, or baseline
+claim may rely on it until Route A or Route B is explicitly selected and
+verified.
 
 The active default remains:
 
@@ -39,6 +42,7 @@ HUMAN_REQUIRED: no physical bootstrap, no runtime execution, no submodule add.
 | 12 | `docs/agent-runtime/devframe-system-phase05-handoff-brief.md` | Gives GPT-5.5 Pro or a future agent a compact safe handoff. | Handoff brief |
 | 13 | `_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md` | Captures the latest read-only four-repository state. | Current freshness snapshot |
 | 14 | `_reports/devframe-system-phase05-route-checklist-source-refresh-a1/ROUTE_CHECKLIST_SOURCE_REFRESH.md` | Records that Route A/B checklists now point to the freshness snapshot as the current repository-fact source. | Checklist source-maintenance evidence |
+| 15 | `_reports/devframe-system-current-gap-tracker-a1/CURRENT_GAP_TRACKER.md` | Records the current gap list after `D:\devframe-system` was manually created while source repositories remain dirty. | Current gap tracker |
 
 ## Route Summary
 
@@ -66,7 +70,10 @@ Its output can become evidence only after a separately approved run.
 
 Unless a later explicit human decision changes the route, do not:
 
-- Create `D:\devframe-system`.
+- Treat the existing `D:\devframe-system` directory as an activated
+  superproject, trusted baseline, or completed merge.
+- Mutate `D:\devframe-system` into a physical bootstrap without explicit Route A
+  or Route B approval.
 - Create or modify `.gitmodules`.
 - Run `git submodule add`.
 - Run external runtime commands.
@@ -102,7 +109,9 @@ The latest recorded read-only repository freshness snapshot is:
 `_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md`
 
 It preserves the operative verdict as `HUMAN_REQUIRED` because all four source
-repositories remain dirty. `D:\devframe-system` remains absent.
+repositories remain dirty. It was captured before the manually created
+`D:\devframe-system` directory existed, so use the current gap tracker for the
+latest directory-existence fact.
 
 For current repository HEAD/count facts, prefer this freshness snapshot over
 older readiness or owner-action reports. Older reports remain useful for
@@ -116,12 +125,20 @@ It does not select Route A or Route B. It only records that the Route A and
 Route B no-op checklists now point future operators to the freshness snapshot
 for repository facts.
 
+The latest current-gap artifact is:
+
+`_reports/devframe-system-current-gap-tracker-a1/CURRENT_GAP_TRACKER.md`
+
+It records that `D:\devframe-system` exists, but the correct verdict remains
+`HUMAN_REQUIRED` until source repositories are clean or a dirty-aware Route B
+approval is recorded.
+
 ## Minimal Prompt For The Next Agent
 
 ```text
 Start at docs/agent-runtime/devframe-system-phase05-index.md.
 Current default is HUMAN_REQUIRED.
-Do not create D:\devframe-system.
+Do not treat the existing D:\devframe-system directory as a completed merge or trusted baseline.
 Do not run external runtimes, tests, paper workflow, cleanup, reset, stash, checkout, or submodule commands.
 Use docs/agent-runtime/devframe-system-route-decision-packet.md if a human route decision is needed.
 Use docs/agent-runtime/devframe-system-route-decision-worksheet.md to compare the valid choices before asking for the formal decision block.

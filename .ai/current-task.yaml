@@ -1,83 +1,78 @@
-task_id: DEVFRAME-SYSTEM-PHASE05-ROUTE-APPROVAL-SCHEMA-A1
-title: "Add devframe-system route approval draft schema"
+task_id: DEVFRAME-SYSTEM-CURRENT-GAP-TRACKER-A1
+title: "Record current devframe-system gaps while source agents continue fixes"
 priority: P1
-status: completed
-type: governance_route_approval_schema
+status: accepted_with_limitation
+type: governance_current_gap_tracker
 mode: "direct"
 
 description: >
-  Extend the inactive devframe-system draft contract packet with a
-  HumanRouteApprovalRecord definition matching the approval record template.
-  This makes future route approval evidence structurally checkable without
-  activating any validator or runtime.
+  Update Phase 0.5 governance entrypoints and produce a current gap tracker so
+  the manually created D:\devframe-system directory is not mistaken for an
+  activated, trusted, or merged baseline while source repositories remain dirty.
 
 write_set:
-  - "tasks/devframe-system-phase05-route-approval-schema-a1.md"
+  - "tasks/devframe-system-current-gap-tracker-a1.md"
   - ".ai/current-task.yaml"
-  - "schemas/draft/devframe-system-contracts.schema.draft.json"
   - "docs/agent-runtime/devframe-system-phase05-index.md"
   - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-  - "docs/agent-runtime/devframe-system-route-approval-record-template.md"
-  - "_reports/devframe-system-phase05-route-approval-schema-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-PHASE05-ROUTE-APPROVAL-SCHEMA-A1/**"
+  - "_reports/devframe-system-current-gap-tracker-a1/**"
+  - "_evidence/DEVFRAME-SYSTEM-CURRENT-GAP-TRACKER-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Approval record template exists, but no inactive draft schema defines its required structure."
+  trigger_reason: "The user confirmed D:\\devframe-system now exists while source repositories remain under active modification."
   inventory_evidence:
     queried_sources:
-      - "schemas/draft/devframe-system-contracts.schema.draft.json"
-      - "docs/agent-runtime/devframe-system-route-approval-record-template.md"
       - "docs/agent-runtime/devframe-system-phase05-index.md"
       - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+      - "git status --porcelain for the four source repositories"
+      - "Test-Path D:\\devframe-system"
     matched_capabilities:
       - sadp_governance
       - documentation_navigation
       - route_decision_governance
       - human_approval_recording
-      - draft_contract_schema
       - external_runtime_non_execution_gate
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "The task extends inactive draft schema only and does not wire schema into active validators."
+  delta_justification: "This is a documentation and readiness tracking update only; it does not activate runtime, submodules, or external tests."
 
 conflict_registry:
   read_set:
-    - "schemas/draft/devframe-system-contracts.schema.draft.json"
-    - "docs/agent-runtime/devframe-system-route-approval-record-template.md"
     - "docs/agent-runtime/devframe-system-phase05-index.md"
     - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
     - ".ai/current-task.yaml"
+    - "current read-only git status of D:\\agent-acceptance"
+    - "current read-only git status of D:\\devframe-control-plane"
+    - "current read-only git status of D:\\dev-frame-opencode"
+    - "current read-only git status of D:\\test-frame"
   write_set:
-    - "tasks/devframe-system-phase05-route-approval-schema-a1.md"
+    - "tasks/devframe-system-current-gap-tracker-a1.md"
     - ".ai/current-task.yaml"
-    - "schemas/draft/devframe-system-contracts.schema.draft.json"
     - "docs/agent-runtime/devframe-system-phase05-index.md"
     - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-    - "docs/agent-runtime/devframe-system-route-approval-record-template.md"
-    - "_reports/devframe-system-phase05-route-approval-schema-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-PHASE05-ROUTE-APPROVAL-SCHEMA-A1/**"
+    - "_reports/devframe-system-current-gap-tracker-a1/**"
+    - "_evidence/DEVFRAME-SYSTEM-CURRENT-GAP-TRACKER-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
-    - "schemas/draft/devframe-system-contracts.schema.draft.json"
     - "docs/agent-runtime/devframe-system-phase05-index.md"
     - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-    - "docs/agent-runtime/devframe-system-route-approval-record-template.md"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Draft schema contains HumanRouteApprovalRecord and includes it in top-level oneOf."
-  - "Draft schema remains explicitly inactive and does not authorize runtime, submodules, or GateResult authority."
-  - "Approval template, index, and handoff brief reference the draft schema."
-  - "No physical bootstrap/runtime/submodule/paper workflow action is performed."
-  - "Targeted checks pass and staged commit contains only this schema package plus hook-managed manifest."
+  - "Phase 0.5 index states that D:\\devframe-system exists but is not an activated or trusted baseline."
+  - "Handoff brief no longer instructs future agents that D:\\devframe-system is absent."
+  - "Gap tracker lists the remaining work before Route A baseline or Route B dirty-aware skeleton."
+  - "Report preserves test-frame as controlled verification runtime candidate, not plugin."
+  - "No external repository is modified and no external runtime/test/paper workflow is executed."
+  - "Local verification results are recorded honestly, including any concurrent registry/router blocker."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused

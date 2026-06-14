@@ -6,13 +6,16 @@ Current default: `HUMAN_REQUIRED`
 
 ## One-Minute State
 
-`devframe-system` is still a future local-only superproject control surface.
-It has not been physically created.
+`D:\devframe-system` now exists as a manually created local directory. It is
+still only a future superproject control surface: it is not activated, not a
+trusted baseline, and not proof that the four source repositories have been
+merged.
 
 Current safe mode is contract-only planning inside `D:\agent-acceptance`.
 
-Do not create `D:\devframe-system` unless a human explicitly selects Route A or
-Route B from `docs/agent-runtime/devframe-system-route-decision-packet.md`.
+Do not mutate `D:\devframe-system` into a physical bootstrap unless a human
+explicitly selects Route A or Route B from
+`docs/agent-runtime/devframe-system-route-decision-packet.md`.
 
 ## Current Route Status
 
@@ -37,7 +40,9 @@ Route B from `docs/agent-runtime/devframe-system-route-decision-packet.md`.
 Do not perform any of these actions unless a later explicit human route decision
 authorizes them:
 
-- Create `D:\devframe-system`.
+- Treat the existing `D:\devframe-system` directory as an activated
+  superproject, trusted baseline, or completed merge.
+- Mutate `D:\devframe-system` into a physical bootstrap.
 - Create or modify `.gitmodules`.
 - Run `git submodule add`.
 - Run external runtime commands.
@@ -76,7 +81,7 @@ Start at:
 
 Current default is HUMAN_REQUIRED.
 
-Do not create D:\devframe-system.
+Do not treat the existing D:\devframe-system directory as a completed merge or trusted baseline.
 Do not create or modify .gitmodules.
 Do not run git submodule add.
 Do not run dev-frame-opencode, devframe-control-plane, test-frame, paper workflow, builds, tests, package installs, cleanup, reset, stash, checkout, delete, stage, or commit commands in external repositories.
@@ -105,6 +110,13 @@ The Route A/B checklist source-maintenance record is:
 
 It confirms the no-op Route A and Route B checklists now point to the freshness
 snapshot as the current repository-fact source.
+
+The current gap tracker is:
+
+`_reports/devframe-system-current-gap-tracker-a1/CURRENT_GAP_TRACKER.md`
+
+It records the newer fact that `D:\devframe-system` exists while the operative
+verdict remains `HUMAN_REQUIRED`.
 
 The one-page human route worksheet is:
 
