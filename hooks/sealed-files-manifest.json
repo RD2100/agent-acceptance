@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-14T15:49:49.4497744+08:00",
+    "generated":  "2026-06-14T16:38:47.5436537+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "5F355E8D4FC1DF34627264AB41E20499C39CA3FDF3F1FEFCEDB364EA6ADB40BD",
@@ -148,11 +148,11 @@
                              "path":  "docs/agent-runtime/devframe-system-activation-gates.md"
                          },
                          {
-                             "sha256":  "6D7327E90F4AC00C1E358BBC6E70DFABB437D58D3A7F2DF05FE352CE2EDCCA5D",
+                             "sha256":  "24647508C98F0EF40270BEBFCD196F2927707579E99F10E14747C72995523D60",
                              "path":  "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
                          },
                          {
-                             "sha256":  "9C47BEAC719CB76ECDECCD7DD0C7959EF9F0374EFBE4D445B45B49AF1E7963B2",
+                             "sha256":  "E1D3487416D860866DCCF51F09290A129ACF2108A44E3F551E731E4CE71C1237",
                              "path":  "docs/agent-runtime/devframe-system-phase05-index.md"
                          },
                          {

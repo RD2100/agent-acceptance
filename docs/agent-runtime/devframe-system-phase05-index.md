@@ -44,6 +44,7 @@ HUMAN_REQUIRED: no physical bootstrap, no runtime execution, no submodule add.
 | 14 | `_reports/devframe-system-phase05-route-checklist-source-refresh-a1/ROUTE_CHECKLIST_SOURCE_REFRESH.md` | Records that Route A/B checklists now point to the freshness snapshot as the current repository-fact source. | Checklist source-maintenance evidence |
 | 15 | `_reports/devframe-system-current-gap-tracker-a1/CURRENT_GAP_TRACKER.md` | Records the current gap list after `D:\devframe-system` was manually created while source repositories remain dirty. | Current gap tracker |
 | 16 | `_reports/devframe-system-gap-tracker-refresh-a1/CURRENT_GAP_REFRESH.md` | Records that the local router stress blocker from the previous gap tracker has been resolved while Route A/B remain blocked. | Latest gap-status overlay |
+| 17 | `_reports/devframe-system-route-a-preflight-a1/MERGE_DASHBOARD.md` | Records the current Route A no-op preflight result from the read-only validator. | Latest merge dashboard |
 
 ## Route Summary
 
@@ -146,6 +147,19 @@ Route B remain blocked for the reasons listed above.
 `devframe-control-plane` has reached clean baseline candidate status, but
 `devframe-system` physical merge remains blocked until all source repos are
 clean or a dirty-aware route is explicitly approved.
+
+The latest Route A no-op preflight dashboard is:
+
+`_reports/devframe-system-route-a-preflight-a1/MERGE_DASHBOARD.md`
+
+It is produced by the read-only validator:
+
+`scripts/devframe_system_route_a_preflight.py`
+
+The current validator result is `HUMAN_REQUIRED`: `devframe-control-plane` is
+ready as a clean baseline candidate, while `agent-acceptance`,
+`dev-frame-opencode`, and `test-frame` still have dirty state and the existing
+empty `D:\devframe-system` target directory still requires route approval.
 
 ## Minimal Prompt For The Next Agent
 
