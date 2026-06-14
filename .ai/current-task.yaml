@@ -1,78 +1,67 @@
-task_id: DEVFRAME-SYSTEM-CURRENT-GAP-TRACKER-A1
-title: "Record current devframe-system gaps while source agents continue fixes"
+task_id: ROUTER-REGISTRY-CURRENT-COUNT-SYNC-A1
+title: "Align router stress tests with registry-declared project count"
 priority: P1
-status: accepted_with_limitation
-type: governance_current_gap_tracker
+status: completed
+type: test_governance_alignment
 mode: "direct"
 
 description: >
-  Update Phase 0.5 governance entrypoints and produce a current gap tracker so
-  the manually created D:\devframe-system directory is not mistaken for an
-  activated, trusted, or merged baseline while source repositories remain dirty.
+  Fix router stress test drift by deriving the expected project count from the
+  canonical PROJECT_REGISTRY.json total_projects field and actual project map,
+  while preserving explicit assertions for key routing statuses.
 
 write_set:
-  - "tasks/devframe-system-current-gap-tracker-a1.md"
+  - "tasks/router-registry-current-count-sync-a1.md"
   - ".ai/current-task.yaml"
-  - "docs/agent-runtime/devframe-system-phase05-index.md"
-  - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-  - "_reports/devframe-system-current-gap-tracker-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-CURRENT-GAP-TRACKER-A1/**"
+  - "tests/test_router_10_project_stress.py"
+  - "_reports/router-registry-current-count-sync-a1/**"
+  - "_evidence/ROUTER-REGISTRY-CURRENT-COUNT-SYNC-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "The user confirmed D:\\devframe-system now exists while source repositories remain under active modification."
+  trigger_reason: "Router stress tests failed because registry now contains 18 projects while the test still expected 17."
   inventory_evidence:
     queried_sources:
-      - "docs/agent-runtime/devframe-system-phase05-index.md"
-      - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-      - "git status --porcelain for the four source repositories"
-      - "Test-Path D:\\devframe-system"
+      - "tests/test_router_10_project_stress.py"
+      - ".agent/PROJECT_REGISTRY.json"
+      - "python -m pytest tests/test_validate_project_registry_bindings.py tests/test_router_10_project_stress.py -q"
     matched_capabilities:
       - sadp_governance
-      - documentation_navigation
-      - route_decision_governance
-      - human_approval_recording
-      - external_runtime_non_execution_gate
-  rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
+      - multi_project_registry
+      - shared_cdp_router
+      - test_governance
+  rules_checked: [core-001, core-004, core-005, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "This is a documentation and readiness tracking update only; it does not activate runtime, submodules, or external tests."
+  delta_justification: "This task changes the test contract only; it does not mutate registry data or external repositories."
 
 conflict_registry:
   read_set:
-    - "docs/agent-runtime/devframe-system-phase05-index.md"
-    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+    - "tests/test_router_10_project_stress.py"
+    - ".agent/PROJECT_REGISTRY.json"
     - ".ai/current-task.yaml"
-    - "current read-only git status of D:\\agent-acceptance"
-    - "current read-only git status of D:\\devframe-control-plane"
-    - "current read-only git status of D:\\dev-frame-opencode"
-    - "current read-only git status of D:\\test-frame"
   write_set:
-    - "tasks/devframe-system-current-gap-tracker-a1.md"
+    - "tasks/router-registry-current-count-sync-a1.md"
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-phase05-index.md"
-    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-    - "_reports/devframe-system-current-gap-tracker-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-CURRENT-GAP-TRACKER-A1/**"
+    - "tests/test_router_10_project_stress.py"
+    - "_reports/router-registry-current-count-sync-a1/**"
+    - "_evidence/ROUTER-REGISTRY-CURRENT-COUNT-SYNC-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-phase05-index.md"
-    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+    - "tests/test_router_10_project_stress.py"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Phase 0.5 index states that D:\\devframe-system exists but is not an activated or trusted baseline."
-  - "Handoff brief no longer instructs future agents that D:\\devframe-system is absent."
-  - "Gap tracker lists the remaining work before Route A baseline or Route B dirty-aware skeleton."
-  - "Report preserves test-frame as controlled verification runtime candidate, not plugin."
-  - "No external repository is modified and no external runtime/test/paper workflow is executed."
-  - "Local verification results are recorded honestly, including any concurrent registry/router blocker."
+  - "Router stress tests derive project count from registry total_projects and actual registry entries."
+  - "Tests still assert known active, suspended, and required pending project identities."
+  - "python -m pytest tests/test_validate_project_registry_bindings.py tests/test_router_10_project_stress.py -q passes in the current worktree."
+  - "No external repository or runtime is touched."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused

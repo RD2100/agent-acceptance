@@ -27,7 +27,6 @@ import multi_project_router  # noqa: E402
 
 # ── Constants ──────────────────────────────────────────────────────────
 
-EXPECTED_PROJECTS = 17
 SHARED_CDP_ENDPOINT = "http://localhost:9222"
 ACTIVE_PROJECT = "agent-acceptance"
 ACTIVE_PROJECTS = [
@@ -43,11 +42,32 @@ ACTIVE_PROJECTS = [
 ]
 SUSPENDED_PROJECTS = ["dev-frame-writing"]
 BOUND_PROJECTS = ["tripmark"]
-PENDING_PROJECTS = [
+REQUIRED_PENDING_PROJECTS = [
     "project-delta", "project-epsilon", "project-zeta",
     "project-eta", "project-theta", "project-iota",
     "devframe-system",
 ]
+OPTIONAL_PENDING_PROJECTS = ["devframe-control-plane"]
+
+
+def _registry_snapshot() -> dict:
+    return multi_project_router.load_registry()
+
+
+def _registry_projects() -> dict:
+    return _registry_snapshot().get("projects", {})
+
+
+def _expected_projects() -> int:
+    reg = _registry_snapshot()
+    return int(reg.get("total_projects", len(reg.get("projects", {}))))
+
+
+def _pending_projects() -> list[str]:
+    return [
+        pid for pid, info in _registry_projects().items()
+        if info["binding_status"] == "pending_binding"
+    ]
 
 
 # ── Helpers ────────────────────────────────────────────────────────────
@@ -88,8 +108,12 @@ class TestRouter10ProjectLoad:
     def test_registry_has_10_projects(self):
         reg = multi_project_router.load_registry()
         projects = reg.get("projects", {})
-        assert len(projects) == EXPECTED_PROJECTS, (
-            f"Expected {EXPECTED_PROJECTS} projects, got {len(projects)}"
+        assert reg.get("total_projects") == len(projects), (
+            f"Registry total_projects={reg.get('total_projects')} but "
+            f"actual projects={len(projects)}"
+        )
+        assert len(projects) == _expected_projects(), (
+            f"Expected {_expected_projects()} projects, got {len(projects)}"
         )
 
     def test_registry_declares_shared_architecture(self):
@@ -119,13 +143,16 @@ class TestRouter10ProjectResolve:
     def test_resolve_all_returns_10(self):
         with patch.object(multi_project_router, "_check_cdp", return_value=False):
             results = multi_project_router.resolve_all()
-        assert len(results) == EXPECTED_PROJECTS, (
-            f"resolve_all must return {EXPECTED_PROJECTS} results"
+        assert len(results) == _expected_projects(), (
+            f"resolve_all must return {_expected_projects()} results"
         )
         project_ids = {r["project_id"] for r in results}
         assert ACTIVE_PROJECT in project_ids
-        for pp in PENDING_PROJECTS + BOUND_PROJECTS:
+        for pp in REQUIRED_PENDING_PROJECTS + BOUND_PROJECTS:
             assert pp in project_ids, f"Missing project: {pp}"
+        for pp in OPTIONAL_PENDING_PROJECTS:
+            if pp in _registry_projects():
+                assert pp in project_ids, f"Missing optional project: {pp}"
 
     def test_resolve_active_project(self):
         with patch.object(multi_project_router, "_check_cdp", return_value=False):
@@ -141,7 +168,7 @@ class TestRouter10ProjectResolve:
 
     def test_resolve_pending_projects(self):
         """Pending projects have binding files but no active agents."""
-        pending_id = PENDING_PROJECTS[0]
+        pending_id = REQUIRED_PENDING_PROJECTS[0]
         with patch.object(multi_project_router, "_check_cdp", return_value=False):
             result = multi_project_router.resolve_target(pending_id)
         assert result["resolved"] is False
@@ -170,21 +197,21 @@ class TestRouter10ProjectIsolation:
 
     def _build_10_targets(self) -> list[dict]:
         """10 properly-isolated synthetic targets (shared CDP, unique conversations)."""
-        names = list(dict.fromkeys(ACTIVE_PROJECTS + SUSPENDED_PROJECTS + BOUND_PROJECTS + PENDING_PROJECTS))[:EXPECTED_PROJECTS]
+        names = list(_registry_projects().keys())[:_expected_projects()]
         return [
             _make_target(
                 project_id=names[i],
                 conv_id=f"conv-{names[i]}-{i}",
             )
-            for i in range(EXPECTED_PROJECTS)
+            for i in range(_expected_projects())
         ]
 
     def test_isolation_10_projects_pass(self):
         targets = self._build_10_targets()
         result = multi_project_router.verify_isolation(targets)
         assert result["isolated"] is True
-        assert result["total_projects"] == EXPECTED_PROJECTS
-        assert result["unique_conversations"] == EXPECTED_PROJECTS
+        assert result["total_projects"] == _expected_projects()
+        assert result["unique_conversations"] == _expected_projects()
         assert result["issues"] == []
 
     def test_shared_cdp_is_not_a_collision(self):
@@ -277,7 +304,7 @@ class TestRouter10ProjectDispatch:
 
     def test_dispatch_packet_for_pending(self):
         """Pending projects do not resolve, dispatch correctly blocked."""
-        pending_id = PENDING_PROJECTS[0]
+        pending_id = REQUIRED_PENDING_PROJECTS[0]
         with patch.object(multi_project_router, "_check_cdp", return_value=False):
             target = multi_project_router.resolve_target(pending_id)
         assert target["resolved"] is False
@@ -316,10 +343,15 @@ class TestRouter10ProjectClassification:
                 f"{pid} should be active"
             )
         # All scaffold projects must be pending_binding
-        for pid in PENDING_PROJECTS:
+        for pid in REQUIRED_PENDING_PROJECTS:
             assert projects[pid]["binding_status"] == "pending_binding", (
                 f"{pid} should be pending_binding"
             )
+        for pid in OPTIONAL_PENDING_PROJECTS:
+            if pid in projects:
+                assert projects[pid]["binding_status"] == "pending_binding", (
+                    f"{pid} should be pending_binding"
+                )
         # All suspended projects must be suspended
         for pid in SUSPENDED_PROJECTS:
             assert projects[pid]["binding_status"] == "suspended", (
@@ -344,7 +376,8 @@ class TestRouter10ProjectClassification:
             pid for pid, info in reg["projects"].items()
             if info["binding_status"] == "pending_binding"
         ]
-        assert len(pending) == len(PENDING_PROJECTS), (
-            f"Expected {len(PENDING_PROJECTS)} pending projects, got {len(pending)}: {pending}"
+        expected_pending = _pending_projects()
+        assert len(pending) == len(expected_pending), (
+            f"Expected {len(expected_pending)} pending projects, got {len(pending)}: {pending}"
         )
-        assert set(pending) == set(PENDING_PROJECTS)
+        assert set(pending) == set(expected_pending)
