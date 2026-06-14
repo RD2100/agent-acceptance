@@ -78,3 +78,7 @@ Any future route selection must produce a human approval record that includes:
 - confirmation that runtime execution remains separately gated;
 - confirmation that `test-frame` remains evidence-only until separately
   approved.
+
+Use `docs/agent-runtime/devframe-system-route-approval-record-template.md` for
+the copy-ready approval record fields. The template is not approval until it is
+filled by a human decision and stored as evidence.

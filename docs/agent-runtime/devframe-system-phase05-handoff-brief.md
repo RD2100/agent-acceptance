@@ -28,8 +28,9 @@ Route B from `docs/agent-runtime/devframe-system-route-decision-packet.md`.
 1. `docs/agent-runtime/devframe-system-phase05-index.md`
 2. `docs/agent-runtime/devframe-system-route-decision-packet.md`
 3. `docs/agent-runtime/devframe-system-route-decision-worksheet.md`
-4. `docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md`
-5. `docs/agent-runtime/devframe-system-route-b-noop-dry-run.md`
+4. `docs/agent-runtime/devframe-system-route-approval-record-template.md`
+5. `docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md`
+6. `docs/agent-runtime/devframe-system-route-b-noop-dry-run.md`
 
 ## Hard Stops
 
@@ -69,6 +70,7 @@ Start at:
 - docs/agent-runtime/devframe-system-phase05-index.md
 - docs/agent-runtime/devframe-system-route-decision-packet.md
 - docs/agent-runtime/devframe-system-route-decision-worksheet.md
+- docs/agent-runtime/devframe-system-route-approval-record-template.md
 - docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md
 - docs/agent-runtime/devframe-system-route-b-noop-dry-run.md
 
@@ -88,6 +90,7 @@ Return:
 2. Which evidence is missing before physical bootstrap.
 3. The safest next no-op governance step.
 4. Whether the human needs to choose a formal route block before any physical bootstrap.
+5. Whether a filled approval record is present, and if so where.
 ```
 
 ## Recommended Next No-Op Step
@@ -109,6 +112,13 @@ The one-page human route worksheet is:
 
 Use it before asking the human to choose a formal route block from the route
 decision packet.
+
+The approval record template is:
+
+`docs/agent-runtime/devframe-system-route-approval-record-template.md`
+
+Use it only to record an explicit human route approval. A blank or partial copy
+does not authorize any action.
 
 If no route is selected, the next safe action is to continue contract-only
 planning or ask the human to choose one of the route decision blocks. Repeat the

@@ -1,77 +1,81 @@
-task_id: DEVFRAME-SYSTEM-PHASE05-ROUTE-DECISION-WORKSHEET-A1
-title: "Create devframe-system Phase 0.5 route decision worksheet"
+task_id: DEVFRAME-SYSTEM-PHASE05-ROUTE-APPROVAL-TEMPLATE-A1
+title: "Create devframe-system route approval record template"
 priority: P1
 status: completed
-type: governance_route_decision_worksheet
+type: governance_route_approval_template
 mode: "direct"
 
 description: >
-  Create a compact human decision worksheet for choosing the next
-  devframe-system Phase 0.5 route. The worksheet must make the valid choices
-  explicit without creating the superproject or selecting Route A/B on its own.
+  Create a copy-ready approval record template for future devframe-system Route
+  A or Route B decisions. The template records a human decision but does not
+  authorize any route by itself.
 
 write_set:
-  - "tasks/devframe-system-phase05-route-decision-worksheet-a1.md"
+  - "tasks/devframe-system-phase05-route-approval-template-a1.md"
   - ".ai/current-task.yaml"
+  - "docs/agent-runtime/devframe-system-route-approval-record-template.md"
+  - "docs/agent-runtime/devframe-system-route-decision-worksheet.md"
   - "docs/agent-runtime/devframe-system-phase05-index.md"
   - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-  - "docs/agent-runtime/devframe-system-route-decision-worksheet.md"
-  - "_reports/devframe-system-phase05-route-decision-worksheet-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-PHASE05-ROUTE-DECISION-WORKSHEET-A1/**"
+  - "_reports/devframe-system-phase05-route-approval-template-a1/**"
+  - "_evidence/DEVFRAME-SYSTEM-PHASE05-ROUTE-APPROVAL-TEMPLATE-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Route decision packet exists, but there is no compact one-page worksheet for human route selection."
+  trigger_reason: "The route worksheet requires a human approval record, but no copy-ready approval record template exists."
   inventory_evidence:
     queried_sources:
+      - "docs/agent-runtime/devframe-system-route-decision-worksheet.md"
+      - "docs/agent-runtime/devframe-system-route-decision-packet.md"
       - "docs/agent-runtime/devframe-system-phase05-index.md"
       - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-      - "docs/agent-runtime/devframe-system-route-decision-packet.md"
-      - "_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md"
     matched_capabilities:
       - sadp_governance
       - documentation_navigation
       - route_decision_governance
+      - human_approval_recording
       - external_runtime_non_execution_gate
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "The task adds a decision worksheet only and does not require new runtime capability."
+  delta_justification: "The task adds a documentation template only and does not require new runtime capability."
 
 conflict_registry:
   read_set:
+    - "docs/agent-runtime/devframe-system-route-decision-worksheet.md"
+    - "docs/agent-runtime/devframe-system-route-decision-packet.md"
     - "docs/agent-runtime/devframe-system-phase05-index.md"
     - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-    - "docs/agent-runtime/devframe-system-route-decision-packet.md"
-    - "_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/devframe-system-phase05-route-decision-worksheet-a1.md"
+    - "tasks/devframe-system-phase05-route-approval-template-a1.md"
     - ".ai/current-task.yaml"
+    - "docs/agent-runtime/devframe-system-route-approval-record-template.md"
+    - "docs/agent-runtime/devframe-system-route-decision-worksheet.md"
     - "docs/agent-runtime/devframe-system-phase05-index.md"
     - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-    - "docs/agent-runtime/devframe-system-route-decision-worksheet.md"
-    - "_reports/devframe-system-phase05-route-decision-worksheet-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-PHASE05-ROUTE-DECISION-WORKSHEET-A1/**"
+    - "_reports/devframe-system-phase05-route-approval-template-a1/**"
+    - "_evidence/DEVFRAME-SYSTEM-PHASE05-ROUTE-APPROVAL-TEMPLATE-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
+    - "docs/agent-runtime/devframe-system-route-approval-record-template.md"
+    - "docs/agent-runtime/devframe-system-route-decision-worksheet.md"
     - "docs/agent-runtime/devframe-system-phase05-index.md"
     - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
-    - "docs/agent-runtime/devframe-system-route-decision-worksheet.md"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Decision worksheet states HUMAN_REQUIRED as the default when no route is selected."
-  - "Decision worksheet states test-frame is a controlled verification runtime candidate, not a plugin."
-  - "Index and handoff brief reference the worksheet."
+  - "Approval template includes exact route name, allowed scope, superproject creation authorization, submodule status, runtime gate status, and test-frame evidence-only confirmation."
+  - "Approval template states it is not valid until filled by a human decision."
+  - "Index, handoff brief, and worksheet reference the approval template."
   - "No physical bootstrap/runtime/submodule/paper workflow action is performed."
-  - "Targeted checks pass and staged commit contains only this worksheet package plus hook-managed manifest."
+  - "Targeted checks pass and staged commit contains only this template package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused

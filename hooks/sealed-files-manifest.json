@@ -9,7 +9,7 @@
                          "C:\\Users\\RD\\.claude\\memory\\"
                      ],
     "note":  "Active manifest authority. hooks/sealed-files-manifest.json is self-excluded from hashing; protected by CODEOWNERS + branch protection.",
-    "generated":  "2026-06-14T12:18:18.4391438+08:00",
+    "generated":  "2026-06-14T12:25:32.3586658+08:00",
     "sealed_files":  [
                          {
                              "sha256":  "5F355E8D4FC1DF34627264AB41E20499C39CA3FDF3F1FEFCEDB364EA6ADB40BD",
@@ -148,16 +148,20 @@
                              "path":  "docs/agent-runtime/devframe-system-activation-gates.md"
                          },
                          {
-                             "sha256":  "2A44A8782B8D96E11A9E63FC0484F3DBA9D5BB6BBE31CCA0522352BE960D9D65",
+                             "sha256":  "EE00B513A9EB1CF95492C75378A0954318A9081546AEA220ECF61C30D7F4F450",
                              "path":  "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
                          },
                          {
-                             "sha256":  "4D229D5BA5EF35954A24CDFF34E83C717E7028D21244A4E1E0E2C839CCA7D8B8",
+                             "sha256":  "DFA8326680DC9AC9276D4420C7FEF84F28512315460E509F835B48294AB7F6CD",
                              "path":  "docs/agent-runtime/devframe-system-phase05-index.md"
                          },
                          {
                              "sha256":  "FC6DE22770F3A1F3F55272115D246B6BFE1C34A9A3B9F92524C25C8111971E9D",
                              "path":  "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
+                         },
+                         {
+                             "sha256":  "E2A227BD2675D09F12DE60358E22A8A96EAA1063199152CA1BAE4C021B95D16B",
+                             "path":  "docs/agent-runtime/devframe-system-route-approval-record-template.md"
                          },
                          {
                              "sha256":  "D62016DCFFF242958977F579357787E8818205B78C12B5E5E52C2B0B0DA71D07",
@@ -168,7 +172,7 @@
                              "path":  "docs/agent-runtime/devframe-system-route-decision-packet.md"
                          },
                          {
-                             "sha256":  "7D0E38E33F1DCBB85BAD7C94FA51860119A55719660810CAB66E3345CAFC7532",
+                             "sha256":  "CFCD63A7D5FE3C74969AD797A38DF933466609CD36BEE8A6C98319B1C79300B8",
                              "path":  "docs/agent-runtime/devframe-system-route-decision-worksheet.md"
                          },
                          {
