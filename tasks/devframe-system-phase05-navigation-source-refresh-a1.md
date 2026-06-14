@@ -1,0 +1,65 @@
+# TaskSpec: DEVFRAME-SYSTEM-PHASE05-NAVIGATION-SOURCE-REFRESH-A1
+
+**ID**: devframe-system-phase05-navigation-source-refresh-a1
+**Priority**: P1
+**Status**: completed
+**Type**: governance_navigation_source_refresh
+
+## Intent
+
+Add the completed Route A/B checklist source-refresh artifact to the canonical
+Phase 0.5 navigation surfaces. This keeps future agents pointed at the newest
+contract-only governance evidence without selecting Route A or Route B.
+
+The task must stay inside `D:\agent-acceptance`. It must not create
+`D:\devframe-system`, add submodules, run external runtimes/tests/builds/package
+installs, run paper workflow, or mutate external repositories.
+
+gate_0:
+  triggered: true
+  trigger_reason: "A completed route-checklist source refresh exists but is not yet listed by the canonical index or handoff brief."
+  inventory_evidence:
+    queried_sources:
+      - "docs/agent-runtime/devframe-system-phase05-index.md"
+      - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+      - "_reports/devframe-system-phase05-route-checklist-source-refresh-a1/ROUTE_CHECKLIST_SOURCE_REFRESH.md"
+      - "_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md"
+    matched_capabilities:
+      - sadp_governance
+      - documentation_navigation
+      - route_checklist_refresh
+      - external_runtime_non_execution_gate
+  rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
+  sufficiency_decision: existing_sufficient
+  decision: reuse
+  delta_justification: "The task updates navigation documentation only and does not require new runtime capability."
+
+conflict_registry:
+  read_set:
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
+    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+    - "_reports/devframe-system-phase05-route-checklist-source-refresh-a1/ROUTE_CHECKLIST_SOURCE_REFRESH.md"
+    - "_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md"
+    - ".ai/current-task.yaml"
+  write_set:
+    - tasks/devframe-system-phase05-navigation-source-refresh-a1.md
+    - .ai/current-task.yaml
+    - docs/agent-runtime/devframe-system-phase05-index.md
+    - docs/agent-runtime/devframe-system-phase05-handoff-brief.md
+    - _reports/devframe-system-phase05-navigation-source-refresh-a1/**
+    - _evidence/DEVFRAME-SYSTEM-PHASE05-NAVIGATION-SOURCE-REFRESH-A1/**
+    - hooks/sealed-files-manifest.json
+    - _evidence/hook-output/**
+  governance_adjacent_files_modified:
+    - ".ai/current-task.yaml"
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
+    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+  protected_files_touched: false
+  conflict_level: medium
+
+**Acceptance Gates**:
+  1. Runner start, edit-check, and finish complete without blocking.
+  2. Index references the Route A/B checklist source-refresh artifact.
+  3. Handoff brief references the Route A/B checklist source-refresh artifact.
+  4. Verdict remains HUMAN_REQUIRED and no physical bootstrap/runtime/submodule/paper workflow action is performed.
+  5. Targeted checks pass and staged commit contains only this navigation refresh package plus hook-managed manifest.

@@ -93,6 +93,13 @@ The read-only freshness snapshot has been captured at:
 
 `_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md`
 
+The Route A/B checklist source-maintenance record is:
+
+`_reports/devframe-system-phase05-route-checklist-source-refresh-a1/ROUTE_CHECKLIST_SOURCE_REFRESH.md`
+
+It confirms the no-op Route A and Route B checklists now point to the freshness
+snapshot as the current repository-fact source.
+
 If no route is selected, the next safe action is to continue contract-only
 planning or ask the human to choose one of the route decision blocks. Repeat the
 freshness snapshot only if there is reason to believe one of the four source

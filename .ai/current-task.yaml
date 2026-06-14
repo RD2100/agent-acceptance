@@ -1,75 +1,74 @@
-task_id: DEVFRAME-SYSTEM-PHASE05-ROUTE-CHECKLIST-SOURCE-REFRESH-A1
-title: "Refresh devframe-system Route A/B checklist source references"
+task_id: DEVFRAME-SYSTEM-PHASE05-NAVIGATION-SOURCE-REFRESH-A1
+title: "Refresh devframe-system Phase 0.5 navigation source references"
 priority: P1
 status: completed
-type: governance_route_checklist_source_refresh
+type: governance_navigation_source_refresh
 mode: "direct"
 
 description: >
-  Refresh the Route A and Route B no-op checklists so they point future
-  operators to the latest freshness snapshot for repository facts. The
-  checklists already forbid physical bootstrap and runtime execution; this task
-  only clarifies the current evidence source used before any later route
-  activation.
+  Add the completed Route A/B checklist source-refresh artifact to the
+  canonical Phase 0.5 navigation surfaces. This keeps future agents pointed at
+  the newest contract-only governance evidence without selecting Route A or
+  Route B.
 
 write_set:
-  - "tasks/devframe-system-phase05-route-checklist-source-refresh-a1.md"
+  - "tasks/devframe-system-phase05-navigation-source-refresh-a1.md"
   - ".ai/current-task.yaml"
-  - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
-  - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
-  - "_reports/devframe-system-phase05-route-checklist-source-refresh-a1/**"
-  - "_evidence/DEVFRAME-SYSTEM-PHASE05-ROUTE-CHECKLIST-SOURCE-REFRESH-A1/**"
+  - "docs/agent-runtime/devframe-system-phase05-index.md"
+  - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+  - "_reports/devframe-system-phase05-navigation-source-refresh-a1/**"
+  - "_evidence/DEVFRAME-SYSTEM-PHASE05-NAVIGATION-SOURCE-REFRESH-A1/**"
   - "hooks/sealed-files-manifest.json"
   - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
-  trigger_reason: "Route A/B checklists do not yet name the freshness snapshot as the latest repository-fact source."
+  trigger_reason: "A completed route-checklist source refresh exists but is not yet listed by the canonical index or handoff brief."
   inventory_evidence:
     queried_sources:
-      - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
-      - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
-      - "docs/agent-runtime/devframe-system-route-decision-packet.md"
+      - "docs/agent-runtime/devframe-system-phase05-index.md"
+      - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+      - "_reports/devframe-system-phase05-route-checklist-source-refresh-a1/ROUTE_CHECKLIST_SOURCE_REFRESH.md"
       - "_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md"
     matched_capabilities:
       - sadp_governance
-      - route_checklist_refresh
       - documentation_navigation
+      - route_checklist_refresh
       - external_runtime_non_execution_gate
   rules_checked: [core-001, core-004, core-005, core-007, core-008, review-001, git-001]
   sufficiency_decision: existing_sufficient
   decision: reuse
-  delta_justification: "The task updates governance documentation only and does not require new runtime capability."
+  delta_justification: "The task updates navigation documentation only and does not require new runtime capability."
 
 conflict_registry:
   read_set:
-    - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
-    - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
-    - "docs/agent-runtime/devframe-system-route-decision-packet.md"
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
+    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+    - "_reports/devframe-system-phase05-route-checklist-source-refresh-a1/ROUTE_CHECKLIST_SOURCE_REFRESH.md"
     - "_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md"
     - ".ai/current-task.yaml"
   write_set:
-    - "tasks/devframe-system-phase05-route-checklist-source-refresh-a1.md"
+    - "tasks/devframe-system-phase05-navigation-source-refresh-a1.md"
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
-    - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
-    - "_reports/devframe-system-phase05-route-checklist-source-refresh-a1/**"
-    - "_evidence/DEVFRAME-SYSTEM-PHASE05-ROUTE-CHECKLIST-SOURCE-REFRESH-A1/**"
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
+    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
+    - "_reports/devframe-system-phase05-navigation-source-refresh-a1/**"
+    - "_evidence/DEVFRAME-SYSTEM-PHASE05-NAVIGATION-SOURCE-REFRESH-A1/**"
     - "hooks/sealed-files-manifest.json"
     - "_evidence/hook-output/**"
   governance_adjacent_files_modified:
     - ".ai/current-task.yaml"
-    - "docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md"
-    - "docs/agent-runtime/devframe-system-route-b-noop-dry-run.md"
+    - "docs/agent-runtime/devframe-system-phase05-index.md"
+    - "docs/agent-runtime/devframe-system-phase05-handoff-brief.md"
   protected_files_touched: false
   conflict_level: medium
 
 acceptance_criteria:
   - "Runner start, edit-check, and finish complete without blocking."
-  - "Route A checklist names the freshness snapshot as the latest repository-fact source."
-  - "Route B checklist names the freshness snapshot as the latest repository-fact source."
+  - "Index references the Route A/B checklist source-refresh artifact."
+  - "Handoff brief references the Route A/B checklist source-refresh artifact."
   - "Verdict remains HUMAN_REQUIRED and no physical bootstrap/runtime/submodule/paper workflow action is performed."
-  - "Targeted checks pass and staged commit contains only this route-checklist refresh package plus hook-managed manifest."
+  - "Targeted checks pass and staged commit contains only this navigation refresh package plus hook-managed manifest."
 
 external_runtime_execution_authorized: false
 paper_workflow_status: paused

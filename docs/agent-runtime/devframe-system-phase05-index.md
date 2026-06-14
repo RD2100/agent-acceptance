@@ -36,6 +36,7 @@ HUMAN_REQUIRED: no physical bootstrap, no runtime execution, no submodule add.
 | 9 | `docs/agent-runtime/devframe-system-route-b-noop-dry-run.md` | Rehearses Route B with zero side effects. | Route B no-op checklist |
 | 10 | `docs/agent-runtime/devframe-system-phase05-handoff-brief.md` | Gives GPT-5.5 Pro or a future agent a compact safe handoff. | Handoff brief |
 | 11 | `_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md` | Captures the latest read-only four-repository state. | Current freshness snapshot |
+| 12 | `_reports/devframe-system-phase05-route-checklist-source-refresh-a1/ROUTE_CHECKLIST_SOURCE_REFRESH.md` | Records that Route A/B checklists now point to the freshness snapshot as the current repository-fact source. | Checklist source-maintenance evidence |
 
 ## Route Summary
 
@@ -104,6 +105,14 @@ repositories remain dirty. `D:\devframe-system` remains absent.
 For current repository HEAD/count facts, prefer this freshness snapshot over
 older readiness or owner-action reports. Older reports remain useful for
 history, prioritization, and owner-action context.
+
+The latest checklist source-maintenance artifact is:
+
+`_reports/devframe-system-phase05-route-checklist-source-refresh-a1/ROUTE_CHECKLIST_SOURCE_REFRESH.md`
+
+It does not select Route A or Route B. It only records that the Route A and
+Route B no-op checklists now point future operators to the freshness snapshot
+for repository facts.
 
 ## Minimal Prompt For The Next Agent
 
