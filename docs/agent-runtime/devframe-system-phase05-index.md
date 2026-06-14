@@ -32,11 +32,12 @@ HUMAN_REQUIRED: no physical bootstrap, no runtime execution, no submodule add.
 | 5 | `schemas/draft/devframe-system-contracts.schema.draft.json` | Captures draft contract packet. | Inactive schema only |
 | 6 | `docs/agent-runtime/devframe-system-activation-gates.md` | Defines Route A and Route B activation gates. | Gate reference |
 | 7 | `docs/agent-runtime/devframe-system-route-decision-packet.md` | Provides copy-ready human decision blocks. | Human decision entrypoint |
-| 8 | `docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md` | Rehearses Route A clean-baseline checks with zero side effects. | Route A no-op checklist |
-| 9 | `docs/agent-runtime/devframe-system-route-b-noop-dry-run.md` | Rehearses Route B with zero side effects. | Route B no-op checklist |
-| 10 | `docs/agent-runtime/devframe-system-phase05-handoff-brief.md` | Gives GPT-5.5 Pro or a future agent a compact safe handoff. | Handoff brief |
-| 11 | `_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md` | Captures the latest read-only four-repository state. | Current freshness snapshot |
-| 12 | `_reports/devframe-system-phase05-route-checklist-source-refresh-a1/ROUTE_CHECKLIST_SOURCE_REFRESH.md` | Records that Route A/B checklists now point to the freshness snapshot as the current repository-fact source. | Checklist source-maintenance evidence |
+| 8 | `docs/agent-runtime/devframe-system-route-decision-worksheet.md` | Compresses route choice, missing evidence, and forbidden actions into a one-page human decision worksheet. | Human decision worksheet |
+| 9 | `docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md` | Rehearses Route A clean-baseline checks with zero side effects. | Route A no-op checklist |
+| 10 | `docs/agent-runtime/devframe-system-route-b-noop-dry-run.md` | Rehearses Route B with zero side effects. | Route B no-op checklist |
+| 11 | `docs/agent-runtime/devframe-system-phase05-handoff-brief.md` | Gives GPT-5.5 Pro or a future agent a compact safe handoff. | Handoff brief |
+| 12 | `_reports/devframe-system-phase05-freshness-snapshot-a1/FRESHNESS_SNAPSHOT.md` | Captures the latest read-only four-repository state. | Current freshness snapshot |
+| 13 | `_reports/devframe-system-phase05-route-checklist-source-refresh-a1/ROUTE_CHECKLIST_SOURCE_REFRESH.md` | Records that Route A/B checklists now point to the freshness snapshot as the current repository-fact source. | Checklist source-maintenance evidence |
 
 ## Route Summary
 
@@ -122,5 +123,6 @@ Current default is HUMAN_REQUIRED.
 Do not create D:\devframe-system.
 Do not run external runtimes, tests, paper workflow, cleanup, reset, stash, checkout, or submodule commands.
 Use docs/agent-runtime/devframe-system-route-decision-packet.md if a human route decision is needed.
+Use docs/agent-runtime/devframe-system-route-decision-worksheet.md to compare the valid choices before asking for the formal decision block.
 If no route is explicitly selected, continue contract-only planning only.
 ```

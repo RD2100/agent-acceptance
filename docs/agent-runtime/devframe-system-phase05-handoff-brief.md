@@ -27,8 +27,9 @@ Route B from `docs/agent-runtime/devframe-system-route-decision-packet.md`.
 
 1. `docs/agent-runtime/devframe-system-phase05-index.md`
 2. `docs/agent-runtime/devframe-system-route-decision-packet.md`
-3. `docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md`
-4. `docs/agent-runtime/devframe-system-route-b-noop-dry-run.md`
+3. `docs/agent-runtime/devframe-system-route-decision-worksheet.md`
+4. `docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md`
+5. `docs/agent-runtime/devframe-system-route-b-noop-dry-run.md`
 
 ## Hard Stops
 
@@ -67,6 +68,7 @@ You are continuing devframe-system Phase 0.5 governance.
 Start at:
 - docs/agent-runtime/devframe-system-phase05-index.md
 - docs/agent-runtime/devframe-system-route-decision-packet.md
+- docs/agent-runtime/devframe-system-route-decision-worksheet.md
 - docs/agent-runtime/devframe-system-route-a-clean-baseline-checklist.md
 - docs/agent-runtime/devframe-system-route-b-noop-dry-run.md
 
@@ -85,6 +87,7 @@ Return:
 1. Which route is currently valid.
 2. Which evidence is missing before physical bootstrap.
 3. The safest next no-op governance step.
+4. Whether the human needs to choose a formal route block before any physical bootstrap.
 ```
 
 ## Recommended Next No-Op Step
@@ -99,6 +102,13 @@ The Route A/B checklist source-maintenance record is:
 
 It confirms the no-op Route A and Route B checklists now point to the freshness
 snapshot as the current repository-fact source.
+
+The one-page human route worksheet is:
+
+`docs/agent-runtime/devframe-system-route-decision-worksheet.md`
+
+Use it before asking the human to choose a formal route block from the route
+decision packet.
 
 If no route is selected, the next safe action is to continue contract-only
 planning or ask the human to choose one of the route decision blocks. Repeat the
