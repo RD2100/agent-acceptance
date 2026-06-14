@@ -1,33 +1,25 @@
+# TaskSpec: devframe-control-plane-registry-decision-a1
+
 task_id: devframe-control-plane-registry-decision-a1
-title: "Prepare devframe-control-plane registry migration decision packet"
 priority: P1
 status: completed
 type: human_required_decision_packet
-mode: "direct"
 
 description: >
   Prepare a Human Required decision packet for the pending
-  devframe-control-plane project registry migration without committing the
+  `devframe-control-plane` project registry migration without committing the
   registry mutation itself.
-
-write_set:
-  - ".ai/current-task.yaml"
-  - "tasks/devframe-control-plane-registry-decision-a1.md"
-  - "_reports/devframe-control-plane-registry-decision-a1/**"
-  - "_evidence/devframe-control-plane-registry-decision-a1/**"
-  - "hooks/sealed-files-manifest.json"
-  - "_evidence/hook-output/**"
 
 gate_0:
   triggered: true
   trigger_reason: "Current .agent/PROJECT_REGISTRY.json contains an unstaged devframe-control-plane project entry, which is a Project Registry Migration trigger."
   inventory_evidence:
     queried_sources:
-      - ".agent/PROJECT_REGISTRY.json"
-      - "docs/agent-runtime/human-required-decision-record.md"
-      - "docs/agent-runtime/inactive-frame-registry.md"
-      - "_reports/devframe-system-workspace-risk-triage-a1/WORKSPACE_RISK_TRIAGE.md"
-      - "python -m pytest tests/test_validate_project_registry_bindings.py tests/test_router_10_project_stress.py -q"
+      - .agent/PROJECT_REGISTRY.json
+      - docs/agent-runtime/human-required-decision-record.md
+      - docs/agent-runtime/inactive-frame-registry.md
+      - _reports/devframe-system-workspace-risk-triage-a1/WORKSPACE_RISK_TRIAGE.md
+      - python -m pytest tests/test_validate_project_registry_bindings.py tests/test_router_10_project_stress.py -q
     matched_capabilities:
       - project_registry_validation
       - human_required_decision_record
@@ -40,21 +32,21 @@ gate_0:
 
 conflict_registry:
   read_set:
-    - ".agent/PROJECT_REGISTRY.json"
-    - "docs/agent-runtime/human-required-decision-record.md"
-    - "docs/agent-runtime/inactive-frame-registry.md"
-    - "_reports/devframe-system-workspace-risk-triage-a1/WORKSPACE_RISK_TRIAGE.md"
-    - "tests/test_validate_project_registry_bindings.py"
-    - "tests/test_router_10_project_stress.py"
+    - .agent/PROJECT_REGISTRY.json
+    - docs/agent-runtime/human-required-decision-record.md
+    - docs/agent-runtime/inactive-frame-registry.md
+    - _reports/devframe-system-workspace-risk-triage-a1/WORKSPACE_RISK_TRIAGE.md
+    - tests/test_validate_project_registry_bindings.py
+    - tests/test_router_10_project_stress.py
   write_set:
-    - ".ai/current-task.yaml"
-    - "tasks/devframe-control-plane-registry-decision-a1.md"
-    - "_reports/devframe-control-plane-registry-decision-a1/**"
-    - "_evidence/devframe-control-plane-registry-decision-a1/**"
-    - "hooks/sealed-files-manifest.json"
-    - "_evidence/hook-output/**"
+    - .ai/current-task.yaml
+    - tasks/devframe-control-plane-registry-decision-a1.md
+    - _reports/devframe-control-plane-registry-decision-a1/**
+    - _evidence/devframe-control-plane-registry-decision-a1/**
+    - hooks/sealed-files-manifest.json
+    - _evidence/hook-output/**
   governance_adjacent_files_modified:
-    - ".ai/current-task.yaml"
+    - .ai/current-task.yaml
   protected_files_touched: false
   conflict_level: low
 
